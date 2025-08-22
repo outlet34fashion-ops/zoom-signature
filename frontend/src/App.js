@@ -563,12 +563,13 @@ function App() {
                 <div>
                   <h4 className="font-semibold mb-3">{t.price}</h4>
                   <div className="grid grid-cols-4 gap-2">
-                    {['5,00 €', '6,90 €', '7,50 €', '8,50 €', '9,00 €', '9,90 €', '11,50 €'].map((price) => (
+                    {priceOptions.map((price) => (
                       <Button
                         key={price}
-                        variant="outline"
+                        variant={selectedPrice === parseFloat(price.replace(',', '.').replace(' €', '')) ? "default" : "outline"}
                         size="sm"
-                        className="text-xs"
+                        onClick={() => handlePriceSelect(price)}
+                        className={selectedPrice === parseFloat(price.replace(',', '.').replace(' €', '')) ? "bg-pink-500 text-white" : "text-xs hover:bg-pink-50"}
                       >
                         {price}
                       </Button>
@@ -576,11 +577,16 @@ function App() {
                   </div>
                   <Input 
                     placeholder="Manuell" 
-                    className="mt-2" 
+                    className="mt-2"
+                    type="number"
+                    step="0.01"
+                    value={selectedPrice}
+                    onChange={(e) => setSelectedPrice(parseFloat(e.target.value) || 0)}
                   />
                   <Button 
                     className="w-full mt-2 text-sm"
                     variant="outline"
+                    onClick={() => setSelectedPrice(selectedProduct?.price || 0)}
                   >
                     {t.keepPrice}
                   </Button>
