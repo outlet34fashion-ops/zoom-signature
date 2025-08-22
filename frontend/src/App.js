@@ -237,7 +237,8 @@ function App() {
         customer_id: customerId,
         product_id: selectedProduct.id,
         size: selectedSize,
-        quantity: quantity
+        quantity: quantity,
+        price: selectedPrice
       });
     } catch (error) {
       console.error('Error placing order:', error);
