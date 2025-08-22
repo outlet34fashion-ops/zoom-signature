@@ -108,6 +108,7 @@ class OrderCreate(BaseModel):
     product_id: str
     size: str
     quantity: int
+    price: float = None  # Allow custom price
 
 # In-memory counter for demo (in production, use database)
 order_counter = 0
