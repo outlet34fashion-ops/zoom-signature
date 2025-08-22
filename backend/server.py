@@ -110,8 +110,12 @@ class OrderCreate(BaseModel):
     quantity: int
     price: float = None  # Allow custom price
 
-# In-memory counter for demo (in production, use database)
+# In-memory counter and settings for demo
 order_counter = 0
+ticker_settings = {
+    "text": "Nur für Händler | Ab 10 € - Heute 18:00 - Frische Ware | Young Fashion & Plus Size",
+    "enabled": True
+}
 
 # Routes
 @api_router.get("/")
@@ -124,8 +128,7 @@ async def get_admin_stats():
     total_orders = await db.orders.count_documents({})
     return {
         "total_orders": total_orders,
-        "session_orders": order_counter,
-        "active_viewers": manager.viewer_count
+        "session_orders": order_counter
     }
 
 @api_router.post("/admin/reset-counter")
@@ -133,6 +136,25 @@ async def reset_order_counter():
     global order_counter
     order_counter = 0
     return {"message": "Order counter reset", "new_count": order_counter}
+
+@api_router.get("/admin/ticker")
+async def get_ticker_settings():
+    global ticker_settings
+    return ticker_settings
+
+@api_router.post("/admin/ticker")
+async def update_ticker_settings(settings: dict):
+    global ticker_settings
+    ticker_settings.update(settings)
+    
+    # Broadcast ticker update to all clients
+    broadcast_data = {
+        "type": "ticker_update",
+        "data": ticker_settings
+    }
+    await manager.broadcast(json.dumps(broadcast_data, default=str))
+    
+    return ticker_settings
 
 @api_router.get("/stream/status")
 async def get_stream_status():
