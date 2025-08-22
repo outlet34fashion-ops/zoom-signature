@@ -198,9 +198,15 @@ async def create_order(order: OrderCreate):
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     
+    # Use custom price if provided, otherwise use product price
+    unit_price = order.price if order.price is not None else product['price']
+    
     order_obj = Order(
-        **order.dict(),
-        price=product['price'] * order.quantity
+        customer_id=order.customer_id,
+        product_id=order.product_id,
+        size=order.size,
+        quantity=order.quantity,
+        price=unit_price * order.quantity
     )
     
     # Store in database
@@ -217,7 +223,8 @@ async def create_order(order: OrderCreate):
             "product_name": product['name'],
             "size": order.size,
             "quantity": order.quantity,
-            "price": order_obj.price
+            "price": order_obj.price,
+            "unit_price": unit_price
         }
     }
     await manager.broadcast(json.dumps(broadcast_data, default=str))
