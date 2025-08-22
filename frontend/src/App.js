@@ -200,8 +200,38 @@ function App() {
     try {
       const statsResponse = await axios.get(`${API}/admin/stats`);
       setAdminStats(statsResponse.data);
+      
+      const tickerResponse = await axios.get(`${API}/admin/ticker`);
+      setTickerSettings(tickerResponse.data);
+      setNewTickerText(tickerResponse.data.text);
     } catch (error) {
       console.error('Error loading admin stats:', error);
+    }
+  };
+
+  const updateTicker = async () => {
+    try {
+      const updatedSettings = {
+        text: newTickerText,
+        enabled: tickerSettings.enabled
+      };
+      await axios.post(`${API}/admin/ticker`, updatedSettings);
+      setTickerSettings(updatedSettings);
+    } catch (error) {
+      console.error('Error updating ticker:', error);
+    }
+  };
+
+  const toggleTicker = async () => {
+    try {
+      const updatedSettings = {
+        ...tickerSettings,
+        enabled: !tickerSettings.enabled
+      };
+      await axios.post(`${API}/admin/ticker`, updatedSettings);
+      setTickerSettings(updatedSettings);
+    } catch (error) {
+      console.error('Error toggling ticker:', error);
     }
   };
 
