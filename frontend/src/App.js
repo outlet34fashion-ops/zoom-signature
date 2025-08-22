@@ -119,7 +119,11 @@ function App() {
       sessionOrders: 'Session Orders',
       activeViewers: 'Active Viewers',
       resetCounter: 'Reset Counter',
-      selectPrice: 'Select Price'
+      selectPrice: 'Select Price',
+      tickerSettings: 'Ticker Settings',
+      tickerText: 'Ticker Text',
+      updateTicker: 'Update Ticker',
+      enableTicker: 'Enable Ticker'
     }
   };
 
