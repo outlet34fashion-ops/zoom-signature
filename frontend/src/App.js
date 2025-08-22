@@ -187,6 +187,13 @@ function App() {
       if (productsResponse.data.length > 0) {
         setSelectedProduct(productsResponse.data[0]);
         setSelectedSize(productsResponse.data[0].sizes[0]);
+        setSelectedPrice(productsResponse.data[0].price);
+      }
+
+      // Load admin stats if in admin view
+      if (isAdminView) {
+        const statsResponse = await axios.get(`${API}/admin/stats`);
+        setAdminStats(statsResponse.data);
       }
     } catch (error) {
       console.error('Error loading initial data:', error);
