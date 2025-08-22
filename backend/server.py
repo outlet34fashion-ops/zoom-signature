@@ -178,7 +178,7 @@ async def create_order(order: OrderCreate):
     
     order_obj = Order(
         **order.dict(),
-        price=product.price * order.quantity
+        price=product['price'] * order.quantity
     )
     
     # Store in database
