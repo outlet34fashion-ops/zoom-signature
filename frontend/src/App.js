@@ -406,11 +406,13 @@ function App() {
         </div>
 
         {/* Stream Title */}
-        <div className="bg-pink-500 py-3">
-          <div className="container mx-auto px-4 text-center">
-            <p className="text-white font-medium">{t.streamTitle}</p>
+        {tickerSettings.enabled && (
+          <div className="bg-pink-500 py-3">
+            <div className="container mx-auto px-4 text-center">
+              <p className="text-white font-medium">{tickerSettings.text}</p>
+            </div>
           </div>
-        </div>
+        )}
       </header>
 
       {/* Main Content */}
