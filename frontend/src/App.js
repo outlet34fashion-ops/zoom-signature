@@ -423,7 +423,9 @@ function App() {
               <h2 className="text-2xl font-bold mb-4 flex items-center">
                 📊 {t.adminDashboard}
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              
+              {/* Statistics */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div className="bg-white/20 rounded-lg p-4 text-center">
                   <div className="text-3xl font-bold">{adminStats.total_orders}</div>
                   <div className="text-sm opacity-90">{t.totalOrders}</div>
@@ -432,12 +434,40 @@ function App() {
                   <div className="text-3xl font-bold text-yellow-300">{adminStats.session_orders}</div>
                   <div className="text-sm opacity-90">{t.sessionOrders}</div>
                 </div>
-                <div className="bg-white/20 rounded-lg p-4 text-center">
-                  <div className="text-3xl font-bold text-green-300">{viewerCount}</div>
-                  <div className="text-sm opacity-90">{t.activeViewers}</div>
+              </div>
+
+              {/* Ticker Settings */}
+              <div className="bg-white/10 rounded-lg p-4 mb-4">
+                <h3 className="text-lg font-semibold mb-3">⚙️ {t.tickerSettings}</h3>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">{t.tickerText}</label>
+                    <Input
+                      value={newTickerText}
+                      onChange={(e) => setNewTickerText(e.target.value)}
+                      className="bg-white/20 border-white/30 text-white placeholder-white/70"
+                      placeholder="Ticker Text eingeben..."
+                    />
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button 
+                      onClick={updateTicker}
+                      className="bg-green-500 hover:bg-green-600 text-white"
+                    >
+                      📝 {t.updateTicker}
+                    </Button>
+                    <Button 
+                      onClick={toggleTicker}
+                      className={tickerSettings.enabled ? "bg-orange-500 hover:bg-orange-600" : "bg-gray-500 hover:bg-gray-600"}
+                    >
+                      {tickerSettings.enabled ? "⏸️ Ticker Stop" : "▶️ Ticker Start"}
+                    </Button>
+                  </div>
                 </div>
               </div>
-              <div className="mt-4 text-center">
+
+              {/* Reset Counter */}
+              <div className="text-center">
                 <Button 
                   onClick={resetOrderCounter}
                   className="bg-red-500 hover:bg-red-600 text-white"
