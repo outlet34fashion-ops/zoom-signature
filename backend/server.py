@@ -188,6 +188,8 @@ async def get_products():
 
 @api_router.post("/orders", response_model=Order)
 async def create_order(order: OrderCreate):
+    global order_counter
+    
     # Get product details
     products = await get_products()
     product = next((p for p in products if p['id'] == order.product_id), None)
@@ -203,6 +205,9 @@ async def create_order(order: OrderCreate):
     # Store in database
     await db.orders.insert_one(order_obj.dict())
     
+    # Increment counter
+    order_counter += 1
+    
     # Broadcast order to chat
     broadcast_data = {
         "type": "new_order",
@@ -215,6 +220,16 @@ async def create_order(order: OrderCreate):
         }
     }
     await manager.broadcast(json.dumps(broadcast_data, default=str))
+    
+    # Broadcast updated counter to admins
+    counter_data = {
+        "type": "order_counter_update",
+        "data": {
+            "session_orders": order_counter,
+            "total_orders": await db.orders.count_documents({})
+        }
+    }
+    await manager.broadcast(json.dumps(counter_data, default=str))
     
     return order_obj
 
