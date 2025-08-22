@@ -189,7 +189,7 @@ async def create_order(order: OrderCreate):
         "type": "new_order",
         "data": {
             "customer_id": order.customer_id,
-            "product_name": product.name,
+            "product_name": product['name'],
             "size": order.size,
             "quantity": order.quantity,
             "price": order_obj.price
