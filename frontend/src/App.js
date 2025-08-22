@@ -26,7 +26,12 @@ function App() {
   const [showMobileChat, setShowMobileChat] = useState(false);
   const [customerId] = useState(() => `customer_${Math.random().toString(36).substr(2, 9)}`);
   const [isAdminView, setIsAdminView] = useState(false);
-  const [adminStats, setAdminStats] = useState({ total_orders: 0, session_orders: 0, active_viewers: 0 });
+  const [adminStats, setAdminStats] = useState({ total_orders: 0, session_orders: 0 });
+  const [tickerSettings, setTickerSettings] = useState({ 
+    text: "Nur für Händler | Ab 10 € - Heute 18:00 - Frische Ware | Young Fashion & Plus Size", 
+    enabled: true 
+  });
+  const [newTickerText, setNewTickerText] = useState('');
   
   const chatRef = useRef(null);
   const wsRef = useRef(null);
