@@ -244,6 +244,22 @@ function App() {
     }
   };
 
+  const resetOrderCounter = async () => {
+    try {
+      await axios.post(`${API}/admin/reset-counter`);
+      setAdminStats(prev => ({ ...prev, session_orders: 0 }));
+    } catch (error) {
+      console.error('Error resetting counter:', error);
+    }
+  };
+
+  const priceOptions = ['5,00 €', '6,90 €', '7,50 €', '8,50 €', '9,00 €', '9,90 €', '11,50 €', '12,90 €', '15,90 €', '18,90 €'];
+
+  const handlePriceSelect = (priceStr) => {
+    const price = parseFloat(priceStr.replace(',', '.').replace(' €', ''));
+    setSelectedPrice(price);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
