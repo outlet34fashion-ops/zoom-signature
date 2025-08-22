@@ -64,7 +64,13 @@ function App() {
       freeShipping: 'Freitekt eingehen und Er',
       topseller: 'Topseller',
       newIn: 'New In',
-      sale: 'Abverkauf'
+      sale: 'Abverkauf',
+      adminDashboard: 'Admin Dashboard',
+      totalOrders: 'Gesamtbestellungen',
+      sessionOrders: 'Session Bestellungen',
+      activeViewers: 'Aktive Zuschauer',
+      resetCounter: 'Counter Reset',
+      selectPrice: 'Preis auswählen'
     },
     en: {
       customerLoggedIn: 'Customer logged in',
@@ -98,7 +104,13 @@ function App() {
       freeShipping: 'Free Shipping',
       topseller: 'Topseller',
       newIn: 'New In',
-      sale: 'Sale'
+      sale: 'Sale',
+      adminDashboard: 'Admin Dashboard',
+      totalOrders: 'Total Orders',
+      sessionOrders: 'Session Orders',
+      activeViewers: 'Active Viewers',
+      resetCounter: 'Reset Counter',
+      selectPrice: 'Select Price'
     }
   };
 
