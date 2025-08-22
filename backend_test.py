@@ -147,7 +147,7 @@ class LiveShoppingAPITester:
             self.log_test("Get Orders", False, str(e))
             get_success = False
 
-        # Test POST order
+        # Test POST order with default price
         try:
             product = products[0]
             test_order = {
@@ -170,10 +170,80 @@ class LiveShoppingAPITester:
                 has_all_fields = all(field in data for field in required_fields)
                 post_success = has_all_fields
                 post_details += f", Response valid: {has_all_fields}, Price: {data.get('price', 'N/A')}"
-            self.log_test("Post Order", post_success, post_details)
-            return get_success and post_success
+            self.log_test("Post Order (Default Price)", post_success, post_details)
         except Exception as e:
-            self.log_test("Post Order", False, str(e))
+            self.log_test("Post Order (Default Price)", False, str(e))
+            post_success = False
+
+        # Test POST order with custom price (NEW FEATURE)
+        try:
+            product = products[0]
+            custom_price = 8.50  # Test custom price
+            test_order_custom = {
+                "customer_id": f"test_customer_custom_{int(time.time())}",
+                "product_id": product['id'],
+                "size": product['sizes'][0] if product['sizes'] else "OneSize",
+                "quantity": 1,
+                "price": custom_price
+            }
+            response = requests.post(
+                f"{self.api_url}/orders",
+                json=test_order_custom,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            custom_success = response.status_code == 200
+            custom_details = f"POST Status: {response.status_code}"
+            if custom_success:
+                data = response.json()
+                expected_total = custom_price * test_order_custom['quantity']
+                actual_price = data.get('price', 0)
+                price_correct = abs(actual_price - expected_total) < 0.01
+                custom_success = price_correct
+                custom_details += f", Custom price used correctly: {price_correct}, Expected: {expected_total}, Actual: {actual_price}"
+            self.log_test("Post Order (Custom Price)", custom_success, custom_details)
+            return get_success and post_success and custom_success
+        except Exception as e:
+            self.log_test("Post Order (Custom Price)", False, str(e))
+            return False
+
+    def test_admin_endpoints(self):
+        """Test new admin endpoints"""
+        # Test GET admin stats
+        try:
+            response = requests.get(f"{self.api_url}/admin/stats", timeout=10)
+            stats_success = response.status_code == 200
+            stats_details = f"GET Status: {response.status_code}"
+            if stats_success:
+                data = response.json()
+                required_fields = ['total_orders', 'session_orders', 'active_viewers']
+                has_all_fields = all(field in data for field in required_fields)
+                stats_success = has_all_fields
+                stats_details += f", Has all fields: {has_all_fields}, Data: {data}"
+            self.log_test("Get Admin Stats", stats_success, stats_details)
+        except Exception as e:
+            self.log_test("Get Admin Stats", False, str(e))
+            stats_success = False
+
+        # Test POST reset counter
+        try:
+            response = requests.post(
+                f"{self.api_url}/admin/reset-counter",
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            reset_success = response.status_code == 200
+            reset_details = f"POST Status: {response.status_code}"
+            if reset_success:
+                data = response.json()
+                has_message = 'message' in data and 'new_count' in data
+                count_is_zero = data.get('new_count') == 0
+                reset_success = has_message and count_is_zero
+                reset_details += f", Response valid: {has_message}, Counter reset to 0: {count_is_zero}"
+            self.log_test("Reset Order Counter", reset_success, reset_details)
+            return stats_success and reset_success
+        except Exception as e:
+            self.log_test("Reset Order Counter", False, str(e))
             return False
 
     def test_websocket_availability(self):
