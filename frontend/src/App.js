@@ -349,6 +349,40 @@ function App() {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-6">
+        
+        {/* Admin Dashboard */}
+        {isAdminView && (
+          <Card className="mb-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+            <CardContent className="p-6">
+              <h2 className="text-2xl font-bold mb-4 flex items-center">
+                📊 {t.adminDashboard}
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-white/20 rounded-lg p-4 text-center">
+                  <div className="text-3xl font-bold">{adminStats.total_orders}</div>
+                  <div className="text-sm opacity-90">{t.totalOrders}</div>
+                </div>
+                <div className="bg-white/20 rounded-lg p-4 text-center">
+                  <div className="text-3xl font-bold text-yellow-300">{adminStats.session_orders}</div>
+                  <div className="text-sm opacity-90">{t.sessionOrders}</div>
+                </div>
+                <div className="bg-white/20 rounded-lg p-4 text-center">
+                  <div className="text-3xl font-bold text-green-300">{viewerCount}</div>
+                  <div className="text-sm opacity-90">{t.activeViewers}</div>
+                </div>
+              </div>
+              <div className="mt-4 text-center">
+                <Button 
+                  onClick={resetOrderCounter}
+                  className="bg-red-500 hover:bg-red-600 text-white"
+                >
+                  🔄 {t.resetCounter}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
           {/* Video Stream Area */}
