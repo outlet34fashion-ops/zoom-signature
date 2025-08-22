@@ -145,12 +145,12 @@ function App() {
           setChatMessages(prev => [...prev, data.data]);
         } else if (data.type === 'viewer_count') {
           setViewerCount(data.count);
-        } else if (data.type === 'new_order') {
-          // Add order notification to chat
+        } else if (data.type === 'order_notification') {
+          // Add order notification to chat in the new format
           const orderMsg = {
             id: `order_${Date.now()}`,
             username: 'System',
-            message: `Bestellung | ${data.data.customer_id} | ${data.data.quantity} | ${data.data.price} | ${data.data.size}`,
+            message: data.data.message, // Already formatted: "Bestellung 1234 | 1 | 12,90 | OneSize"
             timestamp: new Date(),
             emoji: ''
           };
@@ -161,6 +161,8 @@ function App() {
             session_orders: data.data.session_orders,
             total_orders: data.data.total_orders
           }));
+        } else if (data.type === 'ticker_update') {
+          setTickerSettings(data.data);
         }
       };
       
