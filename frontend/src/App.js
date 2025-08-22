@@ -21,9 +21,12 @@ function App() {
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedSize, setSelectedSize] = useState('');
+  const [selectedPrice, setSelectedPrice] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [showMobileChat, setShowMobileChat] = useState(false);
   const [customerId] = useState(() => `customer_${Math.random().toString(36).substr(2, 9)}`);
+  const [isAdminView, setIsAdminView] = useState(false);
+  const [adminStats, setAdminStats] = useState({ total_orders: 0, session_orders: 0, active_viewers: 0 });
   
   const chatRef = useRef(null);
   const wsRef = useRef(null);
