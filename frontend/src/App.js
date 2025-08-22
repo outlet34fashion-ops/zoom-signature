@@ -224,6 +224,11 @@ function App() {
       if (isAdminView) {
         const statsResponse = await axios.get(`${API}/admin/stats`);
         setAdminStats(statsResponse.data);
+        
+        // Load ticker settings
+        const tickerResponse = await axios.get(`${API}/admin/ticker`);
+        setTickerSettings(tickerResponse.data);
+        setNewTickerText(tickerResponse.data.text);
       }
     } catch (error) {
       console.error('Error loading initial data:', error);
