@@ -171,7 +171,7 @@ async def get_products():
 async def create_order(order: OrderCreate):
     # Get product details
     products = await get_products()
-    product = next((p for p in products if p.id == order.product_id), None)
+    product = next((p for p in products if p['id'] == order.product_id), None)
     
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
