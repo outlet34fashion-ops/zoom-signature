@@ -330,16 +330,16 @@ function App() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-pink-500 text-white">
-        <div className="container mx-auto px-4 py-3">
+        <div className="container mx-auto px-4 py-2">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
-              <span className="font-semibold">
+              <span className="text-sm font-medium">
                 {t.customerLoggedIn} 10299
               </span>
               <Button 
                 variant="ghost" 
                 size="sm"
-                className="text-white hover:bg-pink-600"
+                className="text-white hover:bg-pink-600 text-xs"
                 onClick={() => setLanguage(language === 'de' ? 'en' : 'de')}
               >
                 {language === 'de' ? 'EN' : 'DE'}
