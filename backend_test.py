@@ -285,6 +285,9 @@ class LiveShoppingAPITester:
         # Test order endpoints
         order_success = self.test_order_endpoints(products)
         
+        # Test admin endpoints (NEW FEATURE)
+        admin_success = self.test_admin_endpoints()
+        
         # Test WebSocket availability
         ws_success = self.test_websocket_availability()
 
