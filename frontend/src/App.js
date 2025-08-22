@@ -75,7 +75,11 @@ function App() {
       sessionOrders: 'Session Bestellungen',
       activeViewers: 'Aktive Zuschauer',
       resetCounter: 'Counter Reset',
-      selectPrice: 'Preis auswählen'
+      selectPrice: 'Preis auswählen',
+      tickerSettings: 'Ticker Einstellungen',
+      tickerText: 'Ticker Text',
+      updateTicker: 'Ticker aktualisieren',
+      enableTicker: 'Ticker aktivieren'
     },
     en: {
       customerLoggedIn: 'Customer logged in',
