@@ -109,10 +109,29 @@ class OrderCreate(BaseModel):
     size: str
     quantity: int
 
+# In-memory counter for demo (in production, use database)
+order_counter = 0
+
 # Routes
 @api_router.get("/")
 async def root():
     return {"message": "Live Shopping App API"}
+
+@api_router.get("/admin/stats")
+async def get_admin_stats():
+    global order_counter
+    total_orders = await db.orders.count_documents({})
+    return {
+        "total_orders": total_orders,
+        "session_orders": order_counter,
+        "active_viewers": manager.viewer_count
+    }
+
+@api_router.post("/admin/reset-counter")
+async def reset_order_counter():
+    global order_counter
+    order_counter = 0
+    return {"message": "Order counter reset", "new_count": order_counter}
 
 @api_router.get("/stream/status")
 async def get_stream_status():
