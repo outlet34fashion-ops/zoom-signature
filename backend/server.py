@@ -237,10 +237,14 @@ async def create_order(order: OrderCreate):
     # Increment counter
     order_counter += 1
     
-    # Broadcast order to chat
+    # Broadcast order to chat in the requested format
+    order_id = order.customer_id[-4:] if len(order.customer_id) >= 4 else order.customer_id
+    chat_message = f"Bestellung {order_id} | {order.quantity} | {unit_price:.2f} | {order.size}"
+    
     broadcast_data = {
-        "type": "new_order",
+        "type": "order_notification",
         "data": {
+            "message": chat_message,
             "customer_id": order.customer_id,
             "product_name": product['name'],
             "size": order.size,
