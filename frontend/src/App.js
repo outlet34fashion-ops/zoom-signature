@@ -618,7 +618,7 @@ function App() {
                 <div>
                   <div className="text-sm text-gray-600">Händlerpreis</div>
                   <div className="font-semibold text-pink-600 text-xl">
-                    {selectedProduct.price.toFixed(2)} €
+                    {selectedPrice.toFixed(2)} €
                   </div>
                 </div>
                 <div className="flex items-center justify-center space-x-4">
