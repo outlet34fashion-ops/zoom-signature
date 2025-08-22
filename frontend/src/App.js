@@ -142,6 +142,12 @@ function App() {
             emoji: ''
           };
           setChatMessages(prev => [...prev, orderMsg]);
+        } else if (data.type === 'order_counter_update') {
+          setAdminStats(prev => ({
+            ...prev,
+            session_orders: data.data.session_orders,
+            total_orders: data.data.total_orders
+          }));
         }
       };
       
