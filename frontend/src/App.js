@@ -175,6 +175,21 @@ function App() {
     }
   }, [chatMessages]);
 
+  useEffect(() => {
+    if (isAdminView) {
+      loadAdminStats();
+    }
+  }, [isAdminView]);
+
+  const loadAdminStats = async () => {
+    try {
+      const statsResponse = await axios.get(`${API}/admin/stats`);
+      setAdminStats(statsResponse.data);
+    } catch (error) {
+      console.error('Error loading admin stats:', error);
+    }
+  };
+
   const loadInitialData = async () => {
     try {
       // Load chat messages
