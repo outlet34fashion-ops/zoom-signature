@@ -163,7 +163,7 @@ ticker_settings = {
 # Routes
 @api_router.get("/")
 async def root():
-    return {"message": "Live Shopping App API"}
+    return {"message": "Live Shopping App API with Zoom Integration"}
 
 @api_router.get("/admin/stats")
 async def get_admin_stats():
