@@ -265,7 +265,7 @@ async def create_zoom_session(request: ZoomSessionRequest):
         }
         
         # Store session data in database
-        await db.zoom_sessions.insert_one(session_data)
+        await db.zoom_sessions.insert_one(session_data.copy())
         
         return session_data
         
