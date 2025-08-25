@@ -92,30 +92,45 @@ const ZoomLiveStream = ({
                   </div>
                 </div>
               ) : (
-                // DIREKTE ZOOM VIDEO INTEGRATION - NUR VIDEO
-                <div className="zoom-video-display w-full h-full relative bg-gray-900 rounded-lg">
+                // DIREKTE ZOOM VIDEO INTEGRATION - NUR VIDEO, KEINE UI
+                <div className="zoom-video-display w-full h-full relative bg-black rounded-lg overflow-hidden">
                   
-                  {/* Einfacher Zoom Web Client - nur Video */}
-                  <div className="video-embed-container w-full h-full">
+                  {/* Nur Video - Zoom Controls versteckt */}
+                  <div className="video-embed-container w-full h-full relative">
                     <iframe
                       src={ZOOM_VIEWER_URL}
                       style={{
                         width: '100%',
-                        height: '600px',
+                        height: '700px', // Höher um UI-Bereiche zu überschneiden
                         border: 'none',
-                        borderRadius: '12px'
+                        borderRadius: '12px',
+                        marginTop: '-50px', // UI-Bereich nach oben verschieben
+                        marginBottom: '-100px' // UI-Bereich nach unten verstecken
                       }}
                       allow="microphone; camera; display-capture; fullscreen"
-                      title="Live Shopping Video"
+                      title="Live Shopping Video - Nur Video"
                       sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-presentation"
                       loading="eager"
+                      className="zoom-video-only"
                     />
+                    
+                    {/* Overlay um Zoom-UI zu verstecken */}
+                    <div className="zoom-ui-overlay">
+                      {/* Verstecke oberen Bereich */}
+                      <div className="absolute top-0 left-0 right-0 h-16 bg-black z-10"></div>
+                      {/* Verstecke unteren Bereich mit Buttons */}
+                      <div className="absolute bottom-0 left-0 right-0 h-20 bg-black z-10"></div>
+                      {/* Verstecke linken Rand */}
+                      <div className="absolute top-0 bottom-0 left-0 w-8 bg-black z-10"></div>
+                      {/* Verstecke rechten Rand */}
+                      <div className="absolute top-0 bottom-0 right-0 w-8 bg-black z-10"></div>
+                    </div>
                   </div>
 
-                  {/* Video-Status Overlay */}
-                  <div className="video-status-overlay absolute bottom-4 left-4 right-4 flex justify-between items-center">
+                  {/* Unsere eigenen minimalen Video-Status Overlays */}
+                  <div className="custom-video-overlay absolute bottom-4 left-4 right-4 flex justify-between items-center z-20">
                     <div className="bg-black bg-opacity-70 text-white px-3 py-2 rounded-full text-sm">
-                      🔴 Live Video aktiv
+                      🔴 Live Video
                     </div>
                     <button 
                       onClick={() => setShowVideo(false)}
@@ -123,18 +138,6 @@ const ZoomLiveStream = ({
                     >
                       🔄 Neu laden
                     </button>
-                  </div>
-
-                  {/* Fallback Link */}
-                  <div className="fallback-link absolute top-4 left-1/2 transform -translate-x-1/2">
-                    <a 
-                      href={ZOOM_VIEWER_URL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm"
-                    >
-                      📱 In Browser öffnen
-                    </a>
                   </div>
                 </div>
               )}
