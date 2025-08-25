@@ -1,6 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Card, CardContent } from '../ui/card';
-import { Button } from '../ui/button';
+import React, { useState, useEffect } from 'react';
 
 const ZoomLiveStream = ({ 
   isHost = false, 
@@ -54,8 +52,8 @@ Kenncode: ${MEETING_PASSWORD}
 
   return (
     <div className="zoom-live-stream">
-      <Card className="bg-black text-white rounded-lg overflow-hidden">
-        <CardContent className="p-6 min-h-[400px] relative">
+      <div className="bg-black text-white rounded-lg overflow-hidden">
+        <div className="p-6 min-h-[400px] relative">
           
           {/* Live-Video Platzhalter mit Meeting Info */}
           <div className="video-area relative h-full flex flex-col justify-center items-center">
@@ -97,28 +95,27 @@ Kenncode: ${MEETING_PASSWORD}
                 
                 <div className="border-t border-gray-700 pt-4 space-y-3">
                   {isHost ? (
-                    <Button 
+                    <button 
                       onClick={startHostStream}
-                      className="w-full bg-pink-500 hover:bg-pink-600 text-white py-3 text-lg font-semibold"
+                      className="w-full bg-pink-500 hover:bg-pink-600 text-white py-3 px-4 rounded-lg text-lg font-semibold"
                     >
                       🎥 Als Host beitreten
-                    </Button>
+                    </button>
                   ) : (
-                    <Button 
+                    <button 
                       onClick={joinZoomMeeting}
-                      className="w-full bg-pink-500 hover:bg-pink-600 text-white py-3 text-lg font-semibold"
+                      className="w-full bg-pink-500 hover:bg-pink-600 text-white py-3 px-4 rounded-lg text-lg font-semibold"
                     >
                       📱 Zoom Meeting beitreten
-                    </Button>
+                    </button>
                   )}
                   
-                  <Button 
+                  <button 
                     onClick={copyMeetingInfo}
-                    variant="outline"
-                    className="w-full border-gray-600 text-gray-300 hover:bg-gray-800"
+                    className="w-full border border-gray-600 text-gray-300 hover:bg-gray-800 py-2 px-4 rounded-lg"
                   >
                     📋 Meeting-Info kopieren
-                  </Button>
+                  </button>
                 </div>
               </div>
 
@@ -144,12 +141,12 @@ Kenncode: ${MEETING_PASSWORD}
             <span className="mr-2">Powered by</span>
             <span className="font-bold">Zoom</span>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Meeting Instruktionen für verschiedene Geräte */}
-      <Card className="mt-4 bg-gray-50">
-        <CardContent className="p-4">
+      <div className="mt-4 bg-gray-50 rounded-lg">
+        <div className="p-4">
           <h4 className="font-semibold mb-3 text-gray-800">📱 So treten Sie bei:</h4>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div className="space-y-2">
@@ -165,8 +162,8 @@ Kenncode: ${MEETING_PASSWORD}
               <p className="text-gray-600">Wählen Sie "Im Browser beitreten" falls die App nicht gewünscht ist</p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };
