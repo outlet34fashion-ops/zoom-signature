@@ -295,8 +295,8 @@ async def get_stream_status():
     return {
         "is_live": True,
         "viewer_count": manager.viewer_count,
-        "stream_title": "Live Shopping Demo",
-        "stream_description": "Nur für Händler | Ab 10 € - Heute 18:00 - Frische Ware | Young Fashion & Plus Size"
+        "stream_title": "Live Shopping Demo with Zoom",
+        "stream_description": ticker_settings["text"]
     }
 
 @api_router.post("/chat", response_model=ChatMessage)
