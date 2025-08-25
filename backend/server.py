@@ -22,6 +22,13 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
+# Zoom SDK Configuration
+ZOOM_SDK_KEY = os.environ.get('ZOOM_SDK_KEY')
+ZOOM_SDK_SECRET = os.environ.get('ZOOM_SDK_SECRET')
+
+if not ZOOM_SDK_KEY or not ZOOM_SDK_SECRET:
+    raise ValueError("Zoom SDK credentials must be set in environment variables")
+
 # Create the main app without a prefix
 app = FastAPI()
 
