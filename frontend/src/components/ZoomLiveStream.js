@@ -9,12 +9,14 @@ const ZoomLiveStream = ({
   const [isStreamActive, setIsStreamActive] = useState(true);
   const [viewerCount, setViewerCount] = useState(37);
   const [showVideo, setShowVideo] = useState(false);
-  const [videoLoading, setVideoLoading] = useState(false);
   
   // Ihre Zoom Meeting Details
   const ZOOM_MEETING_ID = "5183673726";
   const ZOOM_PASSWORD = "outlet34";
   const ZOOM_HOST_URL = `https://us02web.zoom.us/j/${ZOOM_MEETING_ID}?pwd=UEVMNEoyREZhdEQvNVNRNTNkRDFMQT09`;
+  
+  // Einfacher direkter Zoom-Link für Viewer (ohne Login)
+  const ZOOM_VIEWER_URL = `https://us02web.zoom.us/wc/join/${ZOOM_MEETING_ID}?pwd=${ZOOM_PASSWORD}&uname=Zuschauer&join=1`;
   
   // Simuliere Live-Status Updates
   useEffect(() => {
@@ -31,25 +33,20 @@ const ZoomLiveStream = ({
     setIsStreamActive(true);
   };
 
-  // Kunde startet eingebettetes Video - DIREKT IN DER APP
-  const startEmbeddedVideo = () => {
-    setVideoLoading(true);
+  // Kunde startet Video - EINFACHE LÖSUNG
+  const startCustomerVideo = () => {
     setShowVideo(true);
-    // Kleine Verzögerung für Loading-Animation
-    setTimeout(() => {
-      setVideoLoading(false);
-    }, 2000);
   };
 
-  // Kunde sieht eingebettetes Live-Video - ALLES IN EINER APP
+  // Kunde sieht nur Video-Bereich - OHNE Zoom-UI
   const renderCustomerLiveStream = () => {
     return (
       <div className="live-studio-view">
-        {/* Hauptbereich - Eingebettetes Video DIREKT in der App */}
+        {/* Hauptbereich - Video-Container */}
         <div className="studio-main-area relative">
           
-          {/* Live Stream Container - Hochformat eingebettet */}
-          <div className="live-stream-container relative bg-gradient-to-b from-gray-900 to-black rounded-lg overflow-hidden">
+          {/* Live Stream Container - Einfach und sauber */}
+          <div className="live-stream-container relative bg-black rounded-lg overflow-hidden">
             
             {/* Studio-Style Live Indicator */}
             <div className="absolute top-4 left-4 z-20">
@@ -59,7 +56,7 @@ const ZoomLiveStream = ({
               </div>
             </div>
 
-            {/* Viewer Count - Studio Style */}
+            {/* Viewer Count */}
             <div className="absolute top-4 right-4 z-20">
               <div className="bg-black bg-opacity-70 text-white px-3 py-2 rounded-full flex items-center">
                 <span className="text-red-500 mr-2">●</span>
@@ -67,76 +64,83 @@ const ZoomLiveStream = ({
               </div>
             </div>
 
-            {/* Video-Bereich - DIREKT EINGEBETTET */}
-            <div className="portrait-video-container" style={{ minHeight: '600px', aspectRatio: '9/16' }}>
+            {/* Video-Bereich - VEREINFACHT */}
+            <div className="video-display-area" style={{ minHeight: '600px', aspectRatio: '9/16' }}>
               
               {!showVideo ? (
-                // Bevor Video startet - Bereit-Meldung
-                <div className="video-ready-area text-center space-y-6 p-8 flex flex-col justify-center h-full">
+                // Video bereit - Einfacher Start
+                <div className="video-ready-screen flex flex-col justify-center items-center h-full text-center space-y-8 p-8">
                   <div className="space-y-4">
-                    <div className="text-6xl mb-4">🎬</div>
-                    <h3 className="text-2xl font-bold text-white">Live Shopping bereit!</h3>
-                    <p className="text-gray-300">
-                      Der Moderator ist live. Video direkt hier ansehen - ohne neue Fenster!
+                    <div className="text-7xl animate-pulse">📺</div>
+                    <h2 className="text-3xl font-bold text-white">Video bereit!</h2>
+                    <p className="text-xl text-gray-300">
+                      Live Moderator wartet - Video jetzt starten
                     </p>
                   </div>
 
                   <button 
-                    onClick={startEmbeddedVideo}
-                    className="bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 text-white px-8 py-4 rounded-lg text-xl font-semibold transform transition hover:scale-105 shadow-2xl mx-auto"
+                    onClick={startCustomerVideo}
+                    className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white px-12 py-6 rounded-xl text-2xl font-bold transform transition hover:scale-110 shadow-2xl"
                   >
-                    🎥 Video hier starten
+                    ▶️ Video starten
                   </button>
 
-                  <div className="text-sm text-gray-400 space-y-2">
-                    <p>✅ Bleibt in dieser App</p>
-                    <p>✅ Kein neues Fenster</p>
-                    <p>✅ HD-Qualität eingebettet</p>
+                  <div className="text-lg text-gray-400 space-y-2">
+                    <p>✅ Keine Anmeldung nötig</p>
+                    <p>✅ Nur Video ansehen</p>
+                    <p>✅ Automatisch stumm</p>
                   </div>
                 </div>
-              ) : videoLoading ? (
-                // Loading Animation
-                <div className="video-loading text-center space-y-4 p-8 flex flex-col justify-center h-full">
-                  <div className="text-4xl mb-4 animate-pulse">📺</div>
-                  <h3 className="text-xl font-bold text-white">Video lädt...</h3>
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-500 mx-auto"></div>
-                  <p className="text-gray-300">Stream wird eingebettet...</p>
-                </div>
               ) : (
-                // EINGEBETTETES ZOOM VIDEO - DIREKT IN DER APP
-                <div className="embedded-zoom-video w-full h-full relative">
-                  <iframe
-                    src={`https://us02web.zoom.us/wc/join/${ZOOM_MEETING_ID}?pwd=${ZOOM_PASSWORD}&uname=Zuschauer_${Date.now()}&meeting_result=success`}
-                    style={{
-                      width: '100%',
-                      height: '600px',
-                      border: 'none',
-                      borderRadius: '12px'
-                    }}
-                    allow="microphone; camera; display-capture; autoplay"
-                    title="OUTLET34 Live Shopping - Eingebettet"
-                    className="zoom-embedded-iframe"
-                  />
+                // DIREKTE ZOOM VIDEO INTEGRATION - NUR VIDEO
+                <div className="zoom-video-display w-full h-full relative bg-gray-900 rounded-lg">
                   
-                  {/* Overlay-Controls für eingebettetes Video */}
-                  <div className="video-overlay-controls absolute bottom-4 right-4 space-y-2">
+                  {/* Einfacher Zoom Web Client - nur Video */}
+                  <div className="video-embed-container w-full h-full">
+                    <iframe
+                      src={ZOOM_VIEWER_URL}
+                      style={{
+                        width: '100%',
+                        height: '600px',
+                        border: 'none',
+                        borderRadius: '12px'
+                      }}
+                      allow="microphone; camera; display-capture; fullscreen"
+                      title="Live Shopping Video"
+                      sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-presentation"
+                      loading="eager"
+                    />
+                  </div>
+
+                  {/* Video-Status Overlay */}
+                  <div className="video-status-overlay absolute bottom-4 left-4 right-4 flex justify-between items-center">
+                    <div className="bg-black bg-opacity-70 text-white px-3 py-2 rounded-full text-sm">
+                      🔴 Live Video aktiv
+                    </div>
                     <button 
                       onClick={() => setShowVideo(false)}
-                      className="bg-black bg-opacity-70 text-white px-3 py-1 rounded-full text-sm hover:bg-opacity-90"
+                      className="bg-black bg-opacity-70 text-white px-3 py-2 rounded-full text-sm hover:bg-opacity-90"
                     >
-                      ↻ Neu laden
+                      🔄 Neu laden
                     </button>
+                  </div>
+
+                  {/* Fallback Link */}
+                  <div className="fallback-link absolute top-4 left-1/2 transform -translate-x-1/2">
+                    <a 
+                      href={ZOOM_VIEWER_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm"
+                    >
+                      📱 In Browser öffnen
+                    </a>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Studio-Light Effects */}
-            <div className="absolute inset-0 pointer-events-none">
-              <div className="studio-lights-top absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-orange-200 via-transparent to-transparent opacity-10"></div>
-            </div>
-
-            {/* Moderator Label - Fixiert */}
+            {/* Moderator Label */}
             <div className="absolute bottom-6 left-6 z-20">
               <div className="moderator-label bg-gradient-to-r from-pink-500 to-red-500 text-white px-4 py-2 rounded-full">
                 <span className="font-bold">🎤 Live Moderator</span>
@@ -153,22 +157,25 @@ const ZoomLiveStream = ({
             </div>
           </div>
 
-          {/* Studio Info Bar - Unter dem Video */}
-          <div className="studio-info-bar mt-4 bg-gradient-to-r from-gray-900 to-black text-white p-4 rounded-lg">
+          {/* Video Info Bar */}
+          <div className="video-info-bar mt-4 bg-gradient-to-r from-gray-900 to-black text-white p-4 rounded-lg">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <div className="recording-indicator flex items-center">
                   <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse mr-2"></div>
-                  <span className="text-sm font-medium">LIVE EINGEBETTET</span>
+                  <span className="text-sm font-medium">LIVE ÜBERTRAGUNG</span>
                 </div>
                 <div className="text-sm opacity-75">|</div>
                 <div className="text-sm">
-                  <span className="opacity-75">Direkt in der App</span> 
+                  <span className="opacity-75">Status:</span> 
+                  <span className="font-semibold ml-1 text-green-400">
+                    {showVideo ? 'Video aktiv' : 'Bereit'}
+                  </span>
                 </div>
               </div>
               <div className="text-right text-sm">
-                <div className="font-semibold text-green-400">EINGEBETTET</div>
-                <div className="opacity-75">Kein neues Fenster</div>
+                <div className="font-semibold text-blue-400">NUR VIDEO</div>
+                <div className="opacity-75">Keine Anmeldung</div>
               </div>
             </div>
           </div>
@@ -177,7 +184,7 @@ const ZoomLiveStream = ({
     );
   };
 
-  // Admin Interface - Einfach und fokussiert
+  // Admin Interface - Vereinfacht
   const renderAdminInterface = () => {
     return (
       <div className="admin-studio-control text-center space-y-6">
@@ -213,13 +220,13 @@ const ZoomLiveStream = ({
         </div>
 
         <div className="bg-green-50 p-4 rounded-lg text-left text-sm text-green-800">
-          <h4 className="font-semibold mb-2">✅ Eingebettete Video-Lösung:</h4>
+          <h4 className="font-semibold mb-2">✅ Einfache Video-Lösung:</h4>
           <div className="space-y-1">
             <p>1. Sie gehen mit Handy live (Meeting-ID: <strong>{ZOOM_MEETING_ID}</strong>)</p>
-            <p>2. Kunden klicken "Video hier starten"</p>
-            <p>3. Video wird <strong>direkt in der App</strong> eingebettet</p>
-            <p>4. <strong>Kein neues Fenster</strong> - alles bleibt in einer App!</p>
-            <p>5. Kunden können gleichzeitig shoppen und Video schauen</p>
+            <p>2. Kunden klicken "Video starten"</p>
+            <p>3. Video wird <strong>direkt eingebettet</strong> - nur Video, keine UI</p>
+            <p>4. <strong>Keine Anmeldung nötig</strong> für Kunden</p>
+            <p>5. Kunden sind automatisch stumm</p>
           </div>
         </div>
       </div>
@@ -238,40 +245,40 @@ const ZoomLiveStream = ({
               /* Admin sieht Studio-Kontrolle */
               renderAdminInterface()
             ) : (
-              /* Kunde sieht eingebettetes Live-Video */
+              /* Kunde sieht nur Video */
               renderCustomerLiveStream()
             )}
           </div>
         </div>
       </div>
 
-      {/* Customer Experience Info - Nur bei Kundensicht */}
+      {/* Customer Experience Info */}
       {!isHost && (
         <div className="mt-4 bg-gradient-to-r from-blue-50 to-green-50 rounded-lg">
           <div className="p-4">
             <h4 className="font-semibold mb-3 text-gray-800 flex items-center">
-              📺 Eingebettetes Live-Video
+              📺 Einfache Video-Ansicht
             </h4>
             <div className="text-sm text-gray-700 space-y-2">
-              <p>✅ <strong>Bleibt in dieser App</strong> - Kein neues Fenster öffnet sich</p>
-              <p>✅ <strong>Direktes HD-Video</strong> - Moderator live eingebettet sehen</p>
-              <p>✅ <strong>Alles in einem</strong> - Video + Shopping + Chat zusammen</p>
-              <p>🛍️ <strong>Parallel shoppen</strong> - Während Video läuft bestellen!</p>
+              <p>✅ <strong>Nur Video</strong> - Keine Zoom-Oberfläche oder Anmeldung</p>
+              <p>✅ <strong>Ein Klick</strong> - "Video starten" und sofort sehen</p>
+              <p>✅ <strong>Automatisch stumm</strong> - Sie schauen nur zu</p>
+              <p>🛍️ <strong>Parallel shoppen</strong> - Video + Einkaufen gleichzeitig</p>
             </div>
           </div>
         </div>
       )}
 
-      {/* Admin Studio Info - Nur bei Admin-Sicht */}
+      {/* Admin Info */}
       {isHost && (
         <div className="mt-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
           <div className="p-4">
-            <h4 className="font-semibold mb-3 text-purple-800">🎬 Eingebettete Live-Stream Lösung</h4>
+            <h4 className="font-semibold mb-3 text-purple-800">🎬 Vereinfachte Video-Lösung</h4>
             <div className="text-sm text-purple-700 space-y-2">
-              <p><strong>Moderator (Sie):</strong> Live über Handy mit Video + Audio</p>
-              <p><strong>Kunden:</strong> Sehen Video direkt eingebettet in der App</p>
-              <p><strong>Vorteil:</strong> Alles in einer App - kein Fenster-Wechsel</p>
-              <p><strong>Shopping:</strong> Kunden können parallel Video + Shopping nutzen</p>
+              <p><strong>Problem gelöst:</strong> Kunden sehen nur Video, keine Zoom-UI</p>
+              <p><strong>Keine Anmeldung:</strong> Direkter Zugang ohne Account</p>
+              <p><strong>Einfach:</strong> Ein Klick und Video läuft</p>
+              <p><strong>Stabil:</strong> Robuste iframe-Integration</p>
             </div>
           </div>
         </div>
