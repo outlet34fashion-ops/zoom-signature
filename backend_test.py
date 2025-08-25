@@ -209,17 +209,20 @@ class LiveShoppingAPITester:
 
     def test_admin_endpoints(self):
         """Test new admin endpoints"""
-        # Test GET admin stats
+        # Test GET admin stats (UPDATED - should only have 2 fields now)
         try:
             response = requests.get(f"{self.api_url}/admin/stats", timeout=10)
             stats_success = response.status_code == 200
             stats_details = f"GET Status: {response.status_code}"
             if stats_success:
                 data = response.json()
-                required_fields = ['total_orders', 'session_orders', 'active_viewers']
+                # Updated: should only have total_orders and session_orders (no active_viewers)
+                required_fields = ['total_orders', 'session_orders']
                 has_all_fields = all(field in data for field in required_fields)
-                stats_success = has_all_fields
-                stats_details += f", Has all fields: {has_all_fields}, Data: {data}"
+                # Check that active_viewers is NOT present (as per requirements)
+                no_active_viewers = 'active_viewers' not in data
+                stats_success = has_all_fields and no_active_viewers
+                stats_details += f", Has required fields: {has_all_fields}, No active_viewers: {no_active_viewers}, Data: {data}"
             self.log_test("Get Admin Stats", stats_success, stats_details)
         except Exception as e:
             self.log_test("Get Admin Stats", False, str(e))
@@ -241,10 +244,52 @@ class LiveShoppingAPITester:
                 reset_success = has_message and count_is_zero
                 reset_details += f", Response valid: {has_message}, Counter reset to 0: {count_is_zero}"
             self.log_test("Reset Order Counter", reset_success, reset_details)
-            return stats_success and reset_success
         except Exception as e:
             self.log_test("Reset Order Counter", False, str(e))
-            return False
+            reset_success = False
+
+        # Test GET ticker settings (NEW FEATURE)
+        try:
+            response = requests.get(f"{self.api_url}/admin/ticker", timeout=10)
+            ticker_get_success = response.status_code == 200
+            ticker_get_details = f"GET Status: {response.status_code}"
+            if ticker_get_success:
+                data = response.json()
+                required_fields = ['text', 'enabled']
+                has_all_fields = all(field in data for field in required_fields)
+                ticker_get_success = has_all_fields
+                ticker_get_details += f", Has all fields: {has_all_fields}, Data: {data}"
+            self.log_test("Get Ticker Settings", ticker_get_success, ticker_get_details)
+        except Exception as e:
+            self.log_test("Get Ticker Settings", False, str(e))
+            ticker_get_success = False
+
+        # Test POST ticker settings (NEW FEATURE)
+        try:
+            test_ticker_data = {
+                "text": "Test ticker message from backend test",
+                "enabled": True
+            }
+            response = requests.post(
+                f"{self.api_url}/admin/ticker",
+                json=test_ticker_data,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            ticker_post_success = response.status_code == 200
+            ticker_post_details = f"POST Status: {response.status_code}"
+            if ticker_post_success:
+                data = response.json()
+                text_updated = data.get('text') == test_ticker_data['text']
+                enabled_updated = data.get('enabled') == test_ticker_data['enabled']
+                ticker_post_success = text_updated and enabled_updated
+                ticker_post_details += f", Text updated: {text_updated}, Enabled updated: {enabled_updated}"
+            self.log_test("Update Ticker Settings", ticker_post_success, ticker_post_details)
+        except Exception as e:
+            self.log_test("Update Ticker Settings", False, str(e))
+            ticker_post_success = False
+
+        return stats_success and reset_success and ticker_get_success and ticker_post_success
 
     def test_websocket_availability(self):
         """Test if WebSocket endpoint is accessible (basic connectivity)"""
