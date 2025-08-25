@@ -484,22 +484,14 @@ function App() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
-          {/* Video Stream Area */}
+          {/* Video Stream Area - Now with Real Zoom Integration */}
           <div className="lg:col-span-2">
-            <Card className="bg-black text-white rounded-lg overflow-hidden">
-              <CardContent className="p-6 min-h-[400px] flex flex-col justify-center items-start">
-                <h3 className="text-xl mb-4 text-gray-300">{t.demoMessage}</h3>
-                <div className="text-gray-400 mb-6">
-                  <p>{t.demoDescription}</p>
-                </div>
-                <Button className="bg-pink-500 hover:bg-pink-600 text-white">
-                  {t.startMeeting}
-                </Button>
-                <div className="absolute top-4 left-4 text-gray-500 text-sm">
-                  - | - €
-                </div>
-              </CardContent>
-            </Card>
+            <ZoomLiveStream 
+              isHost={isAdminView}
+              sessionTopic="outlet34_live_shopping"
+              productData={products}
+              onSessionEnd={() => console.log('Zoom session ended')}
+            />
           </div>
 
           {/* Chat Sidebar */}
