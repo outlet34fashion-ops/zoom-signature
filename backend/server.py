@@ -143,6 +143,16 @@ class OrderCreate(BaseModel):
     quantity: int
     price: float = None  # Allow custom price
 
+class ZoomTokenRequest(BaseModel):
+    topic: str
+    user_name: str
+    role: Optional[int] = 0  # 0 for participant, 1 for host
+
+class ZoomSessionRequest(BaseModel):
+    topic: str
+    duration: Optional[int] = 60  # duration in minutes
+    password: Optional[str] = None
+
 # In-memory counter and settings for demo
 order_counter = 0
 ticker_settings = {
