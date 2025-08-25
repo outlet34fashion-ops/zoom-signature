@@ -199,6 +199,97 @@ async def update_ticker_settings(settings: dict):
     
     return ticker_settings
 
+# Zoom Integration Endpoints
+@api_router.post("/zoom/generate-token")
+async def generate_zoom_token(request: ZoomTokenRequest):
+    """
+    Generate Zoom Video SDK authentication token
+    """
+    try:
+        if not request.topic.strip():
+            raise HTTPException(status_code=400, detail="Topic name cannot be empty")
+            
+        token = generate_zoom_jwt(
+            topic=request.topic,
+            role=request.role,
+            expires_in_hours=2
+        )
+        
+        expires_at = datetime.now(timezone.utc) + timezone.utc.localize(datetime.now()).replace(hours=2)
+        
+        return {
+            "token": token,
+            "expires_at": expires_at.isoformat(),
+            "topic": request.topic,
+            "role": request.role
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Zoom token generation error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@api_router.post("/zoom/create-session")
+async def create_zoom_session(request: ZoomSessionRequest):
+    """
+    Create new Zoom live shopping session
+    """
+    try:
+        session_id = f"live_shopping_{int(time.time())}"
+        
+        # Generate host token for session creator
+        host_token = generate_zoom_jwt(
+            topic=session_id,
+            role=1,  # Host role
+            expires_in_hours=4
+        )
+        
+        # Generate viewer token template
+        viewer_token = generate_zoom_jwt(
+            topic=session_id,
+            role=0,  # Participant role
+            expires_in_hours=4
+        )
+        
+        session_data = {
+            "session_id": session_id,
+            "topic": request.topic,
+            "host_token": host_token,
+            "viewer_token": viewer_token,
+            "duration": request.duration,
+            "password": request.password,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "status": "created",
+            "zoom_topic": session_id  # This is the actual Zoom session topic
+        }
+        
+        # Store session data in database
+        await db.zoom_sessions.insert_one(session_data)
+        
+        return session_data
+        
+    except Exception as e:
+        logging.error(f"Zoom session creation error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to create Zoom session")
+
+@api_router.get("/zoom/validate-token")
+async def validate_zoom_token(token: str):
+    """
+    Validate Zoom JWT token for debugging
+    """
+    try:
+        payload = jwt.decode(token, ZOOM_SDK_SECRET, algorithms=['HS256'])
+        return {
+            "valid": True,
+            "payload": payload,
+            "expires": datetime.fromtimestamp(payload['exp']).isoformat()
+        }
+    except jwt.ExpiredSignatureError:
+        return {"valid": False, "error": "Token has expired"}
+    except jwt.InvalidTokenError:
+        return {"valid": False, "error": "Invalid token"}
+
 @api_router.get("/stream/status")
 async def get_stream_status():
     return {
