@@ -6,13 +6,17 @@ const ZoomLiveStream = ({
   onSessionEnd,
   productData = []
 }) => {
-  const [isStreamActive, setIsStreamActive] = useState(true); // Always show as active for customers
+  const [isStreamActive, setIsStreamActive] = useState(true);
   const [viewerCount, setViewerCount] = useState(37);
+  const [showWebClient, setShowWebClient] = useState(false);
   
   // Ihre Zoom Meeting Details
   const ZOOM_MEETING_ID = "5183673726";
   const ZOOM_PASSWORD = "outlet34";
   const ZOOM_HOST_URL = `https://us02web.zoom.us/j/${ZOOM_MEETING_ID}?pwd=UEVMNEoyREZhdEQvNVNRNTNkRDFLQT09`;
+  
+  // Direkter Zoom Web Client Link für Kunden
+  const ZOOM_WEB_CLIENT = `https://us02web.zoom.us/wc/join/${ZOOM_MEETING_ID}?pwd=${ZOOM_PASSWORD}`;
   
   // Simuliere Live-Status Updates
   useEffect(() => {
@@ -29,7 +33,14 @@ const ZoomLiveStream = ({
     setIsStreamActive(true);
   };
 
-  // Kunde sieht nur Hochformat Live-Stream (wie Bild 3)
+  // Kunde tritt automatisch dem Zoom bei
+  const joinAsViewer = () => {
+    setShowWebClient(true);
+    // Öffne Zoom Web Client in der aktuellen Seite
+    window.open(ZOOM_WEB_CLIENT, '_blank', 'width=900,height=700');
+  };
+
+  // Kunde sieht Live-Stream (Direkter Zugang zu Zoom)
   const renderCustomerLiveStream = () => {
     return (
       <div className="live-studio-view">
@@ -37,7 +48,7 @@ const ZoomLiveStream = ({
         <div className="studio-main-area relative">
           
           {/* Live Stream Container - Hochformat wie Studio-Kamera */}
-          <div className="live-stream-container relative bg-black rounded-lg overflow-hidden">
+          <div className="live-stream-container relative bg-gradient-to-b from-gray-900 to-black rounded-lg overflow-hidden">
             
             {/* Studio-Style Live Indicator */}
             <div className="absolute top-4 left-4 z-20">
@@ -55,28 +66,52 @@ const ZoomLiveStream = ({
               </div>
             </div>
 
-            {/* Hochformat Video Stream - Wie Studio Kamera */}
-            <div className="portrait-video-container">
-              <iframe
-                src={`https://us02web.zoom.us/wc/join/${ZOOM_MEETING_ID}?pwd=${ZOOM_PASSWORD}&uname=Zuschauer_${Date.now()}&meeting_result=success&disable_video=1&disable_audio=1&viewer_mode=1`}
-                style={{
-                  width: '100%',
-                  height: '70vh', // Hochformat wie Handy-Stream
-                  minHeight: '600px',
-                  border: 'none',
-                  borderRadius: '12px',
-                  aspectRatio: '9/16' // Hochformat-Verhältnis
-                }}
-                allow="display-capture"
-                title="OUTLET34 Live Shopping Studio"
-                className="studio-stream"
-              />
+            {/* Video Stream Area - Direkte Zoom-Integration */}
+            <div className="portrait-video-container flex flex-col items-center justify-center" style={{ minHeight: '600px' }}>
+              
+              {!showWebClient ? (
+                <div className="video-join-area text-center space-y-6 p-8">
+                  <div className="space-y-4">
+                    <div className="text-6xl mb-4">🎥</div>
+                    <h3 className="text-2xl font-bold text-white">Live Shopping bereit!</h3>
+                    <p className="text-gray-300">
+                      Der Moderator ist live. Treten Sie jetzt bei, um das Video zu sehen.
+                    </p>
+                  </div>
+
+                  <button 
+                    onClick={joinAsViewer}
+                    className="bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 text-white px-8 py-4 rounded-lg text-xl font-semibold transform transition hover:scale-105 shadow-2xl"
+                  >
+                    🎬 Video jetzt ansehen
+                  </button>
+
+                  <div className="text-sm text-gray-400 space-y-2">
+                    <p>✅ Direkter Zugang zum Live-Video</p>
+                    <p>✅ Automatisch stumm geschaltet</p>
+                    <p>✅ HD-Qualität</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="zoom-web-client w-full h-full">
+                  <div className="text-center text-white space-y-4 p-6">
+                    <h3 className="text-xl font-bold">Video-Stream startet...</h3>
+                    <p className="text-gray-300">Das Zoom-Fenster sollte sich geöffnet haben.</p>
+                    <button 
+                      onClick={() => window.open(ZOOM_WEB_CLIENT, '_blank')}
+                      className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-3 rounded-lg"
+                    >
+                      Video in neuem Fenster öffnen
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Studio-Light Effects */}
             <div className="absolute inset-0 pointer-events-none">
-              <div className="studio-lights-top absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-orange-200 via-transparent to-transparent opacity-20"></div>
-              <div className="studio-lights-bottom absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-orange-200 via-transparent to-transparent opacity-20"></div>
+              <div className="studio-lights-top absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-orange-200 via-transparent to-transparent opacity-10"></div>
+              <div className="studio-lights-bottom absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-orange-200 via-transparent to-transparent opacity-10"></div>
             </div>
 
             {/* Moderator Label - Fixiert */}
@@ -106,13 +141,13 @@ const ZoomLiveStream = ({
                 </div>
                 <div className="text-sm opacity-75">|</div>
                 <div className="text-sm">
-                  <span className="opacity-75">Studio:</span> 
-                  <span className="font-semibold ml-1">OUTLET34</span>
+                  <span className="opacity-75">Meeting-ID:</span> 
+                  <span className="font-semibold ml-1">{ZOOM_MEETING_ID}</span>
                 </div>
               </div>
               <div className="text-right text-sm">
                 <div className="font-semibold text-green-400">HD QUALITÄT</div>
-                <div className="opacity-75">Professioneller Stream</div>
+                <div className="opacity-75">Direkter Zoom-Stream</div>
               </div>
             </div>
           </div>
@@ -164,6 +199,7 @@ const ZoomLiveStream = ({
             <p>3. Als Host anmelden mit Passwort: <strong>outlet34</strong></p>
             <p>4. Video und Audio einschalten</p>
             <p>5. Handy hochkant halten für optimale Darstellung</p>
+            <p className="text-green-700 font-semibold">6. Kunden klicken dann auf "Video jetzt ansehen"</p>
           </div>
         </div>
       </div>
@@ -182,7 +218,7 @@ const ZoomLiveStream = ({
               /* Admin sieht Studio-Kontrolle */
               renderAdminInterface()
             ) : (
-              /* Kunde sieht Hochformat Live-Stream */
+              /* Kunde sieht Live-Stream */
               renderCustomerLiveStream()
             )}
           </div>
@@ -194,13 +230,13 @@ const ZoomLiveStream = ({
         <div className="mt-4 bg-gradient-to-r from-green-50 to-blue-50 rounded-lg">
           <div className="p-4">
             <h4 className="font-semibold mb-3 text-gray-800 flex items-center">
-              🎬 Live Shopping Studio Erlebnis
+              🎬 Live Shopping Video-Stream
             </h4>
             <div className="text-sm text-gray-700 space-y-2">
-              <p>✅ <strong>Direkter HD Live-Stream</strong> - Hochformat wie TV-Studio</p>
-              <p>✅ <strong>Professionelle Moderation</strong> - Echter Live-Moderator</p>
-              <p>✅ <strong>Automatische Teilnahme</strong> - Sie sind stumm geschaltet (optimal zum Zuschauen)</p>
-              <p>🛍️ <strong>Live Shopping</strong> - Produkte direkt während des Streams bestellen!</p>
+              <p>✅ <strong>Direkter Zoom-Zugang</strong> - Klicken Sie auf "Video jetzt ansehen"</p>
+              <p>✅ <strong>HD Live-Video</strong> - Sehen Sie den Moderator in Echtzeit</p>
+              <p>✅ <strong>Automatisch stumm</strong> - Sie sind als Zuschauer optimal eingestellt</p>
+              <p>🛍️ <strong>Live Shopping</strong> - Bestellen Sie während des Live-Streams!</p>
             </div>
           </div>
         </div>
@@ -210,12 +246,12 @@ const ZoomLiveStream = ({
       {isHost && (
         <div className="mt-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
           <div className="p-4">
-            <h4 className="font-semibold mb-3 text-purple-800">🎬 Studio Setup Übersicht</h4>
+            <h4 className="font-semibold mb-3 text-purple-800">🎬 Live-Stream Setup</h4>
             <div className="text-sm text-purple-700 space-y-2">
-              <p><strong>Moderator (Sie):</strong> Live über Handy mit Video + Audio</p>
-              <p><strong>Kunden:</strong> Sehen nur Hochformat-Stream, stumm geschaltet</p>
-              <p><strong>Darstellung:</strong> Studio-Kamera Optik wie professioneller TV-Stream</p>
-              <p><strong>Handy-Position:</strong> Hochkant halten für beste Darstellung</p>
+              <p><strong>1. Sie (Moderator):</strong> Live über Handy mit Video + Audio</p>
+              <p><strong>2. Kunden:</strong> Klicken auf "Video jetzt ansehen" um Sie zu sehen</p>
+              <p><strong>3. Direkte Verbindung:</strong> Kunden treten direkt Ihrem Zoom bei</p>
+              <p><strong>4. Handy-Position:</strong> Hochkant halten für beste Darstellung</p>
             </div>
           </div>
         </div>
