@@ -629,8 +629,8 @@ function App() {
           </div>
         </div>
 
-        {/* Product Selection Area */}
-        {selectedProduct && (
+        {/* Product Selection Area - Only for Admin */}
+        {selectedProduct && isAdminView && (
           <Card className="mt-6">
             <CardContent className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
