@@ -82,6 +82,30 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
+def generate_zoom_jwt(topic: str, role: int = 0, expires_in_hours: int = 2) -> str:
+    """
+    Generate JWT token for Zoom Video SDK authentication
+    """
+    try:
+        current_time = int(time.time())
+        expiration_time = current_time + (expires_in_hours * 3600)
+        
+        payload = {
+            'iss': ZOOM_SDK_KEY,
+            'exp': expiration_time,
+            'topic': topic,
+            'role_type': role,
+            'aud': 'zoom',
+            'alg': 'HS256'
+        }
+        
+        token = jwt.encode(payload, ZOOM_SDK_SECRET, algorithm='HS256')
+        return token
+        
+    except Exception as e:
+        logging.error(f"JWT generation failed: {str(e)}")
+        raise HTTPException(status_code=500, detail="Token generation failed")
+
 # Models
 class ChatMessage(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
