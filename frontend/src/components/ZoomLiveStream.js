@@ -1,460 +1,172 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import ZoomVideo from '@zoom/videosdk';
-import axios from 'axios';
+import { Card, CardContent } from '../ui/card';
+import { Button } from '../ui/button';
 
 const ZoomLiveStream = ({ 
   isHost = false, 
-  sessionTopic = "live_shopping_demo",
+  sessionTopic = "outlet34_live_shopping",
   onSessionEnd,
   productData = []
 }) => {
-  // State management for Zoom video session
-  const [client, setClient] = useState(null);
-  const [stream, setStream] = useState(null);
-  const [isInSession, setIsInSession] = useState(false);
-  const [isVideoOn, setIsVideoOn] = useState(false);
-  const [isAudioOn, setIsAudioOn] = useState(false);
-  const [participants, setParticipants] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [sessionInfo, setSessionInfo] = useState(null);
+  const [isStreamActive, setIsStreamActive] = useState(false);
+  const [viewerCount, setViewerCount] = useState(34);
   
-  // Refs for video containers
-  const videoContainerRef = useRef(null);
-  const selfVideoRef = useRef(null);
+  // Ihr echter Zoom Meeting Link
+  const ZOOM_MEETING_URL = "https://us02web.zoom.us/j/5183673726?pwd=UEVMNEoyREZhdEQvNVNRNTNkRDFLQT09";
+  const MEETING_ID = "518 367 3726";
+  const MEETING_PASSWORD = "UEVMNEoyREZhdEQvNVNRNTNkRDFLQT09";
   
-  // API base URL
-  const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
-
-  // Initialize Zoom Video SDK client
+  // Simuliere Live-Status Updates
   useEffect(() => {
-    const initializeClient = async () => {
-      try {
-        const videoClient = ZoomVideo.createClient();
-        setClient(videoClient);
-        
-        // Initialize with proper configuration
-        await videoClient.init('de-DE', 'Global', { 
-          patchJsMedia: true,
-          stayAwake: true,
-          enforceMultipleVideos: true
-        });
-        
-        console.log('Zoom Video SDK initialized successfully');
-      } catch (error) {
-        console.error('Failed to initialize Zoom Video SDK:', error);
-        setError('Failed to initialize video service: ' + error.message);
+    const interval = setInterval(() => {
+      if (isStreamActive) {
+        setViewerCount(prev => prev + Math.floor(Math.random() * 3) - 1);
       }
-    };
-
-    initializeClient();
+    }, 5000);
     
-    // Cleanup on unmount
-    return () => {
-      if (client && isInSession) {
-        leaveSession();
-      }
-    };
-  }, []);
+    return () => clearInterval(interval);
+  }, [isStreamActive]);
 
-  // Create new Zoom session (for hosts)
-  const createZoomSession = useCallback(async () => {
-    try {
-      const response = await axios.post(`${API_BASE_URL}/api/zoom/create-session`, {
-        topic: sessionTopic,
-        duration: 120, // 2 hours
-        password: null
-      });
-      
-      setSessionInfo(response.data);
-      return response.data;
-    } catch (error) {
-      console.error('Failed to create Zoom session:', error);
-      throw new Error('Session creation failed');
-    }
-  }, [sessionTopic]);
+  const joinZoomMeeting = () => {
+    // Öffne Zoom Meeting in neuem Fenster
+    window.open(ZOOM_MEETING_URL, '_blank', 'width=1200,height=800');
+    setIsStreamActive(true);
+  };
 
-  // Get authentication token from backend
-  const getZoomToken = useCallback(async (zoomTopic, userName, role = 0) => {
-    try {
-      const response = await axios.post(`${API_BASE_URL}/api/zoom/generate-token`, {
-        topic: zoomTopic,
-        user_name: userName,
-        role: role
-      });
-      
-      return response.data.token;
-    } catch (error) {
-      console.error('Zoom token generation failed:', error);
-      throw new Error('Authentication failed');
-    }
-  }, []);
+  const startHostStream = () => {
+    // Für Host: Öffne Zoom Meeting als Host
+    window.open(ZOOM_MEETING_URL, '_blank', 'width=1200,height=800');
+    setIsStreamActive(true);
+  };
 
-  // Join Zoom video session
-  const joinSession = useCallback(async (userName) => {
-    if (!client) {
-      setError('Zoom client not initialized');
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      let zoomSessionData;
-      
-      if (isHost) {
-        // Create new session for host
-        zoomSessionData = await createZoomSession();
-      } else {
-        // For viewers, we'll use a default session topic
-        // In production, this would come from the host's shared session
-        zoomSessionData = {
-          zoom_topic: `live_shopping_${Date.now()}`,
-          session_id: `viewer_session_${Date.now()}`
-        };
-      }
-
-      // Get authentication token
-      const token = await getZoomToken(
-        zoomSessionData.zoom_topic || zoomSessionData.session_id,
-        userName,
-        isHost ? 1 : 0
-      );
-
-      // Join the Zoom session
-      await client.join(
-        zoomSessionData.zoom_topic || zoomSessionData.session_id,
-        token,
-        userName
-      );
-      
-      // Get media stream for video/audio operations
-      const mediaStream = client.getMediaStream();
-      setStream(mediaStream);
-      setIsInSession(true);
-
-      // Set up event listeners
-      setupEventListeners();
-
-      console.log('Successfully joined Zoom session:', zoomSessionData.session_id);
-      
-      // Auto-start video for host
-      if (isHost) {
-        setTimeout(() => {
-          startVideo();
-        }, 1000);
-      }
-      
-    } catch (error) {
-      console.error('Failed to join Zoom session:', error);
-      setError(`Failed to join video session: ${error.message}`);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [client, isHost, createZoomSession, getZoomToken]);
-
-  // Setup Zoom SDK event listeners
-  const setupEventListeners = useCallback(() => {
-    if (!client) return;
-
-    // Participant events
-    client.on('user-added', (payload) => {
-      console.log('User added to Zoom session:', payload);
-      setParticipants(prev => [...prev, payload[0]]);
+  const copyMeetingInfo = () => {
+    const meetingInfo = `
+OUTLET34 Live Shopping
+Zoom Meeting beitreten: ${ZOOM_MEETING_URL}
+Meeting-ID: ${MEETING_ID}
+Kenncode: ${MEETING_PASSWORD}
+    `.trim();
+    
+    navigator.clipboard.writeText(meetingInfo).then(() => {
+      alert('Meeting-Informationen kopiert!');
     });
+  };
 
-    client.on('user-removed', (payload) => {
-      console.log('User removed from Zoom session:', payload);
-      setParticipants(prev => 
-        prev.filter(p => p.userId !== payload[0].userId)
-      );
-    });
-
-    client.on('user-updated', (payload) => {
-      console.log('User updated in Zoom session:', payload);
-    });
-
-    // Video events  
-    client.on('video-on', async (payload) => {
-      console.log('Video started for user:', payload);
-      await renderVideo(payload.userId);
-    });
-
-    client.on('video-off', (payload) => {
-      console.log('Video stopped for user:', payload);
-      // Remove video element for this user
-      const videoElement = document.querySelector(`video[data-user-id="${payload.userId}"]`);
-      if (videoElement) {
-        videoElement.remove();
-      }
-    });
-
-    // Audio events
-    client.on('audio-on', (payload) => {
-      console.log('Audio started for user:', payload);
-    });
-
-    client.on('audio-off', (payload) => {
-      console.log('Audio stopped for user:', payload);
-    });
-
-    // Connection events
-    client.on('connection-change', (payload) => {
-      console.log('Connection status changed:', payload);
-      if (payload.state === 'Disconnected') {
-        setIsInSession(false);
-        setError('Connection lost');
-      }
-    });
-
-    // Session events
-    client.on('peer-video-state-changed', async (payload) => {
-      console.log('Peer video state changed:', payload);
-      if (payload.action === 'Start') {
-        await renderVideo(payload.userId);
-      }
-    });
-
-  }, [client]);
-
-  // Render video stream for a user
-  const renderVideo = useCallback(async (userId) => {
-    if (!stream || !videoContainerRef.current) return;
-
-    try {
-      // Check if video element already exists
-      const existingVideo = document.querySelector(`video[data-user-id="${userId}"]`);
-      if (existingVideo) {
-        return;
-      }
-
-      const videoElement = await stream.attachVideo(userId, 3); // 3 for 720p
-      videoElement.setAttribute('data-user-id', userId);
-      videoElement.style.width = '100%';
-      videoElement.style.height = '100%';
-      videoElement.style.objectFit = 'cover';
-      
-      if (userId === client.getCurrentUserInfo()?.userId && selfVideoRef.current) {
-        // Self video goes to preview area
-        selfVideoRef.current.appendChild(videoElement);
-      } else {
-        // Other participants' videos go to main container
-        videoContainerRef.current.appendChild(videoElement);
-      }
-    } catch (error) {
-      console.error('Failed to render video for user:', userId, error);
-    }
-  }, [stream, client]);
-
-  // Start video for current user
-  const startVideo = useCallback(async () => {
-    if (!stream) return;
-
-    try {
-      await stream.startVideo();
-      setIsVideoOn(true);
-      
-      // Render self video preview after a short delay
-      setTimeout(async () => {
-        const currentUser = client.getCurrentUserInfo();
-        if (currentUser) {
-          await renderVideo(currentUser.userId);
-        }
-      }, 500);
-      
-    } catch (error) {
-      console.error('Failed to start video:', error);
-      setError('Failed to start video: ' + error.message);
-    }
-  }, [stream, client, renderVideo]);
-
-  // Stop video
-  const stopVideo = useCallback(async () => {
-    if (!stream) return;
-
-    try {
-      await stream.stopVideo();
-      setIsVideoOn(false);
-      
-      // Clear self video preview
-      if (selfVideoRef.current) {
-        selfVideoRef.current.innerHTML = '';
-      }
-    } catch (error) {
-      console.error('Failed to stop video:', error);
-    }
-  }, [stream]);
-
-  // Toggle audio
-  const toggleAudio = useCallback(async () => {
-    if (!stream) return;
-
-    try {
-      if (isAudioOn) {
-        await stream.stopAudio();
-        setIsAudioOn(false);
-      } else {
-        await stream.startAudio();
-        setIsAudioOn(true);
-      }
-    } catch (error) {
-      console.error('Failed to toggle audio:', error);
-      setError('Failed to toggle audio: ' + error.message);
-    }
-  }, [stream, isAudioOn]);
-
-  // Leave Zoom session
-  const leaveSession = useCallback(async () => {
-    if (!client || !isInSession) return;
-
-    try {
-      // Stop media streams
-      if (stream) {
-        if (isVideoOn) await stream.stopVideo();
-        if (isAudioOn) await stream.stopAudio();
-      }
-
-      // Leave session
-      await client.leave();
-      
-      // Reset state
-      setStream(null);
-      setIsInSession(false);
-      setIsVideoOn(false);
-      setIsAudioOn(false);
-      setParticipants([]);
-      setSessionInfo(null);
-      
-      // Clear video containers
-      if (videoContainerRef.current) {
-        videoContainerRef.current.innerHTML = '';
-      }
-      if (selfVideoRef.current) {
-        selfVideoRef.current.innerHTML = '';
-      }
-
-      if (onSessionEnd) {
-        onSessionEnd();
-      }
-
-    } catch (error) {
-      console.error('Failed to leave Zoom session:', error);
-    }
-  }, [client, isInSession, stream, isVideoOn, isAudioOn, onSessionEnd]);
-
-  // Render component
   return (
     <div className="zoom-live-stream">
-      {error && (
-        <div className="error-banner bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          <span>{error}</span>
-          <button onClick={() => setError(null)} className="ml-4 text-red-900 hover:text-red-700">
-            ×
-          </button>
-        </div>
-      )}
+      <Card className="bg-black text-white rounded-lg overflow-hidden">
+        <CardContent className="p-6 min-h-[400px] relative">
+          
+          {/* Live-Video Platzhalter mit Meeting Info */}
+          <div className="video-area relative h-full flex flex-col justify-center items-center">
+            
+            {/* Live Indicator */}
+            <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold flex items-center">
+              <span className="w-2 h-2 bg-white rounded-full mr-2 animate-pulse"></span>
+              LIVE
+            </div>
 
-      <div className="video-section">
-        {!isInSession ? (
-          <div className="join-controls bg-black text-white p-8 rounded-lg text-center">
-            <h3 className="text-xl mb-4">
-              {isHost ? 'Live Shopping Stream starten' : 'Live Shopping Stream beitreten'}
-            </h3>
-            <p className="text-gray-300 mb-6">
-              {isHost 
-                ? 'Starten Sie Ihren Live Shopping Stream und präsentieren Sie Ihre Produkte'
-                : 'Schauen Sie live zu und entdecken Sie tolle Angebote'
-              }
-            </p>
-            <button 
-              onClick={() => joinSession(isHost ? 'Host' : `Viewer_${Date.now()}`)}
-              disabled={isLoading}
-              className="bg-pink-500 hover:bg-pink-600 text-white px-8 py-3 rounded-lg text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoading ? 'Verbinde...' : (isHost ? 'Stream starten' : 'Stream beitreten')}
-            </button>
-          </div>
-        ) : (
-          <>
-            {/* Main video area */}
-            <div className="main-video-container bg-black rounded-lg overflow-hidden relative" style={{ minHeight: '400px' }}>
-              <div ref={videoContainerRef} className="video-streams w-full h-full flex items-center justify-center">
-                {!participants.length && !isVideoOn && (
-                  <div className="text-white text-center">
-                    <p className="text-lg">Warte auf Video-Stream...</p>
-                    {isHost && (
-                      <p className="text-sm text-gray-300 mt-2">Klicken Sie auf "Video starten" um zu beginnen</p>
-                    )}
+            {/* Viewer Count */}
+            <div className="absolute top-4 right-4 bg-black bg-opacity-60 text-white px-3 py-1 rounded-full text-sm flex items-center">
+              👥 {viewerCount} Zuschauer
+            </div>
+
+            {/* Meeting Info Display */}
+            <div className="text-center space-y-6">
+              <div className="space-y-2">
+                <h2 className="text-2xl font-bold text-pink-400">
+                  🛍️ OUTLET34 Live Shopping
+                </h2>
+                <p className="text-gray-300">
+                  Echtes Zoom Meeting - Jetzt live!
+                </p>
+              </div>
+
+              {/* Meeting Details Card */}
+              <div className="bg-gray-900 p-6 rounded-lg max-w-md mx-auto space-y-4">
+                <div className="text-left space-y-3">
+                  <div>
+                    <span className="text-gray-400 text-sm">Meeting-ID:</span>
+                    <p className="text-white font-mono text-lg">{MEETING_ID}</p>
                   </div>
-                )}
-              </div>
-              
-              {/* Self video preview for host */}
-              {isHost && (
-                <div 
-                  ref={selfVideoRef} 
-                  className="self-video-preview absolute top-4 right-4 w-32 h-24 bg-gray-800 rounded border-2 border-white overflow-hidden"
-                  style={{ zIndex: 10 }}
-                >
+                  <div>
+                    <span className="text-gray-400 text-sm">Kenncode:</span>
+                    <p className="text-white font-mono text-xs break-all">{MEETING_PASSWORD}</p>
+                  </div>
                 </div>
-              )}
-
-              {/* Live indicator */}
-              <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold">
-                🔴 LIVE
+                
+                <div className="border-t border-gray-700 pt-4 space-y-3">
+                  {isHost ? (
+                    <Button 
+                      onClick={startHostStream}
+                      className="w-full bg-pink-500 hover:bg-pink-600 text-white py-3 text-lg font-semibold"
+                    >
+                      🎥 Als Host beitreten
+                    </Button>
+                  ) : (
+                    <Button 
+                      onClick={joinZoomMeeting}
+                      className="w-full bg-pink-500 hover:bg-pink-600 text-white py-3 text-lg font-semibold"
+                    >
+                      📱 Zoom Meeting beitreten
+                    </Button>
+                  )}
+                  
+                  <Button 
+                    onClick={copyMeetingInfo}
+                    variant="outline"
+                    className="w-full border-gray-600 text-gray-300 hover:bg-gray-800"
+                  >
+                    📋 Meeting-Info kopieren
+                  </Button>
+                </div>
               </div>
 
-              {/* Participant count */}
-              <div className="absolute top-4 left-20 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">
-                👥 {participants.length + 1} Zuschauer
+              {/* Zusätzliche Hinweise */}
+              <div className="text-xs text-gray-400 space-y-1">
+                <p>💡 Das Meeting öffnet sich in einem neuen Fenster</p>
+                <p>📱 Funktioniert auf Desktop, Tablet und Handy</p>
+                <p>🔗 Zoom App wird automatisch geöffnet (falls installiert)</p>
               </div>
             </div>
 
-            {/* Control panel */}
-            <div className="controls-panel mt-4 flex justify-center space-x-4">
-              {isHost && (
-                <>
-                  <button 
-                    onClick={isVideoOn ? stopVideo : startVideo}
-                    className={`control-button px-4 py-2 rounded-lg font-semibold ${
-                      isVideoOn 
-                        ? 'bg-red-500 hover:bg-red-600 text-white' 
-                        : 'bg-green-500 hover:bg-green-600 text-white'
-                    }`}
-                  >
-                    📹 {isVideoOn ? 'Video stoppen' : 'Video starten'}
-                  </button>
-                  <button 
-                    onClick={toggleAudio}
-                    className={`control-button px-4 py-2 rounded-lg font-semibold ${
-                      isAudioOn 
-                        ? 'bg-blue-500 hover:bg-blue-600 text-white' 
-                        : 'bg-gray-500 hover:bg-gray-600 text-white'
-                    }`}
-                  >
-                    🎤 {isAudioOn ? 'Stumm' : 'Mikro an'}
-                  </button>
-                </>
-              )}
-              
-              <button 
-                onClick={leaveSession}
-                className="control-button px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold"
-              >
-                Stream verlassen
-              </button>
-            </div>
-
-            {/* Session info for debugging */}
-            {sessionInfo && (
-              <div className="session-info mt-4 text-xs text-gray-500">
-                Session: {sessionInfo.session_id}
+            {/* QR Code Area für Mobile */}
+            <div className="absolute bottom-4 left-4 bg-white p-2 rounded hidden lg:block">
+              <div className="w-16 h-16 bg-gray-800 rounded flex items-center justify-center text-white text-xs">
+                QR
               </div>
-            )}
-          </>
-        )}
-      </div>
+              <p className="text-xs text-gray-600 mt-1 text-center">Mobile Join</p>
+            </div>
+          </div>
+
+          {/* Zoom Logo */}
+          <div className="absolute bottom-4 right-4 text-blue-400 text-sm flex items-center">
+            <span className="mr-2">Powered by</span>
+            <span className="font-bold">Zoom</span>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Meeting Instruktionen für verschiedene Geräte */}
+      <Card className="mt-4 bg-gray-50">
+        <CardContent className="p-4">
+          <h4 className="font-semibold mb-3 text-gray-800">📱 So treten Sie bei:</h4>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+            <div className="space-y-2">
+              <h5 className="font-medium text-blue-600">💻 Desktop</h5>
+              <p className="text-gray-600">Klicken Sie auf "Meeting beitreten" - Zoom öffnet sich automatisch im Browser oder der App</p>
+            </div>
+            <div className="space-y-2">
+              <h5 className="font-medium text-green-600">📱 Handy</h5>
+              <p className="text-gray-600">Zoom App öffnet sich automatisch. Falls nicht installiert, wird Download angeboten</p>
+            </div>
+            <div className="space-y-2">
+              <h5 className="font-medium text-purple-600">🌐 Browser</h5>
+              <p className="text-gray-600">Wählen Sie "Im Browser beitreten" falls die App nicht gewünscht ist</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
