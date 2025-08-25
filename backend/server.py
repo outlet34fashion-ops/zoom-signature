@@ -215,7 +215,7 @@ async def generate_zoom_token(request: ZoomTokenRequest):
             expires_in_hours=2
         )
         
-        expires_at = datetime.now(timezone.utc) + timezone.utc.localize(datetime.now()).replace(hours=2)
+        expires_at = datetime.now(timezone.utc) + timedelta(hours=2)
         
         return {
             "token": token,
