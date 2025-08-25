@@ -6,6 +6,7 @@ import { Input } from './components/ui/input';
 import { Card, CardContent } from './components/ui/card';
 import { Badge } from './components/ui/badge';
 import { Heart, Bell, ShoppingCart, Send, Users, Clock, MessageCircle } from 'lucide-react';
+import ZoomLiveStream from './components/ZoomLiveStream';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
