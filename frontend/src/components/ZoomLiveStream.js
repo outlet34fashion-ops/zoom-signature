@@ -217,7 +217,7 @@ const ZoomLiveStream = ({
                   {/* Echter Zoom Video Stream - Direkter iframe Embed */}
                   <div className="video-embed-container w-full h-full relative bg-black rounded-lg overflow-hidden">
                     <iframe
-                      src={`https://us02web.zoom.us/wc/join/${ZOOM_MEETING_ID}?pwd=UEVMNEoyREZhdEQvNVNRNTNkRDFMQT09&uname=LiveShopper&tk=&audio=false&video=false`}
+                      src={`https://us02web.zoom.us/wc/join/${ZOOM_MEETING_ID}?pwd=b3V0bGV0MzQ=&uname=LiveShopper&tk=&audio=false&video=false&auto=1`}
                       style={{
                         width: '100%',
                         height: '500px',
