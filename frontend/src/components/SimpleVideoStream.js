@@ -29,35 +29,54 @@ const SimpleVideoStream = ({ isHost = false }) => {
           
           <div className="space-y-4">
             
-            {/* Option 1: Zoom Meeting (Empfohlen) */}
-            <div className="bg-blue-600/20 border border-blue-500 rounded-lg p-4">
-              <h3 className="text-lg font-semibold text-blue-300 mb-3">
-                🎥 Option 1: Zoom Meeting (Empfohlen)
+            {/* Option 1: Zoom Meeting - EINFACH */}
+            <div className="bg-blue-600/20 border border-blue-500 rounded-lg p-6">
+              <h3 className="text-xl font-semibold text-blue-300 mb-4">
+                🎥 Live Shopping starten
               </h3>
               
-              <div className="space-y-3">
-                <div className="text-sm text-gray-300 space-y-1">
-                  <p><strong>Meeting-ID:</strong> 5183673726</p>
-                  <p><strong>Passwort:</strong> outlet34</p>
+              <div className="space-y-4">
+                
+                {/* Einfache Anweisungen */}
+                <div className="bg-blue-500/30 rounded-lg p-4">
+                  <h4 className="font-semibold text-white mb-2">So geht's:</h4>
+                  <div className="text-sm text-blue-100 space-y-1">
+                    <p>1️⃣ Öffnen Sie Zoom auf Ihrem Handy</p>
+                    <p>2️⃣ "An Meeting teilnehmen" wählen</p>
+                    <p>3️⃣ Meeting-ID eingeben: <strong className="text-yellow-300">5183673726</strong></p>
+                    <p>4️⃣ Passwort eingeben: <strong className="text-yellow-300">outlet34</strong></p>
+                    <p>5️⃣ Hier klicken: "Ich bin jetzt live"</p>
+                  </div>
                 </div>
                 
-                <div className="flex flex-col space-y-2">
-                  <button
-                    onClick={() => {
-                      const zoomUrl = 'https://us02web.zoom.us/j/5183673726?pwd=UEVMNEoyREZhdEQvNVNRNTNkRDFMQT09';
-                      window.open(zoomUrl, '_blank');
-                      setStreamMethod('zoom');
-                      setIsLive(true);
-                    }}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold"
-                  >
-                    📱 Zoom öffnen & Live gehen
-                  </button>
-                  
-                  <p className="text-xs text-gray-400">
-                    Funktioniert auf allen Geräten - iPhone, Android, Desktop
-                  </p>
-                </div>
+                {/* Zoom App Link */}
+                <a 
+                  href="zoomus://zoom.us/join?confno=5183673726&pwd=outlet34"
+                  className="block bg-blue-600 hover:bg-blue-700 text-white px-6 py-4 rounded-lg font-bold text-center text-lg"
+                >
+                  📱 Zoom App öffnen
+                </a>
+                
+                {/* Fallback Link */}
+                <a 
+                  href="https://us02web.zoom.us/j/5183673726?pwd=UEVMNEoyREZhdEQvNVNRNTNkRDFMQT09"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold text-center"
+                >
+                  🌐 Zoom im Browser öffnen
+                </a>
+                
+                {/* Manual Live Button */}
+                <button
+                  onClick={() => {
+                    setStreamMethod('zoom-manual');
+                    setIsLive(true);
+                  }}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-4 rounded-lg font-bold text-lg"
+                >
+                  ✅ Ich bin jetzt live auf Zoom!
+                </button>
               </div>
             </div>
 
