@@ -214,13 +214,32 @@ const ZoomLiveStream = ({
                 // ECHTES ZOOM VIDEO - Direkte Einbettung des Live-Streams
                 <div className="zoom-video-display w-full h-full relative bg-black rounded-lg overflow-hidden">
                   
-                  {/* Echter Zoom Video Stream mit SDK-Integration */}
+                  {/* Echter Zoom Video Stream - Direkter iframe Embed */}
                   <div className="video-embed-container w-full h-full relative bg-black rounded-lg overflow-hidden">
-                    <ZoomVideoSDKIntegration 
-                      meetingId={ZOOM_MEETING_ID}
-                      password={ZOOM_PASSWORD}
-                      onVideoReady={() => console.log('Zoom video ready')}
+                    <iframe
+                      src={`https://us02web.zoom.us/j/${ZOOM_MEETING_ID}?pwd=UEVMNEoyREZhdEQvNVNRNTNkRDFMQT09&embed=true&web=1&uname=LiveViewer`}
+                      style={{
+                        width: '100%',
+                        height: '500px',
+                        border: 'none',
+                        borderRadius: '12px'
+                      }}
+                      allow="microphone; camera; display-capture; fullscreen; autoplay"
+                      title="Live Shopping Video - Zoom Stream"
+                      loading="eager"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-presentation allow-top-navigation allow-modals"
+                      className="zoom-live-iframe"
                     />
+                    
+                    {/* Fallback falls iframe nicht lädt */}
+                    <div className="iframe-fallback absolute inset-0 flex items-center justify-center bg-gray-900 text-white" style={{zIndex: '-1'}}>
+                      <div className="text-center space-y-4">
+                        <div className="text-4xl">📹</div>
+                        <p>Zoom Video lädt...</p>
+                        <p className="text-sm text-gray-400">Meeting: {ZOOM_MEETING_ID}</p>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Live Status Overlays */}
