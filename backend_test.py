@@ -302,6 +302,106 @@ class LiveShoppingAPITester:
 
         return stats_success and reset_success and ticker_get_success and ticker_post_success
 
+    def test_zoom_integration(self):
+        """Test Zoom integration endpoints"""
+        # Test Zoom JWT token generation
+        try:
+            test_token_request = {
+                "topic": f"test_live_shopping_{int(time.time())}",
+                "user_name": "test_user",
+                "role": 0  # Participant role
+            }
+            response = requests.post(
+                f"{self.api_url}/zoom/generate-token",
+                json=test_token_request,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            token_success = response.status_code == 200
+            token_details = f"POST Status: {response.status_code}"
+            if token_success:
+                data = response.json()
+                required_fields = ['token', 'expires_at', 'topic', 'role']
+                has_all_fields = all(field in data for field in required_fields)
+                token_is_string = isinstance(data.get('token'), str) and len(data.get('token', '')) > 0
+                token_success = has_all_fields and token_is_string
+                token_details += f", Has all fields: {has_all_fields}, Token valid: {token_is_string}"
+            self.log_test("Zoom Generate Token", token_success, token_details)
+        except Exception as e:
+            self.log_test("Zoom Generate Token", False, str(e))
+            token_success = False
+
+        # Test Zoom session creation
+        try:
+            test_session_request = {
+                "topic": f"Live Shopping Test Session {int(time.time())}",
+                "duration": 60,
+                "password": None
+            }
+            response = requests.post(
+                f"{self.api_url}/zoom/create-session",
+                json=test_session_request,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            session_success = response.status_code == 200
+            session_details = f"POST Status: {response.status_code}"
+            if session_success:
+                data = response.json()
+                required_fields = ['session_id', 'topic', 'host_token', 'viewer_token', 'zoom_topic']
+                has_all_fields = all(field in data for field in required_fields)
+                tokens_valid = (isinstance(data.get('host_token'), str) and 
+                              isinstance(data.get('viewer_token'), str) and
+                              len(data.get('host_token', '')) > 0 and 
+                              len(data.get('viewer_token', '')) > 0)
+                session_success = has_all_fields and tokens_valid
+                session_details += f", Has all fields: {has_all_fields}, Tokens valid: {tokens_valid}"
+            self.log_test("Zoom Create Session", session_success, session_details)
+        except Exception as e:
+            self.log_test("Zoom Create Session", False, str(e))
+            session_success = False
+
+        # Test Zoom token validation (if we have a token from previous test)
+        if token_success:
+            try:
+                # Get a token first
+                token_response = requests.post(
+                    f"{self.api_url}/zoom/generate-token",
+                    json={"topic": "validation_test", "user_name": "test", "role": 0},
+                    headers={'Content-Type': 'application/json'},
+                    timeout=10
+                )
+                if token_response.status_code == 200:
+                    token_data = token_response.json()
+                    test_token = token_data.get('token')
+                    
+                    # Validate the token
+                    response = requests.get(
+                        f"{self.api_url}/zoom/validate-token",
+                        params={"token": test_token},
+                        timeout=10
+                    )
+                    validate_success = response.status_code == 200
+                    validate_details = f"GET Status: {response.status_code}"
+                    if validate_success:
+                        data = response.json()
+                        is_valid = data.get('valid', False)
+                        has_payload = 'payload' in data if is_valid else True
+                        validate_success = is_valid and has_payload
+                        validate_details += f", Token valid: {is_valid}, Has payload: {has_payload}"
+                    self.log_test("Zoom Validate Token", validate_success, validate_details)
+                else:
+                    self.log_test("Zoom Validate Token", False, "Could not get token for validation test")
+                    validate_success = False
+            except Exception as e:
+                self.log_test("Zoom Validate Token", False, str(e))
+                validate_success = False
+        else:
+            validate_success = False
+            self.log_test("Zoom Validate Token", False, "Skipped - token generation failed")
+
+        return token_success and session_success and validate_success
+
     def test_websocket_availability(self):
         """Test if WebSocket endpoint is accessible (basic connectivity)"""
         try:
