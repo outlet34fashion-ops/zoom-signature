@@ -69,7 +69,6 @@ const WebcamLiveStream = ({ isHost = false }) => {
         }
         
         setIsStreaming(true);
-        setHasPermission(true);
         console.log('Webcam stream started successfully');
       }
     } catch (err) {
