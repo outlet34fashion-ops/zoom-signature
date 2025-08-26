@@ -141,6 +141,33 @@ const DirectWebcamStream = ({ isHost = false, onStreamReady }) => {
             <div className="bg-red-500/20 border border-red-500 text-red-300 p-4 rounded-lg">
               <p className="font-semibold">Fehler:</p>
               <p>{error}</p>
+              
+              {/* iPhone-spezifische Hilfe */}
+              {isIOS && (
+                <div className="mt-4 text-sm space-y-2">
+                  <p className="font-semibold text-yellow-300">📱 iPhone Anleitung:</p>
+                  <div className="text-left space-y-1 text-xs">
+                    <p>1. Öffnen Sie Safari-Einstellungen</p>
+                    <p>2. Tippen Sie auf "Website-Einstellungen"</p>
+                    <p>3. Suchen Sie diese Website</p>
+                    <p>4. Erlauben Sie "Kamera" Zugriff</p>
+                    <p>5. Laden Sie die Seite neu</p>
+                  </div>
+                </div>
+              )}
+              
+              {/* Alternative für Mobile */}
+              {isMobile && (
+                <div className="mt-4">
+                  <p className="text-sm text-yellow-300">💡 Alternative: Nutzen Sie Zoom vom Handy</p>
+                  <button 
+                    onClick={() => window.open('https://us02web.zoom.us/j/5183673726?pwd=UEVMNEoyREZhdEQvNVNRNTNkRDFMQT09', '_blank')}
+                    className="mt-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm"
+                  >
+                    📱 Zoom App öffnen
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>
