@@ -35,6 +35,14 @@ const WebcamLiveStream = ({ isHost = false }) => {
       // Event Listener hinzufügen
       window.addEventListener('streamStarted', handleStreamStart);
       
+      // Event für manuellen Start
+      const handleManualStart = () => {
+        console.log('Customer: Manual stream start event received');
+        setIsStreaming(true);
+      };
+      
+      window.addEventListener('manualStreamStart', handleManualStart);
+
       // Check if stream already exists
       if (window.liveStream && window.streamActive) {
         console.log('Existing stream found');
@@ -43,6 +51,9 @@ const WebcamLiveStream = ({ isHost = false }) => {
           videoRef.current.play();
           setIsStreaming(true);
         }
+      } else if (window.streamActive) {
+        console.log('Manual stream is active');
+        setIsStreaming(true);
       }
 
       return () => {
