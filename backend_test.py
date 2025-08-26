@@ -472,7 +472,8 @@ class LiveShoppingAPITester:
             ("Products", products_success),
             ("Chat System", chat_success),
             ("Order System", order_success),
-            ("Admin System", admin_success)
+            ("Admin System", admin_success),
+            ("Zoom Integration", zoom_success)
         ]
         
         print(f"\n🎯 CRITICAL FUNCTIONALITY:")
