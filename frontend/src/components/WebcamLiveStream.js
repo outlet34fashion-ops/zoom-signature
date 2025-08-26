@@ -26,68 +26,86 @@ const WebcamLiveStream = ({ isHost = false }) => {
     };
   }, []);
 
-  // Webcam starten - Optimiert für alle Geräte
+  // Einfache, funktionierende Webcam-Lösung
   const startWebcamStream = async () => {
     try {
       setError(null);
+      console.log('Starting webcam...');
       
-      // iOS/Mobile-optimierte Einstellungen
+      // Einfache Constraints - maximal kompatibel
       const constraints = {
-        video: {
-          width: { 
-            ideal: isMobile ? 720 : 1280,
-            max: isMobile ? 720 : 1920
-          },
-          height: { 
-            ideal: isMobile ? 480 : 720,
-            max: isMobile ? 480 : 1080
-          },
-          facingMode: 'user',
-          frameRate: { ideal: 30, max: 30 }
-        },
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true
-        }
+        video: true,
+        audio: false // Erst mal ohne Audio für Stabilität
       };
 
-      console.log('Requesting webcam access...');
+      // Kamera-Zugriff anfordern
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      console.log('Stream erhalten:', stream);
       
-      if (videoRef.current) {
+      if (videoRef.current && stream) {
         videoRef.current.srcObject = stream;
-        videoRef.current.playsInline = true; // Wichtig für iOS
-        videoRef.current.muted = true; // Verhindert Echo
+        videoRef.current.playsInline = true;
+        videoRef.current.muted = true;
+        videoRef.current.autoplay = true;
+        
+        // Warten bis Video bereit ist
+        videoRef.current.onloadedmetadata = () => {
+          console.log('Video metadata geladen');
+          videoRef.current.play().then(() => {
+            console.log('Video spielt');
+            setIsStreaming(true);
+            setStreamQuality('Live');
+          }).catch(e => {
+            console.error('Video play error:', e);
+            setError('Video konnte nicht gestartet werden: ' + e.message);
+          });
+        };
+        
         streamRef.current = stream;
         
-        // Stream-Qualität ermitteln
-        const videoTrack = stream.getVideoTracks()[0];
-        if (videoTrack) {
-          const settings = videoTrack.getSettings();
-          setStreamQuality(`${settings.width}x${settings.height}`);
-        }
-        
-        setIsStreaming(true);
-        console.log('Webcam stream started successfully');
+        // Backup: Direkt setzen falls onloadedmetadata nicht feuert
+        setTimeout(() => {
+          if (!isStreaming) {
+            console.log('Fallback: Stream als aktiv markieren');
+            setIsStreaming(true);
+            setStreamQuality('Active');
+          }
+        }, 3000);
       }
     } catch (err) {
-      console.error('Webcam error:', err);
+      console.error('Kamera-Fehler:', err);
       
-      // Spezifische Fehlermeldungen
-      let errorMessage = 'Kamera-Zugriff nicht möglich.';
+      let errorMessage = `Kamera-Problem: ${err.name || 'Unbekannt'}`;
       
       if (err.name === 'NotAllowedError') {
-        errorMessage = isIOS 
-          ? 'iPhone: Bitte erlauben Sie Kamera-Zugriff in Safari-Einstellungen → Diese Website → Kamera.'
-          : 'Bitte erlauben Sie den Kamera-Zugriff für diese Website.';
+        errorMessage = '🚫 Kamera-Berechtigung verweigert. Bitte in Browser-Einstellungen erlauben.';
       } else if (err.name === 'NotFoundError') {
-        errorMessage = 'Keine Kamera gefunden. Bitte prüfen Sie Ihr Gerät.';
+        errorMessage = '📷 Keine Kamera gefunden. Ist eine Kamera angeschlossen?';
       } else if (err.name === 'NotReadableError') {
-        errorMessage = 'Kamera wird von einer anderen App verwendet.';
+        errorMessage = '⚠️ Kamera ist bereits in Benutzung. Andere Apps schließen.';
+      } else if (err.name === 'OverconstrainedError') {
+        errorMessage = '⚙️ Kamera-Einstellungen nicht unterstützt. Versuche einfachere Einstellungen...';
       }
       
       setError(errorMessage);
+      
+      // Fallback mit noch einfacheren Constraints
+      if (err.name === 'OverconstrainedError') {
+        try {
+          console.log('Versuche Fallback...');
+          const simpleStream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } });
+          if (videoRef.current) {
+            videoRef.current.srcObject = simpleStream;
+            videoRef.current.play();
+            streamRef.current = simpleStream;
+            setIsStreaming(true);
+            setStreamQuality('640x480');
+            setError(null);
+          }
+        } catch (fallbackErr) {
+          console.error('Auch Fallback fehlgeschlagen:', fallbackErr);
+        }
+      }
     }
   };
 
