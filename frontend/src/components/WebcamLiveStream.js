@@ -19,13 +19,45 @@ const WebcamLiveStream = ({ isHost = false }) => {
       setViewerCount(prev => prev + Math.floor(Math.random() * 3) - 1);
     }, 4000);
 
+    // Für Customer: Höre auf globalen Stream
+    if (!isHost) {
+      const handleStreamStart = (event) => {
+        console.log('Customer empfängt Stream-Event');
+        const stream = event.detail.stream || window.liveStream;
+        if (stream && videoRef.current) {
+          videoRef.current.srcObject = stream;
+          videoRef.current.play();
+          setIsStreaming(true);
+          setGlobalStream(stream);
+        }
+      };
+
+      // Event Listener hinzufügen
+      window.addEventListener('streamStarted', handleStreamStart);
+      
+      // Check if stream already exists
+      if (window.liveStream && window.streamActive) {
+        console.log('Existing stream found');
+        if (videoRef.current) {
+          videoRef.current.srcObject = window.liveStream;
+          videoRef.current.play();
+          setIsStreaming(true);
+        }
+      }
+
+      return () => {
+        clearInterval(interval);
+        window.removeEventListener('streamStarted', handleStreamStart);
+      };
+    }
+
     return () => {
       clearInterval(interval);
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(track => track.stop());
       }
     };
-  }, []);
+  }, [isHost]);
 
   // Einfache, funktionierende Webcam-Lösung
   const startWebcamStream = async () => {
