@@ -92,77 +92,33 @@ const ZoomLiveStream = ({
                   </div>
                 </div>
               ) : (
-                // PROFESSIONELLER LIVE VIDEO STREAM - Optimierte Darstellung
-                <div className="live-video-display w-full h-full relative bg-black rounded-lg overflow-hidden">
+                // ECHTES ZOOM VIDEO - Direkte Einbettung des Live-Streams
+                <div className="zoom-video-display w-full h-full relative bg-black rounded-lg overflow-hidden">
                   
-                  {/* Simulierter Live Video Stream */}
-                  <div className="video-stream-container w-full h-full relative bg-gradient-to-br from-gray-900 to-black rounded-lg overflow-hidden">
-                    
-                    {/* Video Simulationsbereich */}
-                    <div className="mock-video-feed w-full h-full flex items-center justify-center relative">
-                      
-                      {/* Video Background mit Animation */}
-                      <div className="video-background absolute inset-0 bg-gradient-to-br from-blue-900 via-purple-900 to-pink-900 opacity-60 animate-pulse"></div>
-                      
-                      {/* Simulierter Video Content */}
-                      <div className="video-content relative z-10 text-center space-y-6 p-8">
-                        
-                        {/* Live Moderator Simulation */}
-                        <div className="moderator-avatar w-32 h-32 bg-gradient-to-br from-pink-400 to-red-500 rounded-full mx-auto flex items-center justify-center text-4xl animate-bounce">
-                          👩‍💼
-                        </div>
-                        
-                        <div className="space-y-4">
-                          <h3 className="text-2xl font-bold text-white">
-                            Live Moderator aktiv
-                          </h3>
-                          <p className="text-lg text-gray-300">
-                            Professioneller Live Shopping Stream
-                          </p>
-                          
-                          {/* Live Status Indicators */}
-                          <div className="flex justify-center space-x-6 text-sm">
-                            <div className="flex items-center space-x-2">
-                              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                              <span className="text-green-400">Verbunden</span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
-                              <span className="text-blue-400">HD Qualität</span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse"></div>
-                              <span className="text-purple-400">Stabil</span>
-                            </div>
-                          </div>
-                          
-                          {/* Rotating Product Showcase */}
-                          <div className="mt-8 p-4 bg-black bg-opacity-40 rounded-lg">
-                            <p className="text-sm text-gray-400 mb-2">Aktuell präsentiert</p>
-                            <div className="text-lg font-semibold text-white animate-pulse">
-                              🛍️ Fashion Collection 2024
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {/* Floating UI Elements */}
-                      <div className="floating-elements absolute inset-0 pointer-events-none">
-                        {/* Animated Particles */}
-                        <div className="particle absolute top-1/4 left-1/4 w-2 h-2 bg-pink-400 rounded-full animate-ping opacity-75"></div>
-                        <div className="particle absolute top-3/4 right-1/4 w-2 h-2 bg-blue-400 rounded-full animate-ping opacity-75" style={{animationDelay: '1s'}}></div>
-                        <div className="particle absolute top-1/2 right-1/3 w-2 h-2 bg-purple-400 rounded-full animate-ping opacity-75" style={{animationDelay: '2s'}}></div>
-                      </div>
-                    </div>
+                  {/* Echter Zoom Video Stream */}
+                  <div className="video-embed-container w-full h-full relative bg-black rounded-lg overflow-hidden">
+                    <iframe
+                      src={`https://us02web.zoom.us/j/${ZOOM_MEETING_ID}?pwd=UEVMNEoyREZhdEQvNVNRNTNkRDFMQT09&web=1&audio=false&video=true`}
+                      style={{
+                        width: '100%',
+                        height: '500px',
+                        border: 'none',
+                        borderRadius: '12px'
+                      }}
+                      allow="microphone; camera; display-capture; fullscreen; autoplay"
+                      title="Live Shopping Video - Zoom Stream"
+                      loading="eager"
+                      className="zoom-live-iframe"
+                    />
                   </div>
 
-                  {/* Professional Video Overlays */}
+                  {/* Live Status Overlays */}
                   <div className="video-overlay absolute bottom-4 left-4 right-4 flex justify-between items-center z-20">
                     <div className="bg-black bg-opacity-80 text-white px-4 py-2 rounded-full text-sm font-medium">
-                      🔴 LIVE - Professioneller Stream
+                      🔴 LIVE - Zoom Video Stream
                     </div>
                     <button 
-                      onClick={() => setShowVideo(false)}
+                      onClick={() => window.location.reload()}
                       className="bg-black bg-opacity-80 text-white px-4 py-2 rounded-full text-sm hover:bg-opacity-90 transition-all"
                     >
                       🔄 Neu laden
