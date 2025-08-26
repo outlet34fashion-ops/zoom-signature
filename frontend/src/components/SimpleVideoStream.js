@@ -144,60 +144,41 @@ const SimpleVideoStream = ({ isHost = false }) => {
       {/* Live Stream Display für Kunden */}
       <div className="relative h-full">
         
-        <div className="stream-display h-full bg-gradient-to-br from-gray-900 via-purple-900 to-black flex items-center justify-center">
+        {/* ECHTES ZOOM VIDEO für Kunden */}
+        <div className="stream-display h-full bg-black flex items-center justify-center relative">
           
-          <div className="text-center space-y-6 p-8">
-            
-            {/* Live Video Icon */}
-            <div className="w-32 h-32 bg-gradient-to-br from-red-500 via-pink-500 to-purple-600 rounded-full mx-auto flex items-center justify-center text-5xl animate-pulse">
-              📺
-            </div>
-            
-            <div className="space-y-4">
-              <h3 className="text-3xl font-bold">
-                Live Shopping aktiv
-              </h3>
-              
-              <p className="text-xl text-gray-300">
-                Outlet34 Fashion Show
-              </p>
-              
-              {/* Live Indicators */}
-              <div className="flex justify-center space-x-8 text-sm">
-                <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 bg-red-500 rounded-full animate-ping"></div>
-                  <span className="text-red-400 font-semibold">LIVE</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-green-400 font-semibold">Online</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-4 h-4 bg-blue-500 rounded-full animate-pulse"></div>
-                  <span className="text-blue-400 font-semibold">HD</span>
-                </div>
+          {/* Zoom Video Iframe - ECHTES VIDEO */}
+          <iframe
+            src="https://us02web.zoom.us/wc/join/5183673726?pwd=b3V0bGV0MzQ=&uname=LiveViewer&tk=&audio=false&video=false&auto=1"
+            style={{
+              width: '100%',
+              height: '500px',
+              border: 'none',
+              borderRadius: '12px'
+            }}
+            allow="microphone; camera; display-capture; fullscreen; autoplay"
+            title="Live Shopping Video - Zoom Stream" 
+            loading="eager"
+            className="zoom-customer-video"
+          />
+          
+          {/* Fallback falls Video nicht lädt */}
+          <div className="fallback-display absolute inset-0 bg-gradient-to-br from-gray-900 via-purple-900 to-black flex items-center justify-center" style={{zIndex: '-1'}}>
+            <div className="text-center space-y-4">
+              <div className="w-24 h-24 bg-gradient-to-br from-red-500 to-purple-600 rounded-full mx-auto flex items-center justify-center text-4xl animate-pulse">
+                📺
               </div>
-              
-              {/* Current Info */}
-              <div className="mt-8 p-6 bg-black/60 rounded-lg">
-                <h4 className="text-lg font-semibold mb-3 text-pink-400">
-                  🛍️ Jetzt live präsentiert:
-                </h4>
-                <div className="space-y-2 text-base">
-                  <p className="text-yellow-300">✨ Fashion Collection 2024</p>
-                  <p className="text-green-300">💰 Händlerpreise ab 5€</p>
-                  <p className="text-blue-300">📦 Sofort verfügbar</p>
+              <h3 className="text-2xl font-bold text-white">Live Stream lädt...</h3>
+              <p className="text-gray-300">Moderator ist live auf Zoom</p>
+              <div className="flex justify-center space-x-4 text-sm">
+                <div className="flex items-center space-x-1">
+                  <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                  <span className="text-red-400">LIVE</span>
                 </div>
-              </div>
-              
-              {/* Shopping Call-to-Action */}
-              <div className="mt-6 p-4 bg-gradient-to-r from-pink-600/30 to-purple-600/30 rounded-lg">
-                <p className="text-lg font-semibold text-pink-300">
-                  👉 Bestellen Sie während der Live-Show!
-                </p>
-                <p className="text-sm text-gray-300 mt-1">
-                  Nutzen Sie das Bestellformular rechts →
-                </p>
+                <div className="flex items-center space-x-1">
+                  <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-green-400">Verbunden</span>
+                </div>
               </div>
             </div>
           </div>
