@@ -17,27 +17,24 @@ body {
   min-height: 100vh;
 }
 
-/* Zoom Video nur Video - UI verstecken */
-.zoom-video-only {
-  transform: scale(1.2);
+/* Zoom Video Direct Integration - Clean Display */
+.zoom-video-direct {
+  transform: scale(1.0);
   transform-origin: center center;
+  overflow: hidden;
 }
 
-/* Zoom UI Elemente verstecken */
-.zoom-video-only::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-  z-index: 5;
+/* Verbesserte Video Container Styling */
+.video-embed-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
 }
 
-/* Verstecke Zoom-spezifische UI-Elemente */
 .video-embed-container iframe {
-  clip-path: inset(60px 20px 80px 20px);
+  /* Keine aggressive Clipping mehr - Natürliche Darstellung */
+  display: block;
+  margin: 0 auto;
 }
 
 /* Custom scrollbar for chat */
