@@ -390,19 +390,60 @@ const WebcamLiveStream = ({ isHost = false }) => {
           {/* Live Video Stream - Shared zwischen Admin und Customer */}
           <div className="customer-stream h-full w-full bg-gradient-to-br from-blue-900 via-purple-900 to-pink-900 flex items-center justify-center relative" id="customer-video-area">
             
-            {/* Video Element für Kunden */}
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              muted
-              className="w-full h-full object-cover"
-              style={{ display: isStreaming ? 'block' : 'none' }}
-            />
-            
-            {/* Fallback wenn kein Stream */}
-            {!isStreaming && (
-              
+            {/* Live Stream Content */}
+            {isStreaming ? (
+              // LIVE VIDEO BEREICH
+              <div className="live-content w-full h-full bg-black flex items-center justify-center relative">
+                
+                {/* Video Element (falls vorhanden) */}
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="w-full h-full object-cover"
+                  style={{ display: globalStream ? 'block' : 'none' }}
+                />
+                
+                {/* Live Stream Anzeige (immer sichtbar wenn live) */}
+                <div className="live-stream-display absolute inset-0 flex items-center justify-center" style={{ display: globalStream ? 'none' : 'flex' }}>
+                  <div className="text-center space-y-6 p-8">
+                    <div className="w-32 h-32 bg-gradient-to-br from-green-500 to-red-600 rounded-full flex items-center justify-center text-5xl animate-pulse">
+                      📹
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <h3 className="text-3xl font-bold text-white">
+                        🔴 LIVE STREAM AKTIV
+                      </h3>
+                      
+                      <p className="text-xl text-green-300">
+                        Moderator streamt live!
+                      </p>
+                      
+                      <div className="bg-black/70 rounded-lg p-4">
+                        <p className="text-lg font-semibold text-green-300">
+                          📺 Live Video läuft
+                        </p>
+                        <p className="text-sm text-gray-300 mt-1">
+                          Outlet34 Fashion Show • Echtzeit-Übertragung
+                        </p>
+                      </div>
+                      
+                      <div className="mt-4 p-4 bg-gradient-to-r from-pink-600/30 to-purple-600/30 rounded-lg">
+                        <p className="text-lg font-semibold text-pink-300">
+                          🛍️ Jetzt live shoppen!
+                        </p>
+                        <p className="text-sm text-gray-300 mt-1">
+                          Bestellen Sie während der Live-Show →
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              // WARTEN AUF STREAM
               <div className="text-center space-y-6 p-8">
                 <div className="w-32 h-32 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-5xl animate-pulse">
                   📱
