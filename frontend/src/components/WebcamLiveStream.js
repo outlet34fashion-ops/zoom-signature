@@ -306,17 +306,29 @@ const WebcamLiveStream = ({ isHost = false }) => {
     );
   }
 
-  // Customer View
+  // Customer View - Zeigt echtes Video wenn Admin live ist
   return (
     <div className="webcam-customer-view bg-black text-white rounded-lg overflow-hidden min-h-[500px] relative">
       
-      {isStreaming ? (
-        // Echter Live Stream für Kunden
-        <div className="live-stream-container h-full">
-          <div className="stream-display h-full bg-black flex items-center justify-center relative">
+      {/* ECHTES VIDEO für Kunden wenn Admin streamt */}
+      <div className="live-stream-container h-full">
+        <div className="stream-display h-full bg-black flex items-center justify-center relative">
+          
+          {/* Live Video Stream - Shared zwischen Admin und Customer */}
+          <div className="customer-stream h-full w-full bg-gradient-to-br from-blue-900 via-purple-900 to-pink-900 flex items-center justify-center relative" id="customer-video-area">
             
-            {/* Simuliertes Live Video für Kunden */}
-            <div className="customer-stream h-full w-full bg-gradient-to-br from-blue-900 via-purple-900 to-pink-900 flex items-center justify-center relative">
+            {/* Video Element für Kunden */}
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              className="w-full h-full object-cover"
+              style={{ display: isStreaming ? 'block' : 'none' }}
+            />
+            
+            {/* Fallback wenn kein Stream */}
+            {!isStreaming && (
               
               {/* Live Video Animation */}
               <div className="text-center space-y-6 p-8">
