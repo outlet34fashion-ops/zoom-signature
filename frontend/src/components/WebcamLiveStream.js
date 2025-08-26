@@ -56,6 +56,14 @@ const WebcamLiveStream = ({ isHost = false }) => {
             console.log('Video spielt');
             setIsStreaming(true);
             setStreamQuality('Live');
+            
+            // WICHTIG: Stream global verfügbar machen
+            setGlobalStream(stream);
+            window.liveStream = stream; // Global für alle Benutzer
+            window.streamActive = true;
+            
+            // Benachrichtige alle Benutzer
+            window.dispatchEvent(new CustomEvent('streamStarted', { detail: { stream } }));
           }).catch(e => {
             console.error('Video play error:', e);
             setError('Video konnte nicht gestartet werden: ' + e.message);
