@@ -64,8 +64,8 @@ const ZoomLiveStream = ({
               </div>
             </div>
 
-            {/* Video-Bereich - VEREINFACHT */}
-            <div className="video-display-area" style={{ minHeight: '600px', aspectRatio: '9/16' }}>
+            {/* Video-Bereich - Optimierte Proportionen */}
+            <div className="video-display-area" style={{ minHeight: '500px', maxHeight: '600px', aspectRatio: '16/9' }}>
               
               {!showVideo ? (
                 // Video bereit - Einfacher Start
