@@ -99,6 +99,26 @@ const DirectWebcamStream = ({ isHost = false, onStreamReady }) => {
                 <p>✅ Direkt über Browser</p>
                 <p>✅ HD Qualität</p>
               </div>
+              
+              {/* Mobile Alternative */}
+              {isMobile && (
+                <div className="mt-6 p-4 bg-blue-500/20 border border-blue-500 rounded-lg">
+                  <p className="text-blue-300 font-semibold mb-2">📱 Mobile Alternative:</p>
+                  <p className="text-sm text-blue-200 mb-3">
+                    Schwierigkeiten mit der Webcam? Nutzen Sie Zoom direkt:
+                  </p>
+                  <button
+                    onClick={() => window.open('https://us02web.zoom.us/j/5183673726?pwd=UEVMNEoyREZhdEQvNVNRNTNkRDFMQT09', '_blank')}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold"
+                  >
+                    📹 Zoom Meeting starten
+                  </button>
+                  <div className="mt-2 text-xs text-blue-200">
+                    <p>Meeting-ID: 5183673726</p>
+                    <p>Passwort: outlet34</p>
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <div className="space-y-4">
