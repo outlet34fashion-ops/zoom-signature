@@ -485,9 +485,9 @@ function App() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
-          {/* Video Stream Area - Webcam/iPhone Live Stream */}
+          {/* Video Stream Area - Real Video Streaming Solutions */}
           <div className="lg:col-span-2">
-            <WebcamLiveStream 
+            <RealVideoStream 
               isHost={isAdminView}
             />
           </div>
