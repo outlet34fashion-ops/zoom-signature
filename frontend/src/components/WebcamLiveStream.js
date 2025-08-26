@@ -163,13 +163,49 @@ const WebcamLiveStream = ({ isHost = false }) => {
                     </div>
                   </div>
                   
-                  <button
-                    onClick={startWebcamStream}
-                    className="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-4 rounded-lg font-bold text-lg flex items-center justify-center space-x-2"
-                  >
-                    <span>📹</span>
-                    <span>{isMobile ? 'iPhone Kamera starten' : 'Webcam starten'}</span>
-                  </button>
+                  <div className="space-y-3">
+                    {/* Kamera-Test Button */}
+                    <button
+                      onClick={async () => {
+                        try {
+                          const devices = await navigator.mediaDevices.enumerateDevices();
+                          const cameras = devices.filter(device => device.kind === 'videoinput');
+                          alert(`Gefunden: ${cameras.length} Kamera(s)\n${cameras.map(c => c.label || 'Kamera').join('\n')}`);
+                        } catch (e) {
+                          alert('Kamera-Check fehlgeschlagen: ' + e.message);
+                        }
+                      }}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm"
+                    >
+                      🔍 Kamera testen
+                    </button>
+                    
+                    {/* Hauptstart Button */}
+                    <button
+                      onClick={startWebcamStream}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white px-6 py-4 rounded-lg font-bold text-lg flex items-center justify-center space-x-2"
+                    >
+                      <span>📹</span>
+                      <span>{isMobile ? 'iPhone Kamera starten' : 'Webcam starten'}</span>
+                    </button>
+                    
+                    {/* Direkter Browser-Test */}
+                    <button
+                      onClick={() => {
+                        navigator.mediaDevices.getUserMedia({ video: true })
+                          .then(stream => {
+                            alert('✅ Kamera funktioniert! Stream erhalten.');
+                            stream.getTracks().forEach(track => track.stop());
+                          })
+                          .catch(err => {
+                            alert('❌ Kamera-Fehler: ' + err.name + ' - ' + err.message);
+                          });
+                      }}
+                      className="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg text-sm"
+                    >
+                      ⚡ Direkt-Test
+                    </button>
+                  </div>
                   
                   <div className="text-center text-sm text-gray-400 space-y-1">
                     <p>✅ {isMobile ? 'Mobile optimiert' : 'Desktop optimiert'}</p>
