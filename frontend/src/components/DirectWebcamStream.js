@@ -8,20 +8,29 @@ const DirectWebcamStream = ({ isHost = false, onStreamReady }) => {
   const videoRef = useRef(null);
   const streamRef = useRef(null);
 
-  // Für Host: Webcam starten
+  // Gerät erkennen
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+  // Für Host: Webcam starten (Mobile-optimiert)
   const startWebcamStream = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
+      // iOS-spezifische Konfiguration
+      const constraints = {
         video: {
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
+          width: { ideal: isIOS ? 720 : 1280 },
+          height: { ideal: isIOS ? 480 : 720 },
           facingMode: 'user'
         },
-        audio: true
-      });
+        audio: !isIOS // iOS Audio kann problematisch sein
+      };
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
 
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
+        videoRef.current.playsInline = true; // Wichtig für iOS
+        videoRef.current.muted = true; // iOS Requirement
         streamRef.current = stream;
         setIsStreaming(true);
         setHasPermission(true);
@@ -29,7 +38,15 @@ const DirectWebcamStream = ({ isHost = false, onStreamReady }) => {
       }
     } catch (err) {
       console.error('Webcam access error:', err);
-      setError('Kamera-Zugriff nicht möglich. Bitte Berechtigung erteilen.');
+      
+      // Spezifische Fehlermeldungen für verschiedene Geräte
+      if (isIOS) {
+        setError('iPhone-Kamera: Bitte erlauben Sie den Kamera-Zugriff in Safari-Einstellungen.');
+      } else if (isMobile) {
+        setError('Mobile Kamera: Bitte erlauben Sie den Kamera-Zugriff für diese Website.');
+      } else {
+        setError('Kamera-Zugriff blockiert. Prüfen Sie Browser-Einstellungen.');
+      }
     }
   };
 
