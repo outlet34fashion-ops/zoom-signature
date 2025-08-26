@@ -260,24 +260,31 @@ const ZoomProStream = ({ isHost = false }) => {
           )}
           
           {streamMethod === 'direct' && (
-            // Direkte Zoom-Einbettung mit SDK
-            <div className="zoom-direct h-full bg-black flex items-center justify-center relative">
+            // Direkte Zoom-Einbettung - ECHTES VIDEO
+            <div className="zoom-direct h-full bg-black relative">
               
-              {/* Zoom SDK Container */}
-              <div id="zoom-video-container" className="w-full h-full">
-                <div className="flex items-center justify-center h-full">
-                  <div className="text-center space-y-4">
-                    <div className="w-32 h-32 bg-blue-600 rounded-full flex items-center justify-center text-4xl animate-bounce">
-                      🎥
-                    </div>
-                    <h3 className="text-2xl font-bold">Zoom SDK Aktiv</h3>
-                    <p className="text-gray-300">Direkte Video-Übertragung</p>
-                    {zoomToken && (
-                      <p className="text-green-300 text-sm">SDK Token: Authentifiziert ✓</p>
-                    )}
-                  </div>
-                </div>
-              </div>
+              {/* Zoom Web Client - Optimiert für Embedding */}
+              <iframe
+                src={`https://us02web.zoom.us/wc/join/${ZOOM_MEETING_ID}?pwd=b3V0bGV0MzQ=&uname=LiveViewer&tk=&audio=false&video=false&checkin=false&auto=1&toolbar=false&waiting_room=false`}
+                className="w-full h-full"
+                allow="microphone; camera; display-capture; fullscreen; autoplay"
+                title="Zoom Direct Integration"
+                style={{ 
+                  width: '100%', 
+                  height: '100%',
+                  border: 'none'
+                }}
+                sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-presentation allow-top-navigation"
+              />
+              
+              {/* Zoom UI verstecken mit CSS Overlay */}
+              <style jsx>{`
+                iframe {
+                  transform: scale(1.1);
+                  transform-origin: center center;
+                  margin: -20px -20px;
+                }
+              `}</style>
             </div>
           )}
           
