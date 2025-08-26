@@ -27,10 +27,56 @@ const ProfessionalStream = ({ isHost = false }) => {
           {!isLive ? (
             <div className="space-y-6">
               
-              {/* Option 1: YouTube Live */}
-              <div className="bg-red-600/20 border border-red-500 rounded-lg p-6">
+              {/* Option 1: Instagram Live - SOFORT verfügbar */}
+              <div className="bg-pink-600/20 border border-pink-500 rounded-lg p-6">
+                <h3 className="text-xl font-semibold text-pink-300 mb-4">
+                  📱 Option 1: Instagram Live (SOFORT verfügbar!)
+                </h3>
+                
+                <div className="space-y-4">
+                  <div className="bg-green-500/20 rounded-lg p-4 border border-green-500">
+                    <h4 className="font-semibold text-green-300 mb-2">✅ Keine Wartezeit!</h4>
+                    <div className="text-sm text-green-100 space-y-1">
+                      <p>1️⃣ Instagram App öffnen</p>
+                      <p>2️⃣ Story → "Live" wählen</p>
+                      <p>3️⃣ Titel: "Outlet34 Live Shopping"</p>
+                      <p>4️⃣ "Live gehen" - SOFORT bereit!</p>
+                      <p>5️⃣ Username hier eingeben (z.B. outlet34_official)</p>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-300">
+                      Instagram Username eingeben:
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="outlet34_official"
+                      className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white"
+                      onChange={(e) => setStreamUrl(`https://www.instagram.com/${e.target.value}/live`)}
+                    />
+                  </div>
+                  
+                  <button
+                    onClick={() => {
+                      if (streamUrl.includes('instagram.com')) {
+                        setStreamType('instagram');
+                        setIsLive(true);
+                      } else {
+                        alert('Bitte geben Sie Ihren Instagram Username ein');
+                      }
+                    }}
+                    className="w-full bg-pink-600 hover:bg-pink-700 text-white px-6 py-4 rounded-lg font-bold text-lg"
+                  >
+                    📱 Instagram Live aktivieren
+                  </button>
+                </div>
+              </div>
+
+              {/* Option 2: YouTube Live (24h Wartezeit) */}
+              <div className="bg-red-600/20 border border-red-500 rounded-lg p-6 opacity-60">
                 <h3 className="text-xl font-semibold text-red-300 mb-4">
-                  📺 Option 1: YouTube Live (Empfohlen)
+                  📺 Option 2: YouTube Live (Wartezeit: 24h)
                 </h3>
                 
                 <div className="space-y-4">
