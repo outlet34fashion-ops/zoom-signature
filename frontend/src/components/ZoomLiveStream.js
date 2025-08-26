@@ -15,8 +15,8 @@ const ZoomLiveStream = ({
   const ZOOM_PASSWORD = "outlet34";
   const ZOOM_HOST_URL = `https://us02web.zoom.us/j/${ZOOM_MEETING_ID}?pwd=UEVMNEoyREZhdEQvNVNRNTNkRDFMQT09`;
   
-  // Direkter Zoom-Link für Viewer - OHNE Anmeldung, automatischer Beitritt
-  const ZOOM_VIEWER_URL = `https://us02web.zoom.us/wc/join/${ZOOM_MEETING_ID}?pwd=${ZOOM_PASSWORD}&uname=Zuschauer&join=1&role=0&auto=1&waiting_room=false&toolbar=false&invite=false&leave=false&video=false&audio=false`;
+  // Direkter Zoom Web Client Link - Bypass Login durch direkte Web-Integration
+  const ZOOM_VIEWER_URL = `https://us02web.zoom.us/wc/join/${ZOOM_MEETING_ID}?pwd=${ZOOM_PASSWORD}&uname=LiveViewer&tk=&checkin=false&t=${Date.now()}&prefer=1&audio=false&video=false&waiting_room=false&toolbar=false&invite=false&leave=false&fromPowerOn=false`;
   
   // Simuliere Live-Status Updates
   useEffect(() => {
