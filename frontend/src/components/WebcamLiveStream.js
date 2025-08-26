@@ -101,7 +101,6 @@ const WebcamLiveStream = ({ isHost = false }) => {
       videoRef.current.srcObject = null;
     }
     setIsStreaming(false);
-    setHasPermission(false);
   };
 
   // Host Interface
