@@ -485,9 +485,9 @@ function App() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
-          {/* Video Stream Area - Professional Streaming Solution */}
+          {/* Video Stream Area - Zoom Professional Integration */}
           <div className="lg:col-span-2">
-            <ProfessionalStream 
+            <ZoomProStream 
               isHost={isAdminView}
             />
           </div>
