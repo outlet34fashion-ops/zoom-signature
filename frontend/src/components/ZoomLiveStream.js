@@ -95,36 +95,22 @@ const ZoomLiveStream = ({
                 // DIREKTE ZOOM VIDEO INTEGRATION - NUR VIDEO, KEINE UI
                 <div className="zoom-video-display w-full h-full relative bg-black rounded-lg overflow-hidden">
                   
-                  {/* Nur Video - Zoom Controls versteckt */}
-                  <div className="video-embed-container w-full h-full relative">
+                  {/* Video nur Bereich - Optimierte Darstellung */}
+                  <div className="video-embed-container w-full h-full relative bg-black rounded-lg overflow-hidden">
                     <iframe
                       src={ZOOM_VIEWER_URL}
                       style={{
                         width: '100%',
-                        height: '700px', // Höher um UI-Bereiche zu überschneiden
+                        height: '600px', // Reduzierte Höhe für bessere Proportionen
                         border: 'none',
-                        borderRadius: '12px',
-                        marginTop: '-50px', // UI-Bereich nach oben verschieben
-                        marginBottom: '-100px' // UI-Bereich nach unten verstecken
+                        borderRadius: '12px'
                       }}
                       allow="microphone; camera; display-capture; fullscreen"
-                      title="Live Shopping Video - Nur Video"
-                      sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-presentation"
+                      title="Live Shopping Video Stream"
+                      sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-presentation allow-top-navigation"
                       loading="eager"
-                      className="zoom-video-only"
+                      className="zoom-video-direct"
                     />
-                    
-                    {/* Overlay um Zoom-UI zu verstecken */}
-                    <div className="zoom-ui-overlay">
-                      {/* Verstecke oberen Bereich */}
-                      <div className="absolute top-0 left-0 right-0 h-16 bg-black z-10"></div>
-                      {/* Verstecke unteren Bereich mit Buttons */}
-                      <div className="absolute bottom-0 left-0 right-0 h-20 bg-black z-10"></div>
-                      {/* Verstecke linken Rand */}
-                      <div className="absolute top-0 bottom-0 left-0 w-8 bg-black z-10"></div>
-                      {/* Verstecke rechten Rand */}
-                      <div className="absolute top-0 bottom-0 right-0 w-8 bg-black z-10"></div>
-                    </div>
                   </div>
 
                   {/* Unsere eigenen minimalen Video-Status Overlays */}
