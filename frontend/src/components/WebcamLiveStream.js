@@ -5,6 +5,7 @@ const WebcamLiveStream = ({ isHost = false }) => {
   const [error, setError] = useState(null);
   const [viewerCount, setViewerCount] = useState(48);
   const [streamQuality, setStreamQuality] = useState('HD');
+  const [globalStream, setGlobalStream] = useState(null);
   const videoRef = useRef(null);
   const streamRef = useRef(null);
 
