@@ -59,6 +59,7 @@ const WebcamLiveStream = ({ isHost = false }) => {
       return () => {
         clearInterval(interval);
         window.removeEventListener('streamStarted', handleStreamStart);
+        window.removeEventListener('manualStreamStart', handleManualStart);
       };
     }
 
