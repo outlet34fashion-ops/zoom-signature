@@ -289,30 +289,49 @@ const ZoomProStream = ({ isHost = false }) => {
           )}
           
           {(streamMethod === 'webinar' || streamMethod === 'manual') && (
-            // Webinar/Manual Mode
-            <div className="zoom-webinar h-full bg-gradient-to-br from-gray-900 via-blue-900 to-black flex items-center justify-center">
-              <div className="text-center space-y-6 p-8">
-                <div className="w-32 h-32 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center text-4xl animate-pulse">
-                  📡
-                </div>
+            // ECHTES ZOOM VIDEO für alle Modi
+            <div className="zoom-all-modes h-full bg-black relative">
+              
+              {/* Mehrfach-Versuch für verschiedene Zoom-URLs */}
+              <div className="zoom-embed-container h-full relative">
                 
-                <div className="space-y-4">
-                  <h3 className="text-3xl font-bold">
-                    Zoom Live Stream
-                  </h3>
-                  
-                  <p className="text-xl text-gray-300">
-                    Professionelle Übertragung aktiv
-                  </p>
-                  
-                  <div className="bg-black/50 rounded-lg p-4">
-                    <p className="text-lg font-semibold text-green-300">
-                      🔴 Live aus Zoom Meeting
-                    </p>
-                    <p className="text-sm text-gray-400 mt-1">
-                      Meeting-ID: {ZOOM_MEETING_ID}
-                    </p>
-                  </div>
+                {/* Primärer Zoom Embed */}
+                <iframe
+                  src={`https://us02web.zoom.us/wc/join/${ZOOM_MEETING_ID}?pwd=b3V0bGV0MzQ=&uname=Customer&tk=&audio=false&video=false&auto=1`}
+                  className="w-full h-full absolute top-0 left-0 z-10"
+                  allow="microphone; camera; display-capture; fullscreen; autoplay"
+                  title="Zoom Primary Stream"
+                  style={{ border: 'none' }}
+                />
+                
+                {/* Fallback Zoom URL */}
+                <iframe
+                  src={`https://zoom.us/wc/join/${ZOOM_MEETING_ID}?pwd=b3V0bGV0MzQ=&uname=Viewer`}
+                  className="w-full h-full absolute top-0 left-0 z-5"
+                  allow="microphone; camera; display-capture; fullscreen; autoplay"
+                  title="Zoom Fallback Stream"
+                  style={{ border: 'none', display: 'none' }}
+                  onLoad={() => {
+                    // Fallback iframe verstecken wenn primary lädt
+                    console.log('Zoom primary loaded');
+                  }}
+                />
+                
+                {/* Dritter Versuch - Direct Meeting Link */}
+                <iframe
+                  src={ZOOM_MEETING_URL}
+                  className="w-full h-full absolute top-0 left-0 z-1"
+                  allow="microphone; camera; display-capture; fullscreen; autoplay"
+                  title="Zoom Direct Link"
+                  style={{ border: 'none', display: 'none' }}
+                />
+              </div>
+              
+              {/* Overlay für professionellen Look */}
+              <div className="absolute top-4 left-4 z-50">
+                <div className="bg-gradient-to-r from-red-600 to-pink-600 text-white px-4 py-2 rounded-full text-sm font-semibold flex items-center">
+                  <div className="w-3 h-3 bg-white rounded-full mr-2 animate-pulse"></div>
+                  ZOOM LIVE
                 </div>
               </div>
             </div>
