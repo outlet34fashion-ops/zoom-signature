@@ -100,7 +100,7 @@ const ZoomLiveStream = ({
                   {/* Echter Zoom Video Stream */}
                   <div className="video-embed-container w-full h-full relative bg-black rounded-lg overflow-hidden">
                     <iframe
-                      src={`https://us02web.zoom.us/j/${ZOOM_MEETING_ID}?pwd=UEVMNEoyREZhdEQvNVNRNTNkRDFMQT09&web=1&audio=false&video=true`}
+                      src={ZOOM_WEB_CLIENT}
                       style={{
                         width: '100%',
                         height: '500px',
