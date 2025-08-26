@@ -97,20 +97,12 @@ const ZoomLiveStream = ({
                 // ECHTES ZOOM VIDEO - Direkte Einbettung des Live-Streams
                 <div className="zoom-video-display w-full h-full relative bg-black rounded-lg overflow-hidden">
                   
-                  {/* Echter Zoom Video Stream */}
+                  {/* Echter Zoom Video Stream mit SDK-Integration */}
                   <div className="video-embed-container w-full h-full relative bg-black rounded-lg overflow-hidden">
-                    <iframe
-                      src={ZOOM_WEB_CLIENT}
-                      style={{
-                        width: '100%',
-                        height: '500px',
-                        border: 'none',
-                        borderRadius: '12px'
-                      }}
-                      allow="microphone; camera; display-capture; fullscreen; autoplay"
-                      title="Live Shopping Video - Zoom Stream"
-                      loading="eager"
-                      className="zoom-live-iframe"
+                    <ZoomVideoSDKIntegration 
+                      meetingId={ZOOM_MEETING_ID}
+                      password={ZOOM_PASSWORD}
+                      onVideoReady={() => console.log('Zoom video ready')}
                     />
                   </div>
 
