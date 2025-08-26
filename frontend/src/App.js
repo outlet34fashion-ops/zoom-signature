@@ -485,11 +485,10 @@ function App() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
-          {/* Video Stream Area - Direct Webcam Integration */}
+          {/* Video Stream Area - Simple Streaming Solution */}
           <div className="lg:col-span-2">
-            <DirectWebcamStream 
+            <SimpleVideoStream 
               isHost={isAdminView}
-              onStreamReady={(stream) => console.log('Webcam stream ready', stream)}
             />
           </div>
 
