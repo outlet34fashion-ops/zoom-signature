@@ -338,31 +338,70 @@ const ZoomProStream = ({ isHost = false }) => {
           )}
         </div>
       ) : (
-        // Warten auf Stream
-        <div className="waiting-stream h-full bg-gradient-to-br from-gray-900 via-purple-900 to-black flex items-center justify-center">
-          <div className="text-center space-y-6 p-8">
-            <div className="w-32 h-32 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-5xl animate-pulse">
-              🎥
-            </div>
+        {/* ALTERNATIVE: Einfacher Browser-Stream */}
+        <div className="browser-stream-ready h-full bg-gradient-to-br from-gray-900 via-purple-900 to-black flex items-center justify-center">
+          <div className="text-center space-y-8 p-8">
             
+            {/* Hauptmeldung */}
             <div className="space-y-4">
-              <h3 className="text-3xl font-bold">
-                Live Shopping startet gleich
+              <div className="w-32 h-32 bg-gradient-to-br from-red-500 to-pink-600 rounded-full flex items-center justify-center text-5xl animate-pulse mx-auto">
+                ⚠️
+              </div>
+              
+              <h3 className="text-3xl font-bold text-yellow-300">
+                Zoom kann nicht direkt eingebettet werden
               </h3>
               
               <p className="text-xl text-gray-300">
-                Professionelle Zoom-Übertragung wird vorbereitet
+                Browser-Sicherheit blockiert Zoom-Integration
               </p>
+            </div>
+            
+            {/* Lösungsvorschläge */}
+            <div className="bg-black/60 rounded-lg p-6 space-y-4">
+              <h4 className="text-lg font-semibold text-pink-400">
+                💡 Funktionierende Alternativen:
+              </h4>
               
-              <div className="mt-8 p-6 bg-black/60 rounded-lg">
-                <h4 className="text-lg font-semibold mb-3 text-pink-400">
-                  🛍️ Gleich live:
-                </h4>
-                <div className="space-y-2 text-base">
-                  <p className="text-yellow-300">✨ Fashion Collection 2024</p>
-                  <p className="text-green-300">💰 Händlerpreise ab 5€</p>
-                  <p className="text-blue-300">📦 Sofort verfügbar</p>
+              <div className="space-y-3 text-left">
+                <div className="flex items-start space-x-3">
+                  <span className="text-green-400 text-xl">🚀</span>
+                  <div>
+                    <p className="font-semibold text-green-300">OBS Studio + YouTube</p>
+                    <p className="text-sm text-gray-400">Professionelle Streaming-Lösung</p>
+                  </div>
                 </div>
+                
+                <div className="flex items-start space-x-3">
+                  <span className="text-blue-400 text-xl">🎥</span>
+                  <div>
+                    <p className="font-semibold text-blue-300">Zoom Webinar Pro</p>
+                    <p className="text-sm text-gray-400">Direktes Streaming zu YouTube</p>
+                  </div>
+                </div>
+                
+                <div className="flex items-start space-x-3">
+                  <span className="text-purple-400 text-xl">💻</span>
+                  <div>
+                    <p className="font-semibold text-purple-300">Browser Webcam</p>
+                    <p className="text-sm text-gray-400">Einfache direkte Lösung</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Call to Action */}
+            <div className="space-y-4">
+              <p className="text-lg text-yellow-300 font-semibold">
+                Möchten Sie eine dieser Lösungen implementieren?
+              </p>
+              <div className="flex justify-center space-x-4">
+                <button className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold">
+                  🚀 OBS Setup
+                </button>
+                <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold">
+                  💻 Browser Webcam
+                </button>
               </div>
             </div>
           </div>
