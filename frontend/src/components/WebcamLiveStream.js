@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 const WebcamLiveStream = ({ isHost = false }) => {
   const [isStreaming, setIsStreaming] = useState(false);
-  const [hasPermission, setHasPermission] = useState(false);
   const [error, setError] = useState(null);
   const [viewerCount, setViewerCount] = useState(48);
   const [streamQuality, setStreamQuality] = useState('HD');
