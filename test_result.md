@@ -101,3 +101,74 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: "Fix 3 specific Zoom video integration issues: 1) Zoom login screen appearing for customers (should view without login), 2) Embedded Zoom video is cut off (display issue), 3) Video size is too large (sizing issue)"
+
+backend:
+  - task: "Zoom JWT token generation for authentication"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Backend has proper Zoom SDK integration with JWT token generation, but frontend is using direct meeting links instead of SDK"
+
+frontend:
+  - task: "Fix Zoom login screen appearing for customers"
+    implemented: false
+    working: false
+    file: "/app/frontend/src/components/ZoomLiveStream.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "main" 
+        comment: "Current ZOOM_VIEWER_URL still shows login screen despite auto-join parameters"
+
+  - task: "Fix video cut off issue"
+    implemented: false
+    working: false
+    file: "/app/frontend/src/App.css"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "main"
+        comment: "CSS clip-path may be too aggressive: inset(60px 20px 80px 20px) and iframe overlays might be causing issues"
+
+  - task: "Fix video size too large issue"
+    implemented: false
+    working: false
+    file: "/app/frontend/src/components/ZoomLiveStream.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "main"
+        comment: "iframe height 700px with negative margins causing sizing problems"
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 0
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "Fix Zoom login screen appearing for customers"
+    - "Fix video cut off issue"
+    - "Fix video size too large issue"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: "Analyzed current Zoom integration. Backend has proper SDK setup but frontend uses direct meeting links. Will fix the 3 customer-facing video display issues: login screen, cut off video, and sizing problems."
