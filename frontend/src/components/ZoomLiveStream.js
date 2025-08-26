@@ -217,7 +217,7 @@ const ZoomLiveStream = ({
                   {/* Echter Zoom Video Stream - Direkter iframe Embed */}
                   <div className="video-embed-container w-full h-full relative bg-black rounded-lg overflow-hidden">
                     <iframe
-                      src={`https://us02web.zoom.us/j/${ZOOM_MEETING_ID}?pwd=UEVMNEoyREZhdEQvNVNRNTNkRDFMQT09&embed=true&web=1&uname=LiveViewer`}
+                      src={`https://us02web.zoom.us/wc/join/${ZOOM_MEETING_ID}?pwd=UEVMNEoyREZhdEQvNVNRNTNkRDFMQT09&uname=LiveShopper&tk=&audio=false&video=false`}
                       style={{
                         width: '100%',
                         height: '500px',
@@ -227,8 +227,6 @@ const ZoomLiveStream = ({
                       allow="microphone; camera; display-capture; fullscreen; autoplay"
                       title="Live Shopping Video - Zoom Stream"
                       loading="eager"
-                      referrerPolicy="no-referrer-when-downgrade"
-                      sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-presentation allow-top-navigation allow-modals"
                       className="zoom-live-iframe"
                     />
                     
