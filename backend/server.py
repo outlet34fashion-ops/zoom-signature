@@ -279,7 +279,7 @@ async def validate_zoom_token(token: str):
     Validate Zoom JWT token for debugging
     """
     try:
-        payload = jwt.decode(token, ZOOM_SDK_SECRET, algorithms=['HS256'])
+        payload = jwt.decode(token, ZOOM_SDK_SECRET, algorithms=['HS256'], audience='zoom')
         return {
             "valid": True,
             "payload": payload,
