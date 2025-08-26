@@ -266,6 +266,26 @@ const ProfessionalStream = ({ isHost = false }) => {
             />
           )}
           
+          {streamType === 'instagram' && (
+            <iframe
+              src={`https://www.instagram.com/${streamUrl.split('/')[3]}/embed`}
+              className="w-full h-full"
+              allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+              allowFullScreen
+              title="Instagram Live Stream"
+            />
+          )}
+          
+          {streamType === 'twitch' && (
+            <iframe
+              src={streamUrl.replace('twitch.tv/', 'player.twitch.tv/?channel=').replace('https://www.', '') + '&parent=shop-live-app.preview.emergentagent.com'}
+              className="w-full h-full"
+              allow="autoplay; fullscreen"
+              allowFullScreen
+              title="Twitch Live Stream"
+            />
+          )}
+          
           {streamType === 'vimeo' && (
             <iframe
               src={streamUrl.replace('vimeo.com/', 'player.vimeo.com/video/') + '?autoplay=1'}
