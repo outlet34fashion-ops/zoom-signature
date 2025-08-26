@@ -104,17 +104,10 @@ const ProfessionalStream = ({ isHost = false }) => {
                   </div>
                   
                   <button
-                    onClick={() => {
-                      if (streamUrl.includes('youtube.com')) {
-                        setStreamType('youtube');
-                        setIsLive(true);
-                      } else {
-                        alert('Bitte geben Sie eine gültige YouTube URL ein');
-                      }
-                    }}
-                    className="w-full bg-red-600 hover:bg-red-700 text-white px-6 py-4 rounded-lg font-bold text-lg"
+                    disabled
+                    className="w-full bg-gray-600 text-gray-400 px-6 py-4 rounded-lg font-bold text-lg cursor-not-allowed"
                   >
-                    📺 YouTube Stream aktivieren
+                    ⏳ Warten auf YouTube (23:59 Std.)
                   </button>
                 </div>
               </div>
