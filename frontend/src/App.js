@@ -485,13 +485,11 @@ function App() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
-          {/* Video Stream Area - Now with Real Zoom Integration */}
+          {/* Video Stream Area - Direct Webcam Integration */}
           <div className="lg:col-span-2">
-            <ZoomLiveStream 
+            <DirectWebcamStream 
               isHost={isAdminView}
-              sessionTopic="outlet34_live_shopping"
-              productData={products}
-              onSessionEnd={() => console.log('Zoom session ended')}
+              onStreamReady={(stream) => console.log('Webcam stream ready', stream)}
             />
           </div>
 
