@@ -15,8 +15,8 @@ const ZoomLiveStream = ({
   const ZOOM_PASSWORD = "outlet34";
   const ZOOM_HOST_URL = `https://us02web.zoom.us/j/${ZOOM_MEETING_ID}?pwd=UEVMNEoyREZhdEQvNVNRNTNkRDFMQT09`;
   
-  // Zoom Meeting URL mit richtigem Password Hash - Direkter Zugang
-  const ZOOM_VIEWER_URL = `https://us02web.zoom.us/wc/join/${ZOOM_MEETING_ID}?pwd=UEVMNEoyREZhdEQvNVNRNTNkRDFMQT09&uname=LiveViewer&tk=&audio=false&video=false&checkin=false`;
+  // Zoom Meeting URL - Verwende Hash aus Host URL für Konsistenz
+  const ZOOM_VIEWER_URL = `https://us02web.zoom.us/wc/join/${ZOOM_MEETING_ID}?pwd=UEVMNEoyREZhdEQvNVNRNTNkRDFMQT09&uname=LiveViewer&auto=1&audio=false&video=false&checkin=false&role=0`;
   
   // Simuliere Live-Status Updates
   useEffect(() => {
