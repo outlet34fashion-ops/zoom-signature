@@ -226,24 +226,34 @@ const ZoomProStream = ({ isHost = false }) => {
         <div className="zoom-stream-container h-full">
           
           {streamMethod === 'rtmp' && (
-            // RTMP Stream Player
-            <div className="rtmp-player h-full bg-black flex items-center justify-center relative">
-              <video
-                ref={videoRef}
-                className="w-full h-full object-cover"
-                controls={false}
-                autoPlay
-                muted
+            // ECHTES ZOOM VIDEO - Direkte Einbettung
+            <div className="zoom-real-video h-full bg-black relative">
+              
+              {/* Zoom Meeting Iframe - ECHTES VIDEO */}
+              <iframe
+                src={`https://us02web.zoom.us/wc/join/${ZOOM_MEETING_ID}?pwd=b3V0bGV0MzQ=&uname=LiveCustomer&tk=&audio=false&video=false&auto=1&waiting_room=false`}
+                className="w-full h-full border-none"
+                allow="microphone; camera; display-capture; fullscreen; autoplay"
+                title="Zoom Live Video Stream"
+                style={{ 
+                  width: '100%', 
+                  height: '100%',
+                  border: 'none',
+                  borderRadius: '0px'
+                }}
               />
               
-              {/* RTMP Stream wird hier eingebettet */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center space-y-4">
-                  <div className="w-24 h-24 bg-red-600 rounded-full flex items-center justify-center text-3xl animate-pulse">
-                    📺
-                  </div>
-                  <h3 className="text-2xl font-bold">RTMP Stream aktiv</h3>
-                  <p className="text-gray-300">Professionelle Übertragung läuft</p>
+              {/* Custom Overlays über dem Video */}
+              <div className="absolute top-4 left-4 z-50">
+                <div className="bg-red-600 text-white px-3 py-1 rounded-full text-sm flex items-center">
+                  <div className="w-2 h-2 bg-white rounded-full mr-2 animate-pulse"></div>
+                  LIVE
+                </div>
+              </div>
+              
+              <div className="absolute bottom-4 left-4 z-50">
+                <div className="bg-black/70 text-white px-3 py-1 rounded-full text-sm">
+                  🎥 Zoom Live Stream
                 </div>
               </div>
             </div>
