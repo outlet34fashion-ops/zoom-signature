@@ -80,48 +80,19 @@ const SimpleVideoStream = ({ isHost = false }) => {
               </div>
             </div>
 
-            {/* Option 2: Direkte Webcam (nur Desktop) */}
-            {!isMobile && (
-              <div className="bg-green-600/20 border border-green-500 rounded-lg p-4">
-                <h3 className="text-lg font-semibold text-green-300 mb-3">
-                  💻 Option 2: Browser Webcam (Desktop)
-                </h3>
-                
-                <button
-                  onClick={() => {
-                    setStreamMethod('webcam');
-                    setIsLive(true);
-                  }}
-                  className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold"
-                >
-                  🎥 Browser Webcam nutzen
-                </button>
-                
-                <p className="text-xs text-gray-400 mt-2">
-                  Direkt über Browser - nur für Desktop geeignet
-                </p>
-              </div>
-            )}
-
-            {/* Option 3: Externe Kamera/Handy */}
-            <div className="bg-purple-600/20 border border-purple-500 rounded-lg p-4">
-              <h3 className="text-lg font-semibold text-purple-300 mb-3">
-                📸 Option 3: Externe Lösung
+            {/* Hilfe-Sektion */}
+            <div className="bg-gray-700/30 border border-gray-600 rounded-lg p-4">
+              <h3 className="text-lg font-semibold text-gray-300 mb-3">
+                💡 Hilfe & Tipps
               </h3>
               
-              <button
-                onClick={() => {
-                  setStreamMethod('external');
-                  setIsLive(true);
-                }}
-                className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold"
-              >
-                📹 Als Live markieren
-              </button>
-              
-              <p className="text-xs text-gray-400 mt-2">
-                Nutzen Sie externe Kamera oder zweites Handy für Video
-              </p>
+              <div className="text-sm text-gray-300 space-y-2">
+                <p><strong>Problem mit Zoom?</strong></p>
+                <p>• Stellen Sie sicher, dass Zoom App installiert ist</p>
+                <p>• Bei iPhone: Safari → Einstellungen → Apps → Zoom erlauben</p>
+                <p>• Manuelle Eingabe: Meeting-ID <strong className="text-blue-300">5183673726</strong></p>
+                <p>• Passwort: <strong className="text-blue-300">outlet34</strong></p>
+              </div>
             </div>
           </div>
 
