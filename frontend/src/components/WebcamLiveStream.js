@@ -230,6 +230,26 @@ const WebcamLiveStream = ({ isHost = false }) => {
                       <span>{isMobile ? 'iPhone Kamera starten' : 'Webcam starten'}</span>
                     </button>
                     
+                    {/* EINFACHE LÖSUNG: Manueller Live-Button */}
+                    <div className="mt-6 p-4 bg-yellow-600/20 border border-yellow-500 rounded-lg">
+                      <h4 className="text-yellow-300 font-semibold mb-3">⚡ Schnellstart (Kamera-Probleme?)</h4>
+                      <button
+                        onClick={() => {
+                          setIsStreaming(true);
+                          setStreamQuality('Live');
+                          // Benachrichtige alle Kunden
+                          window.streamActive = true;
+                          window.dispatchEvent(new CustomEvent('manualStreamStart'));
+                        }}
+                        className="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-3 rounded-lg font-semibold"
+                      >
+                        ✅ Ich bin live (ohne Webcam)
+                      </button>
+                      <p className="text-xs text-yellow-200 mt-2">
+                        Nutzen Sie externe Kamera oder zweites Gerät für Video
+                      </p>
+                    </div>
+                    
                     {/* Direkter Browser-Test */}
                     <button
                       onClick={() => {
