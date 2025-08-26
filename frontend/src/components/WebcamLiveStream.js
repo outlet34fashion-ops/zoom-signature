@@ -330,72 +330,36 @@ const WebcamLiveStream = ({ isHost = false }) => {
             {/* Fallback wenn kein Stream */}
             {!isStreaming && (
               
-              {/* Live Video Animation */}
               <div className="text-center space-y-6 p-8">
-                <div className="w-32 h-32 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center text-4xl animate-pulse mx-auto">
-                  📹
+                <div className="w-32 h-32 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-5xl animate-pulse">
+                  📱
                 </div>
                 
                 <div className="space-y-4">
                   <h3 className="text-3xl font-bold">
-                    Live Video aktiv
+                    Live Shopping startet gleich
                   </h3>
                   
                   <p className="text-xl text-gray-300">
-                    {isMobile ? 'iPhone' : 'Webcam'} Stream läuft
+                    Moderator bereitet {isMobile ? 'iPhone' : 'Webcam'}-Stream vor
                   </p>
                   
-                  <div className="bg-black/50 rounded-lg p-4">
-                    <p className="text-lg font-semibold text-green-300">
-                      🔴 Moderator ist live
-                    </p>
-                    <p className="text-sm text-gray-400 mt-1">
-                      Qualität: {streamQuality} • Echtzeit-Übertragung
-                    </p>
+                  <div className="mt-8 p-6 bg-black/60 rounded-lg">
+                    <h4 className="text-lg font-semibold mb-3 text-pink-400">
+                      🛍️ Gleich live:
+                    </h4>
+                    <div className="space-y-2 text-base">
+                      <p className="text-yellow-300">✨ Fashion Collection 2024</p>
+                      <p className="text-green-300">💰 Händlerpreise ab 5€</p>
+                      <p className="text-blue-300">📦 Sofort verfügbar</p>
+                    </div>
                   </div>
                 </div>
               </div>
-              
-              {/* Moving particles for live effect */}
-              <div className="absolute inset-0 pointer-events-none">
-                <div className="particle absolute top-1/4 left-1/4 w-2 h-2 bg-green-400 rounded-full animate-ping opacity-75"></div>
-                <div className="particle absolute top-3/4 right-1/4 w-2 h-2 bg-blue-400 rounded-full animate-ping opacity-75" style={{animationDelay: '1s'}}></div>
-                <div className="particle absolute top-1/2 right-1/3 w-2 h-2 bg-pink-400 rounded-full animate-ping opacity-75" style={{animationDelay: '2s'}}></div>
-              </div>
-            </div>
+            )}
           </div>
         </div>
-      ) : (
-        // Warten auf Stream
-        <div className="waiting-for-stream h-full bg-gradient-to-br from-gray-900 via-purple-900 to-black flex items-center justify-center">
-          <div className="text-center space-y-6 p-8">
-            <div className="w-32 h-32 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-5xl animate-pulse">
-              📱
-            </div>
-            
-            <div className="space-y-4">
-              <h3 className="text-3xl font-bold">
-                Live Shopping startet gleich
-              </h3>
-              
-              <p className="text-xl text-gray-300">
-                Moderator bereitet {isMobile ? 'iPhone' : 'Webcam'}-Stream vor
-              </p>
-              
-              <div className="mt-8 p-6 bg-black/60 rounded-lg">
-                <h4 className="text-lg font-semibold mb-3 text-pink-400">
-                  🛍️ Gleich live:
-                </h4>
-                <div className="space-y-2 text-base">
-                  <p className="text-yellow-300">✨ Fashion Collection 2024</p>
-                  <p className="text-green-300">💰 Händlerpreise ab 5€</p>
-                  <p className="text-blue-300">📦 Sofort verfügbar</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      </div>
 
       {/* Overlays */}
       <div className="absolute top-4 left-4">
