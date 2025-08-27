@@ -243,7 +243,21 @@ const SimpleLiveStream = ({ isHost = false }) => {
       {isLive ? (
         // Live Stream für Kunden
         <div className="live-customer-stream h-full">
-          <div className="stream-display h-full bg-gradient-to-br from-red-900 via-pink-900 to-purple-900 flex items-center justify-center relative">
+          
+          {/* ECHTES YOUTUBE VIDEO */}
+          {cameraSetup === 'youtube' && youtubeUrl ? (
+            <div className="youtube-video-container h-full">
+              <iframe
+                src={`https://www.youtube.com/embed/3Rj7FNxdXf8?autoplay=1&mute=0&controls=1`}
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                title="YouTube Live Stream - Outlet34"
+              />
+            </div>
+          ) : (
+            // Live Status Display für andere Kamera-Types
+            <div className="stream-display h-full bg-gradient-to-br from-red-900 via-pink-900 to-purple-900 flex items-center justify-center relative">
             
             {/* Live Stream Content */}
             <div className="text-center space-y-8 p-8">
