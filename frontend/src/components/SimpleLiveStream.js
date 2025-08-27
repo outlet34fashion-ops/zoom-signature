@@ -222,8 +222,10 @@ const SimpleLiveStream = ({ isHost = false }) => {
                   onClick={() => {
                     setIsLive(false);
                     setCameraSetup('');
+                    setYoutubeUrl('');
                     localStorage.removeItem('outlet34_is_live');
                     localStorage.removeItem('outlet34_camera_type');
+                    localStorage.removeItem('outlet34_youtube_url');
                   }}
                   className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-bold text-lg"
                 >
