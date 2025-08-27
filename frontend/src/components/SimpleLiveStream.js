@@ -193,7 +193,8 @@ const SimpleLiveStream = ({ isHost = false }) => {
                 
                 <div className="bg-black/50 rounded-lg p-6">
                   <p className="text-xl text-gray-300 mb-3">
-                    🎥 {cameraSetup === 'handy' ? 'Handy-Kamera' : 
+                    🎥 {cameraSetup === 'youtube' ? 'YouTube Live Stream' :
+                        cameraSetup === 'handy' ? 'Handy-Kamera' : 
                         cameraSetup === 'webcam' ? 'Webcam' : 
                         'Professionelle Kamera'} aktiv
                   </p>
