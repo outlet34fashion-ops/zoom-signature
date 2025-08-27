@@ -21,6 +21,9 @@ const SimpleLiveStream = ({ isHost = false }) => {
         if (liveStatus === 'true') {
           setIsLive(true);
           if (cameraType) setCameraSetup(cameraType);
+          
+          const storedYouTubeUrl = localStorage.getItem('outlet34_youtube_url');
+          if (storedYouTubeUrl) setYoutubeUrl(storedYouTubeUrl);
         } else {
           setIsLive(false);
         }
