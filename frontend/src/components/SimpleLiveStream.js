@@ -49,10 +49,37 @@ const SimpleLiveStream = ({ isHost = false }) => {
           {!isLive ? (
             <div className="space-y-6">
               
-              {/* Schritt 1: Kamera Setup */}
+              {/* Option 1: YouTube Live (Direkt mit Ihrer URL) */}
+              <div className="bg-red-600/20 border border-red-500 rounded-lg p-6">
+                <h3 className="text-xl font-semibold text-red-300 mb-4">
+                  📺 YouTube Live - SOFORT LIVE GEHEN!
+                </h3>
+                
+                <div className="bg-red-500/20 rounded-lg p-4 mb-4">
+                  <h4 className="font-semibold text-white mb-2">✅ Ihre YouTube Live URL gefunden:</h4>
+                  <p className="text-sm text-red-100 break-all">
+                    https://youtube.com/live/3Rj7FNxdXf8?feature=share
+                  </p>
+                </div>
+                
+                <button
+                  onClick={() => {
+                    setCameraSetup('youtube');
+                    setIsLive(true);
+                    localStorage.setItem('outlet34_is_live', 'true');
+                    localStorage.setItem('outlet34_camera_type', 'youtube');
+                    localStorage.setItem('outlet34_youtube_url', 'https://youtube.com/live/3Rj7FNxdXf8?feature=share');
+                  }}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white px-6 py-4 rounded-lg font-bold text-xl"
+                >
+                  📺 YOUTUBE LIVE AKTIVIEREN!
+                </button>
+              </div>
+              
+              {/* Schritt 1: Alternative Kamera Setup */}
               <div className="bg-blue-600/20 border border-blue-500 rounded-lg p-6">
                 <h3 className="text-xl font-semibold text-blue-300 mb-4">
-                  📱 Schritt 1: Ihre Kamera auswählen
+                  📱 Alternative: Andere Kamera wählen
                 </h3>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
