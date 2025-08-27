@@ -4,6 +4,7 @@ const SimpleLiveStream = ({ isHost = false }) => {
   const [isLive, setIsLive] = useState(false);
   const [viewerCount, setViewerCount] = useState(47);
   const [cameraSetup, setCameraSetup] = useState('');
+  const [youtubeUrl, setYoutubeUrl] = useState('');
 
   useEffect(() => {
     // Viewer count simulation
