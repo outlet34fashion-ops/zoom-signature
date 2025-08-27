@@ -251,11 +251,13 @@ const SimpleLiveStream = ({ isHost = false }) => {
           {cameraSetup === 'youtube' && youtubeUrl ? (
             <div className="youtube-video-container h-full">
               <iframe
-                src={`https://www.youtube.com/embed/3Rj7FNxdXf8?autoplay=1&mute=0&controls=1`}
+                src={`https://www.youtube.com/embed/3Rj7FNxdXf8?autoplay=1&mute=1&controls=1&enablejsapi=1&origin=${window.location.origin}`}
                 className="w-full h-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
                 title="YouTube Live Stream - Outlet34"
+                loading="eager"
+                referrerPolicy="no-referrer-when-downgrade"
               />
             </div>
           ) : (
