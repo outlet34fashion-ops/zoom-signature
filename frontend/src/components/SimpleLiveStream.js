@@ -321,7 +321,8 @@ const SimpleLiveStream = ({ isHost = false }) => {
               <div className="absolute top-1/2 right-1/3 w-2 h-2 bg-purple-400 rounded-full animate-ping opacity-60" style={{animationDelay: '2s'}}></div>
               <div className="absolute bottom-1/4 left-1/3 w-3 h-3 bg-green-400 rounded-full animate-ping opacity-60" style={{animationDelay: '3s'}}></div>
             </div>
-          </div>
+            </div>
+          )}
         </div>
       ) : (
         // Warten auf Stream
