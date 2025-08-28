@@ -627,7 +627,7 @@ function App() {
     try {
       // Format chat message: Admin messages show as "Admin", customer messages show customer number
       const displayName = isAdminAuthenticated ? 'Admin' : username;
-      const customerDisplayNumber = currentCustomer?.customer_number || '10299';
+      const customerDisplayNumber = currentCustomer?.customer_number || localStorage.getItem('customerNumber') || '10299';
       const formattedMessage = isAdminAuthenticated ? 
         `${newMessage}` : 
         `Chat ${customerDisplayNumber} I ${newMessage}`;
