@@ -1367,7 +1367,7 @@ function App() {
                         {currentCustomer?.profile_image && (
                           <button
                             onClick={() => {
-                              if (currentCustomer) deleteProfileImage(currentCustomer.id);
+                              if (currentCustomer) deleteProfileImage(currentCustomer.customer_number);
                             }}
                             className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
                           >
