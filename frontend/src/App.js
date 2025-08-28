@@ -694,17 +694,23 @@ function App() {
 
   const loadCustomerLastOrder = async (customerNumber) => {
     if (!customerNumber || customerNumber === 'undefined' || customerNumber === '10299') {
+      console.log('Skipping last order load for invalid customer number:', customerNumber);
       return; // Skip for invalid or fallback customer numbers
     }
     
     try {
       setLoadingLastOrder(true);
+      console.log('Loading last order for customer:', customerNumber);
+      
       const response = await axios.get(`${API}/customers/${customerNumber}/last-order`);
+      console.log('Last order response:', response.data);
       
       if (response.data.has_order) {
         setCustomerLastOrder(response.data.order);
+        console.log('Last order updated:', response.data.order);
       } else {
         setCustomerLastOrder(null);
+        console.log('No orders found for customer');
       }
     } catch (error) {
       console.error('Error loading customer last order:', error);
