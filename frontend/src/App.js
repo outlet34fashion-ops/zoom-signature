@@ -192,9 +192,17 @@ function App() {
     connectWebSocket();
     loadInitialData();
     
+    // Check for admin access via URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const isAdminParam = urlParams.get('admin') === 'true';
+    if (isAdminParam) {
+      setIsAdminView(true);
+      setIsAuthenticated(true); // Admin bypass
+    }
+    
     // Check for stored customer authentication
     const storedCustomerNumber = localStorage.getItem('customerNumber');
-    if (storedCustomerNumber) {
+    if (storedCustomerNumber && !isAdminParam) {
       checkCustomerStatus(storedCustomerNumber);
     }
 
