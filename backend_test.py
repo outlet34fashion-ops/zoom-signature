@@ -1594,6 +1594,9 @@ class LiveShoppingAPITester:
         # Test comprehensive customer flow (NEW - for review request)
         comprehensive_flow_success = self.test_comprehensive_customer_flow()
         
+        # Test customer last order display functionality (NEW FEATURE - Review Request)
+        last_order_success = self.test_customer_last_order_display()
+        
         # Test WebSocket availability
         ws_success = self.test_websocket_availability()
 
