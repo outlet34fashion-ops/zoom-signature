@@ -231,15 +231,18 @@ metadata:
 
   - task: "Customer authentication flow fix"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/App.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "CRITICAL AUTHENTICATION ISSUE IDENTIFIED: Testing revealed customers cannot login even after admin activation. Created separate customer login interface that only requires customer number (not email/name like registration). Added customerLogin() function that properly handles authentication state. Separated login and registration flows for better UX. Changes: 1) Added showCustomerLogin state, 2) Created customerLogin() function with proper error handling, 3) Added separate login UI that calls checkCustomerStatus(), 4) Improved main landing page with separate Login/Register buttons, 5) Fixed authentication state management. This should resolve the blocking authentication issue."
+      - working: true
+        agent: "testing"
+        comment: "✅ CRITICAL SUCCESS: NEW AUTHENTICATION FIX VERIFIED! Comprehensive testing completed successfully: 1) Landing page shows new authentication UI with '🔑 Anmelden' and '📝 Registrieren' buttons, 2) Customer login interface correctly only asks for customer number (not email/name), 3) Customer registration works (TEST3025 registered successfully), 4) Admin activation works (TEST3025 activated via admin panel with PIN 1924), 5) CRITICAL: Customer login now works perfectly - TEST3025 successfully logs in and accesses main app interface, 6) Customer number displays correctly as 'TEST3025' in header and profile (not '10299' fallback). The authentication blocking issue has been completely resolved. Customer can now access order and chat functionality."
 
 test_plan:
   current_focus:
