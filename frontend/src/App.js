@@ -1796,6 +1796,67 @@ function App() {
                 </CardContent>
               </Card>
 
+              {/* Last Order Block */}
+              <Card className="max-w-sm mx-auto">
+                <CardContent className="p-4">
+                  <div className="space-y-3">
+                    <h3 className="font-semibold text-gray-800 text-center">📦 Letzte Bestellung</h3>
+                    
+                    {loadingLastOrder ? (
+                      <div className="text-center py-4">
+                        <div className="text-sm text-gray-600">Lade Bestellhistorie...</div>
+                      </div>
+                    ) : customerLastOrder ? (
+                      <div className="bg-gray-50 rounded-lg p-3 space-y-2">
+                        <div className="flex justify-between items-start">
+                          <div className="text-sm text-gray-600">Artikel:</div>
+                          <div className="text-sm font-medium text-right">{customerLastOrder.product_name}</div>
+                        </div>
+                        <div className="flex justify-between items-start">
+                          <div className="text-sm text-gray-600">Größe:</div>
+                          <div className="text-sm font-medium">{customerLastOrder.size}</div>
+                        </div>
+                        <div className="flex justify-between items-start">
+                          <div className="text-sm text-gray-600">Menge:</div>
+                          <div className="text-sm font-medium">{customerLastOrder.quantity}x</div>
+                        </div>
+                        <div className="flex justify-between items-start">
+                          <div className="text-sm text-gray-600">Preis:</div>
+                          <div className="text-sm font-bold text-pink-600">{customerLastOrder.price.toFixed(2)} €</div>
+                        </div>
+                        <div className="border-t pt-2 mt-2">
+                          <div className="flex justify-between items-start">
+                            <div className="text-xs text-gray-500">Bestellt am:</div>
+                            <div className="text-xs font-medium text-gray-700">{customerLastOrder.formatted_time}</div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center py-4">
+                        <div className="text-sm text-gray-500">Noch keine Bestellungen</div>
+                        <div className="text-xs text-gray-400 mt-1">Bestelle etwas, um deine Historie zu sehen</div>
+                      </div>
+                    )}
+                    
+                    {/* Refresh Button */}
+                    <div className="text-center">
+                      <button
+                        onClick={() => {
+                          const customerNumber = currentCustomer?.customer_number || localStorage.getItem('customerNumber');
+                          if (customerNumber && customerNumber !== '10299') {
+                            loadCustomerLastOrder(customerNumber);
+                          }
+                        }}
+                        className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded text-xs"
+                        disabled={loadingLastOrder}
+                      >
+                        🔄 Aktualisieren
+                      </button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
               {/* Order Form */}
               <Card className="max-w-sm mx-auto">
                 <CardContent className="p-3">
