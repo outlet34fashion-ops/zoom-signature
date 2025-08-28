@@ -54,6 +54,9 @@ function App() {
   const [adminLoginError, setAdminLoginError] = useState('');
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   
+  // Customer Management Filter States
+  const [customerFilter, setCustomerFilter] = useState('all'); // 'all', 'pending', 'blocked'
+  
   const chatRef = useRef(null);
   const wsRef = useRef(null);
 
