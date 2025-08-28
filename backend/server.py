@@ -564,9 +564,9 @@ async def delete_customer(customer_id: str):
         logging.error(f"Customer deletion error: {str(e)}")
         raise HTTPException(status_code=500, detail="Deletion failed")
 
-@api_router.post("/customers/{customer_id}/upload-profile-image")
-async def upload_profile_image(customer_id: str, file: UploadFile = File(...)):
-    """Upload profile image for a customer"""
+@api_router.post("/customers/{customer_number}/upload-profile-image")
+async def upload_profile_image_by_number(customer_number: str, file: UploadFile = File(...)):
+    """Upload profile image for a customer using customer number"""
     try:
         # Validate file type
         if not file.content_type or not file.content_type.startswith('image/'):
@@ -581,9 +581,9 @@ async def upload_profile_image(customer_id: str, file: UploadFile = File(...)):
         base64_image = base64.b64encode(file_content).decode('utf-8')
         image_data_url = f"data:{file.content_type};base64,{base64_image}"
         
-        # Update customer record
+        # Update customer record by customer number
         result = await db.customers.update_one(
-            {"id": customer_id},
+            {"customer_number": customer_number},
             {"$set": {
                 "profile_image": image_data_url,
                 "updated_at": datetime.now(timezone.utc)
@@ -593,8 +593,6 @@ async def upload_profile_image(customer_id: str, file: UploadFile = File(...)):
         if result.matched_count == 0:
             raise HTTPException(status_code=404, detail="Customer not found")
         
-        # Get updated customer
-        customer = await db.customers.find_one({"id": customer_id})
         return {"message": "Profile image uploaded successfully", "profile_image": image_data_url}
         
     except HTTPException:
@@ -603,12 +601,12 @@ async def upload_profile_image(customer_id: str, file: UploadFile = File(...)):
         logging.error(f"Profile image upload error: {str(e)}")
         raise HTTPException(status_code=500, detail="Upload failed")
 
-@api_router.delete("/customers/{customer_id}/profile-image")
-async def delete_profile_image(customer_id: str):
-    """Delete profile image for a customer"""
+@api_router.delete("/customers/{customer_number}/profile-image")
+async def delete_profile_image_by_number(customer_number: str):
+    """Delete profile image for a customer using customer number"""
     try:
         result = await db.customers.update_one(
-            {"id": customer_id},
+            {"customer_number": customer_number},
             {"$set": {
                 "profile_image": None,
                 "updated_at": datetime.now(timezone.utc)
