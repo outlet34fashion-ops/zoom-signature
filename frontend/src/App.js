@@ -866,6 +866,11 @@ function App() {
         emoji: ''
       });
 
+      // Reload customer's last order to update the display
+      if (actualCustomerId && actualCustomerId !== '10299') {
+        loadCustomerLastOrder(actualCustomerId);
+      }
+
     } catch (error) {
       console.error('Error placing order:', error);
     }
