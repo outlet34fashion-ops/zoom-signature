@@ -1801,9 +1801,6 @@ function App() {
                 </CardContent>
               </Card>
 
-                </CardContent>
-              </Card>
-
               {/* Order Form */}
               <Card className="max-w-sm mx-auto">
                 <CardContent className="p-3">
