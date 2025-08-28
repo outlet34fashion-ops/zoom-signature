@@ -81,6 +81,9 @@ function App() {
   const [customerLastOrder, setCustomerLastOrder] = useState(null);
   const [loadingLastOrder, setLoadingLastOrder] = useState(false);
   
+  // Profile Modal States
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  
   const chatRef = useRef(null);
   const wsRef = useRef(null);
 
