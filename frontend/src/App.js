@@ -822,32 +822,33 @@ function App() {
               </Button>
             </div>
             <div className="flex space-x-2">
-              <Button 
-                variant={!isAdminView ? "secondary" : "ghost"} 
-                size="sm"
-                onClick={() => setIsAdminView(false)}
-                className={!isAdminView ? "bg-white text-pink-600" : "text-white hover:bg-pink-600"}
-              >
-                {t.customerView}
-              </Button>
-              <Button 
-                variant={isAdminView ? "secondary" : "ghost"} 
-                size="sm"
-                onClick={() => setIsAdminView(true)}
-                className={isAdminView ? "bg-white text-pink-600" : "text-white hover:bg-pink-600"}
-              >
-                {t.adminView}
-              </Button>
+              {/* Only show view switcher for admin */}
+              {isAdminAuthenticated && (
+                <>
+                  <Button 
+                    variant={!isAdminView ? "secondary" : "ghost"} 
+                    size="sm"
+                    onClick={() => setIsAdminView(false)}
+                    className={!isAdminView ? "bg-white text-pink-600" : "text-white hover:bg-pink-600"}
+                  >
+                    {t.customerView}
+                  </Button>
+                  <Button 
+                    variant={isAdminView ? "secondary" : "ghost"} 
+                    size="sm"
+                    onClick={() => setIsAdminView(true)}
+                    className={isAdminView ? "bg-white text-pink-600" : "text-white hover:bg-pink-600"}
+                  >
+                    {t.adminView}
+                  </Button>
+                </>
+              )}
               <Button variant="ghost" size="sm" className="text-white hover:bg-pink-600"
                 onClick={() => {
                   if (isAdminAuthenticated) {
                     adminLogout();
                   } else {
-                    localStorage.removeItem('customerNumber');
-                    setIsAuthenticated(false);
-                    setCurrentCustomer(null);
-                    setCustomerStatus(null);
-                    setIsAdminView(false);
+                    customerLogout();
                   }
                 }}
               >
