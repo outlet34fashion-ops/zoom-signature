@@ -770,9 +770,12 @@ function App() {
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
               <span className="text-sm font-medium">
-                {isAuthenticated && currentCustomer ? 
-                  `${t.customerLoggedIn} ${currentCustomer.customer_number || '10299'}` :
-                  `${t.customerLoggedIn} 10299`
+                {isAdminAuthenticated ? 
+                  "👑 Admin angemeldet" :
+                  (isAuthenticated && currentCustomer ? 
+                    `${t.customerLoggedIn} ${currentCustomer.customer_number || '10299'}` :
+                    `${t.customerLoggedIn} 10299`
+                  )
                 }
               </span>
               <Button 
