@@ -752,15 +752,26 @@ function App() {
       // Get the correct customer number for display - try multiple sources
       let customerDisplayNumber = '10299'; // default fallback
       
+      console.log('🐛 DEBUG placeOrder:');
+      console.log('  currentCustomer:', currentCustomer);
+      console.log('  currentCustomer?.customer_number:', currentCustomer?.customer_number);
+      console.log('  localStorage customerNumber:', localStorage.getItem('customerNumber'));
+      console.log('  actualCustomerId:', actualCustomerId);
+      
       if (currentCustomer?.customer_number) {
         customerDisplayNumber = currentCustomer.customer_number;
+        console.log('  ✓ Using currentCustomer.customer_number:', customerDisplayNumber);
       } else {
         const storedNumber = localStorage.getItem('customerNumber');
         if (storedNumber) {
           customerDisplayNumber = storedNumber;
+          console.log('  ✓ Using localStorage customerNumber:', customerDisplayNumber);
         } else if (actualCustomerId && actualCustomerId !== customerId) {
           // If actualCustomerId is not the random customerId, use it
           customerDisplayNumber = actualCustomerId;
+          console.log('  ✓ Using actualCustomerId:', customerDisplayNumber);
+        } else {
+          console.log('  ❌ Using fallback 10299');
         }
       }
       
