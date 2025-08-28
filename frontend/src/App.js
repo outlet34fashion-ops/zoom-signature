@@ -1016,16 +1016,6 @@ function App() {
 
       {/* Main App - Only shown when authenticated */}
       {(isAuthenticated || isAdminView) && (
-
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      )}
-
-      {/* Main App - Only show if authenticated or admin */}
-      {(isAuthenticated || isAdminView) && (
       <>
       {/* Header */}
       <header className="bg-pink-500 text-white">
