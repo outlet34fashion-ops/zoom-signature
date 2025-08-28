@@ -269,6 +269,13 @@ function App() {
     }
   }, [isAdminView]);
 
+  useEffect(() => {
+    // Load customer's last order when customer changes
+    if (currentCustomer?.customer_number && isAuthenticated && !isAdminView) {
+      loadCustomerLastOrder(currentCustomer.customer_number);
+    }
+  }, [currentCustomer?.customer_number, isAuthenticated, isAdminView]);
+
   const loadAdminStats = async () => {
     try {
       const statsResponse = await axios.get(`${API}/admin/stats`);
