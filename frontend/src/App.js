@@ -608,6 +608,17 @@ function App() {
                       >
                         Zur Live-App Anmeldung
                       </Button>
+                      
+                      <div className="mt-4 pt-4 border-t border-gray-200">
+                        <Button 
+                          onClick={() => setShowAdminLogin(true)}
+                          variant="outline"
+                          className="w-full text-gray-600 hover:text-gray-800"
+                          size="sm"
+                        >
+                          🔐 Admin-Anmeldung
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 ) : (
