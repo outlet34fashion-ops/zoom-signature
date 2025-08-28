@@ -967,48 +967,55 @@ function App() {
                       </Button>
                     </div>
                   </div>
-                ) : !showRegistration ? (
+                ) : (
                   <div className="space-y-4">
-                    <div className="bg-blue-100 border border-blue-300 rounded-lg p-4">
-                      <h2 className="text-lg font-semibold text-blue-800 mb-2">
-                        Registrierung erforderlich 📝
-                      </h2>
-                      <p className="text-blue-700 mb-4">
-                        Das Live-Event ist nur nach Registrierung bei{' '}
-                        <a 
-                          href="https://www.outlet34fashion.com/registrieren" 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="font-semibold underline hover:text-blue-900"
-                        >
-                          https://www.outlet34fashion.com/registrieren
-                        </a>
-                        {' '}möglich.
-                      </p>
+                    <h2 className="text-xl font-semibold text-gray-800">OUTLET34 Live Shopping</h2>
+                    <p className="text-sm text-gray-600">
+                      Live-Event nur nach Anmeldung möglich bei: <br/>
+                      <a href="https://www.outlet34fashion.com/registrieren" className="text-pink-500 hover:underline">
+                        https://www.outlet34fashion.com/registrieren
+                      </a>
+                    </p>
+                    
+                    <div className="flex space-x-3">
+                      <Button 
+                        onClick={() => setShowCustomerLogin(true)}
+                        className="flex-1 bg-pink-500 hover:bg-pink-600"
+                      >
+                        🔑 Anmelden
+                      </Button>
+                      <Button 
+                        variant="outline"
+                        onClick={() => setShowRegistration(true)}
+                        className="flex-1"
+                      >
+                        📝 Registrieren
+                      </Button>
                     </div>
                     
-                    <div className="space-y-3">
-                      <p className="text-gray-600">Bereits registriert? Hier anmelden:</p>
+                    <div className="pt-4 border-t">
+                      <p className="text-xs text-gray-500 text-center">
+                        Administratoren
+                      </p>
                       <Button 
-                        onClick={() => setShowRegistration(true)}
-                        className="w-full bg-pink-500 hover:bg-pink-600 text-white"
+                        onClick={() => setShowAdminLogin(true)}
+                        variant="outline"
+                        className="w-full mt-2 text-gray-600 hover:text-gray-800"
+                        size="sm"
                       >
-                        Zur Live-App Anmeldung
+                        🔐 Admin-Anmeldung
                       </Button>
-                      
-                      <div className="mt-4 pt-4 border-t border-gray-200">
-                        <Button 
-                          onClick={() => setShowAdminLogin(true)}
-                          variant="outline"
-                          className="w-full text-gray-600 hover:text-gray-800"
-                          size="sm"
-                        >
-                          🔐 Admin-Anmeldung
-                        </Button>
-                      </div>
                     </div>
                   </div>
-                ) : (
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Main App - Only shown when authenticated */}
+      {(isAuthenticated || isAdminView) && (
                   <div className="space-y-4">
                     <h2 className="text-xl font-semibold text-gray-800">Live-App Anmeldung</h2>
                     <p className="text-sm text-gray-600">
