@@ -159,6 +159,7 @@ class Customer(BaseModel):
     customer_number: str
     email: str
     name: str
+    profile_image: Optional[str] = None  # URL to profile image
     activation_status: str = "pending"  # pending, active, blocked
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
@@ -167,9 +168,11 @@ class CustomerCreate(BaseModel):
     customer_number: str
     email: str
     name: str
+    profile_image: Optional[str] = None
 
 class CustomerUpdate(BaseModel):
     activation_status: str  # active, blocked
+    profile_image: Optional[str] = None
 
 # In-memory counter and settings for demo
 order_counter = 0
