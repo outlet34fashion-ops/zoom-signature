@@ -564,6 +564,68 @@ async def delete_customer(customer_id: str):
         logging.error(f"Customer deletion error: {str(e)}")
         raise HTTPException(status_code=500, detail="Deletion failed")
 
+@api_router.post("/customers/{customer_id}/upload-profile-image")
+async def upload_profile_image(customer_id: str, file: UploadFile = File(...)):
+    """Upload profile image for a customer"""
+    try:
+        # Validate file type
+        if not file.content_type or not file.content_type.startswith('image/'):
+            raise HTTPException(status_code=400, detail="File must be an image")
+        
+        # Validate file size (max 5MB)
+        file_content = await file.read()
+        if len(file_content) > 5 * 1024 * 1024:
+            raise HTTPException(status_code=400, detail="File size too large (max 5MB)")
+        
+        # Convert to base64 for storage
+        base64_image = base64.b64encode(file_content).decode('utf-8')
+        image_data_url = f"data:{file.content_type};base64,{base64_image}"
+        
+        # Update customer record
+        result = await db.customers.update_one(
+            {"id": customer_id},
+            {"$set": {
+                "profile_image": image_data_url,
+                "updated_at": datetime.now(timezone.utc)
+            }}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Customer not found")
+        
+        # Get updated customer
+        customer = await db.customers.find_one({"id": customer_id})
+        return {"message": "Profile image uploaded successfully", "profile_image": image_data_url}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Profile image upload error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Upload failed")
+
+@api_router.delete("/customers/{customer_id}/profile-image")
+async def delete_profile_image(customer_id: str):
+    """Delete profile image for a customer"""
+    try:
+        result = await db.customers.update_one(
+            {"id": customer_id},
+            {"$set": {
+                "profile_image": None,
+                "updated_at": datetime.now(timezone.utc)
+            }}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Customer not found")
+        
+        return {"message": "Profile image deleted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Profile image deletion error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Profile image deletion failed")
+
 # WebSocket endpoint
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
