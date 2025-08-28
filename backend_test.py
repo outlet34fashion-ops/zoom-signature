@@ -821,6 +821,208 @@ class LiveShoppingAPITester:
             self.log_test("Customer Status Check Fix - Exception", False, str(e))
             return False
 
+    def test_manual_customer_creation(self):
+        """Test new manual customer creation functionality by admin"""
+        print("\n👨‍💼 Testing Manual Customer Creation by Admin...")
+        
+        # Generate unique test data
+        timestamp = int(time.time())
+        
+        # Test data for valid customer creation
+        valid_customer = {
+            "customer_number": f"ADMIN{timestamp}001",
+            "email": f"admin.created.{timestamp}@example.com",
+            "name": "Admin Created Customer"
+        }
+        
+        try:
+            # Test 1: Create valid new customer with unique data - should succeed with status "active"
+            print("  ✅ Test 1: Create valid customer with unique data...")
+            response = requests.post(
+                f"{self.api_url}/admin/customers/create",
+                json=valid_customer,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            details = f"POST Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                required_fields = ['id', 'customer_number', 'email', 'name', 'activation_status', 'created_at', 'updated_at']
+                has_all_fields = all(field in data for field in required_fields)
+                is_active = data.get('activation_status') == 'active'
+                correct_data = (data.get('customer_number') == valid_customer['customer_number'] and
+                              data.get('email') == valid_customer['email'] and
+                              data.get('name') == valid_customer['name'])
+                
+                success = has_all_fields and is_active and correct_data
+                details += f", Has all fields: {has_all_fields}, Status active: {is_active}, Data correct: {correct_data}"
+                
+                if success:
+                    created_customer = data
+            
+            self.log_test("Manual Customer Creation - Valid Customer", success, details)
+            
+            if not success:
+                return False
+            
+            # Test 2: Try to create customer with duplicate customer_number - should fail with 400 error
+            print("  ❌ Test 2: Try duplicate customer_number...")
+            duplicate_number_customer = {
+                "customer_number": valid_customer['customer_number'],  # Same customer number
+                "email": f"different.email.{timestamp}@example.com",
+                "name": "Different Name"
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/admin/customers/create",
+                json=duplicate_number_customer,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            success = response.status_code == 400
+            details = f"Status: {response.status_code} (should be 400 for duplicate customer_number)"
+            if success:
+                error_data = response.json()
+                has_error_message = 'detail' in error_data and 'already exists' in error_data['detail'].lower()
+                success = has_error_message
+                details += f", Has proper error message: {has_error_message}"
+            
+            self.log_test("Manual Customer Creation - Duplicate Customer Number", success, details)
+            
+            # Test 3: Try to create customer with duplicate email - should fail with 400 error
+            print("  ❌ Test 3: Try duplicate email...")
+            duplicate_email_customer = {
+                "customer_number": f"ADMIN{timestamp}002",
+                "email": valid_customer['email'],  # Same email
+                "name": "Different Name"
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/admin/customers/create",
+                json=duplicate_email_customer,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            success = response.status_code == 400
+            details = f"Status: {response.status_code} (should be 400 for duplicate email)"
+            if success:
+                error_data = response.json()
+                has_error_message = 'detail' in error_data and 'already registered' in error_data['detail'].lower()
+                success = has_error_message
+                details += f", Has proper error message: {has_error_message}"
+            
+            self.log_test("Manual Customer Creation - Duplicate Email", success, details)
+            
+            # Test 4: Verify created customer appears in GET /api/admin/customers list
+            print("  📋 Test 4: Verify customer appears in admin list...")
+            response = requests.get(f"{self.api_url}/admin/customers", timeout=10)
+            
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                customers_list = response.json()
+                customer_found = any(
+                    customer.get('customer_number') == valid_customer['customer_number'] and
+                    customer.get('activation_status') == 'active'
+                    for customer in customers_list
+                )
+                success = customer_found
+                details += f", Customer found in list: {customer_found}, Total customers: {len(customers_list)}"
+            
+            self.log_test("Manual Customer Creation - Customer in Admin List", success, details)
+            
+            # Test 5: Test with missing required fields
+            print("  ❌ Test 5: Test missing required fields...")
+            
+            # Test missing customer_number
+            missing_number = {
+                "email": f"missing.number.{timestamp}@example.com",
+                "name": "Missing Number Customer"
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/admin/customers/create",
+                json=missing_number,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            success_missing_number = response.status_code == 422  # Validation error
+            details_missing_number = f"Status: {response.status_code} (should be 422 for missing customer_number)"
+            
+            self.log_test("Manual Customer Creation - Missing Customer Number", success_missing_number, details_missing_number)
+            
+            # Test missing email
+            missing_email = {
+                "customer_number": f"ADMIN{timestamp}003",
+                "name": "Missing Email Customer"
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/admin/customers/create",
+                json=missing_email,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            success_missing_email = response.status_code == 422  # Validation error
+            details_missing_email = f"Status: {response.status_code} (should be 422 for missing email)"
+            
+            self.log_test("Manual Customer Creation - Missing Email", success_missing_email, details_missing_email)
+            
+            # Test missing name
+            missing_name = {
+                "customer_number": f"ADMIN{timestamp}004",
+                "email": f"missing.name.{timestamp}@example.com"
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/admin/customers/create",
+                json=missing_name,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            success_missing_name = response.status_code == 422  # Validation error
+            details_missing_name = f"Status: {response.status_code} (should be 422 for missing name)"
+            
+            self.log_test("Manual Customer Creation - Missing Name", success_missing_name, details_missing_name)
+            
+            # Test 6: Verify customer can be used for status check (integration test)
+            print("  🔍 Test 6: Verify created customer works with status check...")
+            response = requests.get(
+                f"{self.api_url}/customers/check/{valid_customer['customer_number']}",
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                status_data = response.json()
+                correct_status = (status_data.get('exists') == True and
+                                status_data.get('activation_status') == 'active' and
+                                status_data.get('customer_number') == valid_customer['customer_number'])
+                success = correct_status
+                details += f", Status check correct: {correct_status}"
+            
+            self.log_test("Manual Customer Creation - Status Check Integration", success, details)
+            
+            print(f"  🎉 SUCCESS: Manual customer creation functionality working correctly!")
+            print(f"  📊 Created Customer: {valid_customer['customer_number']} (Status: active)")
+            
+            return True
+            
+        except Exception as e:
+            self.log_test("Manual Customer Creation - Exception", False, str(e))
+            return False
+
     def test_comprehensive_customer_flow(self):
         """Test comprehensive customer authentication and order flow as per review request"""
         print("\n🔄 Testing Comprehensive Customer Authentication & Order Flow...")
