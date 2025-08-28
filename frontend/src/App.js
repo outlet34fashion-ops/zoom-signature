@@ -431,10 +431,17 @@ function App() {
   };
 
   const loadCustomers = async () => {
-    if (isAdminView) {
+    if (isAdminView || isAdminAuthenticated) {
       try {
         const response = await axios.get(`${API}/admin/customers`);
-        setCustomers(response.data);
+        // Sort customers by customer_number (ascending - klein nach groß)
+        const sortedCustomers = response.data.sort((a, b) => {
+          // Convert customer numbers to integers for proper numeric sorting
+          const numA = parseInt(a.customer_number) || 0;
+          const numB = parseInt(b.customer_number) || 0;
+          return numA - numB;
+        });
+        setCustomers(sortedCustomers);
       } catch (error) {
         console.error('Error loading customers:', error);
       }
