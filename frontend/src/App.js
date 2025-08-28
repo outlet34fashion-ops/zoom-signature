@@ -412,8 +412,10 @@ function App() {
     if (!selectedProduct || !selectedSize) return;
 
     try {
+      const actualCustomerId = currentCustomer?.customer_number || customerId;
+      
       await axios.post(`${API}/orders`, {
-        customer_id: customerId,
+        customer_id: actualCustomerId,
         product_id: selectedProduct.id,
         size: selectedSize,
         quantity: quantity,
@@ -421,9 +423,10 @@ function App() {
       });
 
       // Send formatted order message to chat: "Bestellung 10299 I 1x I 12,90 I Onesize"
+      const customerDisplayNumber = currentCustomer?.customer_number || '10299';
       const orderMessage = {
         username: 'Kunde',
-        message: `Bestellung 10299 I ${quantity}x I ${selectedPrice.toFixed(2)} I ${selectedSize}`,
+        message: `Bestellung ${customerDisplayNumber} I ${quantity}x I ${selectedPrice.toFixed(2)} I ${selectedSize}`,
         timestamp: new Date().toISOString()
       };
       
