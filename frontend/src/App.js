@@ -1298,8 +1298,74 @@ function App() {
 
           {/* Order Section - Only for Customers - MOVED UP */}
           {selectedProduct && !isAdminView && (
-            <Card className="max-w-sm mx-auto">
-              <CardContent className="p-3">
+            <div className="space-y-4">
+              {/* Customer Profile Section */}
+              <Card className="max-w-sm mx-auto">
+                <CardContent className="p-4">
+                  <div className="text-center space-y-3">
+                    <h3 className="font-semibold text-gray-800">Mein Profil</h3>
+                    
+                    {/* Profile Image */}
+                    <div className="flex justify-center">
+                      {currentCustomer?.profile_image ? (
+                        <img
+                          src={currentCustomer.profile_image}
+                          alt="Profilbild"
+                          className="w-20 h-20 rounded-full object-cover border-4 border-pink-200"
+                        />
+                      ) : (
+                        <div className="w-20 h-20 rounded-full bg-gray-200 flex items-center justify-center border-4 border-pink-200">
+                          <span className="text-gray-600 text-2xl font-bold">
+                            #{currentCustomer?.customer_number || '10299'}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Customer Number Display */}
+                    <div className="text-lg font-bold text-pink-600">
+                      Kunde #{currentCustomer?.customer_number || '10299'}
+                    </div>
+                    
+                    {/* Profile Image Upload */}
+                    <div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0] && currentCustomer) {
+                            uploadProfileImage(currentCustomer.id, e.target.files[0]);
+                          }
+                        }}
+                        className="hidden"
+                        id="customer-profile-upload"
+                      />
+                      <div className="flex justify-center space-x-2">
+                        <label
+                          htmlFor="customer-profile-upload"
+                          className="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
+                        >
+                          📷 {currentCustomer?.profile_image ? 'Bild ändern' : 'Profilbild hinzufügen'}
+                        </label>
+                        {currentCustomer?.profile_image && (
+                          <button
+                            onClick={() => {
+                              if (currentCustomer) deleteProfileImage(currentCustomer.id);
+                            }}
+                            className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
+                          >
+                            🗑️ Entfernen
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Order Form */}
+              <Card className="max-w-sm mx-auto">
+                <CardContent className="p-3">
                 <div className="text-center space-y-3">
                   <div>
                     <div className="text-xs text-gray-600">{t.size}</div>
