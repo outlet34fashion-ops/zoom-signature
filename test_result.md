@@ -317,6 +317,18 @@ test_plan:
         agent: "testing"
         comment: "✅ BACKEND TESTING COMPLETE: Manual customer creation functionality working perfectly! All 8 test scenarios passed (100% success rate). POST /api/admin/customers/create endpoint fully functional with proper validation: 1) Creates customers with automatic 'active' status, 2) Validates unique customer_number and email (returns 400 for duplicates), 3) Validates required fields (returns 422 for missing data), 4) Returns complete Customer object with all fields, 5) Integrates with existing admin customer list, 6) Works with existing status check authentication flow. Backend implementation is COMPLETE and ready for frontend testing."
 
+  - task: "Display last order with timestamp for customers"
+    implemented: false
+    working: "NA"
+    file: "/app/backend/server.py, /app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "IMPLEMENTING: Adding display of last order with timestamp for customers in a block. Requirements: 1) Show last order information for each customer, 2) Include timestamp/time of the order, 3) Display in appropriate block/section as shown in uploaded image, 4) Add backend API to get customer's last order, 5) Integrate in customer profile or admin customer management."
+
 agent_communication:
   - agent: "main"
     message: "Customer management system implementation completed successfully! Backend: All APIs working (registration, status check, admin management). Frontend: Guest blocking with registration message, registration form, pending/active/blocked status handling, and comprehensive admin dashboard with customer management controls. System ready for production use."
