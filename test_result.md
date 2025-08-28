@@ -238,8 +238,25 @@ test_plan:
   test_all: false
   test_priority: "high_first"
 
+  - task: "Order chat message format fix"
+    implemented: true
+    working: false
+    file: "/app/frontend/src/App.js"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "User reported that orders are not appearing directly in chat with correct 'Bestellung' format. Need to verify placeOrder function sends messages correctly to chat."
+      - working: false
+        agent: "user"
+        comment: "User feedback: 'die bestellungen müssen direkt im chat auftauchen' - orders must appear directly in the chat"
+
 agent_communication:
   - agent: "main"
     message: "Customer management system implementation completed successfully! Backend: All APIs working (registration, status check, admin management). Frontend: Guest blocking with registration message, registration form, pending/active/blocked status handling, and comprehensive admin dashboard with customer management controls. System ready for production use."
   - agent: "testing"
     message: "✅ BACKEND TESTING COMPLETE: All high-priority customer management backend tasks are working perfectly! Comprehensive testing completed with 28/28 tests passing (100% success rate). Customer registration, status checking, admin management (activate/block/delete), duplicate validation, and error handling all working correctly. Integration testing confirms existing functionality (chat, orders, Zoom) remains intact. Only remaining task is medium-priority customer authentication middleware which is not implemented yet."
+  - agent: "main"
+    message: "CURRENT ISSUE: User reports orders not appearing in chat. placeOrder function in App.js looks correct (lines 675-684) - sends 'Bestellung' format to chat API. Need to test order placement flow with activated customer to verify if chat messages actually appear. Priority: HIGH"
