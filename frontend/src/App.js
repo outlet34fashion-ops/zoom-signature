@@ -558,37 +558,39 @@ function App() {
                     </Button>
                   </div>
 
-                  {/* Quick Action Buttons */}
-                  <div className="grid grid-cols-2 gap-2">
-                    <Button 
-                      size="sm" 
-                      className="bg-orange-500 hover:bg-orange-600 text-white text-xs"
-                      onClick={() => sendEmoji('🔥')}
-                    >
-                      🔥 {t.topseller}
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      className="bg-purple-500 hover:bg-purple-600 text-white text-xs"
-                      onClick={() => sendEmoji('🆕')}
-                    >
-                      🆕 {t.newIn}
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      className="bg-teal-500 hover:bg-teal-600 text-white text-xs"
-                      onClick={() => sendEmoji('💸')}
-                    >
-                      💸 {t.sale}
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      className="bg-red-500 hover:bg-red-600 text-white text-xs"
-                      onClick={() => sendEmoji('💖')}
-                    >
-                      💖 {t.specialOffer}
-                    </Button>
-                  </div>
+                  {/* Quick Action Buttons - Only for Admin */}
+                  {isAdminView && (
+                    <div className="grid grid-cols-2 gap-2">
+                      <Button 
+                        size="sm" 
+                        className="bg-orange-500 hover:bg-orange-600 text-white text-xs"
+                        onClick={() => sendEmoji('🔥')}
+                      >
+                        🔥 {t.topseller}
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        className="bg-purple-500 hover:bg-purple-600 text-white text-xs"
+                        onClick={() => sendEmoji('🆕')}
+                      >
+                        🆕 {t.newIn}
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        className="bg-teal-500 hover:bg-teal-600 text-white text-xs"
+                        onClick={() => sendEmoji('💸')}
+                      >
+                        💸 {t.sale}
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        className="bg-red-500 hover:bg-red-600 text-white text-xs"
+                        onClick={() => sendEmoji('💖')}
+                      >
+                        💖 {t.specialOffer}
+                      </Button>
+                    </div>
+                  )}
 
                   {/* Emoji Reactions */}
                   <div className="flex space-x-2 justify-center">
