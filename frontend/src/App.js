@@ -1844,37 +1844,6 @@ function App() {
                     </div>
                   )}
                 </div>
-                      >
-                        💖 {t.specialOffer}
-                      </Button>
-                    </div>
-                  )}
-
-                  {/* Emoji Reactions */}
-                  <div className="flex space-x-2 justify-center">
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => sendEmoji('❤️')}
-                    >
-                      ❤️
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => sendEmoji('🔥')}
-                    >
-                      🔥
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => sendEmoji('👍')}
-                    >
-                      👍
-                    </Button>
-                  </div>
-                </div>
               </CardContent>
             </Card>
           </div>
