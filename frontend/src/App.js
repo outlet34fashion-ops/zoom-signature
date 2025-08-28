@@ -1043,70 +1043,118 @@ function App() {
                 <div className="bg-white/10 rounded-lg p-4">
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="text-lg font-semibold">
-                      Registrierte Kunden ({customers.filter(c => {
-                        if (customerFilter === 'pending') return c.activation_status === 'pending';
-                        if (customerFilter === 'blocked') return c.activation_status === 'blocked';
-                        return true;
+                      👥 Kundenverwaltung ({customers.filter(c => {
+                        // Filter by status
+                        let matchesFilter = true;
+                        if (customerFilter === 'pending') matchesFilter = c.activation_status === 'pending';
+                        if (customerFilter === 'blocked') matchesFilter = c.activation_status === 'blocked';
+                        
+                        // Filter by search (customer number)
+                        let matchesSearch = true;
+                        if (customerSearch.trim()) {
+                          matchesSearch = c.customer_number.toLowerCase().includes(customerSearch.toLowerCase());
+                        }
+                        
+                        return matchesFilter && matchesSearch;
                       }).length})
                     </h3>
-                    <div className="flex space-x-2">
-                      <Button 
-                        onClick={() => setCustomerFilter('pending')}
-                        className={customerFilter === 'pending' ? "bg-yellow-500 hover:bg-yellow-600 text-white" : "bg-white/20 hover:bg-white/30 text-white"}
-                        size="sm"
-                      >
-                        ⏳ Freigabe ({customers.filter(c => c.activation_status === 'pending').length})
-                      </Button>
-                      <Button 
-                        onClick={() => setCustomerFilter('blocked')}
-                        className={customerFilter === 'blocked' ? "bg-red-500 hover:bg-red-600 text-white" : "bg-white/20 hover:bg-white/30 text-white"}
-                        size="sm"
-                      >
-                        🚫 Gesperrt ({customers.filter(c => c.activation_status === 'blocked').length})
-                      </Button>
-                      <Button 
-                        onClick={() => setCustomerFilter('all')}
-                        className={customerFilter === 'all' ? "bg-blue-500 hover:bg-blue-600 text-white" : "bg-white/20 hover:bg-white/30 text-white"}
-                        size="sm"
-                      >
-                        📋 Alle
-                      </Button>
-                      <Button 
-                        onClick={loadCustomers}
-                        className="bg-white/20 hover:bg-white/30 text-white"
-                        size="sm"
-                      >
-                        🔄 Aktualisieren
-                      </Button>
-                    </div>
+                  </div>
+                  
+                  {/* Search Field */}
+                  <div className="mb-4">
+                    <Input
+                      placeholder="🔍 Suche nach Kundennummer..."
+                      value={customerSearch}
+                      onChange={(e) => setCustomerSearch(e.target.value)}
+                      className="bg-white/20 border-white/30 text-white placeholder-white/70"
+                    />
+                  </div>
+                  
+                  {/* Filter Buttons */}
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <Button 
+                      onClick={() => setCustomerFilter('pending')}
+                      className={customerFilter === 'pending' ? "bg-yellow-500 hover:bg-yellow-600 text-white" : "bg-white/20 hover:bg-white/30 text-white"}
+                      size="sm"
+                    >
+                      ⏳ Freigabe ({customers.filter(c => c.activation_status === 'pending').length})
+                    </Button>
+                    <Button 
+                      onClick={() => setCustomerFilter('blocked')}
+                      className={customerFilter === 'blocked' ? "bg-red-500 hover:bg-red-600 text-white" : "bg-white/20 hover:bg-white/30 text-white"}
+                      size="sm"
+                    >
+                      🚫 Gesperrt ({customers.filter(c => c.activation_status === 'blocked').length})
+                    </Button>
+                    <Button 
+                      onClick={() => setCustomerFilter('all')}
+                      className={customerFilter === 'all' ? "bg-blue-500 hover:bg-blue-600 text-white" : "bg-white/20 hover:bg-white/30 text-white"}
+                      size="sm"
+                    >
+                      📋 Alle
+                    </Button>
+                    <Button 
+                      onClick={loadCustomers}
+                      className="bg-white/20 hover:bg-white/30 text-white"
+                      size="sm"
+                    >
+                      🔄 Aktualisieren
+                    </Button>
                   </div>
                   
                   <div className="space-y-3 max-h-64 overflow-y-auto">
                     {customers.filter(customer => {
-                      if (customerFilter === 'pending') return customer.activation_status === 'pending';
-                      if (customerFilter === 'blocked') return customer.activation_status === 'blocked';
-                      return true;
+                      // Filter by status
+                      let matchesFilter = true;
+                      if (customerFilter === 'pending') matchesFilter = customer.activation_status === 'pending';
+                      if (customerFilter === 'blocked') matchesFilter = customer.activation_status === 'blocked';
+                      
+                      // Filter by search (customer number)
+                      let matchesSearch = true;
+                      if (customerSearch.trim()) {
+                        matchesSearch = customer.customer_number.toLowerCase().includes(customerSearch.toLowerCase());
+                      }
+                      
+                      return matchesFilter && matchesSearch;
                     }).length === 0 ? (
                       <p className="text-white/70 text-center py-4">
-                        {customerFilter === 'pending' ? 'Keine wartenden Kunden' : 
+                        {customerSearch.trim() ? `Keine Kunden mit Nummer "${customerSearch}" gefunden` :
+                         customerFilter === 'pending' ? 'Keine wartenden Kunden' : 
                          customerFilter === 'blocked' ? 'Keine gesperrten Kunden' : 
                          'Noch keine Kunden registriert'}
                       </p>
                     ) : (
                       customers.filter(customer => {
-                        if (customerFilter === 'pending') return customer.activation_status === 'pending';
-                        if (customerFilter === 'blocked') return customer.activation_status === 'blocked';
-                        return true;
+                        // Filter by status
+                        let matchesFilter = true;
+                        if (customerFilter === 'pending') matchesFilter = customer.activation_status === 'pending';
+                        if (customerFilter === 'blocked') matchesFilter = customer.activation_status === 'blocked';
+                        
+                        // Filter by search (customer number)
+                        let matchesSearch = true;
+                        if (customerSearch.trim()) {
+                          matchesSearch = customer.customer_number.toLowerCase().includes(customerSearch.toLowerCase());
+                        }
+                        
+                        return matchesFilter && matchesSearch;
                       }).map((customer) => (
                         <div key={customer.id} className="bg-white/20 rounded-lg p-3">
                           <div className="flex justify-between items-start">
                             <div className="flex-1">
-                              <div className="font-medium">{customer.name}</div>
+                              {/* Customer Number FIRST - Most Important */}
+                              <div className="font-bold text-lg text-yellow-200">
+                                #{customer.customer_number}
+                              </div>
+                              {/* Name Second */}
+                              <div className="font-medium text-white">
+                                {customer.name}
+                              </div>
+                              {/* Email and date smaller */}
                               <div className="text-sm opacity-90">
-                                Kunde: {customer.customer_number} | {customer.email}
+                                📧 {customer.email}
                               </div>
                               <div className="text-xs opacity-75">
-                                Registriert: {new Date(customer.created_at).toLocaleDateString('de-DE')}
+                                📅 Registriert: {new Date(customer.created_at).toLocaleDateString('de-DE')}
                               </div>
                             </div>
                             
