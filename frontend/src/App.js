@@ -1384,7 +1384,9 @@ function App() {
                         {currentCustomer?.profile_image && (
                           <button
                             onClick={() => {
-                              if (currentCustomer) deleteProfileImage(currentCustomer.customer_number);
+                              const customerNumber = currentCustomer?.customer_number || localStorage.getItem('customerNumber') || '10299';
+                              console.log('Deleting for customer:', customerNumber);
+                              deleteProfileImage(customerNumber);
                             }}
                             className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
                           >
