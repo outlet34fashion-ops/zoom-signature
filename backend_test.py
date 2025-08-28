@@ -734,6 +734,9 @@ class LiveShoppingAPITester:
         # Test Zoom integration endpoints
         zoom_success = self.test_zoom_integration()
         
+        # Test Customer Management System (NEW FEATURE)
+        customer_success = self.test_customer_management()
+        
         # Test WebSocket availability
         ws_success = self.test_websocket_availability()
 
