@@ -708,6 +708,9 @@ function App() {
                 ) : (
                   <div className="space-y-4">
                     <h2 className="text-xl font-semibold text-gray-800">Live-App Anmeldung</h2>
+                    <p className="text-sm text-gray-600">
+                      Geben Sie Ihre Kundendaten ein. Bereits registrierte Kunden werden automatisch angemeldet.
+                    </p>
                     
                     {registrationError && (
                       <div className="bg-red-100 border border-red-300 rounded-lg p-3">
