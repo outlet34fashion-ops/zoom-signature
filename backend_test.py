@@ -402,6 +402,290 @@ class LiveShoppingAPITester:
 
         return token_success and session_success and validate_success
 
+    def test_customer_management(self):
+        """Test customer management system endpoints"""
+        print("\n🧑‍💼 Testing Customer Management System...")
+        
+        # Test data with realistic information
+        test_customers = [
+            {
+                "customer_number": f"CUST{int(time.time())}001",
+                "email": f"john.doe.{int(time.time())}@example.com",
+                "name": "John Doe"
+            },
+            {
+                "customer_number": f"CUST{int(time.time())}002", 
+                "email": f"jane.smith.{int(time.time())}@example.com",
+                "name": "Jane Smith"
+            }
+        ]
+        
+        registered_customers = []
+        
+        # 1. Test Customer Registration
+        print("  📝 Testing customer registration...")
+        for i, customer_data in enumerate(test_customers):
+            try:
+                response = requests.post(
+                    f"{self.api_url}/customers/register",
+                    json=customer_data,
+                    headers={'Content-Type': 'application/json'},
+                    timeout=10
+                )
+                success = response.status_code == 200
+                details = f"POST Status: {response.status_code}"
+                
+                if success:
+                    data = response.json()
+                    required_fields = ['id', 'customer_number', 'email', 'name', 'activation_status', 'created_at']
+                    has_all_fields = all(field in data for field in required_fields)
+                    is_pending = data.get('activation_status') == 'pending'
+                    success = has_all_fields and is_pending
+                    details += f", Has all fields: {has_all_fields}, Status pending: {is_pending}"
+                    if success:
+                        registered_customers.append(data)
+                
+                self.log_test(f"Customer Registration {i+1}", success, details)
+            except Exception as e:
+                self.log_test(f"Customer Registration {i+1}", False, str(e))
+        
+        # 2. Test Duplicate Customer Number Rejection
+        if registered_customers:
+            try:
+                duplicate_data = {
+                    "customer_number": registered_customers[0]['customer_number'],
+                    "email": f"different.email.{int(time.time())}@example.com",
+                    "name": "Different Name"
+                }
+                response = requests.post(
+                    f"{self.api_url}/customers/register",
+                    json=duplicate_data,
+                    headers={'Content-Type': 'application/json'},
+                    timeout=10
+                )
+                success = response.status_code == 400
+                details = f"Status: {response.status_code} (should be 400 for duplicate customer_number)"
+                if success and response.status_code == 400:
+                    error_data = response.json()
+                    has_error_message = 'detail' in error_data
+                    details += f", Has error message: {has_error_message}"
+                self.log_test("Duplicate Customer Number Rejection", success, details)
+            except Exception as e:
+                self.log_test("Duplicate Customer Number Rejection", False, str(e))
+        
+        # 3. Test Duplicate Email Rejection
+        if registered_customers:
+            try:
+                duplicate_email_data = {
+                    "customer_number": f"DIFFERENT{int(time.time())}",
+                    "email": registered_customers[0]['email'],
+                    "name": "Different Name"
+                }
+                response = requests.post(
+                    f"{self.api_url}/customers/register",
+                    json=duplicate_email_data,
+                    headers={'Content-Type': 'application/json'},
+                    timeout=10
+                )
+                success = response.status_code == 400
+                details = f"Status: {response.status_code} (should be 400 for duplicate email)"
+                if success and response.status_code == 400:
+                    error_data = response.json()
+                    has_error_message = 'detail' in error_data
+                    details += f", Has error message: {has_error_message}"
+                self.log_test("Duplicate Email Rejection", success, details)
+            except Exception as e:
+                self.log_test("Duplicate Email Rejection", False, str(e))
+        
+        # 4. Test Customer Status Check - Existing Customer
+        if registered_customers:
+            try:
+                customer_number = registered_customers[0]['customer_number']
+                response = requests.get(
+                    f"{self.api_url}/customers/check/{customer_number}",
+                    timeout=10
+                )
+                success = response.status_code == 200
+                details = f"GET Status: {response.status_code}"
+                
+                if success:
+                    data = response.json()
+                    required_fields = ['exists', 'activation_status', 'name', 'email', 'message']
+                    has_all_fields = all(field in data for field in required_fields)
+                    exists_true = data.get('exists') == True
+                    status_pending = data.get('activation_status') == 'pending'
+                    success = has_all_fields and exists_true and status_pending
+                    details += f", Has all fields: {has_all_fields}, Exists: {exists_true}, Status: {data.get('activation_status')}"
+                
+                self.log_test("Customer Status Check (Existing)", success, details)
+            except Exception as e:
+                self.log_test("Customer Status Check (Existing)", False, str(e))
+        
+        # 5. Test Customer Status Check - Non-existing Customer
+        try:
+            non_existing_number = f"NONEXIST{int(time.time())}"
+            response = requests.get(
+                f"{self.api_url}/customers/check/{non_existing_number}",
+                timeout=10
+            )
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                required_fields = ['exists', 'activation_status', 'message']
+                has_required_fields = all(field in data for field in required_fields)
+                exists_false = data.get('exists') == False
+                status_none = data.get('activation_status') is None
+                success = has_required_fields and exists_false and status_none
+                details += f", Has required fields: {has_required_fields}, Exists: {exists_false}, Status: {data.get('activation_status')}"
+            
+            self.log_test("Customer Status Check (Non-existing)", success, details)
+        except Exception as e:
+            self.log_test("Customer Status Check (Non-existing)", False, str(e))
+        
+        # 6. Test Admin - Get All Customers
+        try:
+            response = requests.get(f"{self.api_url}/admin/customers", timeout=10)
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                is_list = isinstance(data, list)
+                has_customers = len(data) >= len(registered_customers)
+                success = is_list and has_customers
+                details += f", Is list: {is_list}, Customer count: {len(data)}"
+                
+                # Check structure of first customer if available
+                if data:
+                    first_customer = data[0]
+                    required_fields = ['id', 'customer_number', 'email', 'name', 'activation_status']
+                    has_all_fields = all(field in first_customer for field in required_fields)
+                    details += f", First customer valid: {has_all_fields}"
+            
+            self.log_test("Admin Get All Customers", success, details)
+        except Exception as e:
+            self.log_test("Admin Get All Customers", False, str(e))
+        
+        # 7. Test Admin - Activate Customer
+        if registered_customers:
+            try:
+                customer_id = registered_customers[0]['id']
+                response = requests.post(
+                    f"{self.api_url}/admin/customers/{customer_id}/activate",
+                    headers={'Content-Type': 'application/json'},
+                    timeout=10
+                )
+                success = response.status_code == 200
+                details = f"POST Status: {response.status_code}"
+                
+                if success:
+                    data = response.json()
+                    has_message = 'message' in data and 'customer' in data
+                    if has_message:
+                        customer_data = data['customer']
+                        is_active = customer_data.get('activation_status') == 'active'
+                        success = is_active
+                        details += f", Has message: {has_message}, Status active: {is_active}"
+                        # Update our test data
+                        registered_customers[0]['activation_status'] = 'active'
+                
+                self.log_test("Admin Activate Customer", success, details)
+            except Exception as e:
+                self.log_test("Admin Activate Customer", False, str(e))
+        
+        # 8. Test Admin - Block Customer
+        if len(registered_customers) > 1:
+            try:
+                customer_id = registered_customers[1]['id']
+                response = requests.post(
+                    f"{self.api_url}/admin/customers/{customer_id}/block",
+                    headers={'Content-Type': 'application/json'},
+                    timeout=10
+                )
+                success = response.status_code == 200
+                details = f"POST Status: {response.status_code}"
+                
+                if success:
+                    data = response.json()
+                    has_message = 'message' in data and 'customer' in data
+                    if has_message:
+                        customer_data = data['customer']
+                        is_blocked = customer_data.get('activation_status') == 'blocked'
+                        success = is_blocked
+                        details += f", Has message: {has_message}, Status blocked: {is_blocked}"
+                        # Update our test data
+                        registered_customers[1]['activation_status'] = 'blocked'
+                
+                self.log_test("Admin Block Customer", success, details)
+            except Exception as e:
+                self.log_test("Admin Block Customer", False, str(e))
+        
+        # 9. Test Admin - Delete Customer (use a separate test customer)
+        try:
+            # Create a customer specifically for deletion test
+            delete_test_customer = {
+                "customer_number": f"DELETE{int(time.time())}",
+                "email": f"delete.test.{int(time.time())}@example.com",
+                "name": "Delete Test Customer"
+            }
+            
+            # Register the customer
+            reg_response = requests.post(
+                f"{self.api_url}/customers/register",
+                json=delete_test_customer,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            if reg_response.status_code == 200:
+                customer_to_delete = reg_response.json()
+                customer_id = customer_to_delete['id']
+                
+                # Now delete the customer
+                response = requests.delete(
+                    f"{self.api_url}/admin/customers/{customer_id}",
+                    timeout=10
+                )
+                success = response.status_code == 200
+                details = f"DELETE Status: {response.status_code}"
+                
+                if success:
+                    data = response.json()
+                    has_message = 'message' in data
+                    success = has_message
+                    details += f", Has success message: {has_message}"
+                
+                self.log_test("Admin Delete Customer", success, details)
+            else:
+                self.log_test("Admin Delete Customer", False, "Could not create test customer for deletion")
+        except Exception as e:
+            self.log_test("Admin Delete Customer", False, str(e))
+        
+        # 10. Test Admin Operations with Non-existing Customer ID
+        try:
+            fake_id = f"fake_id_{int(time.time())}"
+            response = requests.post(
+                f"{self.api_url}/admin/customers/{fake_id}/activate",
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            success = response.status_code == 404
+            details = f"Status: {response.status_code} (should be 404 for non-existing customer)"
+            self.log_test("Admin Operation on Non-existing Customer", success, details)
+        except Exception as e:
+            self.log_test("Admin Operation on Non-existing Customer", False, str(e))
+        
+        # Calculate success rate for customer management tests
+        customer_tests = [r for r in self.test_results if 'Customer' in r['name'] or 'Admin' in r['name']]
+        customer_tests_recent = customer_tests[-11:]  # Get the last 11 customer-related tests
+        customer_success_count = sum(1 for test in customer_tests_recent if test['success'])
+        
+        print(f"  📊 Customer Management Tests: {customer_success_count}/{len(customer_tests_recent)} passed")
+        
+        return customer_success_count == len(customer_tests_recent)
+
     def test_websocket_availability(self):
         """Test if WebSocket endpoint is accessible (basic connectivity)"""
         try:
