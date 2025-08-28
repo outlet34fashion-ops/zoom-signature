@@ -480,19 +480,27 @@ function App() {
     }
   };
 
-  const uploadProfileImage = async (customerId, file) => {
+  const uploadProfileImage = async (customerNumber, file) => {
     try {
       setUploadingImage(true);
       const formData = new FormData();
       formData.append('file', file);
       
-      const response = await axios.post(`${API}/customers/${customerId}/upload-profile-image`, formData, {
+      const response = await axios.post(`${API}/customers/${customerNumber}/upload-profile-image`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
       
-      loadCustomers(); // Refresh the list to show new image
+      // Update current customer data if it's the same customer
+      if (currentCustomer && currentCustomer.customer_number === customerNumber) {
+        setCurrentCustomer(prev => ({
+          ...prev,
+          profile_image: response.data.profile_image
+        }));
+      }
+      
+      loadCustomers(); // Refresh admin list if needed
       return response.data;
     } catch (error) {
       console.error('Error uploading profile image:', error);
@@ -502,10 +510,19 @@ function App() {
     }
   };
 
-  const deleteProfileImage = async (customerId) => {
+  const deleteProfileImage = async (customerNumber) => {
     try {
-      await axios.delete(`${API}/customers/${customerId}/profile-image`);
-      loadCustomers(); // Refresh the list
+      await axios.delete(`${API}/customers/${customerNumber}/profile-image`);
+      
+      // Update current customer data if it's the same customer
+      if (currentCustomer && currentCustomer.customer_number === customerNumber) {
+        setCurrentCustomer(prev => ({
+          ...prev,
+          profile_image: null
+        }));
+      }
+      
+      loadCustomers(); // Refresh admin list if needed
     } catch (error) {
       console.error('Error deleting profile image:', error);
     }
