@@ -731,65 +731,169 @@ function App() {
         
         {/* Admin Dashboard */}
         {isAdminView && (
-          <Card className="mb-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-            <CardContent className="p-6">
-              <h2 className="text-2xl font-bold mb-4 flex items-center">
-                📊 {t.adminDashboard}
-              </h2>
-              
-              {/* Statistics */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div className="bg-white/20 rounded-lg p-4 text-center">
-                  <div className="text-3xl font-bold">{adminStats.total_orders}</div>
-                  <div className="text-sm opacity-90">{t.totalOrders}</div>
-                </div>
-                <div className="bg-white/20 rounded-lg p-4 text-center">
-                  <div className="text-3xl font-bold text-yellow-300">{adminStats.session_orders}</div>
-                  <div className="text-sm opacity-90">{t.sessionOrders}</div>
-                </div>
-              </div>
-
-              {/* Ticker Settings */}
-              <div className="bg-white/10 rounded-lg p-4 mb-4">
-                <h3 className="text-lg font-semibold mb-3">⚙️ {t.tickerSettings}</h3>
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-sm font-medium mb-1">{t.tickerText}</label>
-                    <Input
-                      value={newTickerText}
-                      onChange={(e) => setNewTickerText(e.target.value)}
-                      className="bg-white/20 border-white/30 text-white placeholder-white/70"
-                      placeholder="Ticker Text eingeben..."
-                    />
+          <div className="space-y-6">
+            <Card className="mb-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+              <CardContent className="p-6">
+                <h2 className="text-2xl font-bold mb-4 flex items-center">
+                  📊 {t.adminDashboard}
+                </h2>
+                
+                {/* Statistics */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                  <div className="bg-white/20 rounded-lg p-4 text-center">
+                    <div className="text-3xl font-bold">{adminStats.total_orders}</div>
+                    <div className="text-sm opacity-90">{t.totalOrders}</div>
                   </div>
-                  <div className="flex space-x-2">
-                    <Button 
-                      onClick={updateTicker}
-                      className="bg-green-500 hover:bg-green-600 text-white"
-                    >
-                      📝 {t.updateTicker}
-                    </Button>
-                    <Button 
-                      onClick={toggleTicker}
-                      className={tickerSettings.enabled ? "bg-orange-500 hover:bg-orange-600" : "bg-gray-500 hover:bg-gray-600"}
-                    >
-                      {tickerSettings.enabled ? "⏸️ Ticker Stop" : "▶️ Ticker Start"}
-                    </Button>
+                  <div className="bg-white/20 rounded-lg p-4 text-center">
+                    <div className="text-3xl font-bold text-yellow-300">{adminStats.session_orders}</div>
+                    <div className="text-sm opacity-90">{t.sessionOrders}</div>
                   </div>
                 </div>
-              </div>
 
-              {/* Reset Counter */}
-              <div className="text-center">
-                <Button 
-                  onClick={resetOrderCounter}
-                  className="bg-red-500 hover:bg-red-600 text-white"
-                >
-                  🔄 {t.resetCounter}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+                {/* Ticker Settings */}
+                <div className="bg-white/10 rounded-lg p-4 mb-4">
+                  <h3 className="text-lg font-semibold mb-3">⚙️ {t.tickerSettings}</h3>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium mb-1">{t.tickerText}</label>
+                      <Input
+                        value={newTickerText}
+                        onChange={(e) => setNewTickerText(e.target.value)}
+                        className="bg-white/20 border-white/30 text-white placeholder-white/70"
+                        placeholder="Ticker Text eingeben..."
+                      />
+                    </div>
+                    <div className="flex space-x-2">
+                      <Button 
+                        onClick={updateTicker}
+                        className="bg-green-500 hover:bg-green-600 text-white"
+                      >
+                        📝 {t.updateTicker}
+                      </Button>
+                      <Button 
+                        onClick={toggleTicker}
+                        className={tickerSettings.enabled ? "bg-orange-500 hover:bg-orange-600" : "bg-gray-500 hover:bg-gray-600"}
+                      >
+                        {tickerSettings.enabled ? "⏸️ Ticker Stop" : "▶️ Ticker Start"}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Reset Counter */}
+                <div className="text-center">
+                  <Button 
+                    onClick={resetOrderCounter}
+                    className="bg-red-500 hover:bg-red-600 text-white"
+                  >
+                    🔄 {t.resetCounter}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Customer Management Dashboard */}
+            <Card className="bg-gradient-to-r from-blue-500 to-teal-500 text-white">
+              <CardContent className="p-6">
+                <h2 className="text-2xl font-bold mb-4 flex items-center">
+                  👥 Kundenverwaltung
+                </h2>
+                
+                <div className="bg-white/10 rounded-lg p-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-semibold">Registrierte Kunden ({customers.length})</h3>
+                    <Button 
+                      onClick={loadCustomers}
+                      className="bg-white/20 hover:bg-white/30 text-white"
+                      size="sm"
+                    >
+                      🔄 Aktualisieren
+                    </Button>
+                  </div>
+                  
+                  <div className="space-y-3 max-h-64 overflow-y-auto">
+                    {customers.length === 0 ? (
+                      <p className="text-white/70 text-center py-4">
+                        Noch keine Kunden registriert
+                      </p>
+                    ) : (
+                      customers.map((customer) => (
+                        <div key={customer.id} className="bg-white/20 rounded-lg p-3">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <div className="font-medium">{customer.name}</div>
+                              <div className="text-sm opacity-90">
+                                Kunde: {customer.customer_number} | {customer.email}
+                              </div>
+                              <div className="text-xs opacity-75">
+                                Registriert: {new Date(customer.created_at).toLocaleDateString('de-DE')}
+                              </div>
+                            </div>
+                            
+                            <div className="flex flex-col items-end space-y-2">
+                              <Badge 
+                                className={
+                                  customer.activation_status === 'active' 
+                                    ? "bg-green-500 text-white" 
+                                    : customer.activation_status === 'pending'
+                                    ? "bg-yellow-500 text-white"
+                                    : "bg-red-500 text-white"
+                                }
+                              >
+                                {customer.activation_status === 'active' ? '✓ Aktiv' : 
+                                 customer.activation_status === 'pending' ? '⏳ Wartend' : 
+                                 '🚫 Gesperrt'}
+                              </Badge>
+                              
+                              <div className="flex space-x-1">
+                                {customer.activation_status === 'pending' && (
+                                  <Button 
+                                    onClick={() => activateCustomer(customer.id)}
+                                    className="bg-green-600 hover:bg-green-700 text-white"
+                                    size="sm"
+                                  >
+                                    ✓
+                                  </Button>
+                                )}
+                                
+                                {customer.activation_status === 'active' && (
+                                  <Button 
+                                    onClick={() => blockCustomer(customer.id)}
+                                    className="bg-red-600 hover:bg-red-700 text-white"
+                                    size="sm"
+                                  >
+                                    🚫
+                                  </Button>
+                                )}
+                                
+                                {customer.activation_status === 'blocked' && (
+                                  <Button 
+                                    onClick={() => activateCustomer(customer.id)}
+                                    className="bg-green-600 hover:bg-green-700 text-white"
+                                    size="sm"
+                                  >
+                                    ✓
+                                  </Button>
+                                )}
+                                
+                                <Button 
+                                  onClick={() => deleteCustomer(customer.id)}
+                                  className="bg-red-800 hover:bg-red-900 text-white"
+                                  size="sm"
+                                >
+                                  🗑️
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         )}
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
