@@ -476,6 +476,7 @@ async def check_customer_status(customer_number: str):
         
         return {
             "exists": True,
+            "customer_number": customer["customer_number"],
             "activation_status": customer["activation_status"],
             "name": customer["name"],
             "email": customer["email"],
