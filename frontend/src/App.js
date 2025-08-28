@@ -737,7 +737,8 @@ function App() {
     if (!selectedProduct || !selectedSize) return;
 
     try {
-      const actualCustomerId = currentCustomer?.customer_number || customerId;
+      // Get customer ID for the order API
+      const actualCustomerId = currentCustomer?.customer_number || localStorage.getItem('customerNumber') || customerId;
       
       // Place the order first
       await axios.post(`${API}/orders`, {
@@ -748,10 +749,22 @@ function App() {
         price: selectedPrice
       });
 
-      // Get the correct customer number from localStorage or currentCustomer
-      const customerDisplayNumber = currentCustomer?.customer_number || localStorage.getItem('customerNumber') || '10299';
+      // Get the correct customer number for display - try multiple sources
+      let customerDisplayNumber = '10299'; // default fallback
       
-      // Send formatted order message to chat with bold "Bestellung": "**Bestellung** CustomerNumber I 2x I 12,90 I OneSize"
+      if (currentCustomer?.customer_number) {
+        customerDisplayNumber = currentCustomer.customer_number;
+      } else {
+        const storedNumber = localStorage.getItem('customerNumber');
+        if (storedNumber) {
+          customerDisplayNumber = storedNumber;
+        } else if (actualCustomerId && actualCustomerId !== customerId) {
+          // If actualCustomerId is not the random customerId, use it
+          customerDisplayNumber = actualCustomerId;
+        }
+      }
+      
+      // Send formatted order message to chat with bold "Bestellung"
       const orderChatMessage = `**Bestellung** ${customerDisplayNumber} I ${quantity}x I ${selectedPrice.toFixed(2)} I ${selectedSize}`;
       
       // Send order message to chat via API
