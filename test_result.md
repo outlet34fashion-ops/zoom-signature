@@ -231,10 +231,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Guest blocking and registration message"
-    - "Customer registration form"
-    - "Admin customer management dashboard"
-  stuck_tasks: []
+    - "Order chat message format fix"
+  stuck_tasks:
+    - "Order chat message format fix"
   test_all: false
   test_priority: "high_first"
 
