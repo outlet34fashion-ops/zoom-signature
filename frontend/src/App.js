@@ -749,30 +749,20 @@ function App() {
         price: selectedPrice
       });
 
-      // Get the correct customer number for display - try multiple sources
-      let customerDisplayNumber = '10299'; // default fallback
+      // Automatic customer number detection - try all available sources
+      let customerDisplayNumber = '10299'; // fallback
       
-      console.log('🐛 DEBUG placeOrder:');
-      console.log('  currentCustomer:', currentCustomer);
-      console.log('  currentCustomer?.customer_number:', currentCustomer?.customer_number);
-      console.log('  localStorage customerNumber:', localStorage.getItem('customerNumber'));
-      console.log('  actualCustomerId:', actualCustomerId);
-      
+      // Priority 1: currentCustomer (from successful login)
       if (currentCustomer?.customer_number) {
         customerDisplayNumber = currentCustomer.customer_number;
-        console.log('  ✓ Using currentCustomer.customer_number:', customerDisplayNumber);
-      } else {
-        const storedNumber = localStorage.getItem('customerNumber');
-        if (storedNumber) {
-          customerDisplayNumber = storedNumber;
-          console.log('  ✓ Using localStorage customerNumber:', customerDisplayNumber);
-        } else if (actualCustomerId && actualCustomerId !== customerId) {
-          // If actualCustomerId is not the random customerId, use it
-          customerDisplayNumber = actualCustomerId;
-          console.log('  ✓ Using actualCustomerId:', customerDisplayNumber);
-        } else {
-          console.log('  ❌ Using fallback 10299');
-        }
+      } 
+      // Priority 2: localStorage (from previous session)
+      else if (localStorage.getItem('customerNumber')) {
+        customerDisplayNumber = localStorage.getItem('customerNumber');
+      } 
+      // Priority 3: actualCustomerId (if it's not the random ID)
+      else if (actualCustomerId && actualCustomerId !== customerId && !actualCustomerId.startsWith('customer_')) {
+        customerDisplayNumber = actualCustomerId;
       }
       
       // Send formatted order message to chat with bold "Bestellung"
