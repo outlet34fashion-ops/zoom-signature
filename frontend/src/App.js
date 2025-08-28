@@ -77,6 +77,10 @@ function App() {
   const [profileImageFile, setProfileImageFile] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
   
+  // Last Order States
+  const [customerLastOrder, setCustomerLastOrder] = useState(null);
+  const [loadingLastOrder, setLoadingLastOrder] = useState(false);
+  
   const chatRef = useRef(null);
   const wsRef = useRef(null);
 
