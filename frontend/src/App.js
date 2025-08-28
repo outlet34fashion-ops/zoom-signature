@@ -784,7 +784,7 @@ function App() {
                         disabled={!registrationData.customer_number || !registrationData.email || !registrationData.name}
                         className="flex-1 bg-pink-500 hover:bg-pink-600 text-white"
                       >
-                        Anmelden
+                        Einloggen / Registrieren
                       </Button>
                     </div>
                   </div>
