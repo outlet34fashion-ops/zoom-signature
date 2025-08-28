@@ -695,8 +695,8 @@ function App() {
           </Card>
         )}
 
-        {/* Order Section */}
-        {selectedProduct && (
+        {/* Order Section - Only for Customers */}
+        {selectedProduct && !isAdminView && (
           <Card className="mt-6 max-w-sm mx-auto">
             <CardContent className="p-3">
               <div className="text-center space-y-3">
