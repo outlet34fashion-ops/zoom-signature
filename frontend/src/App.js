@@ -840,11 +840,15 @@ function App() {
               </Button>
               <Button variant="ghost" size="sm" className="text-white hover:bg-pink-600"
                 onClick={() => {
-                  localStorage.removeItem('customerNumber');
-                  setIsAuthenticated(false);
-                  setCurrentCustomer(null);
-                  setCustomerStatus(null);
-                  setIsAdminView(false);
+                  if (isAdminAuthenticated) {
+                    adminLogout();
+                  } else {
+                    localStorage.removeItem('customerNumber');
+                    setIsAuthenticated(false);
+                    setCurrentCustomer(null);
+                    setCustomerStatus(null);
+                    setIsAdminView(false);
+                  }
                 }}
               >
                 {t.logout}
