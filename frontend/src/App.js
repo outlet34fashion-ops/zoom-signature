@@ -198,17 +198,27 @@ function App() {
     connectWebSocket();
     loadInitialData();
     
-    // Check for admin access via URL parameter
-    const urlParams = new URLSearchParams(window.location.search);
-    const isAdminParam = urlParams.get('admin') === 'true';
-    if (isAdminParam) {
+    // Check for admin session
+    const adminSession = localStorage.getItem('adminSession');
+    if (adminSession === 'true') {
+      setIsAdminAuthenticated(true);
       setIsAdminView(true);
-      setIsAuthenticated(true); // Admin bypass
+      setIsAuthenticated(true);
     }
     
-    // Check for stored customer authentication
+    // Check for admin access via URL parameter (fallback)
+    const urlParams = new URLSearchParams(window.location.search);
+    const isAdminParam = urlParams.get('admin') === 'true';
+    if (isAdminParam && !adminSession) {
+      setIsAdminAuthenticated(true);
+      setIsAdminView(true);
+      setIsAuthenticated(true);
+      localStorage.setItem('adminSession', 'true');
+    }
+    
+    // Check for stored customer authentication (only if not admin)
     const storedCustomerNumber = localStorage.getItem('customerNumber');
-    if (storedCustomerNumber && !isAdminParam) {
+    if (storedCustomerNumber && !adminSession && !isAdminParam) {
       checkCustomerStatus(storedCustomerNumber);
     }
 
