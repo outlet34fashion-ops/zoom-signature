@@ -191,6 +191,12 @@ function App() {
 
     connectWebSocket();
     loadInitialData();
+    
+    // Check for stored customer authentication
+    const storedCustomerNumber = localStorage.getItem('customerNumber');
+    if (storedCustomerNumber) {
+      checkCustomerStatus(storedCustomerNumber);
+    }
 
     return () => {
       if (wsRef.current) {
