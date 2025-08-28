@@ -424,6 +424,142 @@ async def get_orders():
     orders = await db.orders.find().sort("timestamp", -1).to_list(100)
     return [Order(**order) for order in orders]
 
+# Customer Management Endpoints
+@api_router.post("/customers/register", response_model=Customer)
+async def register_customer(customer: CustomerCreate):
+    """Register a new customer with pending status"""
+    try:
+        # Check if customer number already exists
+        existing = await db.customers.find_one({"customer_number": customer.customer_number})
+        if existing:
+            raise HTTPException(status_code=400, detail="Customer number already registered")
+        
+        # Check if email already exists
+        existing_email = await db.customers.find_one({"email": customer.email})
+        if existing_email:
+            raise HTTPException(status_code=400, detail="Email already registered")
+        
+        # Create new customer with pending status
+        customer_obj = Customer(
+            customer_number=customer.customer_number,
+            email=customer.email,
+            name=customer.name,
+            activation_status="pending"
+        )
+        
+        # Store in database
+        await db.customers.insert_one(customer_obj.dict())
+        
+        return customer_obj
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Customer registration error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Registration failed")
+
+@api_router.get("/customers/check/{customer_number}")
+async def check_customer_status(customer_number: str):
+    """Check customer registration and activation status"""
+    try:
+        customer = await db.customers.find_one({"customer_number": customer_number})
+        if not customer:
+            return {
+                "exists": False,
+                "activation_status": None,
+                "message": "Customer not registered"
+            }
+        
+        return {
+            "exists": True,
+            "activation_status": customer["activation_status"],
+            "name": customer["name"],
+            "email": customer["email"],
+            "message": f"Customer status: {customer['activation_status']}"
+        }
+        
+    except Exception as e:
+        logging.error(f"Customer status check error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Status check failed")
+
+# Admin Customer Management Endpoints
+@api_router.get("/admin/customers", response_model=List[Customer])
+async def get_all_customers():
+    """Get all customers for admin management"""
+    try:
+        customers = await db.customers.find().sort("created_at", -1).to_list(1000)
+        return [Customer(**customer) for customer in customers]
+    except Exception as e:
+        logging.error(f"Error fetching customers: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to fetch customers")
+
+@api_router.post("/admin/customers/{customer_id}/activate")
+async def activate_customer(customer_id: str):
+    """Activate a customer (admin only)"""
+    try:
+        result = await db.customers.update_one(
+            {"id": customer_id},
+            {"$set": {
+                "activation_status": "active",
+                "updated_at": datetime.now(timezone.utc)
+            }}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Customer not found")
+        
+        # Get updated customer
+        customer = await db.customers.find_one({"id": customer_id})
+        return {"message": "Customer activated successfully", "customer": Customer(**customer)}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Customer activation error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Activation failed")
+
+@api_router.post("/admin/customers/{customer_id}/block")
+async def block_customer(customer_id: str):
+    """Block a customer (admin only)"""
+    try:
+        result = await db.customers.update_one(
+            {"id": customer_id},
+            {"$set": {
+                "activation_status": "blocked",
+                "updated_at": datetime.now(timezone.utc)
+            }}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Customer not found")
+        
+        # Get updated customer
+        customer = await db.customers.find_one({"id": customer_id})
+        return {"message": "Customer blocked successfully", "customer": Customer(**customer)}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Customer blocking error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Blocking failed")
+
+@api_router.delete("/admin/customers/{customer_id}")
+async def delete_customer(customer_id: str):
+    """Delete a customer (admin only)"""
+    try:
+        result = await db.customers.delete_one({"id": customer_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Customer not found")
+        
+        return {"message": "Customer deleted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Customer deletion error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Deletion failed")
+
 # WebSocket endpoint
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
