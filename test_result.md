@@ -232,7 +232,8 @@ metadata:
 test_plan:
   current_focus:
     - "Order chat message format fix"
-  stuck_tasks: []
+  stuck_tasks:
+    - "Order chat message format fix"
   test_all: false
   test_priority: "high_first"
 
