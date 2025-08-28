@@ -302,6 +302,18 @@ test_plan:
         agent: "testing"
         comment: "✅ CUSTOMER STATUS CHECK API FIX VERIFIED: Comprehensive testing completed with 100% success (29/29 tests passed). Specific test for customer status check API fix confirmed: 1) Registered test customer 'FIXED123', 2) Activated via admin API, 3) Called GET /api/customers/check/FIXED123, 4) Verified API response correctly includes customer_number field with value 'FIXED123', 5) Confirmed all other required fields present (exists=true, activation_status='active', name='Test Name', email, profile_image=null, message='Customer status: active'). The backend API is working correctly and returning the customer_number field as expected. This should fix the frontend issue where currentCustomer?.customer_number was undefined."
 
+  - task: "Manual customer creation by admin"
+    implemented: false
+    working: "NA"
+    file: "/app/backend/server.py, /app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "IMPLEMENTING: Adding manual customer creation functionality for admins. Requirements: 1) Admin can manually create customers with all data (customer_number, name, email), 2) Automatically set status to 'active' for admin-created customers, 3) Add backend API endpoint POST /api/admin/customers/create, 4) Add frontend form in admin dashboard for manual customer creation, 5) Integrate with existing customer management UI."
+
 agent_communication:
   - agent: "main"
     message: "Customer management system implementation completed successfully! Backend: All APIs working (registration, status check, admin management). Frontend: Guest blocking with registration message, registration form, pending/active/blocked status handling, and comprehensive admin dashboard with customer management controls. System ready for production use."
