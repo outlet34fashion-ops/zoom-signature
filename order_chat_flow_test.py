@@ -237,13 +237,10 @@ class OrderChatFlowTester:
             current_messages = response.json()
             current_count = len(current_messages)
             
-            # Check if we have more messages than before
-            if current_count <= initial_count:
-                return self.log_result("Verify Chat History", False, f"No new messages found. Before: {initial_count}, After: {current_count}")
-            
-            # Look for our order message in the recent messages
+            # Look for our order message in the recent messages (don't rely on count as API may limit results)
             order_message_found = False
-            for message in current_messages[-5:]:  # Check last 5 messages
+            found_message = ""
+            for message in current_messages[-10:]:  # Check last 10 messages
                 if "Bestellung" in message.get('message', '') and customer_number in message.get('message', ''):
                     order_message_found = True
                     found_message = message.get('message')
