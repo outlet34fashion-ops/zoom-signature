@@ -356,6 +356,10 @@ function App() {
           localStorage.setItem('customerNumber', existingCustomer.customer_number || registrationData.customer_number);
           setShowRegistration(false);
           setRegistrationData({ customer_number: '', email: '', name: '' });
+          
+          // Send login message to chat
+          await sendLoginMessage(existingCustomer.customer_number || registrationData.customer_number);
+          
           return true;
         } else if (existingCustomer.activation_status === 'pending') {
           // Customer exists but is pending
