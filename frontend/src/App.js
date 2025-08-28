@@ -733,7 +733,7 @@ function App() {
     try {
       // Format emoji message like regular chat messages for customers
       const displayName = isAdminAuthenticated ? 'Admin' : username;
-      const customerDisplayNumber = currentCustomer?.customer_number || localStorage.getItem('customerNumber') || '10299';
+      const customerDisplayNumber = getCustomerNumber();
       const formattedMessage = isAdminAuthenticated ? 
         '' : // Admin emojis have no text message
         `Chat ${customerDisplayNumber} I`; // Customer emojis show customer number format
