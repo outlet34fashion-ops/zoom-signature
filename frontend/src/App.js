@@ -269,6 +269,34 @@ function App() {
     }
   };
 
+  // Admin Authentication Functions
+  const adminLogin = () => {
+    setAdminLoginError('');
+    
+    if (adminPin === '1924') {
+      setIsAdminAuthenticated(true);
+      setIsAdminView(true);
+      setIsAuthenticated(true);
+      setShowAdminLogin(false);
+      setAdminPin('');
+      
+      // Store admin session
+      localStorage.setItem('adminSession', 'true');
+    } else {
+      setAdminLoginError('Falscher PIN. Bitte versuchen Sie es erneut.');
+    }
+  };
+
+  const adminLogout = () => {
+    setIsAdminAuthenticated(false);
+    setIsAdminView(false);
+    setIsAuthenticated(false);
+    localStorage.removeItem('adminSession');
+    localStorage.removeItem('customerNumber');
+    setCurrentCustomer(null);
+    setCustomerStatus(null);
+  };
+
   const registerCustomer = async () => {
     try {
       setRegistrationError('');
