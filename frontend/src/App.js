@@ -338,6 +338,18 @@ function App() {
     setIsAdminView(false);
   };
 
+  const sendAdminNotification = async (message) => {
+    try {
+      await axios.post(`${API}/chat`, {
+        username: 'System',
+        message: `🔔 ADMIN: ${message}`,
+        emoji: ''
+      });
+    } catch (error) {
+      console.error('Error sending admin notification:', error);
+    }
+  };
+
   const sendLoginMessage = async (customerNumber) => {
     try {
       await axios.post(`${API}/chat`, {
