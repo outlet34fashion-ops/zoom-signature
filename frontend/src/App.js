@@ -268,12 +268,13 @@ function App() {
   };
 
   const sendMessage = async () => {
-    if (!newMessage.trim() || !username.trim()) return;
+    if (!newMessage.trim()) return;
 
     try {
+      // Format chat message: "Chat 10299 I [Nachricht]"
       await axios.post(`${API}/chat`, {
         username: username,
-        message: newMessage,
+        message: `Chat 10299 I ${newMessage}`,
         emoji: ''
       });
       setNewMessage('');
