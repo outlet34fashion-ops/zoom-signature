@@ -105,20 +105,53 @@
 user_problem_statement: "Implement comprehensive customer management system with: 1) Backend customer database (customer_number, email, name, activation_status), 2) Admin approval/blocking functionality, 3) Customer registration process that creates pending status, 4) Guest blocking with registration message, 5) Admin dashboard for customer management"
 
 backend:
-  - task: "Zoom JWT token generation for authentication"
-    implemented: true
-    working: true
+  - task: "Customer database model and schema"
+    implemented: false
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Starting customer management system implementation. Need to add Customer model with fields: customer_number, email, name, activation_status (pending/active/blocked)"
+
+  - task: "Customer registration API endpoint"
+    implemented: false
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Need to create /api/customers/register endpoint that creates customers in pending status"
+
+  - task: "Admin customer management API endpoints"
+    implemented: false
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Need to create admin endpoints: GET /api/admin/customers, POST /api/admin/customers/{id}/activate, POST /api/admin/customers/{id}/block"
+
+  - task: "Customer authentication middleware"
+    implemented: false
+    working: "NA"
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
-      - working: true
+      - working: "NA"
         agent: "main"
-        comment: "Backend has proper Zoom SDK integration with JWT token generation, but frontend is using direct meeting links instead of SDK"
-      - working: true
-        agent: "testing"
-        comment: "COMPREHENSIVE BACKEND TESTING COMPLETED: All backend systems verified and working perfectly. Fixed JWT token validation issue (audience parameter). All 17 backend tests passing (100% success rate). WebSocket connections working, chat system functional, order management operational, admin features working, and Zoom integration fully tested including token generation, session creation, and validation."
+        comment: "Need middleware to check customer status for protected routes"
 
 frontend:
   - task: "Fix Zoom login screen appearing for customers"
