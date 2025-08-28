@@ -229,12 +229,23 @@ metadata:
   test_sequence: 0
   run_ui: false
 
+  - task: "Customer authentication flow fix"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "CRITICAL AUTHENTICATION ISSUE IDENTIFIED: Testing revealed customers cannot login even after admin activation. Created separate customer login interface that only requires customer number (not email/name like registration). Added customerLogin() function that properly handles authentication state. Separated login and registration flows for better UX. Changes: 1) Added showCustomerLogin state, 2) Created customerLogin() function with proper error handling, 3) Added separate login UI that calls checkCustomerStatus(), 4) Improved main landing page with separate Login/Register buttons, 5) Fixed authentication state management. This should resolve the blocking authentication issue."
+
 test_plan:
   current_focus:
     - "Customer authentication flow fix"
     - "Order chat message format fix"
-  stuck_tasks:
-    - "Order chat message format fix"
+  stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
