@@ -56,6 +56,7 @@ function App() {
   
   // Customer Management Filter States
   const [customerFilter, setCustomerFilter] = useState('all'); // 'all', 'pending', 'blocked'
+  const [customerSearch, setCustomerSearch] = useState(''); // Search by customer number
   
   const chatRef = useRef(null);
   const wsRef = useRef(null);
