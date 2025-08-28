@@ -580,6 +580,59 @@ function App() {
                       Andere Kundennummer verwenden
                     </Button>
                   </div>
+                ) : showAdminLogin ? (
+                  <div className="space-y-4">
+                    <h2 className="text-xl font-semibold text-gray-800">🔐 Admin-Anmeldung</h2>
+                    
+                    {adminLoginError && (
+                      <div className="bg-red-100 border border-red-300 rounded-lg p-3">
+                        <p className="text-red-700 text-sm">{adminLoginError}</p>
+                      </div>
+                    )}
+                    
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Admin PIN
+                        </label>
+                        <Input
+                          type="password"
+                          placeholder="Admin PIN eingeben"
+                          value={adminPin}
+                          onChange={(e) => setAdminPin(e.target.value)}
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              adminLogin();
+                            }
+                          }}
+                          className="w-full text-center text-lg tracking-widest"
+                          maxLength="4"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="flex space-x-3">
+                      <Button 
+                        variant="outline"
+                        onClick={() => {
+                          setShowAdminLogin(false);
+                          setAdminLoginError('');
+                          setAdminPin('');
+                        }}
+                        className="flex-1"
+                      >
+                        Zurück
+                      </Button>
+                      <Button 
+                        onClick={adminLogin}
+                        disabled={!adminPin}
+                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                      >
+                        Anmelden
+                      </Button>
+                    </div>
+                  </div>
                 ) : !showRegistration ? (
                   <div className="space-y-4">
                     <div className="bg-blue-100 border border-blue-300 rounded-lg p-4">
