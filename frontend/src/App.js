@@ -538,6 +538,13 @@ function App() {
 
   const deleteProfileImage = async (customerNumber) => {
     try {
+      if (!customerNumber || customerNumber === 'undefined') {
+        console.error('Invalid customer number for delete:', customerNumber);
+        return;
+      }
+      
+      console.log('Deleting image for customer number:', customerNumber);
+      
       await axios.delete(`${API}/customers/${customerNumber}/profile-image`);
       
       // Update current customer data if it's the same customer
@@ -548,9 +555,13 @@ function App() {
         }));
       }
       
+      // Reload customer status to get updated profile
+      await checkCustomerStatus(customerNumber);
+      
       loadCustomers(); // Refresh admin list if needed
     } catch (error) {
       console.error('Error deleting profile image:', error);
+      alert('Fehler beim Löschen des Profilbildes. Bitte versuchen Sie es erneut.');
     }
   };
 
