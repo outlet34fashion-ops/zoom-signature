@@ -434,11 +434,16 @@ function App() {
     if (!newMessage.trim()) return;
 
     try {
-      // Format chat message: "Chat 10299 I [Nachricht]"
+      // Format chat message: Admin messages show as "Admin", customer messages show customer number
+      const displayName = isAdminAuthenticated ? 'Admin' : username;
       const customerDisplayNumber = currentCustomer?.customer_number || '10299';
+      const formattedMessage = isAdminAuthenticated ? 
+        `${newMessage}` : 
+        `Chat ${customerDisplayNumber} I ${newMessage}`;
+      
       await axios.post(`${API}/chat`, {
-        username: username,
-        message: `Chat ${customerDisplayNumber} I ${newMessage}`,
+        username: displayName,
+        message: formattedMessage,
         emoji: ''
       });
       setNewMessage('');
