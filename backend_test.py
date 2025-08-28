@@ -2015,11 +2015,17 @@ class LiveShoppingAPITester:
 
     def run_all_tests(self):
         """Run all backend API tests"""
+    def run_all_tests(self):
+        """Run all backend API tests"""
         print("🚀 Starting Live Shopping App Backend API Tests")
         print(f"🔗 Testing against: {self.base_url}")
         print("=" * 60)
 
-        # CRITICAL BUG TEST FIRST - User reported issue
+        # PRIORITY 1: CRITICAL AUTHENTICATION ISSUE TEST (as per review request)
+        print("\n🚨 PRIORITY 1: CRITICAL AUTHENTICATION ISSUE TEST...")
+        critical_auth_success = self.test_critical_authentication_issue()
+
+        # CRITICAL BUG TEST - User reported issue
         print("\n🚨 CRITICAL BUG TESTS (User Reported Issues)...")
         critical_success = self.test_critical_order_chat_integration()
 
@@ -2081,6 +2087,7 @@ class LiveShoppingAPITester:
 
         # Critical functionality check
         critical_tests = [
+            ("🚨 CRITICAL AUTH ISSUE (Customer 10299)", critical_auth_success),
             ("CRITICAL BUG TEST", critical_success),
             ("API Root", any(r['name'] == 'API Root' and r['success'] for r in self.test_results)),
             ("Stream Status", stream_success),
