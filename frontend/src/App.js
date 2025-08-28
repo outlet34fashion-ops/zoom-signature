@@ -1041,23 +1041,62 @@ function App() {
                 
                 <div className="bg-white/10 rounded-lg p-4">
                   <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-semibold">Registrierte Kunden ({customers.length})</h3>
-                    <Button 
-                      onClick={loadCustomers}
-                      className="bg-white/20 hover:bg-white/30 text-white"
-                      size="sm"
-                    >
-                      🔄 Aktualisieren
-                    </Button>
+                    <h3 className="text-lg font-semibold">
+                      Registrierte Kunden ({customers.filter(c => {
+                        if (customerFilter === 'pending') return c.activation_status === 'pending';
+                        if (customerFilter === 'blocked') return c.activation_status === 'blocked';
+                        return true;
+                      }).length})
+                    </h3>
+                    <div className="flex space-x-2">
+                      <Button 
+                        onClick={() => setCustomerFilter('pending')}
+                        className={customerFilter === 'pending' ? "bg-yellow-500 hover:bg-yellow-600 text-white" : "bg-white/20 hover:bg-white/30 text-white"}
+                        size="sm"
+                      >
+                        ⏳ Freigabe ({customers.filter(c => c.activation_status === 'pending').length})
+                      </Button>
+                      <Button 
+                        onClick={() => setCustomerFilter('blocked')}
+                        className={customerFilter === 'blocked' ? "bg-red-500 hover:bg-red-600 text-white" : "bg-white/20 hover:bg-white/30 text-white"}
+                        size="sm"
+                      >
+                        🚫 Gesperrt ({customers.filter(c => c.activation_status === 'blocked').length})
+                      </Button>
+                      <Button 
+                        onClick={() => setCustomerFilter('all')}
+                        className={customerFilter === 'all' ? "bg-blue-500 hover:bg-blue-600 text-white" : "bg-white/20 hover:bg-white/30 text-white"}
+                        size="sm"
+                      >
+                        📋 Alle
+                      </Button>
+                      <Button 
+                        onClick={loadCustomers}
+                        className="bg-white/20 hover:bg-white/30 text-white"
+                        size="sm"
+                      >
+                        🔄 Aktualisieren
+                      </Button>
+                    </div>
                   </div>
                   
                   <div className="space-y-3 max-h-64 overflow-y-auto">
-                    {customers.length === 0 ? (
+                    {customers.filter(customer => {
+                      if (customerFilter === 'pending') return customer.activation_status === 'pending';
+                      if (customerFilter === 'blocked') return customer.activation_status === 'blocked';
+                      return true;
+                    }).length === 0 ? (
                       <p className="text-white/70 text-center py-4">
-                        Noch keine Kunden registriert
+                        {customerFilter === 'pending' ? 'Keine wartenden Kunden' : 
+                         customerFilter === 'blocked' ? 'Keine gesperrten Kunden' : 
+                         'Noch keine Kunden registriert'}
                       </p>
                     ) : (
-                      customers.map((customer) => (
+                      customers.filter(customer => {
+                        if (customerFilter === 'pending') return customer.activation_status === 'pending';
+                        if (customerFilter === 'blocked') return customer.activation_status === 'blocked';
+                        return true;
+                      }).map((customer) => (
                         <div key={customer.id} className="bg-white/20 rounded-lg p-3">
                           <div className="flex justify-between items-start">
                             <div className="flex-1">
