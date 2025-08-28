@@ -246,10 +246,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Customer status integration with existing features"
+    - "CRITICAL BUG: Order placement and chat integration"
   stuck_tasks: []
   test_all: false
-  test_priority: "high_first"
+  test_priority: "critical_first"
 
   - task: "Order chat message format fix"
     implemented: true
