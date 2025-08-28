@@ -765,20 +765,7 @@ function App() {
       });
 
       // Automatic customer number detection - try all available sources
-      let customerDisplayNumber = '10299'; // fallback
-      
-      // Priority 1: currentCustomer (from successful login)
-      if (currentCustomer?.customer_number) {
-        customerDisplayNumber = currentCustomer.customer_number;
-      } 
-      // Priority 2: localStorage (from previous session)
-      else if (localStorage.getItem('customerNumber')) {
-        customerDisplayNumber = localStorage.getItem('customerNumber');
-      } 
-      // Priority 3: actualCustomerId (if it's not the random ID)
-      else if (actualCustomerId && actualCustomerId !== customerId && !actualCustomerId.startsWith('customer_')) {
-        customerDisplayNumber = actualCustomerId;
-      }
+      let customerDisplayNumber = getCustomerNumber();
       
       // Send formatted order message to chat with bold "Bestellung"
       const orderChatMessage = `**Bestellung** ${customerDisplayNumber} I ${quantity}x I ${selectedPrice.toFixed(2)} I ${selectedSize}`;
