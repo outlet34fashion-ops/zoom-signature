@@ -231,7 +231,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Order chat message format fix"
+    - "Customer status check API fix"
   stuck_tasks:
     - "Order chat message format fix"
   test_all: false
