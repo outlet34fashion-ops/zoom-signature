@@ -58,6 +58,11 @@ function App() {
   const [customerFilter, setCustomerFilter] = useState('all'); // 'all', 'pending', 'blocked'
   const [customerSearch, setCustomerSearch] = useState(''); // Search by customer number
   
+  // Profile Image States
+  const [showProfileImageUpload, setShowProfileImageUpload] = useState(false);
+  const [profileImageFile, setProfileImageFile] = useState(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  
   const chatRef = useRef(null);
   const wsRef = useRef(null);
 
