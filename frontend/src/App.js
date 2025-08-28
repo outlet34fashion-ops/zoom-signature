@@ -492,7 +492,56 @@ function App() {
             />
           </div>
 
-          {/* Chat Sidebar */}
+          {/* Order Section - Only for Customers - MOVED UP */}
+          {selectedProduct && !isAdminView && (
+            <Card className="max-w-sm mx-auto">
+              <CardContent className="p-3">
+                <div className="text-center space-y-3">
+                  <div>
+                    <div className="text-xs text-gray-600">{t.size}</div>
+                    <div className="font-medium text-sm">{selectedSize}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-600">Händlerpreis</div>
+                    <div className="font-bold text-pink-600 text-lg">
+                      {selectedPrice.toFixed(2)} €
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-center space-x-3">
+                    <span className="text-sm">{t.quantity}</span>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      className="h-7 w-7 p-0"
+                    >
+                      -
+                    </Button>
+                    <span className="font-medium text-sm w-8 text-center">{quantity}</span>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setQuantity(quantity + 1)}
+                      className="h-7 w-7 p-0"
+                    >
+                      +
+                    </Button>
+                  </div>
+                  <Button 
+                    onClick={placeOrder}
+                    className="w-full bg-pink-500 hover:bg-pink-600 text-white py-2 text-sm"
+                  >
+                    🛒 {t.order}
+                  </Button>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Alle Preise netto, zzgl. Versand*
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Chat Sidebar - MOVED DOWN */}
           <div className="space-y-4">
             <Card>
               <CardContent className="p-4">
@@ -686,55 +735,6 @@ function App() {
                 <Button className="bg-green-600 hover:bg-green-700 text-white">
                   ⚠️ {t.sendPriceSize}
                 </Button>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Order Section - Only for Customers */}
-        {selectedProduct && !isAdminView && (
-          <Card className="mt-6 max-w-sm mx-auto">
-            <CardContent className="p-3">
-              <div className="text-center space-y-3">
-                <div>
-                  <div className="text-xs text-gray-600">{t.size}</div>
-                  <div className="font-medium text-sm">{selectedSize}</div>
-                </div>
-                <div>
-                  <div className="text-xs text-gray-600">Händlerpreis</div>
-                  <div className="font-bold text-pink-600 text-lg">
-                    {selectedPrice.toFixed(2)} €
-                  </div>
-                </div>
-                <div className="flex items-center justify-center space-x-3">
-                  <span className="text-sm">{t.quantity}</span>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="h-7 w-7 p-0"
-                  >
-                    -
-                  </Button>
-                  <span className="font-medium text-sm w-8 text-center">{quantity}</span>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => setQuantity(quantity + 1)}
-                    className="h-7 w-7 p-0"
-                  >
-                    +
-                  </Button>
-                </div>
-                <Button 
-                  onClick={placeOrder}
-                  className="w-full bg-pink-500 hover:bg-pink-600 text-white py-2 text-sm"
-                >
-                  🛒 {t.order}
-                </Button>
-                <p className="text-xs text-gray-500 mt-2">
-                  Alle Preise netto, zzgl. Versand*
-                </p>
               </div>
             </CardContent>
           </Card>
