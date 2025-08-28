@@ -970,7 +970,7 @@ function App() {
       <div className="container mx-auto px-4 py-6">
         
         {/* Admin Dashboard */}
-        {isAdminView && (
+        {isAdminAuthenticated && isAdminView && (
           <div className="space-y-6">
             <Card className="mb-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white">
               <CardContent className="p-6">
