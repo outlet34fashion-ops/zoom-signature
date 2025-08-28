@@ -413,6 +413,9 @@ function App() {
         // Store customer number in localStorage for future sessions
         localStorage.setItem('customerNumber', customerData.customer_number);
         
+        // Send admin notification for new registration
+        await sendAdminNotification(`Neue Registrierung: ${customerData.name} (${customerData.customer_number}) wartet auf Freischaltung`);
+        
         return true;
       }
     } catch (error) {
