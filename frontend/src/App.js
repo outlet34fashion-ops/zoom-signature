@@ -676,7 +676,15 @@ function App() {
               >
                 {t.adminView}
               </Button>
-              <Button variant="ghost" size="sm" className="text-white hover:bg-pink-600">
+              <Button variant="ghost" size="sm" className="text-white hover:bg-pink-600"
+                onClick={() => {
+                  localStorage.removeItem('customerNumber');
+                  setIsAuthenticated(false);
+                  setCurrentCustomer(null);
+                  setCustomerStatus(null);
+                  setIsAdminView(false);
+                }}
+              >
                 {t.logout}
               </Button>
             </div>
