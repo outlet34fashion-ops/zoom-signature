@@ -847,35 +847,28 @@ function App() {
       // Get customer ID for the order API
       const actualCustomerId = currentCustomer?.customer_number || localStorage.getItem('customerNumber') || customerId;
       
-      // Place the order first
-      await axios.post(`${API}/orders`, {
+      console.log('Placing order for customer:', actualCustomerId);
+      
+      // Place the order first - Backend will automatically send WebSocket notification
+      const orderResponse = await axios.post(`${API}/orders`, {
         customer_id: actualCustomerId,
         product_id: selectedProduct.id,
         size: selectedSize,
         quantity: quantity,
         price: selectedPrice
       });
-
-      // Automatic customer number detection - try all available sources
-      let customerDisplayNumber = getCustomerNumber();
       
-      // Send formatted order message to chat with bold "Bestellung"
-      const orderChatMessage = `**Bestellung** ${customerDisplayNumber} I ${quantity}x I ${selectedPrice.toFixed(2)} I ${selectedSize}`;
-      
-      // Send order message to chat via API
-      await axios.post(`${API}/chat`, {
-        username: 'System',
-        message: orderChatMessage,
-        emoji: ''
-      });
+      console.log('Order placed successfully:', orderResponse.data);
 
       // Reload customer's last order to update the display
       if (actualCustomerId && actualCustomerId !== '10299') {
-        loadCustomerLastOrder(actualCustomerId);
+        console.log('Reloading last order for customer:', actualCustomerId);
+        await loadCustomerLastOrder(actualCustomerId);
       }
 
     } catch (error) {
       console.error('Error placing order:', error);
+      alert('Fehler beim Bestellen. Bitte versuchen Sie es erneut.');
     }
   };
 
