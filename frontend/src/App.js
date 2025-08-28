@@ -264,6 +264,18 @@ function App() {
     }
   };
 
+  // Helper function to format bold text in messages
+  const formatMessage = (message) => {
+    // Convert **text** to <strong>text</strong>
+    if (message.includes('**')) {
+      const parts = message.split('**');
+      return parts.map((part, index) => 
+        index % 2 === 1 ? <strong key={index}>{part}</strong> : part
+      );
+    }
+    return message;
+  };
+
   // Customer Management Functions
   const checkCustomerStatus = async (customerNumber) => {
     try {
