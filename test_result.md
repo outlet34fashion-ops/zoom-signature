@@ -238,11 +238,11 @@ test_plan:
 
   - task: "Order chat message format fix"
     implemented: true
-    working: true
+    working: false
     file: "/app/frontend/src/App.js"
-    stuck_count: 2
+    stuck_count: 3
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
@@ -262,6 +262,9 @@ test_plan:
       - working: true
         agent: "testing"
         comment: "✅ BACKEND FUNCTIONALITY VERIFIED: Comprehensive testing confirms all backend APIs are working correctly. Customer management (registration, activation, status check with customer_number field), Chat API (message storage/retrieval), Orders API (placement with correct pricing), and WebSocket (real-time broadcasting) all function properly. Backend generates correct order message format 'Bestellung [customer_id] | [qty] | [price] | [size]'. The main agent's frontend fix should resolve the customer number display issue. Backend is solid - any remaining issues are frontend implementation details."
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL AUTHENTICATION ISSUE IDENTIFIED: Comprehensive testing of order-to-chat functionality reveals customer authentication is failing even after admin activation. Tested complete flow: 1) Customer registration (TEST2025) - SUCCESS, 2) Admin activation via dashboard - SUCCESS (customer shows as 'Aktiv'), 3) Customer login attempt - FAILED (authentication not working despite activation). Root cause: Customer authentication flow is broken - even activated customers cannot login to access order functionality. This prevents testing of the actual order-to-chat fixes. The frontend fixes for customer number resolution (lines 688, 642) and bold formatting (formatMessage function) appear correctly implemented in code, but cannot be verified due to authentication blocking access to authenticated customer features. REQUIRES IMMEDIATE FIX of customer authentication flow before order-to-chat functionality can be properly tested."
 
   - task: "Customer status check API fix"
     implemented: true
