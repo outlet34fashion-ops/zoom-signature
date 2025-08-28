@@ -457,6 +457,188 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Guest Registration/Blocking Screen */}
+      {!isAuthenticated && !isAdminView && (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-400 to-purple-600">
+          <Card className="w-full max-w-md mx-4">
+            <CardContent className="p-8">
+              <div className="text-center space-y-6">
+                <h1 className="text-2xl font-bold text-gray-800">OUTLET34 Live Shopping</h1>
+                
+                {customerStatus === 'pending' ? (
+                  <div className="space-y-4">
+                    <div className="bg-yellow-100 border border-yellow-300 rounded-lg p-4">
+                      <h2 className="text-lg font-semibold text-yellow-800 mb-2">
+                        Anmeldung eingegangen ✓
+                      </h2>
+                      <p className="text-yellow-700">
+                        Ihre Registrierung wird derzeit geprüft. Sie werden aktiviert, sobald die Prüfung abgeschlossen ist.
+                      </p>
+                    </div>
+                    
+                    {currentCustomer && (
+                      <div className="text-left bg-gray-50 rounded-lg p-4">
+                        <p><strong>Kundennummer:</strong> {currentCustomer.customer_number || 'N/A'}</p>
+                        <p><strong>Name:</strong> {currentCustomer.name || 'N/A'}</p>
+                        <p><strong>E-Mail:</strong> {currentCustomer.email || 'N/A'}</p>
+                      </div>
+                    )}
+                    
+                    <Button 
+                      variant="outline" 
+                      onClick={() => {
+                        localStorage.removeItem('customerNumber');
+                        setCurrentCustomer(null);
+                        setCustomerStatus(null);
+                      }}
+                      className="w-full"
+                    >
+                      Andere Kundennummer verwenden
+                    </Button>
+                  </div>
+                ) : customerStatus === 'blocked' ? (
+                  <div className="space-y-4">
+                    <div className="bg-red-100 border border-red-300 rounded-lg p-4">
+                      <h2 className="text-lg font-semibold text-red-800 mb-2">
+                        Konto gesperrt ⚠️
+                      </h2>
+                      <p className="text-red-700">
+                        Ihr Kundenkonto wurde gesperrt. Bitte kontaktieren Sie unseren Support.
+                      </p>
+                    </div>
+                    
+                    <Button 
+                      variant="outline" 
+                      onClick={() => {
+                        localStorage.removeItem('customerNumber');
+                        setCurrentCustomer(null);
+                        setCustomerStatus(null);
+                      }}
+                      className="w-full"
+                    >
+                      Andere Kundennummer verwenden
+                    </Button>
+                  </div>
+                ) : !showRegistration ? (
+                  <div className="space-y-4">
+                    <div className="bg-blue-100 border border-blue-300 rounded-lg p-4">
+                      <h2 className="text-lg font-semibold text-blue-800 mb-2">
+                        Registrierung erforderlich 📝
+                      </h2>
+                      <p className="text-blue-700 mb-4">
+                        Das Live-Event ist nur nach Registrierung bei{' '}
+                        <a 
+                          href="https://www.outlet34fashion.com/registrieren" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="font-semibold underline hover:text-blue-900"
+                        >
+                          https://www.outlet34fashion.com/registrieren
+                        </a>
+                        {' '}möglich.
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <p className="text-gray-600">Bereits registriert? Hier anmelden:</p>
+                      <Button 
+                        onClick={() => setShowRegistration(true)}
+                        className="w-full bg-pink-500 hover:bg-pink-600 text-white"
+                      >
+                        Zur Live-App Anmeldung
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <h2 className="text-xl font-semibold text-gray-800">Live-App Anmeldung</h2>
+                    
+                    {registrationError && (
+                      <div className="bg-red-100 border border-red-300 rounded-lg p-3">
+                        <p className="text-red-700 text-sm">{registrationError}</p>
+                      </div>
+                    )}
+                    
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Kundennummer
+                        </label>
+                        <Input
+                          type="text"
+                          placeholder="Ihre Kundennummer"
+                          value={registrationData.customer_number}
+                          onChange={(e) => setRegistrationData(prev => ({
+                            ...prev,
+                            customer_number: e.target.value
+                          }))}
+                          className="w-full"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          E-Mail
+                        </label>
+                        <Input
+                          type="email"
+                          placeholder="ihre@email.de"
+                          value={registrationData.email}
+                          onChange={(e) => setRegistrationData(prev => ({
+                            ...prev,
+                            email: e.target.value
+                          }))}
+                          className="w-full"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Name
+                        </label>
+                        <Input
+                          type="text"
+                          placeholder="Ihr vollständiger Name"
+                          value={registrationData.name}
+                          onChange={(e) => setRegistrationData(prev => ({
+                            ...prev,
+                            name: e.target.value
+                          }))}
+                          className="w-full"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="flex space-x-3">
+                      <Button 
+                        variant="outline"
+                        onClick={() => {
+                          setShowRegistration(false);
+                          setRegistrationError('');
+                        }}
+                        className="flex-1"
+                      >
+                        Zurück
+                      </Button>
+                      <Button 
+                        onClick={registerCustomer}
+                        disabled={!registrationData.customer_number || !registrationData.email || !registrationData.name}
+                        className="flex-1 bg-pink-500 hover:bg-pink-600 text-white"
+                      >
+                        Anmelden
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Main App - Only show if authenticated or admin */}
+      {(isAuthenticated || isAdminView) && (
+      <>
       {/* Header */}
       <header className="bg-pink-500 text-white">
         <div className="container mx-auto px-4 py-2">
