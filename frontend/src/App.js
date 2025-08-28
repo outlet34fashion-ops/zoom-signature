@@ -267,6 +267,21 @@ function App() {
     }
   };
 
+  // Helper function for automatic customer number detection
+  const getCustomerNumber = () => {
+    // Automatic detection with multiple fallbacks
+    if (currentCustomer?.customer_number) {
+      return currentCustomer.customer_number;
+    }
+    
+    const storedNumber = localStorage.getItem('customerNumber');
+    if (storedNumber) {
+      return storedNumber;
+    }
+    
+    return '10299'; // fallback
+  };
+
   // Helper function to format bold text in messages
   const formatMessage = (message) => {
     // Convert **text** to <strong>text</strong>
