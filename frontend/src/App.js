@@ -1651,103 +1651,199 @@ function App() {
             </div>
           )}
 
-          {/* Chat Sidebar - MOVED DOWN */}
+          {/* Split View - Chat and Orders */}
           <div className="space-y-4">
             <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-semibold flex items-center">
-                    <MessageCircle className="mr-2" size={20} />
-                    {t.welcomeMessage}
-                  </h3>
+              <CardContent className="p-0">
+                {/* Tab Header */}
+                <div className="grid grid-cols-2 bg-gray-100">
+                  <button
+                    onClick={() => setActiveView('orders')}
+                    className={`py-3 px-4 text-center font-medium transition-colors ${
+                      activeView === 'orders'
+                        ? 'bg-pink-500 text-white'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    📋 Bestellungen
+                  </button>
+                  <button
+                    onClick={() => setActiveView('chat')}
+                    className={`py-3 px-4 text-center font-medium transition-colors ${
+                      activeView === 'chat'
+                        ? 'bg-pink-500 text-white'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    💬 Chat
+                  </button>
                 </div>
 
-                {/* Chat Messages */}
-                <div 
-                  ref={chatRef}
-                  className="h-64 overflow-y-auto bg-gray-50 rounded p-3 mb-4 space-y-2"
-                >
-                  {chatMessages.map((msg) => (
-                    <div key={msg.id} className="text-sm">
-                      {msg.username === 'System' ? (
-                        <div className="text-gray-600 font-medium">
-                          {formatMessage(msg.message)}
-                        </div>
-                      ) : msg.username === 'Admin' ? (
-                        <div>
-                          <span className="font-bold text-red-600">
-                            👑 Admin {msg.emoji && <span className="ml-1">{msg.emoji}</span>}
-                          </span>
-                          {msg.message && (
-                            <span className="ml-2 text-gray-600">{msg.message}</span>
-                          )}
-                        </div>
-                      ) : (
-                        <div>
-                          <span className="font-medium text-blue-600">
-                            #{extractCustomerNumber(msg.username)} {msg.emoji && <span className="ml-1">{msg.emoji}</span>}
-                          </span>
-                          {msg.message && (
-                            <span className="ml-2 text-gray-600">{msg.message}</span>
-                          )}
-                        </div>
-                      )}
+                {/* Tab Content */}
+                <div className="p-4">
+                  {activeView === 'orders' ? (
+                    /* Orders View */
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-semibold flex items-center">
+                          <ShoppingCart className="mr-2" size={20} />
+                          Bestellungen
+                        </h3>
+                      </div>
+                      
+                      {/* Orders List */}
+                      <div className="h-64 overflow-y-auto bg-gray-50 rounded p-3 space-y-2">
+                        {chatMessages
+                          .filter(msg => msg.message.includes('Bestellung'))
+                          .map((msg) => (
+                            <div key={msg.id} className="text-sm bg-white rounded p-2 border-l-4 border-pink-500">
+                              <div className="font-medium text-pink-600">
+                                {formatMessage(msg.message)}
+                              </div>
+                              <div className="text-xs text-gray-500 mt-1">
+                                {new Date(msg.timestamp || Date.now()).toLocaleTimeString()}
+                              </div>
+                            </div>
+                          ))}
+                        {chatMessages.filter(msg => msg.message.includes('Bestellung')).length === 0 && (
+                          <div className="text-center text-gray-500 py-8">
+                            Noch keine Bestellungen
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  ))}
+                  ) : (
+                    /* Chat View */
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-semibold flex items-center">
+                          <MessageCircle className="mr-2" size={20} />
+                          {t.welcomeMessage}
+                        </h3>
+                      </div>
+
+                      {/* Chat Messages */}
+                      <div 
+                        ref={chatRef}
+                        className="h-64 overflow-y-auto bg-gray-50 rounded p-3 space-y-2"
+                      >
+                        {chatMessages
+                          .filter(msg => !msg.message.includes('Bestellung'))
+                          .map((msg) => (
+                            <div key={msg.id} className="text-sm">
+                              {msg.username === 'System' ? (
+                                <div className="text-gray-600 font-medium">
+                                  {formatMessage(msg.message)}
+                                </div>
+                              ) : msg.username === 'Admin' ? (
+                                <div>
+                                  <span className="font-bold text-red-600">
+                                    👑 Admin {msg.emoji && <span className="ml-1">{msg.emoji}</span>}
+                                  </span>
+                                  {msg.message && (
+                                    <span className="ml-2 text-gray-600">{msg.message}</span>
+                                  )}
+                                </div>
+                              ) : (
+                                <div>
+                                  <span className="font-medium text-blue-600">
+                                    #{extractCustomerNumber(msg.username)} {msg.emoji && <span className="ml-1">{msg.emoji}</span>}
+                                  </span>
+                                  {msg.message && (
+                                    <span className="ml-2 text-gray-600">{msg.message}</span>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                      </div>
+
+                      {/* Chat Input */}
+                      <div className="space-y-3">
+                        <div className="flex space-x-2">
+                          <Input
+                            placeholder={t.chatPlaceholder}
+                            value={newMessage}
+                            onChange={(e) => setNewMessage(e.target.value)}
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                sendMessage();
+                              }
+                            }}
+                            className="flex-1"
+                          />
+                          <Button 
+                            onClick={sendMessage}
+                            className="bg-pink-500 hover:bg-pink-600"
+                            size="sm"
+                          >
+                            {t.send}
+                          </Button>
+                        </div>
+
+                        {/* Quick Action Buttons - Only for Admin */}
+                        {isAdminView && (
+                          <div className="grid grid-cols-2 gap-2">
+                            <Button 
+                              size="sm" 
+                              className="bg-orange-500 hover:bg-orange-600 text-white text-xs"
+                              onClick={() => sendEmoji('🔥')}
+                            >
+                              🔥 {t.topseller}
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              className="bg-purple-500 hover:bg-purple-600 text-white text-xs"
+                              onClick={() => sendEmoji('🆕')}
+                            >
+                              🆕 {t.newIn}
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              className="bg-teal-500 hover:bg-teal-600 text-white text-xs"
+                              onClick={() => sendEmoji('💸')}
+                            >
+                              💸 {t.sale}
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              className="bg-red-500 hover:bg-red-600 text-white text-xs"
+                              onClick={() => sendEmoji('💖')}
+                            >
+                              💖 {t.specialOffer}
+                            </Button>
+                          </div>
+                        )}
+
+                        {/* Emoji Reactions - For all users */}
+                        <div className="flex space-x-2 justify-center">
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => sendEmoji('❤️')}
+                          >
+                            ❤️
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => sendEmoji('🔥')}
+                          >
+                            🔥
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => sendEmoji('👍')}
+                          >
+                            👍
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
-
-                {/* Chat Input */}
-                <div className="space-y-3">
-                  <div className="flex space-x-2">
-                    <Input
-                      placeholder={t.chatPlaceholder}
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          sendMessage();
-                        }
-                      }}
-                      className="flex-1"
-                    />
-                    <Button 
-                      onClick={sendMessage}
-                      className="bg-pink-500 hover:bg-pink-600"
-                      size="sm"
-                    >
-                      {t.send}
-                    </Button>
-                  </div>
-
-                  {/* Quick Action Buttons - Only for Admin */}
-                  {isAdminView && (
-                    <div className="grid grid-cols-2 gap-2">
-                      <Button 
-                        size="sm" 
-                        className="bg-orange-500 hover:bg-orange-600 text-white text-xs"
-                        onClick={() => sendEmoji('🔥')}
-                      >
-                        🔥 {t.topseller}
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        className="bg-purple-500 hover:bg-purple-600 text-white text-xs"
-                        onClick={() => sendEmoji('🆕')}
-                      >
-                        🆕 {t.newIn}
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        className="bg-teal-500 hover:bg-teal-600 text-white text-xs"
-                        onClick={() => sendEmoji('💸')}
-                      >
-                        💸 {t.sale}
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        className="bg-red-500 hover:bg-red-600 text-white text-xs"
-                        onClick={() => sendEmoji('💖')}
                       >
                         💖 {t.specialOffer}
                       </Button>
