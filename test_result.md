@@ -222,7 +222,9 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Customer authentication middleware"
+    - "Guest blocking and registration message"
+    - "Customer registration form"
+    - "Admin customer management dashboard"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
