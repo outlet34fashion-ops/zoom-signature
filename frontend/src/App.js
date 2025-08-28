@@ -1207,7 +1207,7 @@ function App() {
                                 <div className="font-bold text-lg text-yellow-200">
                                   #{customer.customer_number}
                                 </div>
-                                {/* Name Second */}
+                                {/* Name Second - ONLY FOR ADMIN INTERNAL USE */}
                                 <div className="font-medium text-white">
                                   {customer.name}
                                 </div>
@@ -1217,37 +1217,6 @@ function App() {
                                 </div>
                                 <div className="text-xs opacity-75">
                                   📅 Registriert: {new Date(customer.created_at).toLocaleDateString('de-DE')}
-                                </div>
-                                
-                                {/* Profile Image Upload */}
-                                <div className="mt-2">
-                                  <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={(e) => {
-                                      if (e.target.files && e.target.files[0]) {
-                                        uploadProfileImage(customer.id, e.target.files[0]);
-                                      }
-                                    }}
-                                    className="hidden"
-                                    id={`profile-upload-${customer.id}`}
-                                  />
-                                  <div className="flex space-x-1">
-                                    <label
-                                      htmlFor={`profile-upload-${customer.id}`}
-                                      className="cursor-pointer text-xs bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded"
-                                    >
-                                      📷 {customer.profile_image ? 'Ändern' : 'Bild'}
-                                    </label>
-                                    {customer.profile_image && (
-                                      <button
-                                        onClick={() => deleteProfileImage(customer.id)}
-                                        className="text-xs bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded"
-                                      >
-                                        🗑️ Löschen
-                                      </button>
-                                    )}
-                                  </div>
                                 </div>
                               </div>
                             </div>
