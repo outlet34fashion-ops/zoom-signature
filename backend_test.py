@@ -1283,6 +1283,7 @@ class LiveShoppingAPITester:
             ("Admin System", admin_success),
             ("Zoom Integration", zoom_success),
             ("Customer Management", customer_success),
+            ("Manual Customer Creation", manual_creation_success),
             ("Customer Status Check Fix", customer_fix_success),
             ("Comprehensive Customer Flow", comprehensive_flow_success)
         ]
