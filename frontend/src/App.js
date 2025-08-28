@@ -279,6 +279,62 @@ function App() {
     return message;
   };
 
+  // Customer Authentication Functions
+  const customerLogin = async () => {
+    try {
+      setCustomerLoginError('');
+      
+      if (!customerLoginData.customer_number.trim()) {
+        setCustomerLoginError('Bitte geben Sie Ihre Kundennummer ein.');
+        return;
+      }
+      
+      const customerData = await checkCustomerStatus(customerLoginData.customer_number);
+      
+      if (!customerData) {
+        setCustomerLoginError('Kundennummer nicht gefunden. Bitte registrieren Sie sich zuerst.');
+        return;
+      }
+      
+      if (customerData.activation_status === 'pending') {
+        setCustomerStatus('pending');
+        setCurrentCustomer(customerData);
+        localStorage.setItem('customerNumber', customerData.customer_number);
+        setCustomerLoginError('');
+        return;
+      }
+      
+      if (customerData.activation_status === 'blocked') {
+        setCustomerStatus('blocked');
+        setCurrentCustomer(customerData);
+        localStorage.setItem('customerNumber', customerData.customer_number);
+        setCustomerLoginError('');
+        return;
+      }
+      
+      if (customerData.activation_status === 'active') {
+        // Successful login
+        setIsAuthenticated(true);
+        setCurrentCustomer(customerData);
+        setCustomerStatus('active');
+        localStorage.setItem('customerNumber', customerData.customer_number);
+        setShowCustomerLogin(false);
+        setCustomerLoginData({ customer_number: '' });
+        
+        // Send login message to chat
+        await sendLoginMessage(customerData.customer_number);
+        
+        return;
+      }
+      
+      setCustomerLoginError('Unbekannter Kundenstatus. Bitte kontaktieren Sie den Support.');
+      
+    } catch (error) {
+      console.error('Error during customer login:', error);
+      setCustomerLoginError('Anmeldefehler. Bitte versuchen Sie es erneut.');
+    }
+  };
+
   // Customer Management Functions
   const checkCustomerStatus = async (customerNumber) => {
     try {
