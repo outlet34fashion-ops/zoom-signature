@@ -258,6 +258,21 @@ test_plan:
         agent: "testing"
         comment: "❌ CRITICAL ISSUE IDENTIFIED: Customer number display bug found! Even though customer TEST001 is properly authenticated (localStorage shows 'TEST001', API calls /api/customers/check/TEST001 work), the frontend displays customer number as '10299' in header, profile, chat messages, and order messages. Root cause: currentCustomer state is not properly populated with actual customer data from API response. Chat messages show 'Chat 10299 I message' instead of 'Chat TEST001 I message'. Order messages show 'Bestellung 10299 I ...' instead of 'Bestellung TEST001 I ...'. The checkCustomerStatus function (line 268-296) retrieves correct data but currentCustomer state is not being set properly. This explains user reports - orders DO appear in chat but with wrong customer number format."
 
+  - task: "Customer status check API fix"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Fix customer status check API to ensure it returns customer_number field correctly to resolve frontend issue where currentCustomer?.customer_number was undefined"
+      - working: true
+        agent: "testing"
+        comment: "✅ CUSTOMER STATUS CHECK API FIX VERIFIED: Comprehensive testing completed with 100% success (29/29 tests passed). Specific test for customer status check API fix confirmed: 1) Registered test customer 'FIXED123', 2) Activated via admin API, 3) Called GET /api/customers/check/FIXED123, 4) Verified API response correctly includes customer_number field with value 'FIXED123', 5) Confirmed all other required fields present (exists=true, activation_status='active', name='Test Name', email, profile_image=null, message='Customer status: active'). The backend API is working correctly and returning the customer_number field as expected. This should fix the frontend issue where currentCustomer?.customer_number was undefined."
+
 agent_communication:
   - agent: "main"
     message: "Customer management system implementation completed successfully! Backend: All APIs working (registration, status check, admin management). Frontend: Guest blocking with registration message, registration form, pending/active/blocked status handling, and comprehensive admin dashboard with customer management controls. System ready for production use."
