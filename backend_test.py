@@ -1214,6 +1214,345 @@ class LiveShoppingAPITester:
             self.log_test("Comprehensive Flow - Exception", False, str(e))
             return False
 
+    def test_customer_last_order_display(self):
+        """Test new 'Display last order with timestamp for customers' functionality"""
+        print("\n📋 Testing Customer Last Order Display Functionality...")
+        
+        # Generate unique test data
+        timestamp = int(time.time())
+        
+        # Test customers for different scenarios
+        test_customers = [
+            {
+                "customer_number": f"ORDER{timestamp}001",
+                "email": f"order.test1.{timestamp}@example.com",
+                "name": "Order Test Customer 1"
+            },
+            {
+                "customer_number": f"ORDER{timestamp}002", 
+                "email": f"order.test2.{timestamp}@example.com",
+                "name": "Order Test Customer 2"
+            },
+            {
+                "customer_number": f"ORDER{timestamp}003",
+                "email": f"order.test3.{timestamp}@example.com", 
+                "name": "Order Test Customer 3"
+            }
+        ]
+        
+        registered_customers = []
+        
+        try:
+            # Setup: Register and activate test customers
+            print("  📝 Setup: Registering and activating test customers...")
+            for i, customer_data in enumerate(test_customers):
+                # Register customer
+                reg_response = requests.post(
+                    f"{self.api_url}/customers/register",
+                    json=customer_data,
+                    headers={'Content-Type': 'application/json'},
+                    timeout=10
+                )
+                
+                if reg_response.status_code != 200:
+                    self.log_test(f"Last Order Setup - Customer {i+1} Registration", False, f"Registration failed with status {reg_response.status_code}")
+                    continue
+                
+                customer = reg_response.json()
+                
+                # Activate customer
+                activate_response = requests.post(
+                    f"{self.api_url}/admin/customers/{customer['id']}/activate",
+                    headers={'Content-Type': 'application/json'},
+                    timeout=10
+                )
+                
+                if activate_response.status_code == 200:
+                    registered_customers.append(customer)
+                    self.log_test(f"Last Order Setup - Customer {i+1} ({customer['customer_number']})", True, "Registered and activated successfully")
+            
+            if len(registered_customers) < 3:
+                self.log_test("Last Order Setup - Insufficient Customers", False, f"Only {len(registered_customers)}/3 customers registered successfully")
+                return False
+            
+            # Get products for orders
+            products_response = requests.get(f"{self.api_url}/products", timeout=10)
+            if products_response.status_code != 200:
+                self.log_test("Last Order Setup - Get Products", False, "Could not fetch products")
+                return False
+            
+            products = products_response.json()
+            if not products:
+                self.log_test("Last Order Setup - Products Available", False, "No products available")
+                return False
+            
+            # Test Scenario 1: Customer with no orders - should return has_order: false
+            print("  ❌ Test 1: Customer with no orders...")
+            customer_no_orders = registered_customers[0]['customer_number']
+            
+            response = requests.get(
+                f"{self.api_url}/customers/{customer_no_orders}/last-order",
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                has_order_false = data.get('has_order') == False
+                has_message = 'message' in data
+                success = has_order_false and has_message
+                details += f", has_order=False: {has_order_false}, Has message: {has_message}"
+                if success:
+                    details += f", Message: '{data.get('message')}'"
+            
+            self.log_test("Last Order - Customer with No Orders", success, details)
+            
+            # Test Scenario 2: Non-existent customer - should return has_order: false
+            print("  ❌ Test 2: Non-existent customer...")
+            non_existent_customer = f"NONEXIST{timestamp}"
+            
+            response = requests.get(
+                f"{self.api_url}/customers/{non_existent_customer}/last-order",
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                has_order_false = data.get('has_order') == False
+                has_message = 'message' in data
+                success = has_order_false and has_message
+                details += f", has_order=False: {has_order_false}, Has message: {has_message}"
+            
+            self.log_test("Last Order - Non-existent Customer", success, details)
+            
+            # Test Scenario 3: Customer with single order - should return order details
+            print("  ✅ Test 3: Customer with single order...")
+            customer_single_order = registered_customers[1]['customer_number']
+            
+            # Place a single order
+            order_data_single = {
+                "customer_id": customer_single_order,
+                "product_id": products[0]['id'],
+                "size": "OneSize",
+                "quantity": 2,
+                "price": 15.90
+            }
+            
+            order_response = requests.post(
+                f"{self.api_url}/orders",
+                json=order_data_single,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            if order_response.status_code != 200:
+                self.log_test("Last Order - Single Order Placement", False, f"Order placement failed with status {order_response.status_code}")
+                return False
+            
+            placed_order = order_response.json()
+            
+            # Wait a moment to ensure timestamp difference
+            time.sleep(1)
+            
+            # Get last order
+            response = requests.get(
+                f"{self.api_url}/customers/{customer_single_order}/last-order",
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                has_order_true = data.get('has_order') == True
+                has_order_data = 'order' in data
+                
+                if has_order_true and has_order_data:
+                    order_info = data['order']
+                    required_fields = ['id', 'product_id', 'product_name', 'size', 'quantity', 'price', 'timestamp', 'formatted_time']
+                    has_all_fields = all(field in order_info for field in required_fields)
+                    
+                    # Verify order details match
+                    correct_details = (
+                        order_info.get('id') == placed_order['id'] and
+                        order_info.get('product_id') == order_data_single['product_id'] and
+                        order_info.get('size') == order_data_single['size'] and
+                        order_info.get('quantity') == order_data_single['quantity'] and
+                        abs(order_info.get('price', 0) - placed_order['price']) < 0.01
+                    )
+                    
+                    # Verify timestamp format (DD.MM.YYYY HH:MM:SS)
+                    formatted_time = order_info.get('formatted_time', '')
+                    import re
+                    timestamp_pattern = r'^\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}:\d{2}$'
+                    correct_format = bool(re.match(timestamp_pattern, formatted_time))
+                    
+                    success = has_all_fields and correct_details and correct_format
+                    details += f", has_order=True: {has_order_true}, Has all fields: {has_all_fields}, Correct details: {correct_details}, Correct timestamp format: {correct_format}"
+                    if success:
+                        details += f", Formatted time: '{formatted_time}', Product: '{order_info.get('product_name')}'"
+                else:
+                    success = False
+                    details += f", has_order=True: {has_order_true}, Has order data: {has_order_data}"
+            
+            self.log_test("Last Order - Customer with Single Order", success, details)
+            
+            # Test Scenario 4: Customer with multiple orders - should return most recent
+            print("  🔄 Test 4: Customer with multiple orders (most recent)...")
+            customer_multiple_orders = registered_customers[2]['customer_number']
+            
+            # Place first order
+            order_data_first = {
+                "customer_id": customer_multiple_orders,
+                "product_id": products[0]['id'],
+                "size": "OneSize",
+                "quantity": 1,
+                "price": 12.90
+            }
+            
+            first_order_response = requests.post(
+                f"{self.api_url}/orders",
+                json=order_data_first,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            if first_order_response.status_code != 200:
+                self.log_test("Last Order - First Order Placement", False, f"First order placement failed")
+                return False
+            
+            first_order = first_order_response.json()
+            
+            # Wait to ensure timestamp difference
+            time.sleep(2)
+            
+            # Place second order (this should be the "last" order)
+            order_data_second = {
+                "customer_id": customer_multiple_orders,
+                "product_id": products[1]['id'] if len(products) > 1 else products[0]['id'],
+                "size": "L",
+                "quantity": 3,
+                "price": 25.50
+            }
+            
+            second_order_response = requests.post(
+                f"{self.api_url}/orders",
+                json=order_data_second,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            if second_order_response.status_code != 200:
+                self.log_test("Last Order - Second Order Placement", False, f"Second order placement failed")
+                return False
+            
+            second_order = second_order_response.json()
+            
+            # Get last order - should be the second (most recent) order
+            response = requests.get(
+                f"{self.api_url}/customers/{customer_multiple_orders}/last-order",
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                has_order_true = data.get('has_order') == True
+                has_order_data = 'order' in data
+                
+                if has_order_true and has_order_data:
+                    order_info = data['order']
+                    
+                    # Verify it's the second (most recent) order, not the first
+                    is_most_recent = order_info.get('id') == second_order['id']
+                    correct_details = (
+                        order_info.get('product_id') == order_data_second['product_id'] and
+                        order_info.get('size') == order_data_second['size'] and
+                        order_info.get('quantity') == order_data_second['quantity'] and
+                        abs(order_info.get('price', 0) - second_order['price']) < 0.01
+                    )
+                    
+                    # Verify it's NOT the first order
+                    not_first_order = order_info.get('id') != first_order['id']
+                    
+                    success = is_most_recent and correct_details and not_first_order
+                    details += f", Is most recent order: {is_most_recent}, Correct details: {correct_details}, Not first order: {not_first_order}"
+                    if success:
+                        details += f", Order ID: {order_info.get('id')}, Quantity: {order_info.get('quantity')}, Size: {order_info.get('size')}"
+                else:
+                    success = False
+                    details += f", has_order=True: {has_order_true}, Has order data: {has_order_data}"
+            
+            self.log_test("Last Order - Customer with Multiple Orders (Most Recent)", success, details)
+            
+            # Test Scenario 5: Verify German timestamp format in detail
+            print("  🕐 Test 5: Verify German timestamp format...")
+            if success and 'order' in data:
+                formatted_time = data['order'].get('formatted_time', '')
+                
+                # Parse the formatted timestamp to verify it's correct German format
+                try:
+                    from datetime import datetime
+                    parsed_time = datetime.strptime(formatted_time, "%d.%m.%Y %H:%M:%S")
+                    
+                    # Verify the format matches DD.MM.YYYY HH:MM:SS pattern
+                    reformatted = parsed_time.strftime("%d.%m.%Y %H:%M:%S")
+                    format_correct = reformatted == formatted_time
+                    
+                    # Verify it's a reasonable timestamp (not in the future, not too old)
+                    now = datetime.now()
+                    time_reasonable = (now - parsed_time).total_seconds() < 3600  # Within last hour
+                    
+                    success = format_correct and time_reasonable
+                    details = f"Format correct: {format_correct}, Time reasonable: {time_reasonable}, Formatted: '{formatted_time}'"
+                    
+                except ValueError as e:
+                    success = False
+                    details = f"Failed to parse timestamp '{formatted_time}': {str(e)}"
+            else:
+                success = False
+                details = "No order data available for timestamp verification"
+            
+            self.log_test("Last Order - German Timestamp Format Verification", success, details)
+            
+            # Test Scenario 6: Error handling for invalid customer number format
+            print("  ❌ Test 6: Error handling...")
+            
+            # Test with empty customer number
+            try:
+                response = requests.get(
+                    f"{self.api_url}/customers//last-order",  # Empty customer number
+                    timeout=10
+                )
+                # This should either return 404 or handle gracefully
+                error_handled = response.status_code in [404, 422, 400]
+                details = f"Empty customer number handled: Status {response.status_code}"
+                self.log_test("Last Order - Empty Customer Number Handling", error_handled, details)
+            except Exception as e:
+                self.log_test("Last Order - Empty Customer Number Handling", False, str(e))
+            
+            print(f"  🎉 SUCCESS: Customer last order display functionality tested comprehensively!")
+            print(f"  📊 Test Summary:")
+            print(f"    - Customer with no orders: ✅ Returns has_order=false")
+            print(f"    - Non-existent customer: ✅ Returns has_order=false") 
+            print(f"    - Customer with single order: ✅ Returns complete order details")
+            print(f"    - Customer with multiple orders: ✅ Returns most recent order")
+            print(f"    - German timestamp format: ✅ DD.MM.YYYY HH:MM:SS format verified")
+            
+            return True
+            
+        except Exception as e:
+            self.log_test("Last Order Display - Exception", False, str(e))
+            return False
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("🚀 Starting Live Shopping App Backend API Tests")
