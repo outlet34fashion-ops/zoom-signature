@@ -592,6 +592,51 @@ function App() {
     }
   };
 
+  const createCustomerManually = async () => {
+    try {
+      setCreateCustomerError('');
+      setCreatingCustomer(true);
+      
+      // Validation
+      if (!newCustomerData.customer_number.trim()) {
+        setCreateCustomerError('Kundennummer ist erforderlich.');
+        return;
+      }
+      if (!newCustomerData.email.trim()) {
+        setCreateCustomerError('E-Mail ist erforderlich.');
+        return;
+      }
+      if (!newCustomerData.name.trim()) {
+        setCreateCustomerError('Name ist erforderlich.');
+        return;
+      }
+      
+      // Create customer via admin API
+      await axios.post(`${API}/admin/customers/create`, newCustomerData);
+      
+      // Reset form and close modal
+      setNewCustomerData({ customer_number: '', email: '', name: '' });
+      setShowCreateCustomer(false);
+      setCreateCustomerError('');
+      
+      // Refresh customer list
+      loadCustomers();
+      
+      // Send admin notification
+      await sendAdminNotification(`Neuer Kunde manuell erstellt: ${newCustomerData.name} (${newCustomerData.customer_number}) - Status: Aktiv`);
+      
+    } catch (error) {
+      console.error('Manual customer creation error:', error);
+      if (error.response && error.response.data && error.response.data.detail) {
+        setCreateCustomerError(error.response.data.detail);
+      } else {
+        setCreateCustomerError('Fehler beim Erstellen des Kunden. Bitte versuchen Sie es erneut.');
+      }
+    } finally {
+      setCreatingCustomer(false);
+    }
+  };
+
   const uploadProfileImage = async (customerNumber, file) => {
     try {
       if (!customerNumber || customerNumber === 'undefined') {
