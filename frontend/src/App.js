@@ -841,6 +841,79 @@ function App() {
                       Andere Kundennummer verwenden
                     </Button>
                   </div>
+                ) : showCustomerLogin ? (
+                  <div className="space-y-4">
+                    <h2 className="text-xl font-semibold text-gray-800">🔑 Kunden-Anmeldung</h2>
+                    <p className="text-sm text-gray-600">
+                      Melden Sie sich mit Ihrer Kundennummer an.
+                    </p>
+                    
+                    {customerLoginError && (
+                      <div className="bg-red-100 border border-red-300 rounded-lg p-3">
+                        <p className="text-red-700 text-sm">{customerLoginError}</p>
+                      </div>
+                    )}
+                    
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Kundennummer
+                        </label>
+                        <Input
+                          type="text"
+                          placeholder="Ihre Kundennummer"
+                          value={customerLoginData.customer_number}
+                          onChange={(e) => setCustomerLoginData(prev => ({
+                            ...prev,
+                            customer_number: e.target.value
+                          }))}
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              customerLogin();
+                            }
+                          }}
+                          className="w-full"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="flex space-x-3">
+                      <Button 
+                        variant="outline"
+                        onClick={() => {
+                          setShowCustomerLogin(false);
+                          setCustomerLoginError('');
+                        }}
+                        className="flex-1"
+                      >
+                        Zurück
+                      </Button>
+                      <Button 
+                        onClick={customerLogin}
+                        className="flex-1 bg-pink-500 hover:bg-pink-600"
+                      >
+                        Anmelden
+                      </Button>
+                    </div>
+                    
+                    <div className="pt-4 border-t">
+                      <p className="text-xs text-gray-500 text-center">
+                        Noch nicht registriert?
+                      </p>
+                      <Button 
+                        variant="outline"
+                        onClick={() => {
+                          setShowCustomerLogin(false);
+                          setShowRegistration(true);
+                        }}
+                        className="w-full mt-2 text-gray-600 hover:text-gray-800"
+                        size="sm"
+                      >
+                        Jetzt registrieren
+                      </Button>
+                    </div>
+                  </div>
                 ) : showAdminLogin ? (
                   <div className="space-y-4">
                     <h2 className="text-xl font-semibold text-gray-800">🔐 Admin-Anmeldung</h2>
