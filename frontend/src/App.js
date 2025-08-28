@@ -967,6 +967,106 @@ function App() {
                       </Button>
                     </div>
                   </div>
+                ) : showRegistration ? (
+                  <div className="space-y-4">
+                    <h2 className="text-xl font-semibold text-gray-800">📝 Registrierung</h2>
+                    <p className="text-sm text-gray-600">
+                      Geben Sie Ihre Kundendaten ein für die Registrierung.
+                    </p>
+                    
+                    {registrationError && (
+                      <div className="bg-red-100 border border-red-300 rounded-lg p-3">
+                        <p className="text-red-700 text-sm">{registrationError}</p>
+                      </div>
+                    )}
+                    
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Kundennummer
+                        </label>
+                        <Input
+                          type="text"
+                          placeholder="Ihre Kundennummer"
+                          value={registrationData.customer_number}
+                          onChange={(e) => setRegistrationData(prev => ({
+                            ...prev,
+                            customer_number: e.target.value
+                          }))}
+                          className="w-full"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          E-Mail
+                        </label>
+                        <Input
+                          type="email"
+                          placeholder="ihre@email.de"
+                          value={registrationData.email}
+                          onChange={(e) => setRegistrationData(prev => ({
+                            ...prev,
+                            email: e.target.value
+                          }))}
+                          className="w-full"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Name
+                        </label>
+                        <Input
+                          type="text"
+                          placeholder="Ihr vollständiger Name"
+                          value={registrationData.name}
+                          onChange={(e) => setRegistrationData(prev => ({
+                            ...prev,
+                            name: e.target.value
+                          }))}
+                          className="w-full"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="flex space-x-3">
+                      <Button 
+                        variant="outline"
+                        onClick={() => {
+                          setShowRegistration(false);
+                          setRegistrationError('');
+                        }}
+                        className="flex-1"
+                      >
+                        Zurück
+                      </Button>
+                      <Button 
+                        onClick={registerCustomer}
+                        disabled={!registrationData.customer_number || !registrationData.email || !registrationData.name}
+                        className="flex-1 bg-pink-500 hover:bg-pink-600"
+                      >
+                        Registrieren
+                      </Button>
+                    </div>
+                    
+                    <div className="pt-4 border-t">
+                      <p className="text-xs text-gray-500 text-center">
+                        Bereits registriert?
+                      </p>
+                      <Button 
+                        variant="outline"
+                        onClick={() => {
+                          setShowRegistration(false);
+                          setShowCustomerLogin(true);
+                        }}
+                        className="w-full mt-2 text-gray-600 hover:text-gray-800"
+                        size="sm"
+                      >
+                        Jetzt anmelden
+                      </Button>
+                    </div>
+                  </div>
                 ) : (
                   <div className="space-y-4">
                     <h2 className="text-xl font-semibold text-gray-800">OUTLET34 Live Shopping</h2>
