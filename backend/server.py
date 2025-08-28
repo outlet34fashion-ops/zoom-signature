@@ -153,6 +153,24 @@ class ZoomSessionRequest(BaseModel):
     duration: Optional[int] = 60  # duration in minutes
     password: Optional[str] = None
 
+# Customer Management Models
+class Customer(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    customer_number: str
+    email: str
+    name: str
+    activation_status: str = "pending"  # pending, active, blocked
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class CustomerCreate(BaseModel):
+    customer_number: str
+    email: str
+    name: str
+
+class CustomerUpdate(BaseModel):
+    activation_status: str  # active, blocked
+
 # In-memory counter and settings for demo
 order_counter = 0
 ticker_settings = {
