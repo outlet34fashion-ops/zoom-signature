@@ -214,6 +214,7 @@ function App() {
   useEffect(() => {
     if (isAdminView) {
       loadAdminStats();
+      loadCustomers();
     }
   }, [isAdminView]);
 
