@@ -744,15 +744,10 @@ function App() {
       });
 
       // Get the correct customer number from localStorage or currentCustomer
-      console.log('DEBUG placeOrder - currentCustomer:', currentCustomer);
-      console.log('DEBUG placeOrder - localStorage customerNumber:', localStorage.getItem('customerNumber'));
-      
       const customerDisplayNumber = currentCustomer?.customer_number || localStorage.getItem('customerNumber') || '10299';
-      console.log('DEBUG placeOrder - final customerDisplayNumber:', customerDisplayNumber);
       
       // Send formatted order message to chat with bold "Bestellung": "**Bestellung** CustomerNumber I 2x I 12,90 I OneSize"
       const orderChatMessage = `**Bestellung** ${customerDisplayNumber} I ${quantity}x I ${selectedPrice.toFixed(2)} I ${selectedSize}`;
-      console.log('DEBUG placeOrder - orderChatMessage:', orderChatMessage);
       
       // Send order message to chat via API
       await axios.post(`${API}/chat`, {
