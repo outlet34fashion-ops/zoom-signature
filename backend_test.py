@@ -1047,6 +1047,9 @@ class LiveShoppingAPITester:
         # Test the specific customer status check fix
         customer_fix_success = self.test_customer_status_check_fix()
         
+        # Test comprehensive customer flow (NEW - for review request)
+        comprehensive_flow_success = self.test_comprehensive_customer_flow()
+        
         # Test WebSocket availability
         ws_success = self.test_websocket_availability()
 
