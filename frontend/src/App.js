@@ -19,7 +19,7 @@ function App() {
   const [viewerCount, setViewerCount] = useState(34);
   const [chatMessages, setChatMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
-  const [username, setUsername] = useState('');
+  const [username] = useState('Kunde');
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedSize, setSelectedSize] = useState('');
