@@ -1501,7 +1501,7 @@ function App() {
                     <div key={msg.id} className="text-sm">
                       {msg.username === 'System' ? (
                         <div className="text-gray-600 font-medium">
-                          {msg.message}
+                          {formatMessage(msg.message)}
                         </div>
                       ) : msg.username === 'Admin' ? (
                         <div>
