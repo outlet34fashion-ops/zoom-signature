@@ -335,9 +335,11 @@ function App() {
         <div className="container mx-auto px-4 py-2">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-4">
-              <span className="text-sm font-medium">
-                {t.customerLoggedIn} 10299
-              </span>
+              {isAdminView && (
+                <span className="text-sm font-medium">
+                  {t.customerLoggedIn} 10299
+                </span>
+              )}
               <Button 
                 variant="ghost" 
                 size="sm"
