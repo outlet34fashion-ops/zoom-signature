@@ -62,6 +62,16 @@ function App() {
   const [customerFilter, setCustomerFilter] = useState('all'); // 'all', 'pending', 'blocked'
   const [customerSearch, setCustomerSearch] = useState(''); // Search by customer number
   
+  // Manual Customer Creation States
+  const [showCreateCustomer, setShowCreateCustomer] = useState(false);
+  const [newCustomerData, setNewCustomerData] = useState({
+    customer_number: '',
+    email: '',
+    name: ''
+  });
+  const [createCustomerError, setCreateCustomerError] = useState('');
+  const [creatingCustomer, setCreatingCustomer] = useState(false);
+  
   // Profile Image States
   const [showProfileImageUpload, setShowProfileImageUpload] = useState(false);
   const [profileImageFile, setProfileImageFile] = useState(null);
