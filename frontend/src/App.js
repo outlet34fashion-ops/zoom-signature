@@ -356,6 +356,21 @@ function App() {
     }
   };
 
+  // Helper function to extract customer number from username or message
+  const extractCustomerNumber = (username) => {
+    // If username is 'Kunde', return current customer number
+    if (username === 'Kunde' && currentCustomer?.customer_number) {
+      return currentCustomer.customer_number;
+    }
+    // If username is already a customer number pattern
+    if (username && /^\d+$/.test(username)) {
+      return username;
+    }
+    // Extract number from formatted messages like "Chat 10299 I ..."
+    const match = username.match(/\d+/);
+    return match ? match[0] : username;
+  };
+
   const sendLoginMessage = async (customerNumber) => {
     try {
       await axios.post(`${API}/chat`, {
