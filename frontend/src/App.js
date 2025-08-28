@@ -497,9 +497,16 @@ function App() {
 
   const uploadProfileImage = async (customerNumber, file) => {
     try {
+      if (!customerNumber || customerNumber === 'undefined') {
+        console.error('Invalid customer number for upload:', customerNumber);
+        return;
+      }
+      
       setUploadingImage(true);
       const formData = new FormData();
       formData.append('file', file);
+      
+      console.log('Uploading image for customer number:', customerNumber);
       
       const response = await axios.post(`${API}/customers/${customerNumber}/upload-profile-image`, formData, {
         headers: {
@@ -515,10 +522,14 @@ function App() {
         }));
       }
       
+      // Reload customer status to get updated profile image
+      await checkCustomerStatus(customerNumber);
+      
       loadCustomers(); // Refresh admin list if needed
       return response.data;
     } catch (error) {
       console.error('Error uploading profile image:', error);
+      alert('Fehler beim Hochladen des Profilbildes. Bitte versuchen Sie es erneut.');
       throw error;
     } finally {
       setUploadingImage(false);
