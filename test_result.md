@@ -238,9 +238,9 @@ test_plan:
 
   - task: "Order chat message format fix"
     implemented: true
-    working: true
+    working: false
     file: "/app/frontend/src/App.js"
-    stuck_count: 1
+    stuck_count: 2
     priority: "high"
     needs_retesting: false
     status_history:
@@ -253,6 +253,9 @@ test_plan:
       - working: true
         agent: "testing"
         comment: "✅ COMPREHENSIVE TESTING COMPLETED: Order-to-chat flow is working perfectly at backend level. Tested complete flow: customer registration → activation → order placement → chat message verification. Both frontend format ('Bestellung FLOW1756377245 I 2x I 15.90 I OneSize') and backend format ('Bestellung 175e | 3 | 8.50 | OneSize') are correctly implemented. Chat API stores and retrieves messages properly. Backend order notifications are broadcasted correctly. If users still report issues, problem is likely frontend display/WebSocket connection, not backend functionality."
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL ISSUE IDENTIFIED: Customer number display bug found! Even though customer TEST001 is properly authenticated (localStorage shows 'TEST001', API calls /api/customers/check/TEST001 work), the frontend displays customer number as '10299' in header, profile, chat messages, and order messages. Root cause: currentCustomer state is not properly populated with actual customer data from API response. Chat messages show 'Chat 10299 I message' instead of 'Chat TEST001 I message'. Order messages show 'Bestellung 10299 I ...' instead of 'Bestellung TEST001 I ...'. The checkCustomerStatus function (line 268-296) retrieves correct data but currentCustomer state is not being set properly. This explains user reports - orders DO appear in chat but with wrong customer number format."
 
 agent_communication:
   - agent: "main"
