@@ -530,12 +530,6 @@ function App() {
 
                 {/* Chat Input */}
                 <div className="space-y-3">
-                  <Input
-                    placeholder={t.enterUsername}
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    className="text-sm"
-                  />
                   <div className="flex space-x-2">
                     <Input
                       placeholder={t.chatPlaceholder}
