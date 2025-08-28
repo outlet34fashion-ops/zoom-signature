@@ -35,6 +35,19 @@ function App() {
   });
   const [newTickerText, setNewTickerText] = useState('');
   
+  // Customer Management States
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [customerStatus, setCustomerStatus] = useState(null); // null, pending, active, blocked
+  const [currentCustomer, setCurrentCustomer] = useState(null);
+  const [showRegistration, setShowRegistration] = useState(false);
+  const [registrationData, setRegistrationData] = useState({
+    customer_number: '',
+    email: '',
+    name: ''
+  });
+  const [registrationError, setRegistrationError] = useState('');
+  const [customers, setCustomers] = useState([]);
+  
   const chatRef = useRef(null);
   const wsRef = useRef(null);
 
