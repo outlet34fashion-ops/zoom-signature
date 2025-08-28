@@ -1736,6 +1736,89 @@ function App() {
           </div>
         )}
 
+        {/* Profile Modal */}
+        {showProfileModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <Card className="w-full max-w-md mx-4">
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-800 text-center">
+                    Mein Profil
+                  </h3>
+                  
+                  {/* Profile Image */}
+                  <div className="flex justify-center">
+                    {currentCustomer?.profile_image ? (
+                      <img
+                        src={currentCustomer.profile_image}
+                        alt="Profilbild"
+                        className="w-24 h-24 rounded-full object-cover border-4 border-pink-200"
+                      />
+                    ) : (
+                      <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center border-4 border-pink-200">
+                        <span className="text-gray-600 text-2xl font-bold">
+                          MCD
+                        </span>
+                        <span className="text-yellow-500 text-sm absolute mt-8">60s</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Customer Number Display */}
+                  <div className="text-xl font-bold text-pink-600 text-center">
+                    Kunde #{getCustomerNumber()}
+                  </div>
+                  
+                  {/* Profile Image Upload */}
+                  <div className="flex justify-center space-x-3">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          const customerNumber = currentCustomer?.customer_number || localStorage.getItem('customerNumber') || '10299';
+                          console.log('Uploading for customer:', customerNumber);
+                          uploadProfileImage(customerNumber, e.target.files[0]);
+                        }
+                      }}
+                      className="hidden"
+                      id="profile-modal-upload"
+                    />
+                    <label
+                      htmlFor="profile-modal-upload"
+                      className="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+                    >
+                      📷 Bild ändern
+                    </label>
+                    {currentCustomer?.profile_image && (
+                      <button
+                        onClick={() => {
+                          const customerNumber = currentCustomer?.customer_number || localStorage.getItem('customerNumber') || '10299';
+                          console.log('Deleting for customer:', customerNumber);
+                          deleteProfileImage(customerNumber);
+                        }}
+                        className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+                      >
+                        🗑️ Entfernen
+                      </button>
+                    )}
+                  </div>
+                  
+                  {/* Close Button */}
+                  <div className="text-center pt-4">
+                    <Button 
+                      onClick={() => setShowProfileModal(false)}
+                      className="w-full bg-gray-500 hover:bg-gray-600 text-white"
+                    >
+                      Schließen
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
           {/* Video Stream Area - Simple Live Stream Solution */}
