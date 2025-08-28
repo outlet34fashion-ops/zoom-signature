@@ -222,9 +222,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Customer database model and schema"
-    - "Customer registration API endpoint"
-    - "Admin customer management API endpoints"
+    - "Customer authentication middleware"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
