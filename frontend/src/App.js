@@ -715,12 +715,17 @@ function App() {
   };
 
   const sendEmoji = async (emoji) => {
-    if (!username.trim()) return;
-
     try {
+      // Format emoji message like regular chat messages for customers
+      const displayName = isAdminAuthenticated ? 'Admin' : username;
+      const customerDisplayNumber = currentCustomer?.customer_number || localStorage.getItem('customerNumber') || '10299';
+      const formattedMessage = isAdminAuthenticated ? 
+        '' : // Admin emojis have no text message
+        `Chat ${customerDisplayNumber} I`; // Customer emojis show customer number format
+      
       await axios.post(`${API}/chat`, {
-        username: username,
-        message: '',
+        username: displayName,
+        message: formattedMessage,
         emoji: emoji
       });
     } catch (error) {
