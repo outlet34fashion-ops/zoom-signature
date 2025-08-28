@@ -1566,7 +1566,7 @@ function App() {
                     
                     {/* Customer Number Display */}
                     <div className="text-lg font-bold text-pink-600">
-                      Kunde #{currentCustomer?.customer_number || '10299'}
+                      Kunde #{currentCustomer?.customer_number || localStorage.getItem('customerNumber') || '10299'}
                     </div>
                     
                     {/* Profile Image Upload */}
