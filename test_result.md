@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Fix 3 specific Zoom video integration issues: 1) Zoom login screen appearing for customers (should view without login), 2) Embedded Zoom video is cut off (display issue), 3) Video size is too large (sizing issue)"
+user_problem_statement: "Implement comprehensive customer management system with: 1) Backend customer database (customer_number, email, name, activation_status), 2) Admin approval/blocking functionality, 3) Customer registration process that creates pending status, 4) Guest blocking with registration message, 5) Admin dashboard for customer management"
 
 backend:
   - task: "Zoom JWT token generation for authentication"
