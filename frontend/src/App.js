@@ -663,6 +663,7 @@ function App() {
     try {
       const actualCustomerId = currentCustomer?.customer_number || customerId;
       
+      // Place the order first
       await axios.post(`${API}/orders`, {
         customer_id: actualCustomerId,
         product_id: selectedProduct.id,
@@ -671,20 +672,16 @@ function App() {
         price: selectedPrice
       });
 
-      // Send formatted order message to chat: "Bestellung 10299 I 1x I 12,90 I Onesize"
+      // Send formatted order message to chat: "10299 I 2x I 12,90 I Onesize"
       const customerDisplayNumber = currentCustomer?.customer_number || '10299';
-      const orderMessage = {
-        username: 'Kunde',
-        message: `Bestellung ${customerDisplayNumber} I ${quantity}x I ${selectedPrice.toFixed(2)} I ${selectedSize}`,
-        timestamp: new Date().toISOString()
-      };
+      const orderChatMessage = `${customerDisplayNumber} I ${quantity}x I ${selectedPrice.toFixed(2)} I ${selectedSize}`;
       
-      if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-        wsRef.current.send(JSON.stringify({
-          type: 'chat',
-          ...orderMessage
-        }));
-      }
+      // Send order message to chat via API
+      await axios.post(`${API}/chat`, {
+        username: 'System',
+        message: orderChatMessage,
+        emoji: ''
+      });
 
     } catch (error) {
       console.error('Error placing order:', error);
