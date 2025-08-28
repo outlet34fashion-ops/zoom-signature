@@ -489,6 +489,39 @@ async def check_customer_status(customer_number: str):
         raise HTTPException(status_code=500, detail="Status check failed")
 
 # Admin Customer Management Endpoints
+@api_router.post("/admin/customers/create", response_model=Customer)
+async def create_customer_by_admin(customer: CustomerCreate):
+    """Manually create a new customer by admin with active status"""
+    try:
+        # Check if customer number already exists
+        existing = await db.customers.find_one({"customer_number": customer.customer_number})
+        if existing:
+            raise HTTPException(status_code=400, detail="Customer number already exists")
+        
+        # Check if email already exists
+        existing_email = await db.customers.find_one({"email": customer.email})
+        if existing_email:
+            raise HTTPException(status_code=400, detail="Email already registered")
+        
+        # Create new customer with active status (admin created)
+        customer_obj = Customer(
+            customer_number=customer.customer_number,
+            email=customer.email,
+            name=customer.name,
+            activation_status="active"  # Admin-created customers are automatically active
+        )
+        
+        # Store in database
+        await db.customers.insert_one(customer_obj.dict())
+        
+        return customer_obj
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Admin customer creation error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Customer creation failed")
+
 @api_router.get("/admin/customers", response_model=List[Customer])
 async def get_all_customers():
     """Get all customers for admin management"""
