@@ -1246,6 +1246,9 @@ class LiveShoppingAPITester:
         # Test Customer Management System (NEW FEATURE)
         customer_success = self.test_customer_management()
         
+        # Test Manual Customer Creation by Admin (NEW FEATURE - Review Request)
+        manual_creation_success = self.test_manual_customer_creation()
+        
         # Test the specific customer status check fix
         customer_fix_success = self.test_customer_status_check_fix()
         
