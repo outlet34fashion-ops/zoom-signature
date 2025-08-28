@@ -311,6 +311,37 @@ function App() {
     try {
       setRegistrationError('');
       
+      // First check if customer already exists and what their status is
+      const existingCustomer = await checkCustomerStatus(registrationData.customer_number);
+      
+      if (existingCustomer) {
+        if (existingCustomer.activation_status === 'active') {
+          // Customer is already registered and active - log them in
+          setIsAuthenticated(true);
+          setCurrentCustomer(existingCustomer);
+          setCustomerStatus('active');
+          localStorage.setItem('customerNumber', existingCustomer.customer_number || registrationData.customer_number);
+          setShowRegistration(false);
+          setRegistrationData({ customer_number: '', email: '', name: '' });
+          return true;
+        } else if (existingCustomer.activation_status === 'pending') {
+          // Customer exists but is pending
+          setCurrentCustomer(existingCustomer);
+          setCustomerStatus('pending');
+          setShowRegistration(false);
+          setRegistrationData({ customer_number: '', email: '', name: '' });
+          return true;
+        } else if (existingCustomer.activation_status === 'blocked') {
+          // Customer exists but is blocked
+          setCurrentCustomer(existingCustomer);
+          setCustomerStatus('blocked');
+          setShowRegistration(false);
+          setRegistrationData({ customer_number: '', email: '', name: '' });
+          return true;
+        }
+      }
+      
+      // Customer doesn't exist - try to register new
       const response = await axios.post(`${API}/customers/register`, registrationData);
       
       if (response.status === 200) {
@@ -330,7 +361,7 @@ function App() {
       if (error.response && error.response.data && error.response.data.detail) {
         setRegistrationError(error.response.data.detail);
       } else {
-        setRegistrationError('Registration failed. Please try again.');
+        setRegistrationError('Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.');
       }
       return false;
     }
