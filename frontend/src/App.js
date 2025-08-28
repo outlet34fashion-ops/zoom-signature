@@ -383,9 +383,10 @@ function App() {
 
     try {
       // Format chat message: "Chat 10299 I [Nachricht]"
+      const customerDisplayNumber = currentCustomer?.customer_number || '10299';
       await axios.post(`${API}/chat`, {
         username: username,
-        message: `Chat 10299 I ${newMessage}`,
+        message: `Chat ${customerDisplayNumber} I ${newMessage}`,
         emoji: ''
       });
       setNewMessage('');
