@@ -1259,6 +1259,18 @@ function App() {
               </Button>
             </div>
             <div className="flex space-x-2">
+              {/* Profile Button for authenticated customers */}
+              {isAuthenticated && !isAdminView && (
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => setShowProfileModal(true)}
+                  className="text-white hover:bg-pink-600"
+                >
+                  👤 Mein Profil
+                </Button>
+              )}
+              
               {/* Only show view switcher for authenticated admin */}
               {isAdminAuthenticated && (
                 <>
