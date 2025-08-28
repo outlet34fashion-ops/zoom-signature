@@ -705,6 +705,122 @@ class LiveShoppingAPITester:
             self.log_test("WebSocket Endpoint Availability", False, str(e))
             return False
 
+    def test_customer_status_check_fix(self):
+        """Test the specific customer status check API fix for customer_number field"""
+        print("\n🔧 Testing Customer Status Check API Fix...")
+        
+        # Test customer data as specified in the review request
+        test_customer = {
+            "customer_number": "FIXED123",
+            "email": f"fixed.test.{int(time.time())}@example.com",
+            "name": "Test Name"
+        }
+        
+        try:
+            # Step 1: Register the test customer
+            print("  📝 Step 1: Registering test customer FIXED123...")
+            reg_response = requests.post(
+                f"{self.api_url}/customers/register",
+                json=test_customer,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            if reg_response.status_code != 200:
+                self.log_test("Customer Status Check Fix - Registration", False, f"Registration failed with status {reg_response.status_code}")
+                return False
+            
+            customer_data = reg_response.json()
+            customer_id = customer_data['id']
+            
+            # Step 2: Activate the customer via admin API
+            print("  ✅ Step 2: Activating customer via admin API...")
+            activate_response = requests.post(
+                f"{self.api_url}/admin/customers/{customer_id}/activate",
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            if activate_response.status_code != 200:
+                self.log_test("Customer Status Check Fix - Activation", False, f"Activation failed with status {activate_response.status_code}")
+                return False
+            
+            # Step 3: Call GET /api/customers/check/FIXED123
+            print("  🔍 Step 3: Checking customer status via API...")
+            check_response = requests.get(
+                f"{self.api_url}/customers/check/FIXED123",
+                timeout=10
+            )
+            
+            if check_response.status_code != 200:
+                self.log_test("Customer Status Check Fix - Status Check", False, f"Status check failed with status {check_response.status_code}")
+                return False
+            
+            # Step 4: Verify the API response includes customer_number field
+            print("  ✅ Step 4: Verifying API response structure...")
+            response_data = check_response.json()
+            
+            # Check all required fields are present
+            expected_fields = ['exists', 'customer_number', 'activation_status', 'name', 'email', 'profile_image', 'message']
+            missing_fields = [field for field in expected_fields if field not in response_data]
+            
+            if missing_fields:
+                self.log_test("Customer Status Check Fix - Response Structure", False, f"Missing fields: {missing_fields}")
+                return False
+            
+            # Step 5: Verify specific field values
+            print("  🔍 Step 5: Verifying field values...")
+            
+            # Check exists field
+            if response_data.get('exists') != True:
+                self.log_test("Customer Status Check Fix - Exists Field", False, f"Expected exists=True, got {response_data.get('exists')}")
+                return False
+            
+            # Check customer_number field (THIS IS THE CRITICAL FIX)
+            if response_data.get('customer_number') != "FIXED123":
+                self.log_test("Customer Status Check Fix - Customer Number Field", False, f"Expected customer_number='FIXED123', got '{response_data.get('customer_number')}'")
+                return False
+            
+            # Check activation_status field
+            if response_data.get('activation_status') != "active":
+                self.log_test("Customer Status Check Fix - Activation Status", False, f"Expected activation_status='active', got '{response_data.get('activation_status')}'")
+                return False
+            
+            # Check name field
+            if response_data.get('name') != "Test Name":
+                self.log_test("Customer Status Check Fix - Name Field", False, f"Expected name='Test Name', got '{response_data.get('name')}'")
+                return False
+            
+            # Check email field
+            if response_data.get('email') != test_customer['email']:
+                self.log_test("Customer Status Check Fix - Email Field", False, f"Expected email='{test_customer['email']}', got '{response_data.get('email')}'")
+                return False
+            
+            # Check profile_image field (should be null initially)
+            if response_data.get('profile_image') is not None:
+                self.log_test("Customer Status Check Fix - Profile Image Field", False, f"Expected profile_image=null, got '{response_data.get('profile_image')}'")
+                return False
+            
+            # Check message field
+            expected_message = "Customer status: active"
+            if response_data.get('message') != expected_message:
+                self.log_test("Customer Status Check Fix - Message Field", False, f"Expected message='{expected_message}', got '{response_data.get('message')}'")
+                return False
+            
+            # All checks passed!
+            success_details = f"✅ All fields correct: exists={response_data['exists']}, customer_number='{response_data['customer_number']}', activation_status='{response_data['activation_status']}', name='{response_data['name']}', email='{response_data['email']}', profile_image={response_data['profile_image']}, message='{response_data['message']}'"
+            
+            self.log_test("Customer Status Check Fix - Complete Test", True, success_details)
+            
+            print(f"  🎉 SUCCESS: Customer status check API now correctly returns customer_number field!")
+            print(f"  📋 Response: {json.dumps(response_data, indent=2)}")
+            
+            return True
+            
+        except Exception as e:
+            self.log_test("Customer Status Check Fix - Exception", False, str(e))
+            return False
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("🚀 Starting Live Shopping App Backend API Tests")
@@ -736,6 +852,9 @@ class LiveShoppingAPITester:
         
         # Test Customer Management System (NEW FEATURE)
         customer_success = self.test_customer_management()
+        
+        # Test the specific customer status check fix
+        customer_fix_success = self.test_customer_status_check_fix()
         
         # Test WebSocket availability
         ws_success = self.test_websocket_availability()
