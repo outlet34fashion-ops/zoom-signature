@@ -1183,21 +1183,72 @@ function App() {
                       }).map((customer) => (
                         <div key={customer.id} className="bg-white/20 rounded-lg p-3">
                           <div className="flex justify-between items-start">
-                            <div className="flex-1">
-                              {/* Customer Number FIRST - Most Important */}
-                              <div className="font-bold text-lg text-yellow-200">
-                                #{customer.customer_number}
+                            <div className="flex items-start space-x-3">
+                              {/* Profile Image */}
+                              <div className="flex-shrink-0">
+                                {customer.profile_image ? (
+                                  <img
+                                    src={customer.profile_image}
+                                    alt={customer.name}
+                                    className="w-16 h-16 rounded-full object-cover border-2 border-white/30"
+                                  />
+                                ) : (
+                                  <div className="w-16 h-16 rounded-full bg-white/30 flex items-center justify-center border-2 border-white/30">
+                                    <span className="text-white text-xl font-bold">
+                                      {customer.name.charAt(0).toUpperCase()}
+                                    </span>
+                                  </div>
+                                )}
                               </div>
-                              {/* Name Second */}
-                              <div className="font-medium text-white">
-                                {customer.name}
-                              </div>
-                              {/* Email and date smaller */}
-                              <div className="text-sm opacity-90">
-                                📧 {customer.email}
-                              </div>
-                              <div className="text-xs opacity-75">
-                                📅 Registriert: {new Date(customer.created_at).toLocaleDateString('de-DE')}
+                              
+                              {/* Customer Info */}
+                              <div className="flex-1">
+                                {/* Customer Number FIRST - Most Important */}
+                                <div className="font-bold text-lg text-yellow-200">
+                                  #{customer.customer_number}
+                                </div>
+                                {/* Name Second */}
+                                <div className="font-medium text-white">
+                                  {customer.name}
+                                </div>
+                                {/* Email and date smaller */}
+                                <div className="text-sm opacity-90">
+                                  📧 {customer.email}
+                                </div>
+                                <div className="text-xs opacity-75">
+                                  📅 Registriert: {new Date(customer.created_at).toLocaleDateString('de-DE')}
+                                </div>
+                                
+                                {/* Profile Image Upload */}
+                                <div className="mt-2">
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                      if (e.target.files && e.target.files[0]) {
+                                        uploadProfileImage(customer.id, e.target.files[0]);
+                                      }
+                                    }}
+                                    className="hidden"
+                                    id={`profile-upload-${customer.id}`}
+                                  />
+                                  <div className="flex space-x-1">
+                                    <label
+                                      htmlFor={`profile-upload-${customer.id}`}
+                                      className="cursor-pointer text-xs bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded"
+                                    >
+                                      📷 {customer.profile_image ? 'Ändern' : 'Bild'}
+                                    </label>
+                                    {customer.profile_image && (
+                                      <button
+                                        onClick={() => deleteProfileImage(customer.id)}
+                                        className="text-xs bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded"
+                                      >
+                                        🗑️ Löschen
+                                      </button>
+                                    )}
+                                  </div>
+                                </div>
                               </div>
                             </div>
                             
