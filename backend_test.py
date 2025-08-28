@@ -1793,6 +1793,10 @@ class LiveShoppingAPITester:
         print(f"🔗 Testing against: {self.base_url}")
         print("=" * 60)
 
+        # CRITICAL BUG TEST FIRST - User reported issue
+        print("\n🚨 CRITICAL BUG TESTS (User Reported Issues)...")
+        critical_success = self.test_critical_order_chat_integration()
+
         # Test API root
         if not self.test_api_root():
             print("❌ API root failed - stopping tests")
@@ -1851,6 +1855,7 @@ class LiveShoppingAPITester:
 
         # Critical functionality check
         critical_tests = [
+            ("CRITICAL BUG TEST", critical_success),
             ("API Root", any(r['name'] == 'API Root' and r['success'] for r in self.test_results)),
             ("Stream Status", stream_success),
             ("Products", products_success),
