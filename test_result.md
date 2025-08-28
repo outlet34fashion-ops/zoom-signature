@@ -318,16 +318,19 @@ test_plan:
         comment: "✅ BACKEND TESTING COMPLETE: Manual customer creation functionality working perfectly! All 8 test scenarios passed (100% success rate). POST /api/admin/customers/create endpoint fully functional with proper validation: 1) Creates customers with automatic 'active' status, 2) Validates unique customer_number and email (returns 400 for duplicates), 3) Validates required fields (returns 422 for missing data), 4) Returns complete Customer object with all fields, 5) Integrates with existing admin customer list, 6) Works with existing status check authentication flow. Backend implementation is COMPLETE and ready for frontend testing."
 
   - task: "Display last order with timestamp for customers"
-    implemented: false
-    working: "NA"
+    implemented: true
+    working: true
     file: "/app/backend/server.py, /app/frontend/src/App.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "IMPLEMENTING: Adding display of last order with timestamp for customers in a block. Requirements: 1) Show last order information for each customer, 2) Include timestamp/time of the order, 3) Display in appropriate block/section as shown in uploaded image, 4) Add backend API to get customer's last order, 5) Integrate in customer profile or admin customer management."
+      - working: true
+        agent: "testing"
+        comment: "✅ COMPREHENSIVE TESTING COMPLETED: New 'Display last order with timestamp for customers' functionality working perfectly! All 6 test scenarios passed (100% success rate). GET /api/customers/{customer_number}/last-order endpoint fully functional: 1) ✅ Customer with no orders returns has_order=false with proper message, 2) ✅ Non-existent customer returns has_order=false gracefully, 3) ✅ Customer with single order returns complete order details with all required fields (id, product_id, product_name, size, quantity, price, timestamp, formatted_time), 4) ✅ Customer with multiple orders correctly returns MOST RECENT order (not first order), 5) ✅ German timestamp format verified as DD.MM.YYYY HH:MM:SS (e.g., '28.08.2025 14:28:35'), 6) ✅ Error handling works correctly for invalid customer numbers. Backend implementation is COMPLETE and ready for frontend integration. Product information includes correct product names from product catalog. Timestamp sorting by descending order confirmed working correctly."
 
 agent_communication:
   - agent: "main"
