@@ -1451,10 +1451,19 @@ function App() {
                         <div className="text-gray-600 font-medium">
                           {msg.message}
                         </div>
+                      ) : msg.username === 'Admin' ? (
+                        <div>
+                          <span className="font-bold text-red-600">
+                            👑 Admin {msg.emoji && <span className="ml-1">{msg.emoji}</span>}
+                          </span>
+                          {msg.message && (
+                            <span className="ml-2 text-gray-600">{msg.message}</span>
+                          )}
+                        </div>
                       ) : (
                         <div>
-                          <span className="font-medium text-gray-800">
-                            {msg.username} {msg.emoji && <span className="ml-1">{msg.emoji}</span>}
+                          <span className="font-medium text-blue-600">
+                            #{extractCustomerNumber(msg.username)} {msg.emoji && <span className="ml-1">{msg.emoji}</span>}
                           </span>
                           {msg.message && (
                             <span className="ml-2 text-gray-600">{msg.message}</span>
