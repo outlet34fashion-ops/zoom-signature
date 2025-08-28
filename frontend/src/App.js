@@ -480,6 +480,37 @@ function App() {
     }
   };
 
+  const uploadProfileImage = async (customerId, file) => {
+    try {
+      setUploadingImage(true);
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const response = await axios.post(`${API}/customers/${customerId}/upload-profile-image`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      
+      loadCustomers(); // Refresh the list to show new image
+      return response.data;
+    } catch (error) {
+      console.error('Error uploading profile image:', error);
+      throw error;
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const deleteProfileImage = async (customerId) => {
+    try {
+      await axios.delete(`${API}/customers/${customerId}/profile-image`);
+      loadCustomers(); // Refresh the list
+    } catch (error) {
+      console.error('Error deleting profile image:', error);
+    }
+  };
+
   const updateTicker = async () => {
     try {
       const updatedSettings = {
