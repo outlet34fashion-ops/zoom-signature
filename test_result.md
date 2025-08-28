@@ -239,11 +239,11 @@ test_plan:
 
   - task: "Order chat message format fix"
     implemented: true
-    working: false
+    working: "NA"
     file: "/app/frontend/src/App.js"
     stuck_count: 2
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
@@ -257,6 +257,9 @@ test_plan:
       - working: false
         agent: "testing"
         comment: "❌ CRITICAL ISSUE IDENTIFIED: Customer number display bug found! Even though customer TEST001 is properly authenticated (localStorage shows 'TEST001', API calls /api/customers/check/TEST001 work), the frontend displays customer number as '10299' in header, profile, chat messages, and order messages. Root cause: currentCustomer state is not properly populated with actual customer data from API response. Chat messages show 'Chat 10299 I message' instead of 'Chat TEST001 I message'. Order messages show 'Bestellung 10299 I ...' instead of 'Bestellung TEST001 I ...'. The checkCustomerStatus function (line 268-296) retrieves correct data but currentCustomer state is not being set properly. This explains user reports - orders DO appear in chat but with wrong customer number format."
+      - working: "NA"
+        agent: "main"
+        comment: "FRONTEND FIX IMPLEMENTED: Fixed customer number resolution in both placeOrder (line 676) and sendMessage (line 630) functions. Now uses: currentCustomer?.customer_number || localStorage.getItem('customerNumber') || '10299'. This ensures correct customer number is used from localStorage when currentCustomer state is not yet populated. Also implemented bold formatting for 'Bestellung' using **Bestellung** markdown syntax and added formatMessage() helper function to convert **text** to <strong>text</strong> in chat display. Changes: 1) Correct customer number resolution, 2) Bold 'Bestellung' formatting, 3) Chat message rendering with formatMessage()."
 
   - task: "Customer status check API fix"
     implemented: true
