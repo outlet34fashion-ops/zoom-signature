@@ -264,7 +264,14 @@ function App() {
       if (data.exists) {
         setCurrentCustomer(data);
         setCustomerStatus(data.activation_status);
+        const wasAuthenticated = isAuthenticated;
         setIsAuthenticated(data.activation_status === 'active');
+        
+        // Send login message if customer just became authenticated
+        if (!wasAuthenticated && data.activation_status === 'active') {
+          await sendLoginMessage(data.customer_number);
+        }
+        
         return data;
       } else {
         setIsAuthenticated(false);
