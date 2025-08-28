@@ -866,7 +866,7 @@ function App() {
               </Button>
             </div>
             <div className="flex space-x-2">
-              {/* Only show view switcher for admin */}
+              {/* Only show view switcher for authenticated admin */}
               {isAdminAuthenticated && (
                 <>
                   <Button 
