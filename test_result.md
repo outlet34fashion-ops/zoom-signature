@@ -246,9 +246,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Order chat message format fix"
-  stuck_tasks: 
-    - "Order chat message format fix"
+    - "Customer status integration with existing features"
+  stuck_tasks: []
   test_all: false
   test_priority: "high_first"
 
