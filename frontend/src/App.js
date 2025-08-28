@@ -224,6 +224,97 @@ function App() {
     }
   };
 
+  // Customer Management Functions
+  const checkCustomerStatus = async (customerNumber) => {
+    try {
+      const response = await axios.get(`${API}/customers/check/${customerNumber}`);
+      const data = response.data;
+      
+      if (data.exists) {
+        setCurrentCustomer(data);
+        setCustomerStatus(data.activation_status);
+        setIsAuthenticated(data.activation_status === 'active');
+        return data;
+      } else {
+        setIsAuthenticated(false);
+        setCustomerStatus(null);
+        return null;
+      }
+    } catch (error) {
+      console.error('Error checking customer status:', error);
+      setIsAuthenticated(false);
+      setCustomerStatus(null);
+      return null;
+    }
+  };
+
+  const registerCustomer = async () => {
+    try {
+      setRegistrationError('');
+      
+      const response = await axios.post(`${API}/customers/register`, registrationData);
+      
+      if (response.status === 200) {
+        const customerData = response.data;
+        setCurrentCustomer(customerData);
+        setCustomerStatus('pending');
+        setShowRegistration(false);
+        setRegistrationData({ customer_number: '', email: '', name: '' });
+        
+        // Store customer number in localStorage for future sessions
+        localStorage.setItem('customerNumber', customerData.customer_number);
+        
+        return true;
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      if (error.response && error.response.data && error.response.data.detail) {
+        setRegistrationError(error.response.data.detail);
+      } else {
+        setRegistrationError('Registration failed. Please try again.');
+      }
+      return false;
+    }
+  };
+
+  const loadCustomers = async () => {
+    if (isAdminView) {
+      try {
+        const response = await axios.get(`${API}/admin/customers`);
+        setCustomers(response.data);
+      } catch (error) {
+        console.error('Error loading customers:', error);
+      }
+    }
+  };
+
+  const activateCustomer = async (customerId) => {
+    try {
+      await axios.post(`${API}/admin/customers/${customerId}/activate`);
+      loadCustomers(); // Refresh the list
+    } catch (error) {
+      console.error('Error activating customer:', error);
+    }
+  };
+
+  const blockCustomer = async (customerId) => {
+    try {
+      await axios.post(`${API}/admin/customers/${customerId}/block`);
+      loadCustomers(); // Refresh the list
+    } catch (error) {
+      console.error('Error blocking customer:', error);
+    }
+  };
+
+  const deleteCustomer = async (customerId) => {
+    try {
+      await axios.delete(`${API}/admin/customers/${customerId}`);
+      loadCustomers(); // Refresh the list
+    } catch (error) {
+      console.error('Error deleting customer:', error);
+    }
+  };
+
   const updateTicker = async () => {
     try {
       const updatedSettings = {
