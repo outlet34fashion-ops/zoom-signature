@@ -636,6 +636,45 @@ async def upload_profile_image_by_number(customer_number: str, file: UploadFile 
         logging.error(f"Profile image upload error: {str(e)}")
         raise HTTPException(status_code=500, detail="Upload failed")
 
+@api_router.get("/customers/{customer_number}/last-order")
+async def get_customer_last_order(customer_number: str):
+    """Get the last order for a specific customer"""
+    try:
+        # Find the most recent order for this customer
+        last_order = await db.orders.find_one(
+            {"customer_id": customer_number},
+            sort=[("timestamp", -1)]  # Sort by timestamp descending (most recent first)
+        )
+        
+        if not last_order:
+            return {
+                "has_order": False,
+                "message": "No orders found for this customer"
+            }
+        
+        # Get product details for the order
+        products = await get_products()
+        product = next((p for p in products if p['id'] == last_order.get('product_id')), None)
+        product_name = product['name'] if product else "Unknown Product"
+        
+        return {
+            "has_order": True,
+            "order": {
+                "id": last_order["id"],
+                "product_id": last_order["product_id"],
+                "product_name": product_name,
+                "size": last_order["size"],
+                "quantity": last_order["quantity"],
+                "price": last_order["price"],
+                "timestamp": last_order["timestamp"],
+                "formatted_time": last_order["timestamp"].strftime("%d.%m.%Y %H:%M:%S")
+            }
+        }
+        
+    except Exception as e:
+        logging.error(f"Error getting customer last order: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to get customer last order")
+
 @api_router.delete("/customers/{customer_number}/profile-image")
 async def delete_profile_image_by_number(customer_number: str):
     """Delete profile image for a customer using customer number"""
