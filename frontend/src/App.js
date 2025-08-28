@@ -1408,7 +1408,8 @@ function App() {
                   </p>
                 </div>
               </CardContent>
-            </Card>
+              </Card>
+            </div>
           )}
 
           {/* Chat Sidebar - MOVED DOWN */}
