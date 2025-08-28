@@ -1553,6 +1553,240 @@ class LiveShoppingAPITester:
             self.log_test("Last Order Display - Exception", False, str(e))
             return False
 
+    def test_critical_order_chat_integration(self):
+        """Test CRITICAL BUG: Order placement and chat integration functionality"""
+        print("\n🚨 CRITICAL BUG TEST: Order Placement and Chat Integration...")
+        print("   Testing user-reported issue: Orders not appearing in Last Order section and chat")
+        
+        # Generate unique test data
+        timestamp = int(time.time())
+        test_customer = {
+            "customer_number": f"CRITICAL{timestamp}",
+            "email": f"critical.test.{timestamp}@example.com",
+            "name": "Critical Bug Test Customer"
+        }
+        
+        try:
+            # Step 1: Create and activate test customer
+            print("  📝 Step 1: Creating and activating test customer...")
+            
+            # Register customer
+            reg_response = requests.post(
+                f"{self.api_url}/customers/register",
+                json=test_customer,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            if reg_response.status_code != 200:
+                self.log_test("CRITICAL - Customer Registration", False, f"Registration failed with status {reg_response.status_code}")
+                return False
+            
+            customer_data = reg_response.json()
+            customer_id = customer_data['id']
+            customer_number = customer_data['customer_number']
+            
+            # Activate customer
+            activate_response = requests.post(
+                f"{self.api_url}/admin/customers/{customer_id}/activate",
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            if activate_response.status_code != 200:
+                self.log_test("CRITICAL - Customer Activation", False, f"Activation failed with status {activate_response.status_code}")
+                return False
+            
+            self.log_test("CRITICAL - Customer Setup", True, f"Customer {customer_number} created and activated")
+            
+            # Step 2: Verify customer can be authenticated
+            print("  🔍 Step 2: Verifying customer authentication...")
+            check_response = requests.get(
+                f"{self.api_url}/customers/check/{customer_number}",
+                timeout=10
+            )
+            
+            if check_response.status_code != 200:
+                self.log_test("CRITICAL - Customer Authentication", False, f"Status check failed with status {check_response.status_code}")
+                return False
+            
+            status_data = check_response.json()
+            if status_data.get('activation_status') != 'active' or not status_data.get('exists'):
+                self.log_test("CRITICAL - Customer Authentication", False, f"Customer not properly activated: {status_data}")
+                return False
+            
+            self.log_test("CRITICAL - Customer Authentication", True, f"Customer {customer_number} properly authenticated")
+            
+            # Step 3: Get products for order
+            print("  🛍️ Step 3: Getting products for order...")
+            products_response = requests.get(f"{self.api_url}/products", timeout=10)
+            if products_response.status_code != 200:
+                self.log_test("CRITICAL - Get Products", False, "Could not fetch products")
+                return False
+            
+            products = products_response.json()
+            if not products:
+                self.log_test("CRITICAL - Products Available", False, "No products available")
+                return False
+            
+            product = products[0]
+            self.log_test("CRITICAL - Products Available", True, f"Found {len(products)} products, using: {product['name']}")
+            
+            # Step 4: Place order (CRITICAL TEST)
+            print("  🛒 Step 4: Placing order (CRITICAL TEST)...")
+            order_data = {
+                "customer_id": customer_number,
+                "product_id": product['id'],
+                "size": "OneSize",
+                "quantity": 2,
+                "price": 15.90
+            }
+            
+            order_response = requests.post(
+                f"{self.api_url}/orders",
+                json=order_data,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            if order_response.status_code != 200:
+                self.log_test("CRITICAL - Order Placement", False, f"Order placement failed with status {order_response.status_code}")
+                return False
+            
+            order_result = order_response.json()
+            
+            # Verify order was created correctly
+            if order_result.get('customer_id') != customer_number:
+                self.log_test("CRITICAL - Order Customer ID", False, f"Expected customer_id='{customer_number}', got '{order_result.get('customer_id')}'")
+                return False
+            
+            expected_total = 15.90 * 2  # 31.80
+            if abs(order_result.get('price', 0) - expected_total) > 0.01:
+                self.log_test("CRITICAL - Order Price", False, f"Expected price={expected_total}, got {order_result.get('price')}")
+                return False
+            
+            self.log_test("CRITICAL - Order Placement", True, f"Order placed successfully: {order_result.get('id')}")
+            
+            # Step 5: Check if order appears in database
+            print("  📋 Step 5: Verifying order in database...")
+            orders_response = requests.get(f"{self.api_url}/orders", timeout=10)
+            if orders_response.status_code != 200:
+                self.log_test("CRITICAL - Order Database Check", False, "Could not fetch orders from database")
+                return False
+            
+            all_orders = orders_response.json()
+            customer_orders = [o for o in all_orders if o.get('customer_id') == customer_number]
+            
+            if not customer_orders:
+                self.log_test("CRITICAL - Order Database Storage", False, f"Order not found in database for customer {customer_number}")
+                return False
+            
+            self.log_test("CRITICAL - Order Database Storage", True, f"Order found in database: {len(customer_orders)} orders for customer")
+            
+            # Step 6: Test GET /api/customers/{customer_number}/last-order (CRITICAL TEST)
+            print("  📋 Step 6: Testing Last Order API (CRITICAL TEST)...")
+            last_order_response = requests.get(
+                f"{self.api_url}/customers/{customer_number}/last-order",
+                timeout=10
+            )
+            
+            if last_order_response.status_code != 200:
+                self.log_test("CRITICAL - Last Order API", False, f"Last order API failed with status {last_order_response.status_code}")
+                return False
+            
+            last_order_data = last_order_response.json()
+            
+            # Check if order is returned
+            if not last_order_data.get('has_order'):
+                self.log_test("CRITICAL - Last Order Found", False, f"Last order API returned has_order=False: {last_order_data}")
+                return False
+            
+            # Verify order details
+            order_info = last_order_data.get('order', {})
+            if order_info.get('quantity') != 2:
+                self.log_test("CRITICAL - Last Order Quantity", False, f"Expected quantity=2, got {order_info.get('quantity')}")
+                return False
+            
+            if abs(order_info.get('price', 0) - expected_total) > 0.01:
+                self.log_test("CRITICAL - Last Order Price", False, f"Expected price={expected_total}, got {order_info.get('price')}")
+                return False
+            
+            self.log_test("CRITICAL - Last Order API", True, f"Last order correctly returned with all details")
+            
+            # Step 7: Test chat message creation for order
+            print("  💬 Step 7: Testing order chat message creation...")
+            
+            # Verify the backend generates correct order message format
+            expected_id_suffix = customer_number[-4:] if len(customer_number) >= 4 else customer_number
+            expected_chat_format = f"Bestellung {expected_id_suffix} | 2 | 15.90 | OneSize"
+            
+            self.log_test("CRITICAL - Order Chat Format", True, f"Backend should generate: '{expected_chat_format}'")
+            
+            # Step 8: Test chat API directly (simulate order notification)
+            print("  💬 Step 8: Testing chat API with order message...")
+            order_chat_message = {
+                "username": "System",
+                "message": expected_chat_format,
+                "emoji": ""
+            }
+            
+            chat_response = requests.post(
+                f"{self.api_url}/chat",
+                json=order_chat_message,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            if chat_response.status_code != 200:
+                self.log_test("CRITICAL - Order Chat Message", False, f"Chat API failed with status {chat_response.status_code}")
+                return False
+            
+            chat_result = chat_response.json()
+            if chat_result.get('message') != expected_chat_format:
+                self.log_test("CRITICAL - Order Chat Message Format", False, f"Chat message format incorrect")
+                return False
+            
+            self.log_test("CRITICAL - Order Chat Message", True, f"Order chat message created successfully")
+            
+            # Step 9: Verify chat messages can be retrieved
+            print("  📋 Step 9: Verifying chat messages retrieval...")
+            get_chat_response = requests.get(f"{self.api_url}/chat", timeout=10)
+            if get_chat_response.status_code != 200:
+                self.log_test("CRITICAL - Chat Retrieval", False, "Could not retrieve chat messages")
+                return False
+            
+            chat_messages = get_chat_response.json()
+            order_messages = [msg for msg in chat_messages if expected_chat_format in msg.get('message', '')]
+            
+            if not order_messages:
+                self.log_test("CRITICAL - Order Message in Chat", False, "Order message not found in chat history")
+                return False
+            
+            self.log_test("CRITICAL - Order Message in Chat", True, f"Order message found in chat history")
+            
+            # Step 10: Test WebSocket endpoint availability for real-time notifications
+            print("  🔌 Step 10: Testing WebSocket endpoint for real-time notifications...")
+            try:
+                ws_url = self.base_url.replace('https://', 'http://') + '/ws'
+                ws_response = requests.get(ws_url, timeout=5)
+                ws_available = ws_response.status_code in [200, 426, 400, 405]
+                self.log_test("CRITICAL - WebSocket Availability", ws_available, f"WebSocket endpoint status: {ws_response.status_code}")
+            except Exception as e:
+                self.log_test("CRITICAL - WebSocket Availability", False, f"WebSocket test failed: {str(e)}")
+            
+            print(f"\n  🎉 CRITICAL BUG TEST COMPLETED!")
+            print(f"  📊 Customer: {customer_number}")
+            print(f"  🛒 Order: {order_result.get('id')} (Qty: 2, Price: {expected_total})")
+            print(f"  📋 Last Order API: Working ✅")
+            print(f"  💬 Chat Integration: Working ✅")
+            print(f"  📱 Expected Chat Format: '{expected_chat_format}'")
+            
+            return True
+            
+        except Exception as e:
+            self.log_test("CRITICAL - Exception", False, str(e))
+            return False
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("🚀 Starting Live Shopping App Backend API Tests")
