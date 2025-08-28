@@ -258,7 +258,7 @@ test_plan:
     file: "/app/frontend/src/App.js"
     stuck_count: 3
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
@@ -281,6 +281,9 @@ test_plan:
       - working: false
         agent: "testing"
         comment: "❌ CRITICAL AUTHENTICATION ISSUE IDENTIFIED: Comprehensive testing of order-to-chat functionality reveals customer authentication is failing even after admin activation. Tested complete flow: 1) Customer registration (TEST2025) - SUCCESS, 2) Admin activation via dashboard - SUCCESS (customer shows as 'Aktiv'), 3) Customer login attempt - FAILED (authentication not working despite activation). Root cause: Customer authentication flow is broken - even activated customers cannot login to access order functionality. This prevents testing of the actual order-to-chat fixes. The frontend fixes for customer number resolution (lines 688, 642) and bold formatting (formatMessage function) appear correctly implemented in code, but cannot be verified due to authentication blocking access to authenticated customer features. REQUIRES IMMEDIATE FIX of customer authentication flow before order-to-chat functionality can be properly tested."
+      - working: false
+        agent: "testing"
+        comment: "❌ PARTIAL SUCCESS WITH REMAINING ISSUE: Authentication fix successful - customer TEST3025 can now login and access main app interface with correct customer number display in header and profile. However, order messages in chat still show 'Bestellung 10299' instead of 'Bestellung TEST3025', indicating the customer number resolution fix in placeOrder function (line 747) is not working correctly. The localStorage fallback mechanism appears to not be functioning as expected. Orders DO appear in chat (resolving user's main concern), but with incorrect customer number. This is a display issue rather than a functional failure. Bold formatting for 'Bestellung' needs verification but cannot be confirmed due to message format issues."
 
   - task: "Customer status check API fix"
     implemented: true
