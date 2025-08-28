@@ -307,6 +307,39 @@ function App() {
     setCustomerStatus(null);
   };
 
+  const customerLogout = async () => {
+    // Send logout message to chat
+    if (currentCustomer?.customer_number) {
+      try {
+        await axios.post(`${API}/chat`, {
+          username: 'System',
+          message: `${currentCustomer.customer_number} hat sich abgemeldet`,
+          emoji: ''
+        });
+      } catch (error) {
+        console.error('Error sending logout message:', error);
+      }
+    }
+    
+    localStorage.removeItem('customerNumber');
+    setIsAuthenticated(false);
+    setCurrentCustomer(null);
+    setCustomerStatus(null);
+    setIsAdminView(false);
+  };
+
+  const sendLoginMessage = async (customerNumber) => {
+    try {
+      await axios.post(`${API}/chat`, {
+        username: 'System',
+        message: `${customerNumber} hat sich angemeldet`,
+        emoji: ''
+      });
+    } catch (error) {
+      console.error('Error sending login message:', error);
+    }
+  };
+
   const registerCustomer = async () => {
     try {
       setRegistrationError('');
