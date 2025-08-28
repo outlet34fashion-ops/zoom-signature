@@ -305,7 +305,7 @@ test_plan:
   - task: "Manual customer creation by admin"
     implemented: true
     working: true
-    file: "/app/backend/server.py"
+    file: "/app/backend/server.py, /app/frontend/src/App.js"
     stuck_count: 0
     priority: "high"
     needs_retesting: false
@@ -315,7 +315,7 @@ test_plan:
         comment: "IMPLEMENTING: Adding manual customer creation functionality for admins. Requirements: 1) Admin can manually create customers with all data (customer_number, name, email), 2) Automatically set status to 'active' for admin-created customers, 3) Add backend API endpoint POST /api/admin/customers/create, 4) Add frontend form in admin dashboard for manual customer creation, 5) Integrate with existing customer management UI."
       - working: true
         agent: "testing"
-        comment: "✅ COMPREHENSIVE TESTING COMPLETED: Manual customer creation functionality working perfectly! Tested all requirements: 1) POST /api/admin/customers/create endpoint working correctly, 2) Required fields validation (customer_number, email, name) - returns 422 for missing fields, 3) Automatically sets activation_status to 'active' for admin-created customers ✓, 4) Validates customer_number uniqueness - returns 400 error for duplicates ✓, 5) Validates email uniqueness - returns 400 error for duplicates ✓, 6) Returns proper Customer object with all fields (id, customer_number, email, name, activation_status, created_at, updated_at) ✓, 7) Created customer appears in GET /api/admin/customers list ✓, 8) Integration with status check API works correctly ✓. All 8 test scenarios passed (100% success rate). Backend implementation is complete and fully functional."
+        comment: "✅ BACKEND TESTING COMPLETE: Manual customer creation functionality working perfectly! All 8 test scenarios passed (100% success rate). POST /api/admin/customers/create endpoint fully functional with proper validation: 1) Creates customers with automatic 'active' status, 2) Validates unique customer_number and email (returns 400 for duplicates), 3) Validates required fields (returns 422 for missing data), 4) Returns complete Customer object with all fields, 5) Integrates with existing admin customer list, 6) Works with existing status check authentication flow. Backend implementation is COMPLETE and ready for frontend testing."
 
 agent_communication:
   - agent: "main"
