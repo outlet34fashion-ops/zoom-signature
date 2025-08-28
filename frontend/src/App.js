@@ -682,6 +682,28 @@ function App() {
     }
   };
 
+  const loadCustomerLastOrder = async (customerNumber) => {
+    if (!customerNumber || customerNumber === 'undefined' || customerNumber === '10299') {
+      return; // Skip for invalid or fallback customer numbers
+    }
+    
+    try {
+      setLoadingLastOrder(true);
+      const response = await axios.get(`${API}/customers/${customerNumber}/last-order`);
+      
+      if (response.data.has_order) {
+        setCustomerLastOrder(response.data.order);
+      } else {
+        setCustomerLastOrder(null);
+      }
+    } catch (error) {
+      console.error('Error loading customer last order:', error);
+      setCustomerLastOrder(null);
+    } finally {
+      setLoadingLastOrder(false);
+    }
+  };
+
   const deleteProfileImage = async (customerNumber) => {
     try {
       if (!customerNumber || customerNumber === 'undefined') {
