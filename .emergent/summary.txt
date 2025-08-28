@@ -1,81 +1,57 @@
 <analysis>
-The previous AI engineer meticulously evolved a live shopping MVP, demonstrating strong iterative problem-solving, particularly in video integration by shifting from problematic Zoom embeds to robust external YouTube Live streaming. Key architectural decisions included clear separation of admin/customer views, dynamic UI, and a WebSocket-based real-time chat. The work culminated in a comprehensive customer management system, including backend APIs, frontend registration/login, admin dashboard with activation/blocking, filtering, sorting, and push notifications. Recent efforts focused on refining user experience: customer-managed profile picture uploads, strict display of only customer numbers, and precise chat message formatting for orders and system events. Despite minor bugs (JSX tags, 404s, image display, order chat format), the engineer consistently diagnosed and resolved issues, ensuring the application's stability and feature completeness. The trajectory concludes with a specific bug in chat order message formatting.
+The AI engineer's work primarily focused on refining the Live Shopping application, moving from initial setup to addressing complex real-time communication and customer management issues. The trajectory shows an iterative problem-solving approach, starting with a user's report about order messages not appearing in the chat and evolving to uncover deeper architectural inconsistencies. The initial diagnosis incorrectly assumed the  function was sending correct messages, leading to a backend API investigation. The critical discovery was that the  API endpoint in  was not returning the , causing frontend display issues. After fixing this backend bug, the engineer provided detailed testing instructions to the user. However, the order display bug persisted, prompting a new requirement for bold formatting of Bestellung and a renewed focus on frontend chat display logic. The work halted at the point of initiating a detailed frontend analysis for the persistent order display and formatting issues.
 </analysis>
 
 <product_requirements>
-The core product is a Live Shopping App with a live stream (currently YouTube Live), real-time chat, and product ordering. It supports multi-language and responsive design. Key features and subsequent requirements include: an admin dashboard for order tracking and resets; UI refinements (order display, chat message formatting, compact header, product selection for admins only); reliable live video streaming; bug fixes (Zoom, webcam issues); strict separation of admin UI elements from customer view; reordering of chat/order sections; automatic chat message formatting ( and ). The latest major feature is a comprehensive customer management system with backend database, admin interface (add, block, unblock, edit), frontend signup, and admin approval. Further refinements included admin login with PIN (1924), Admin chat tag for admin messages, hiding admin buttons for customers, chat messages for customer login/logout, filter buttons for customer status, push notifications for new registrations, sorting customers by number, and customer-managed profile picture uploads (displaying only customer numbers publicly, not names).
+The Live Shopping App facilitates live streaming (YouTube Live), real-time chat, and product ordering, supporting multi-language and responsive design. Core features include an admin dashboard for order management and resets, UI refinements (order display, chat message formatting, compact header, product selection for admins), and robust live video streaming. A comprehensive customer management system was introduced, featuring a backend database, admin interface (add, block, unblock, edit), frontend signup, and admin approval. Enhancements included admin login (PIN 1924), Admin chat tags, customer login/logout chat messages, customer filtering/sorting, push notifications for new registrations, and customer-managed profile picture uploads (displaying only customer numbers publicly).
+The current, explicit user requirements are:
+1.  **Order messages must appear directly in the chat.**
+2.  **Order messages must follow the format:** . (e.g., )
+3.  **Regular chat messages must follow the format:** . (e.g., )
+4.  **The Bestellung prefix for order messages should be displayed in bold.**
 </product_requirements>
 
 <key_technical_concepts>
--   **FastAPI:** Python backend for APIs and WebSockets.
--   **React:** JavaScript frontend for single-page application.
--   **MongoDB:** NoSQL database for persistence.
--   **WebSockets:** Real-time communication for chat and notifications.
--   **shadcn/ui & Tailwind CSS:** Frontend UI components and styling.
--   **External Streaming Services:** YouTube Live for video embedding.
--   **JWT:** For secure authentication (initially Zoom, now admin).
--   **Base64 Encoding:** For storing and transmitting profile images.
+-   **FastAPI:** Python framework for backend APIs and WebSockets.
+-   **React:** JavaScript library for building the frontend user interface.
+-   **MongoDB:** NoSQL database for data persistence.
+-   **WebSockets:** For real-time chat and notifications.
+-   **Base64 Encoding:** Used for transmitting profile images.
+-   **API Design:** RESTful API endpoints for customer management and chat.
 </key_technical_concepts>
 
 <code_architecture>
-The application uses a standard full-stack architecture with a Python FastAPI backend and a React frontend.
+The application employs a standard full-stack architecture, combining a Python FastAPI backend and a React frontend.
 
 
 
--   : The main FastAPI application.
-    -   **Importance**: Handles all backend logic including chat, orders, and now comprehensive customer management APIs.
-    -   **Changes Made**:
-        -   Added Pydantic models for customer data (customer number, email, name, activation status, profile image).
-        -   Implemented CRUD (Create, Read, Update, Delete) API endpoints for customers (, ).
-        -   Added API endpoints for profile image upload () and deletion ().
-        -   Ensured the  API response includes the  field.
-        -   Logic for Zoom JWT generation is present but less relevant due to shift to external streaming.
+-   : The main FastAPI application, handling backend logic for chat, orders, and customer management.
+    -   **Importance**: Centralizes all API endpoints and WebSocket handling.
+    -   **Changes Made**: The  API endpoint () was modified to explicitly include  in its JSON response, addressing a critical bug that prevented correct customer number display on the frontend. It also supports customer CRUD operations and profile image handling.
 
--   : Lists Python dependencies.
+-   : The primary React component, managing global state, routing, and UI for both admin and customer views.
+    -   **Importance**: Orchestrates application flow, user authentication, customer management dashboard, chat, and order placement.
+    -   **Changes Made**: Contains the  and  functions which are central to the current bug. The  function processes the customer status from the backend. The code logic for sending chat and order messages was initially believed to be correct, but issues with customer number display (due to a backend omission) and persistent order message display problems indicate potential further frontend adjustments are needed, specifically in how messages are rendered or dispatched via WebSockets.
+
+-   : Python dependencies.
     -   **Importance**: Ensures all necessary Python libraries for the backend are installed.
-    -   **Changes Made**: Confirmed  (or similar for file uploads) is present to support image uploads.
+    -   **Changes Made**: No explicit recent changes mentioned in the trajectory.
 
--   : The central React component.
-    -   **Importance**: Manages global application state, routing, UI rendering for both admin and customer views, and handles interactions.
-    -   **Changes Made**:
-        -   Integrated customer authentication state, ,  functions.
-        -   Modified  hooks for initial customer status checks, admin customer loading, and session management.
-        -   Implemented guest blocking UI and registration/login forms.
-        -   Added admin customer management dashboard (displaying, filtering, sorting customers, activation/blocking actions).
-        -   Updated header to conditionally display customer/admin status and relevant action buttons (logout, view switchers).
-        -   Modified  and  functions to include customer numbers and specific formatting.
-        -   Implemented admin login with PIN (1924) and conditional rendering for admin-specific UI elements.
-        -   Added  function and logic for automatic chat messages upon customer login/logout.
-        -   Introduced filter states for customer management (pending, blocked, all) and a search function by customer number.
-        -   Added  for new customer registrations.
-        -   Integrated customer-managed profile picture upload/delete functionality and UI, ensuring names are hidden from public view.
-        -   Added  helper function for chat display.
-        -   Fixed multiple bugs including JSX errors, 404 errors during image upload (due to  customer number), and ensuring the  is fetched from the backend and made available in the frontend state.
-
--   : Global and custom CSS rules.
-    -   **Importance**: Styles various UI elements, including video display and new components.
-    -   **Changes Made**: Minor, primarily related to styling for new components like profile pictures and customer management dashboard.
-
--   : Component for live streaming status and YouTube embed.
-    -   **Importance**: Displays the Live Shopping status or embeds the YouTube stream.
-    -   **Changes Made**: No direct changes in the most recent trajectory, but is crucial for displaying the live video.
-
--    & : Store environment variables.
-    -   **Importance**: Securely configures database URL, backend URL, and other sensitive keys.
-    -   **Changes Made**: No modifications to these files were explicitly shown, but Zoom credentials for the backend were noted to be less relevant now.
+-    & : Environment variables.
+    -   **Importance**: Configures  for the frontend and  for the backend.
+    -   **Changes Made**: No modifications were made to these files during the trajectory.
 </code_architecture>
 
 <pending_tasks>
--   Ensure the uploaded profile image is correctly displayed in the customer's profile after a successful upload.
--   Fix the  function to send chat messages with the explicit Bestellung prefix and the requested format ().
+-   Ensure order messages are displayed in the chat.
+-   Implement bold formatting for the Bestellung prefix in order messages.
+-   Confirm chat messages (both regular and order-related) use the correct, actual customer number (not 10299).
 </pending_tasks>
 
 <current_work>
-Immediately before this summary request, the AI engineer was addressing a series of bugs related to the newly implemented customer profile picture upload feature. Initially, the user reported that the uploaded profile image was not being displayed, despite the upload apparently succeeding. The AI engineer diagnosed this as a backend issue where the  field was not included in the  API response. The  file was modified to include this field.
-
-Following this, the conversation shifted as the user reported a new bug: when an order is placed, the corresponding message in the chat is not displayed with the correct format, specifically lacking the Bestellung prefix and the exact structure . The AI engineer has identified that the  function in  is incorrectly sending the message via WebSocket and needs to use the correct chat API with the specified prefix. The AI has just completed a frontend restart and is about to implement the correction for the order chat message format to include the Bestellung prefix.
+Immediately before this summary, the AI engineer was addressing a persistent issue where order messages were not being displayed in the chat, despite a prior fix for the  being correctly returned by the backend API. The user re-confirmed that orders are not showing and requested that the Bestellung prefix be displayed in bold. The AI had just re-examined the  function in  (lines 660-690) and found its logic to be seemingly correct, leading to the conclusion that a detailed frontend analysis is required to diagnose why the messages are not appearing and to implement the requested bold formatting. The current state is that the backend API provides the correct customer number, but the frontend's display logic for order messages in the chat, including formatting, is still problematic.
 </current_work>
 
 <optional_next_step>
-Correct the  function in  to include the Bestellung prefix and format for chat messages.
+Conduct a detailed frontend analysis to determine why order messages are not appearing in the chat and implement bold formatting for Bestellung.
 </optional_next_step>
