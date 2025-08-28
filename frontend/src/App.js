@@ -1406,6 +1406,13 @@ function App() {
                   {/* Filter Buttons */}
                   <div className="flex flex-wrap gap-2 mb-4">
                     <Button 
+                      onClick={() => setShowCreateCustomer(true)}
+                      className="bg-green-600 hover:bg-green-700 text-white"
+                      size="sm"
+                    >
+                      ➕ Kunde erstellen
+                    </Button>
+                    <Button 
                       onClick={() => setCustomerFilter('pending')}
                       className={customerFilter === 'pending' ? "bg-yellow-500 hover:bg-yellow-600 text-white" : "bg-white/20 hover:bg-white/30 text-white"}
                       size="sm"
