@@ -1365,8 +1365,10 @@ function App() {
                         type="file"
                         accept="image/*"
                         onChange={(e) => {
-                          if (e.target.files && e.target.files[0] && currentCustomer) {
-                            uploadProfileImage(currentCustomer.customer_number, e.target.files[0]);
+                          if (e.target.files && e.target.files[0]) {
+                            const customerNumber = currentCustomer?.customer_number || localStorage.getItem('customerNumber') || '10299';
+                            console.log('Uploading for customer:', customerNumber);
+                            uploadProfileImage(customerNumber, e.target.files[0]);
                           }
                         }}
                         className="hidden"
