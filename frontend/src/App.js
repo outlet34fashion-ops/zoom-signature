@@ -1584,6 +1584,105 @@ function App() {
           </div>
         )}
 
+        {/* Create Customer Modal */}
+        {showCreateCustomer && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <Card className="w-full max-w-md mx-4">
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-800 text-center">
+                    ➕ Neuen Kunde erstellen
+                  </h3>
+                  
+                  {createCustomerError && (
+                    <div className="bg-red-100 border border-red-300 rounded-lg p-3">
+                      <p className="text-red-700 text-sm">{createCustomerError}</p>
+                    </div>
+                  )}
+                  
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Kundennummer *
+                      </label>
+                      <Input
+                        type="text"
+                        placeholder="z.B. TEST001"
+                        value={newCustomerData.customer_number}
+                        onChange={(e) => setNewCustomerData(prev => ({
+                          ...prev,
+                          customer_number: e.target.value
+                        }))}
+                        className="w-full"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Name *
+                      </label>
+                      <Input
+                        type="text"
+                        placeholder="Vollständiger Name"
+                        value={newCustomerData.name}
+                        onChange={(e) => setNewCustomerData(prev => ({
+                          ...prev,
+                          name: e.target.value
+                        }))}
+                        className="w-full"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        E-Mail *
+                      </label>
+                      <Input
+                        type="email"
+                        placeholder="kunde@example.com"
+                        value={newCustomerData.email}
+                        onChange={(e) => setNewCustomerData(prev => ({
+                          ...prev,
+                          email: e.target.value
+                        }))}
+                        className="w-full"
+                      />
+                    </div>
+                    
+                    <div className="bg-green-100 border border-green-300 rounded-lg p-3">
+                      <p className="text-green-700 text-sm text-center">
+                        ✓ Status wird automatisch auf <strong>"Aktiv"</strong> gesetzt
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex space-x-3 pt-4">
+                    <Button 
+                      variant="outline"
+                      onClick={() => {
+                        setShowCreateCustomer(false);
+                        setNewCustomerData({ customer_number: '', email: '', name: '' });
+                        setCreateCustomerError('');
+                      }}
+                      className="flex-1"
+                      disabled={creatingCustomer}
+                    >
+                      Abbrechen
+                    </Button>
+                    <Button 
+                      onClick={createCustomerManually}
+                      className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                      disabled={creatingCustomer}
+                    >
+                      {creatingCustomer ? 'Erstellen...' : 'Kunde erstellen'}
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
           {/* Video Stream Area - Simple Live Stream Solution */}
