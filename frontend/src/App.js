@@ -48,6 +48,12 @@ function App() {
   const [registrationError, setRegistrationError] = useState('');
   const [customers, setCustomers] = useState([]);
   
+  // Admin Authentication States
+  const [showAdminLogin, setShowAdminLogin] = useState(false);
+  const [adminPin, setAdminPin] = useState('');
+  const [adminLoginError, setAdminLoginError] = useState('');
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
+  
   const chatRef = useRef(null);
   const wsRef = useRef(null);
 
