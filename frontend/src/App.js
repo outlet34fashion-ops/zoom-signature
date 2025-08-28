@@ -1351,7 +1351,7 @@ function App() {
                         accept="image/*"
                         onChange={(e) => {
                           if (e.target.files && e.target.files[0] && currentCustomer) {
-                            uploadProfileImage(currentCustomer.id, e.target.files[0]);
+                            uploadProfileImage(currentCustomer.customer_number, e.target.files[0]);
                           }
                         }}
                         className="hidden"
