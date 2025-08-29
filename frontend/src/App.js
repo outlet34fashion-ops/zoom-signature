@@ -1032,12 +1032,58 @@ function App() {
   };
 
   const resetOrderCounter = async () => {
-    try {
-      await axios.post(`${API}/admin/reset-counter`);
-      setAdminStats(prev => ({ ...prev, session_orders: 0 }));
-    } catch (error) {
-      console.error('Error resetting counter:', error);
+    if (window.confirm('Session-Bestellungen auf 0 zurücksetzen?')) {
+      try {
+        await axios.post(`${API}/admin/reset-counter`);
+        setAdminStats(prev => ({ 
+          ...prev, 
+          session_orders: 0,
+          session_revenue: 0 
+        }));
+      } catch (error) {
+        console.error('Error resetting counter:', error);
+      }
     }
+  };
+
+  // Berechne Live-Statistiken aus Chat-Nachrichten
+  const calculateLiveStats = () => {
+    const orderMessages = chatMessages.filter(msg => msg.message.includes('Bestellung'));
+    
+    let totalRevenue = 0;
+    let sessionRevenue = 0;
+    let totalItems = 0;
+    const sessionStartTime = new Date().setHours(0, 0, 0, 0); // Today's start
+    
+    orderMessages.forEach(msg => {
+      // Parse order message: "**Bestellung** [CustomerNumber] I [Quantity]x I [Price] I [Size]"
+      const match = msg.message.match(/\*\*Bestellung\*\*.*?(\d+)x.*?([\d,]+).*€/);
+      if (match) {
+        const quantity = parseInt(match[1]) || 1;
+        const price = parseFloat(match[2].replace(',', '.')) || 0;
+        const revenue = quantity * price;
+        
+        totalRevenue += revenue;
+        totalItems += quantity;
+        
+        // Check if message is from current session (today)
+        const msgTime = new Date(msg.timestamp || Date.now());
+        if (msgTime >= sessionStartTime) {
+          sessionRevenue += revenue;
+        }
+      }
+    });
+    
+    return {
+      total_orders: orderMessages.length,
+      session_orders: orderMessages.filter(msg => {
+        const msgTime = new Date(msg.timestamp || Date.now());
+        return msgTime >= sessionStartTime;
+      }).length,
+      total_revenue: totalRevenue,
+      session_revenue: sessionRevenue,
+      total_items: totalItems
+    };
   };
 
   const priceOptions = ['5,00 €', '6,90 €', '7,50 €', '8,50 €', '9,00 €', '9,90 €', '11,50 €', '12,90 €', '15,90 €', '18,90 €'];
