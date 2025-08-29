@@ -2945,12 +2945,16 @@ class LiveShoppingAPITester:
         print(f"🔗 Testing against: {self.base_url}")
         print("=" * 60)
 
-        # PRIORITY 1: GERMAN ORDER FORMAT VERIFICATION (Current Review Request)
-        print("\n🎯 PRIORITY 1: GERMAN ORDER FORMAT VERIFICATION...")
+        # PRIORITY 1: MULTI-LANGUAGE FUNCTIONALITY TESTING (Current Review Request)
+        print("\n🎯 PRIORITY 1: MULTI-LANGUAGE FUNCTIONALITY TESTING...")
+        multi_language_success = self.test_multi_language_functionality()
+
+        # PRIORITY 2: GERMAN ORDER FORMAT VERIFICATION
+        print("\n🎯 PRIORITY 2: GERMAN ORDER FORMAT VERIFICATION...")
         german_format_success = self.test_order_system_verification_german_format()
 
-        # PRIORITY 2: CRITICAL AUTHENTICATION ISSUE TEST (as per review request)
-        print("\n🚨 PRIORITY 2: CRITICAL AUTHENTICATION ISSUE TEST...")
+        # PRIORITY 3: CRITICAL AUTHENTICATION ISSUE TEST
+        print("\n🚨 PRIORITY 3: CRITICAL AUTHENTICATION ISSUE TEST...")
         critical_auth_success = self.test_critical_authentication_issue()
 
         # CRITICAL BUG TEST - User reported issue
