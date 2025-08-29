@@ -473,6 +473,7 @@ async def register_customer(customer: CustomerCreate):
             customer_number=customer.customer_number,
             email=customer.email,
             name=customer.name,
+            preferred_language=customer.preferred_language or "de",
             activation_status="pending"
         )
         
