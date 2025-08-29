@@ -1357,9 +1357,6 @@ function App() {
                       
                       {/* 2. WhatsApp Service Contact */}
                       <div className="bg-pink-50 border border-pink-200 rounded-lg p-3">
-                        <p className="text-xs text-pink-600 text-center mb-2 font-semibold">
-                          OUTLET34 Service Nummer
-                        </p>
                         <a 
                           href="https://wa.me/4917621105848?text=Hallo%20OUTLET34%20Team,%20ich%20habe%20eine%20Frage%20zum%20Live%20Shopping..." 
                           target="_blank" 
@@ -1371,7 +1368,7 @@ function App() {
                             alt="WhatsApp Logo" 
                             className="w-6 h-6"
                           />
-                          <span className="font-semibold">WhatsApp Chat</span>
+                          <span className="font-semibold">Service Nummer</span>
                         </a>
                       </div>
                       
