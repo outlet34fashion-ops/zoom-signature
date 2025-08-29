@@ -2013,6 +2013,149 @@ class LiveShoppingAPITester:
             self.log_test("Critical Auth - Exception", False, str(e))
             return False
 
+    def test_objectid_serialization_fix(self):
+        """Test specific ObjectId serialization fix for POST /api/admin/events endpoint"""
+        print("\n🔧 Testing ObjectId Serialization Fix for Live Shopping Calendar...")
+        
+        # Test data from review request
+        test_event = {
+            "date": "2024-09-15",
+            "time": "20:00", 
+            "title": "Herbst Fashion Show",
+            "description": "Neue Herbstkollektion 2024"
+        }
+        
+        try:
+            print("  🎯 PRIORITY TEST: POST /api/admin/events ObjectId Fix...")
+            
+            # Test POST /api/admin/events - this was the endpoint with ObjectId serialization issue
+            response = requests.post(
+                f"{self.api_url}/admin/events",
+                json=test_event,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            # Check if we get 200 instead of 500 (ObjectId serialization error)
+            success = response.status_code == 200
+            details = f"POST Status: {response.status_code}"
+            
+            if response.status_code == 500:
+                # This indicates ObjectId serialization issue still exists
+                try:
+                    error_data = response.json()
+                    details += f" - ERROR: {error_data.get('detail', 'Internal Server Error')}"
+                except:
+                    details += " - ERROR: Internal Server Error (likely ObjectId serialization)"
+                self.log_test("ObjectId Fix - POST Event Creation", False, details)
+                return False
+            
+            if success:
+                try:
+                    data = response.json()
+                    
+                    # Verify response structure - should be clean JSON without ObjectId
+                    has_message = 'message' in data
+                    has_event = 'event' in data
+                    
+                    if has_message and has_event:
+                        event_data = data['event']
+                        
+                        # Check all required fields are present and properly serialized
+                        required_fields = ['id', 'date', 'time', 'title', 'description', 'created_at', 'updated_at']
+                        has_all_fields = all(field in event_data for field in required_fields)
+                        
+                        # Verify data integrity
+                        data_correct = (
+                            event_data.get('date') == test_event['date'] and
+                            event_data.get('time') == test_event['time'] and
+                            event_data.get('title') == test_event['title'] and
+                            event_data.get('description') == test_event['description']
+                        )
+                        
+                        # Check that timestamps are properly serialized (not ObjectId)
+                        created_at_valid = isinstance(event_data.get('created_at'), str)
+                        updated_at_valid = isinstance(event_data.get('updated_at'), str)
+                        
+                        success = has_all_fields and data_correct and created_at_valid and updated_at_valid
+                        details += f", Clean JSON response: {success}, All fields: {has_all_fields}, Data correct: {data_correct}"
+                        
+                        if success:
+                            created_event_id = event_data['id']
+                            details += f", Event ID: {created_event_id}"
+                            
+                            # Test GET /api/events to verify event appears correctly
+                            print("  📋 Verifying event appears in GET /api/events...")
+                            get_response = requests.get(f"{self.api_url}/events", timeout=10)
+                            
+                            if get_response.status_code == 200:
+                                events = get_response.json()
+                                event_found = any(
+                                    event.get('title') == test_event['title'] and
+                                    event.get('date') == test_event['date'] and
+                                    event.get('time') == test_event['time']
+                                    for event in events
+                                )
+                                
+                                if event_found:
+                                    details += f", Event appears in public list: {event_found}"
+                                    self.log_test("ObjectId Fix - Event Retrieval", True, f"Created event appears correctly in GET /api/events")
+                                else:
+                                    self.log_test("ObjectId Fix - Event Retrieval", False, "Created event not found in public events list")
+                            
+                            # Test full CRUD cycle
+                            print("  🔄 Testing full CRUD cycle...")
+                            
+                            # UPDATE test
+                            update_data = {"title": "Herbst Fashion Show - UPDATED"}
+                            update_response = requests.put(
+                                f"{self.api_url}/admin/events/{created_event_id}",
+                                json=update_data,
+                                headers={'Content-Type': 'application/json'},
+                                timeout=10
+                            )
+                            
+                            update_success = update_response.status_code == 200
+                            self.log_test("ObjectId Fix - Event Update", update_success, f"PUT Status: {update_response.status_code}")
+                            
+                            # DELETE test
+                            delete_response = requests.delete(
+                                f"{self.api_url}/admin/events/{created_event_id}",
+                                timeout=10
+                            )
+                            
+                            delete_success = delete_response.status_code == 200
+                            self.log_test("ObjectId Fix - Event Delete", delete_success, f"DELETE Status: {delete_response.status_code}")
+                            
+                    else:
+                        success = False
+                        details += f", Missing message/event in response: message={has_message}, event={has_event}"
+                        
+                except json.JSONDecodeError:
+                    success = False
+                    details += ", Response is not valid JSON"
+                except Exception as e:
+                    success = False
+                    details += f", Error parsing response: {str(e)}"
+            
+            self.log_test("ObjectId Fix - POST Event Creation", success, details)
+            
+            if success:
+                print("  ✅ SUCCESS: ObjectId serialization issue has been RESOLVED!")
+                print("  ✅ POST /api/admin/events now returns 200 with clean JSON")
+                print("  ✅ Event creation, retrieval, update, and delete all working")
+                print(f"  📋 Test Event: '{test_event['title']}' on {test_event['date']} at {test_event['time']}")
+            else:
+                print("  ❌ FAILED: ObjectId serialization issue still exists")
+                print("  ❌ POST /api/admin/events returning 500 error")
+            
+            return success
+            
+        except Exception as e:
+            self.log_test("ObjectId Fix - Exception", False, str(e))
+            print(f"  ❌ EXCEPTION: {str(e)}")
+            return False
+
     def test_live_shopping_calendar(self):
         """Test Live Shopping Calendar system endpoints as per review request"""
         print("\n📅 Testing Live Shopping Calendar System...")
