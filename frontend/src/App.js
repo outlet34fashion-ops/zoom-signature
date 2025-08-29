@@ -1915,6 +1915,78 @@ function App() {
           </div>
         )}
 
+        {/* Live Shopping Calendar Management (Admin) */}
+        {isAdminAuthenticated && isAdminView && (
+          <Card className="mb-6">
+            <CardContent className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-800">📅 Live Shopping Kalender</h3>
+                <Button 
+                  onClick={() => {
+                    setNewEventData({ date: '', time: '', title: '', description: '' });
+                    setEventError('');
+                    setShowCreateEvent(true);
+                  }}
+                  className="bg-pink-500 hover:bg-pink-600 text-white"
+                >
+                  ➕ Event erstellen
+                </Button>
+              </div>
+              
+              {loadingEvents ? (
+                <div className="text-center py-4">
+                  <p className="text-gray-600">Events werden geladen...</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {events.length === 0 ? (
+                    <p className="text-gray-600 text-center py-4">Noch keine Events geplant.</p>
+                  ) : (
+                    events.map((event) => (
+                      <div key={event.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-4">
+                            <div className="text-sm text-gray-500">
+                              {formatEventDate(event.date)}
+                            </div>
+                            <div className="font-medium text-pink-600">
+                              {event.time}
+                            </div>
+                            <div className="font-semibold text-gray-800">
+                              {event.title}
+                            </div>
+                          </div>
+                          {event.description && (
+                            <div className="text-sm text-gray-600 mt-1">
+                              {event.description}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button 
+                            onClick={() => openEditEvent(event)}
+                            variant="outline"
+                            size="sm"
+                          >
+                            ✏️ Bearbeiten
+                          </Button>
+                          <Button 
+                            onClick={() => deleteEvent(event.id)}
+                            className="bg-red-500 hover:bg-red-600 text-white"
+                            size="sm"
+                          >
+                            🗑️ Löschen
+                          </Button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         {/* Profile Modal */}
         {showProfileModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
