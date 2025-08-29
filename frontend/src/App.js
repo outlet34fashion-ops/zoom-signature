@@ -1415,8 +1415,8 @@ function App() {
                 {isAdminAuthenticated ? 
                   "👑 Admin angemeldet" :
                   (isAuthenticated && currentCustomer ? 
-                    `${t.customerLoggedIn} ${currentCustomer.customer_number || '10299'}` :
-                    `${t.customerLoggedIn} 10299`
+                    `${t('auth.customerLoggedIn')} ${currentCustomer.customer_number || '10299'}` :
+                    `${t('auth.customerLoggedIn')} 10299`
                   )
                 }
               </span>
