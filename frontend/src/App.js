@@ -2446,6 +2446,80 @@ function App() {
             </div>
           )}
 
+          {/* Top 3 Käufer-Liste - Gamification für Kunden */}
+          {!isAdminView && (
+            <Card className="max-w-sm mx-auto">
+              <CardContent className="p-3">
+                <div className="space-y-3">
+                  <h3 className="font-bold text-center text-sm text-pink-600 flex items-center justify-center">
+                    🏆 TOP 3 KÄUFER 🏆
+                  </h3>
+                  
+                  <div className="space-y-2">
+                    {getTop3Buyers().map((buyer, index) => (
+                      <div key={buyer.customerNumber} className={`flex items-center p-2 rounded-lg ${
+                        index === 0 ? 'bg-gradient-to-r from-yellow-100 to-yellow-200 border-2 border-yellow-400' :
+                        index === 1 ? 'bg-gradient-to-r from-gray-100 to-gray-200 border-2 border-gray-400' :
+                        'bg-gradient-to-r from-orange-100 to-orange-200 border-2 border-orange-400'
+                      }`}>
+                        <div className="flex items-center space-x-2">
+                          {/* Podium Icons */}
+                          <div className="text-lg">
+                            {index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}
+                          </div>
+                          
+                          <div className="flex-1">
+                            <div className="font-bold text-sm text-gray-800">
+                              Kunde {buyer.customerNumber}
+                            </div>
+                            <div className="flex justify-between text-xs text-gray-600">
+                              <span>{buyer.totalItems} Artikel</span>
+                              <span className="font-semibold text-green-600">
+                                {buyer.totalRevenue.toFixed(2).replace('.', ',')} €
+                              </span>
+                            </div>
+                          </div>
+                          
+                          {/* Rang Badge */}
+                          <div className={`px-2 py-1 rounded-full text-xs font-bold ${
+                            index === 0 ? 'bg-yellow-500 text-white' :
+                            index === 1 ? 'bg-gray-500 text-white' :
+                            'bg-orange-500 text-white'
+                          }`}>
+                            #{index + 1}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    
+                    {getTop3Buyers().length === 0 && (
+                      <div className="text-center py-4 text-gray-500">
+                        <div className="text-2xl mb-2">🚀</div>
+                        <div className="text-xs">
+                          Seien Sie der erste Top-Käufer!<br/>
+                          Bestellen Sie jetzt und sichern Sie sich Platz #1!
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Motivations-Text für aktuellen Kunden */}
+                  {currentCustomer && getTop3Buyers().length > 0 && (
+                    <div className="mt-3 p-2 bg-pink-50 rounded-lg border border-pink-200">
+                      <div className="text-xs text-center text-pink-700">
+                        {getTop3Buyers().some(buyer => buyer.customerNumber === currentCustomer.customer_number) ? (
+                          <>🎉 <strong>Sie sind in den Top 3!</strong> Halten Sie Ihre Position! 💪</>
+                        ) : (
+                          <>⚡ <strong>Jetzt bestellen</strong> und in die Top 3 aufsteigen! 🏆</>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Split View - Chat and Orders */}
           <div className="space-y-4">
             <Card>
