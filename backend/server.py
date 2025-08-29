@@ -546,6 +546,7 @@ async def create_customer_by_admin(customer: CustomerCreate):
             customer_number=customer.customer_number,
             email=customer.email,
             name=customer.name,
+            preferred_language=customer.preferred_language or "de",
             activation_status="active"  # Admin-created customers are automatically active
         )
         
