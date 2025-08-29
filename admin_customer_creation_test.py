@@ -224,7 +224,7 @@ class AdminCustomerCreationTester:
         duplicate_email = {
             "customer_number": f"TEST{timestamp}003",
             "name": "Duplicate Email Customer",
-            "email": "test@example.com",  # Same as Test 1
+            "email": f"test.{unique_suffix}@example.com",  # Same as Test 1
             "preferred_language": "tr"
         }
         
