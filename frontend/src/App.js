@@ -1168,6 +1168,41 @@ function App() {
     };
   };
 
+  // WebRTC Streaming Functions
+  const startWebRTCStream = () => {
+    if (!isAdminAuthenticated) {
+      alert('Sie müssen als Administrator angemeldet sein, um zu streamen.');
+      return;
+    }
+    
+    setStreamingMode('streamer');
+    setShowStreaming(true);
+  };
+
+  const joinWebRTCStream = (streamId) => {
+    setCurrentStreamId(streamId);
+    setStreamingMode('viewer');
+    setShowStreaming(true);
+  };
+
+  const handleStreamEnd = () => {
+    setShowStreaming(false);
+    setCurrentStreamId(null);
+    setStreamingMode(null);
+    // Refresh active streams list
+    loadActiveStreams();
+  };
+
+  const loadActiveStreams = async () => {
+    try {
+      const response = await axios.get(`${API}/streams/active`);
+      setActiveStreams(response.data.streams || []);
+    } catch (error) {
+      console.error('Error loading active streams:', error);
+      setActiveStreams([]);
+    }
+  };
+
   const priceOptions = ['5,00 €', '6,90 €', '7,50 €', '8,50 €', '9,00 €', '9,90 €', '11,50 €', '12,90 €', '15,90 €', '18,90 €'];
 
   const handlePriceSelect = (priceStr) => {
