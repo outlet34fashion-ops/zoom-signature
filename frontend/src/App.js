@@ -2598,6 +2598,84 @@ function App() {
           </Card>
         </div>
       )}
+
+      {/* Customer Calendar Modal */}
+      {showCalendar && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-2xl mx-4">
+            <CardContent className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-semibold text-gray-800">📅 Live Shopping Kalender</h3>
+                <Button 
+                  variant="ghost"
+                  onClick={() => setShowCalendar(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  ✕
+                </Button>
+              </div>
+              
+              {loadingEvents ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-600">Kalender wird geladen...</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {events.length === 0 ? (
+                    <div className="text-center py-8">
+                      <p className="text-gray-600">Noch keine Live Shopping Events geplant.</p>
+                      <p className="text-sm text-gray-500 mt-2">Schauen Sie bald wieder vorbei!</p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="mb-6">
+                        <h4 className="text-lg font-medium text-gray-800 mb-4">Kommende Live Shopping Events:</h4>
+                      </div>
+                      
+                      {events.map((event, index) => (
+                        <div key={event.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-4 mb-2">
+                                <div className="bg-pink-100 text-pink-800 px-3 py-1 rounded-full text-sm font-medium">
+                                  {formatEventDate(event.date)}
+                                </div>
+                                <div className="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                                  {event.time}
+                                </div>
+                              </div>
+                              
+                              <h5 className="text-lg font-semibold text-gray-800 mb-1">
+                                {event.title}
+                              </h5>
+                              
+                              {event.description && (
+                                <p className="text-gray-600 text-sm">
+                                  {event.description}
+                                </p>
+                              )}
+                            </div>
+                            
+                            <div className="ml-4 text-pink-500 font-bold text-2xl">
+                              {index === 0 ? '🔴' : '📅'}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                      
+                      <div className="mt-6 pt-4 border-t text-center">
+                        <p className="text-sm text-gray-500">
+                          💡 Verpassen Sie keine Live Shopping Events! Besuchen Sie uns zur angegebenen Zeit.
+                        </p>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }
