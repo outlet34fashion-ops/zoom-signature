@@ -1049,15 +1049,12 @@ function App() {
                           className="flex items-center justify-center space-x-2 bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-3 rounded-lg transition-colors duration-200 text-sm"
                         >
                           <img 
-                            src="/images/whatsapp-logo.png" 
+                            src="/images/whatsapp-logo-dark.png" 
                             alt="WhatsApp Logo" 
                             className="w-6 h-6"
                           />
                           <span className="font-semibold">WhatsApp</span>
                         </a>
-                        <p className="text-xs text-green-600 text-center mt-1">
-                          Hilfe per WhatsApp
-                        </p>
                       </div>
                     </div>
                   </div>
