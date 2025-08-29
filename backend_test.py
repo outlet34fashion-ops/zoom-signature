@@ -2282,6 +2282,9 @@ class LiveShoppingAPITester:
         # Test customer last order display functionality (NEW FEATURE - Review Request)
         last_order_success = self.test_customer_last_order_display()
         
+        # Test Live Shopping Calendar system (NEW FEATURE - Review Request)
+        calendar_success = self.test_live_shopping_calendar()
+        
         # Test WebSocket availability
         ws_success = self.test_websocket_availability()
 
