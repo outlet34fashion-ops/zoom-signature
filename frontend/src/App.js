@@ -34,7 +34,7 @@ function App() {
   const [showCustomerLogin, setShowCustomerLogin] = useState(false);
   const [customerLoginData, setCustomerLoginData] = useState({ customer_number: '' });
   const [customerLoginError, setCustomerLoginError] = useState('');
-  const [activeView, setActiveView] = useState('chat'); // 'chat' or 'orders'
+  const [activeView, setActiveView] = useState('orders'); // 'chat' or 'orders' - Standard auf Bestellungen
   const [tickerSettings, setTickerSettings] = useState({ 
     text: "Nur für Händler | Ab 10 € - Heute 18:00 - Frische Ware | Young Fashion & Plus Size", 
     enabled: true 
