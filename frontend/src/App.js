@@ -1420,59 +1420,48 @@ function App() {
                   )
                 }
               </span>
-
-            </div>
-            <div className="flex space-x-2">
-              {/* Profile Button for authenticated customers */}
+              
+              {/* WhatsApp Support Button auf der linken Seite für Kunden */}
               {isAuthenticated && !isAdminView && (
-                <>
-                  <button 
-                    onClick={() => setShowProfileModal(true)}
-                    className="w-8 h-8 rounded-full border-2 border-white hover:border-pink-200 transition-all duration-200 flex items-center justify-center"
-                    title={t('navigation.profile')}
-                  >
-                    {currentCustomer?.profile_image ? (
-                      <img
-                        src={currentCustomer.profile_image}
-                        alt="Profil"
-                        className="w-full h-full rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full rounded-full bg-white/20 flex items-center justify-center">
-                        <span className="text-white text-xs font-bold">
-                          {currentCustomer?.name ? currentCustomer.name.charAt(0).toUpperCase() : '👤'}
-                        </span>
-                      </div>
-                    )}
-                  </button>
-                  
-                  {/* Kalender Button für Kunden */}
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    onClick={() => setShowCalendar(true)}
-                    className="text-white hover:bg-pink-600"
-                    title="Live Shopping Kalender"
-                  >
-                    📅 {t('navigation.calendar')}
-                  </Button>
-                  
-                  {/* Dezenter WhatsApp Support Button für Kunden */}
-                  <a 
-                    href="https://wa.me/4917621105848?text=Hallo%20OUTLET34%20Team,%20ich%20brauche%20Hilfe%20beim%20Live%20Shopping..." 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center px-3 py-1.5 text-sm text-white hover:bg-pink-600 rounded transition-colors duration-200"
-                    title="WhatsApp Support"
-                  >
-                    <img 
-                      src="/images/whatsapp-logo-dark.png" 
-                      alt="WhatsApp" 
-                      className="w-4 h-4 opacity-80 hover:opacity-100"
-                    />
-                  </a>
-                </>
+                <a 
+                  href="https://wa.me/4917621105848?text=Hallo%20OUTLET34%20Team,%20ich%20brauche%20Hilfe%20beim%20Live%20Shopping..." 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center px-3 py-1.5 text-sm text-white hover:bg-pink-600 rounded transition-colors duration-200"
+                  title="WhatsApp Support"
+                >
+                  <img 
+                    src="/images/whatsapp-logo-dark.png" 
+                    alt="WhatsApp" 
+                    className="w-4 h-4 mr-2"
+                  />
+                  {t('navigation.service')}
+                </a>
               )}
+            </div>
+            
+            {/* Profile Button rechts für authentifizierte Kunden */}
+            {isAuthenticated && !isAdminView && (
+              <button 
+                onClick={() => setShowProfileModal(true)}
+                className="w-8 h-8 rounded-full border-2 border-white hover:border-pink-200 transition-all duration-200 flex items-center justify-center"
+                title={t('navigation.profile')}
+              >
+                {currentCustomer?.profile_image ? (
+                  <img
+                    src={currentCustomer.profile_image}
+                    alt="Profil"
+                    className="w-full h-full rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full rounded-full bg-white/20 flex items-center justify-center">
+                    <span className="text-white text-xs font-bold">
+                      {currentCustomer?.name ? currentCustomer.name.charAt(0).toUpperCase() : '👤'}
+                    </span>
+                  </div>
+                )}
+              </button>
+            )}
               
               {/* Only show view switcher for authenticated admin */}
               {isAdminAuthenticated && (
