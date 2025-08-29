@@ -1224,24 +1224,24 @@ function App() {
                     
                     {/* Buttons untereinander - neue Reihenfolge */}
                     <div className="space-y-3 pt-4">
-                      {/* 1. Anmelden Button */}
-                      <Button 
-                        onClick={() => setShowCustomerLogin(true)}
-                        className="w-full bg-pink-500 hover:bg-pink-600"
-                      >
-                        🔑 Anmelden
-                      </Button>
+                      {/* 1. Zeile: Registrieren (links) + Anmelden (rechts) */}
+                      <div className="flex space-x-3">
+                        <Button 
+                          variant="outline"
+                          onClick={() => setShowRegistration(true)}
+                          className="flex-1"
+                        >
+                          📝 Registrieren
+                        </Button>
+                        <Button 
+                          onClick={() => setShowCustomerLogin(true)}
+                          className="flex-1 bg-pink-500 hover:bg-pink-600"
+                        >
+                          🔑 Anmelden
+                        </Button>
+                      </div>
                       
-                      {/* 2. Registrieren Button */}
-                      <Button 
-                        variant="outline"
-                        onClick={() => setShowRegistration(true)}
-                        className="w-full"
-                      >
-                        📝 Registrieren
-                      </Button>
-                      
-                      {/* 3. Admin-Anmeldung Button */}
+                      {/* 2. Admin-Anmeldung Button */}
                       <div className="pt-2">
                         <p className="text-xs text-gray-500 text-center mb-2">
                           Administratoren
@@ -1255,7 +1255,7 @@ function App() {
                         </Button>
                       </div>
                       
-                      {/* 4. WhatsApp Service Contact */}
+                      {/* 3. WhatsApp Service Contact */}
                       <div className="bg-green-50 border border-green-200 rounded-lg p-3 mt-4">
                         <p className="text-xs text-green-600 text-center mb-2 font-semibold">
                           OUTLET34 Service Nummer
