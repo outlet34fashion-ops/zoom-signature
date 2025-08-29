@@ -56,12 +56,13 @@ class AdminCustomerCreationTester:
         # Generate unique timestamp for test data
         timestamp = int(time.time())
         
-        # Test 1: Create customer with specific test data from review request
+        # Test 1: Create customer with specific test data from review request (using unique data)
         print("📝 Test 1: Create customer with review request test data...")
+        unique_suffix = f"{timestamp}"
         test_customer_data = {
-            "customer_number": "TEST123",
+            "customer_number": f"TEST{unique_suffix}",
             "name": "Test Customer", 
-            "email": "test@example.com",
+            "email": f"test.{unique_suffix}@example.com",
             "preferred_language": "de"
         }
         
