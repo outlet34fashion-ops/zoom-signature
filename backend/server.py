@@ -192,6 +192,7 @@ class CustomerCreate(BaseModel):
     email: str
     name: str
     profile_image: Optional[str] = None
+    preferred_language: Optional[str] = "de"  # de, en, tr, fr
 
 class CustomerUpdate(BaseModel):
     activation_status: str  # active, blocked
