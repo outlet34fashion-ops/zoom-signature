@@ -3043,43 +3043,38 @@ function App() {
 
       {/* Customer Calendar Modal */}
       {showCalendar && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <Card className="w-full max-w-2xl mx-4">
-            <CardContent className="p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-semibold text-gray-800">📅 Live Shopping Kalender</h3>
-                <div className="flex space-x-2">
-                  {!notificationsEnabled && (
-                    <Button 
-                      onClick={requestNotificationPermission}
-                      className="bg-green-500 hover:bg-green-600 text-white text-sm"
-                      size="sm"
-                    >
-                      🔔 Erinnerungen aktivieren
-                    </Button>
-                  )}
-                  <a 
-                    href="https://wa.me/4917621105848?text=Hallo%20OUTLET34%20Team,%20ich%20brauche%20Hilfe%20beim%20Live%20Shopping..." 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded text-sm transition-colors duration-200"
-                    title="WhatsApp Support"
-                  >
-                    <img 
-                      src="/images/whatsapp-logo-dark.png" 
-                      alt="WhatsApp" 
-                      className="w-4 h-4"
-                    />
-                  </a>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <CardContent className="p-4 md:p-6">
+              {/* Mobile-optimized Header */}
+              <div className="flex justify-between items-start mb-4">
+                <h3 className="text-lg md:text-xl font-semibold text-gray-800 pr-2">
+                  📅 Live Shopping Kalender
+                </h3>
+                
+                {/* Close Button - Always visible and prominent */}
+                <Button 
+                  variant="ghost"
+                  onClick={() => setShowCalendar(false)}
+                  className="text-gray-500 hover:text-gray-700 text-xl p-2 min-w-[40px] flex-shrink-0"
+                  title="Schließen"
+                >
+                  ✕
+                </Button>
+              </div>
+
+              {/* Notification Button - Mobile friendly placement */}
+              {!notificationsEnabled && (
+                <div className="mb-4">
                   <Button 
-                    variant="ghost"
-                    onClick={() => setShowCalendar(false)}
-                    className="text-gray-500 hover:text-gray-700"
+                    onClick={requestNotificationPermission}
+                    className="bg-green-500 hover:bg-green-600 text-white text-sm w-full md:w-auto"
+                    size="sm"
                   >
-                    ✕
+                    🔔 Erinnerungen aktivieren
                   </Button>
                 </div>
-              </div>
+              )}
               
               {loadingEvents ? (
                 <div className="text-center py-8">
