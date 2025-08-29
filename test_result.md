@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "MULTI-LANGUAGE SUPPORT IMPLEMENTATION: Implement comprehensive multi-language support (German/English/Turkish/French) for the Live Shopping App. Requirements: 1) Add language preference to customer profiles, 2) Install and configure react-i18next for internationalization, 3) Create translation files for all 4 languages, 4) Add language selection UI in profile modal, 5) Update backend APIs to handle language preferences, 6) Sync user language with i18n system, 7) Translate key UI elements. Expected functionality: Users can select preferred language, language preference persists, interface updates dynamically, all critical text translated."
+user_problem_statement: "WEBRTC LIVE VIDEO STREAMING IMPLEMENTATION: Implement WebRTC live video streaming functionality for the Live Shopping App. Requirements: 1) iPhone camera support (direct browser access), 2) Free solution (no paid services), 3) Best video quality, 4) Maximum 50 concurrent viewers, 5) Admin streaming capability, 6) Customer viewing capability, 7) Integration with existing FastAPI + React + MongoDB app. Expected functionality: Admins can start live streams from iPhone camera, customers can view live streams, real-time video streaming with optimal quality, proper viewer management and limits."
 
 backend:
   - task: "Multi-language functionality integration"
