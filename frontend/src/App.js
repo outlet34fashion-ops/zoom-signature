@@ -1322,13 +1322,13 @@ function App() {
                     <h2 className="text-xl font-semibold text-gray-800">OUTLET34 Live Shopping</h2>
                     
                     <div className="text-center space-y-1 pt-16">
-                      <p className="text-sm font-medium text-gray-700">
+                      <p className="text-base font-medium text-gray-700 sm:text-sm">
                         Neu bei OUTLET34?
                       </p>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-base text-gray-600 sm:text-sm">
                         Jetzt registrieren und Live Shopping erleben!
                       </p>
-                      <a href="https://www.outlet34fashion.com/registrieren" className="block text-sm text-pink-500 hover:underline">
+                      <a href="https://www.outlet34fashion.com/registrieren" className="block text-base text-pink-500 hover:underline sm:text-sm">
                         https://www.outlet34fashion.com/registrieren
                       </a>
                     </div>
