@@ -2579,8 +2579,12 @@ class LiveShoppingAPITester:
         print(f"🔗 Testing against: {self.base_url}")
         print("=" * 60)
 
-        # PRIORITY 1: CRITICAL AUTHENTICATION ISSUE TEST (as per review request)
-        print("\n🚨 PRIORITY 1: CRITICAL AUTHENTICATION ISSUE TEST...")
+        # PRIORITY 1: GERMAN ORDER FORMAT VERIFICATION (Current Review Request)
+        print("\n🎯 PRIORITY 1: GERMAN ORDER FORMAT VERIFICATION...")
+        german_format_success = self.test_order_system_verification_german_format()
+
+        # PRIORITY 2: CRITICAL AUTHENTICATION ISSUE TEST (as per review request)
+        print("\n🚨 PRIORITY 2: CRITICAL AUTHENTICATION ISSUE TEST...")
         critical_auth_success = self.test_critical_authentication_issue()
 
         # CRITICAL BUG TEST - User reported issue
