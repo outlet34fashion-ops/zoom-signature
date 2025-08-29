@@ -2701,8 +2701,13 @@ function App() {
                 <div className="space-y-4">
                   {events.length === 0 ? (
                     <div className="text-center py-8">
-                      <p className="text-gray-600">Noch keine Live Shopping Events geplant.</p>
-                      <p className="text-sm text-gray-500 mt-2">Schauen Sie bald wieder vorbei!</p>
+                      <p className="text-gray-600 mb-2">📅 Keine kommenden Live Shopping Events geplant.</p>
+                      <p className="text-sm text-gray-500">Schauen Sie bald wieder vorbei für neue Events!</p>
+                      {notificationsEnabled && (
+                        <p className="text-xs text-green-600 mt-2">
+                          🔔 Sie werden über neue Events benachrichtigt
+                        </p>
+                      )}
                     </div>
                   ) : (
                     <>
