@@ -2676,6 +2676,37 @@ function App() {
                                   )}
                                 </div>
                               )}
+                                </div>
+                                
+                                {/* Pin-Button für Admins */}
+                                {isAdminView && (
+                                  <div className="ml-2 flex space-x-1">
+                                    {!isPinned(msg.id) ? (
+                                      <button
+                                        onClick={() => pinMessage(msg.id)}
+                                        className="text-gray-400 hover:text-yellow-600 text-xs px-1"
+                                        title="Nachricht pinnen"
+                                      >
+                                        📌
+                                      </button>
+                                    ) : (
+                                      <button
+                                        onClick={() => unpinMessage(msg.id)}
+                                        className="text-yellow-600 hover:text-red-600 text-xs px-1"
+                                        title="Nachricht entpinnen"
+                                      >
+                                        📌❌
+                                      </button>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                              
+                              {/* Zeitstempel */}
+                              <div className="text-xs text-gray-500 mt-1">
+                                {new Date(msg.timestamp || Date.now()).toLocaleTimeString()}
+                                {isPinned(msg.id) && <span className="ml-1 text-yellow-600">📍</span>}
+                              </div>
                             </div>
                           ))}
                       </div>
