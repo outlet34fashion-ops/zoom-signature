@@ -102,7 +102,10 @@ class AdminCustomerCreationTester:
                     print(f"   ✅ Language: {data['preferred_language']}")
                     print(f"   ✅ Created at: {data['created_at']}")
                     
-            self.log_test("Admin Customer Creation - Test Data (TEST123)", success, details)
+                    # Store for later tests
+                    created_test_customer = data
+                    
+            self.log_test(f"Admin Customer Creation - Test Data (TEST{unique_suffix})", success, details)
             
         except Exception as e:
             self.log_test("Admin Customer Creation - Test Data (TEST123)", False, str(e))
