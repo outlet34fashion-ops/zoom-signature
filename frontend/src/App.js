@@ -1411,7 +1411,45 @@ function App() {
         <div className="container mx-auto px-4 py-2">
           <div className="flex justify-between items-center">
             <div className="flex items-center">
-              {/* WhatsApp Support Button - nur Logo für Kunden */}
+              {/* Kalender Button links für Kunden */}
+              {isAuthenticated && !isAdminView && (
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => setShowCalendar(true)}
+                  className="text-white hover:bg-pink-600"
+                  title="Live Shopping Kalender"
+                >
+                  📅 {t('navigation.calendar')}
+                </Button>
+              )}
+            </div>
+            
+            <div className="flex items-center space-x-3">
+              {/* Profile Button für authentifizierte Kunden */}
+              {isAuthenticated && !isAdminView && (
+                <button 
+                  onClick={() => setShowProfileModal(true)}
+                  className="w-8 h-8 rounded-full border-2 border-white hover:border-pink-200 transition-all duration-200 flex items-center justify-center"
+                  title={t('navigation.profile')}
+                >
+                  {currentCustomer?.profile_image ? (
+                    <img
+                      src={currentCustomer.profile_image}
+                      alt="Profil"
+                      className="w-full h-full rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full rounded-full bg-white/20 flex items-center justify-center">
+                      <span className="text-white text-xs font-bold">
+                        {currentCustomer?.name ? currentCustomer.name.charAt(0).toUpperCase() : '👤'}
+                      </span>
+                    </div>
+                  )}
+                </button>
+              )}
+              
+              {/* WhatsApp Support Button rechts - nur Logo für Kunden */}
               {isAuthenticated && !isAdminView && (
                 <a 
                   href="https://wa.me/4917621105848?text=Hallo%20OUTLET34%20Team,%20ich%20brauche%20Hilfe%20beim%20Live%20Shopping..." 
@@ -1428,29 +1466,6 @@ function App() {
                 </a>
               )}
             </div>
-            
-            {/* Profile Button rechts für authentifizierte Kunden */}
-            {isAuthenticated && !isAdminView && (
-              <button 
-                onClick={() => setShowProfileModal(true)}
-                className="w-8 h-8 rounded-full border-2 border-white hover:border-pink-200 transition-all duration-200 flex items-center justify-center"
-                title={t('navigation.profile')}
-              >
-                {currentCustomer?.profile_image ? (
-                  <img
-                    src={currentCustomer.profile_image}
-                    alt="Profil"
-                    className="w-full h-full rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full rounded-full bg-white/20 flex items-center justify-center">
-                    <span className="text-white text-xs font-bold">
-                      {currentCustomer?.name ? currentCustomer.name.charAt(0).toUpperCase() : '👤'}
-                    </span>
-                  </div>
-                )}
-              </button>
-            )}
               
             <div className="flex space-x-2">
               {/* Only show view switcher for authenticated admin */}
