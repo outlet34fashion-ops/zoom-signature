@@ -30,7 +30,13 @@ function App() {
   const [showMobileChat, setShowMobileChat] = useState(false);
   const [customerId] = useState(() => `customer_${Math.random().toString(36).substr(2, 9)}`);
   const [isAdminView, setIsAdminView] = useState(false);
-  const [adminStats, setAdminStats] = useState({ total_orders: 0, session_orders: 0 });
+  const [adminStats, setAdminStats] = useState({ 
+    total_orders: 0, 
+    session_orders: 0, 
+    total_revenue: 0, 
+    session_revenue: 0, 
+    total_items: 0 
+  });
   const [showCustomerLogin, setShowCustomerLogin] = useState(false);
   const [customerLoginData, setCustomerLoginData] = useState({ customer_number: '' });
   const [customerLoginError, setCustomerLoginError] = useState('');
