@@ -1426,14 +1426,25 @@ function App() {
               {/* Profile Button for authenticated customers */}
               {isAuthenticated && !isAdminView && (
                 <>
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
+                  <button 
                     onClick={() => setShowProfileModal(true)}
-                    className="text-white hover:bg-pink-600"
+                    className="w-8 h-8 rounded-full border-2 border-white hover:border-pink-200 transition-all duration-200 flex items-center justify-center"
+                    title={t('navigation.profile')}
                   >
-                    👤 {t('navigation.profile')}
-                  </Button>
+                    {currentCustomer?.profile_image ? (
+                      <img
+                        src={currentCustomer.profile_image}
+                        alt="Profil"
+                        className="w-full h-full rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full rounded-full bg-white/20 flex items-center justify-center">
+                        <span className="text-white text-xs font-bold">
+                          {currentCustomer?.name ? currentCustomer.name.charAt(0).toUpperCase() : '👤'}
+                        </span>
+                      </div>
+                    )}
+                  </button>
                   
                   {/* Kalender Button für Kunden */}
                   <Button 
