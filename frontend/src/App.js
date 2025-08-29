@@ -797,7 +797,24 @@ function App() {
     try {
       setLoadingEvents(true);
       const response = await axios.get(`${API}/events`);
-      setEvents(response.data);
+      
+      // Filter events: only show future events (from today onwards)
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Set to start of today
+      
+      const futureEvents = response.data.filter(event => {
+        const eventDate = new Date(event.date + 'T00:00:00');
+        return eventDate >= today;
+      });
+      
+      // Sort by date and time
+      futureEvents.sort((a, b) => {
+        const dateA = new Date(a.date + 'T' + a.time);
+        const dateB = new Date(b.date + 'T' + b.time);
+        return dateA - dateB;
+      });
+      
+      setEvents(futureEvents);
     } catch (error) {
       console.error('Error loading events:', error);
     } finally {
