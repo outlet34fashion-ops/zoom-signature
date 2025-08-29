@@ -2710,36 +2710,55 @@ function App() {
                         <h4 className="text-lg font-medium text-gray-800 mb-4">Kommende Live Shopping Events:</h4>
                       </div>
                       
-                      {events.map((event, index) => (
-                        <div key={event.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center space-x-4 mb-2">
-                                <div className="bg-pink-100 text-pink-800 px-3 py-1 rounded-full text-sm font-medium">
-                                  {formatEventDate(event.date)}
+                      {events.map((event, index) => {
+                        const eventDateTime = new Date(event.date + 'T' + event.time);
+                        const now = new Date();
+                        const isToday = eventDateTime.toDateString() === now.toDateString();
+                        const isUpcoming = eventDateTime > now;
+                        
+                        return (
+                          <div key={event.id} className={`border rounded-lg p-4 transition-colors ${
+                            isToday ? 'bg-pink-50 border-pink-300' : 
+                            isUpcoming ? 'hover:bg-gray-50' : 'opacity-50'
+                          }`}>
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <div className="flex items-center space-x-4 mb-2">
+                                  <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                                    isToday ? 'bg-pink-500 text-white' : 'bg-pink-100 text-pink-800'
+                                  }`}>
+                                    {formatEventDate(event.date)}
+                                  </div>
+                                  <div className={`px-3 py-1 rounded-full text-sm font-bold ${
+                                    isToday ? 'bg-pink-600 text-white' : 'bg-pink-500 text-white'
+                                  }`}>
+                                    {event.time}
+                                  </div>
+                                  {isToday && (
+                                    <span className="animate-pulse text-pink-600 font-bold text-xs">
+                                      🔴 HEUTE LIVE!
+                                    </span>
+                                  )}
                                 </div>
-                                <div className="bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-                                  {event.time}
-                                </div>
+                                
+                                <h5 className="text-lg font-semibold text-gray-800 mb-1">
+                                  {event.title}
+                                </h5>
+                                
+                                {event.description && (
+                                  <p className="text-gray-600 text-sm">
+                                    {event.description}
+                                  </p>
+                                )}
                               </div>
                               
-                              <h5 className="text-lg font-semibold text-gray-800 mb-1">
-                                {event.title}
-                              </h5>
-                              
-                              {event.description && (
-                                <p className="text-gray-600 text-sm">
-                                  {event.description}
-                                </p>
-                              )}
-                            </div>
-                            
-                            <div className="ml-4 text-pink-500 font-bold text-2xl">
-                              {index === 0 ? '🔴' : '📅'}
+                              <div className="ml-4 text-2xl">
+                                {isToday ? '🔴' : index === 0 ? '⭐' : '📅'}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                       
                       <div className="mt-6 pt-4 border-t text-center">
                         <p className="text-sm text-gray-500">
