@@ -522,7 +522,7 @@ async def check_customer_status(customer_number: str):
         raise HTTPException(status_code=500, detail="Status check failed")
 
 # Admin Customer Management Endpoints
-@api_router.post("/admin/customers/create", response_model=Customer)
+@api_router.post("/admin/customers/create")
 async def create_customer_by_admin(customer: CustomerCreate):
     """Manually create a new customer by admin with active status"""
     try:
