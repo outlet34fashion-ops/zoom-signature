@@ -37,6 +37,7 @@ function App() {
     session_revenue: 0, 
     total_items: 0 
   });
+  const [pinnedMessages, setPinnedMessages] = useState([]); // Für Chat-Pinnung
   const [showCustomerLogin, setShowCustomerLogin] = useState(false);
   const [customerLoginData, setCustomerLoginData] = useState({ customer_number: '' });
   const [customerLoginError, setCustomerLoginError] = useState('');
