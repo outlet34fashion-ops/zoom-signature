@@ -1313,14 +1313,31 @@ function App() {
             <div className="flex space-x-2">
               {/* Profile Button for authenticated customers */}
               {isAuthenticated && !isAdminView && (
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => setShowProfileModal(true)}
-                  className="text-white hover:bg-pink-600"
-                >
-                  👤 Mein Profil
-                </Button>
+                <>
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => setShowProfileModal(true)}
+                    className="text-white hover:bg-pink-600"
+                  >
+                    👤 Mein Profil
+                  </Button>
+                  
+                  {/* Dezenter WhatsApp Support Button für Kunden */}
+                  <a 
+                    href="https://wa.me/4917621105848?text=Hallo%20OUTLET34%20Team,%20ich%20brauche%20Hilfe%20beim%20Live%20Shopping..." 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center px-3 py-1.5 text-sm text-white hover:bg-pink-600 rounded transition-colors duration-200"
+                    title="WhatsApp Support"
+                  >
+                    <img 
+                      src="/images/whatsapp-logo-dark.png" 
+                      alt="WhatsApp" 
+                      className="w-4 h-4 opacity-80 hover:opacity-100"
+                    />
+                  </a>
+                </>
               )}
               
               {/* Only show view switcher for authenticated admin */}
