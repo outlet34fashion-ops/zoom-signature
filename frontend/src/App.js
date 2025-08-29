@@ -1037,6 +1037,26 @@ function App() {
                       >
                         Jetzt registrieren
                       </Button>
+                      
+                      {/* WhatsApp Service Contact */}
+                      <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-3">
+                        <p className="text-xs text-green-600 text-center mb-2 font-semibold">
+                          OUTLET34 Service Nummer
+                        </p>
+                        <a 
+                          href="https://wa.me/4917621105848?text=Hallo%20OUTLET34%20Team,%20ich%20habe%20Probleme%20bei%20der%20Anmeldung..." 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center space-x-2 bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-3 rounded-lg transition-colors duration-200 text-sm"
+                        >
+                          <span>📱</span>
+                          <span>0176 21105848</span>
+                          <span>💬</span>
+                        </a>
+                        <p className="text-xs text-green-600 text-center mt-1">
+                          Hilfe per WhatsApp
+                        </p>
+                      </div>
                     </div>
                   </div>
                 ) : showAdminLogin ? (
