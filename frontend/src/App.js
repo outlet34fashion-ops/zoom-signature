@@ -790,6 +790,94 @@ function App() {
     }
   };
 
+  // Live Shopping Calendar Functions
+  const loadEvents = async () => {
+    try {
+      setLoadingEvents(true);
+      const response = await axios.get(`${API}/events`);
+      setEvents(response.data);
+    } catch (error) {
+      console.error('Error loading events:', error);
+    } finally {
+      setLoadingEvents(false);
+    }
+  };
+
+  const createEvent = async () => {
+    try {
+      setEventError('');
+      
+      if (!newEventData.date || !newEventData.time || !newEventData.title) {
+        setEventError('Datum, Zeit und Titel sind erforderlich.');
+        return;
+      }
+
+      await axios.post(`${API}/admin/events`, newEventData);
+      setShowCreateEvent(false);
+      setNewEventData({ date: '', time: '', title: '', description: '' });
+      loadEvents(); // Refresh events list
+    } catch (error) {
+      console.error('Error creating event:', error);
+      setEventError('Fehler beim Erstellen des Events. Bitte versuchen Sie es erneut.');
+    }
+  };
+
+  const updateEvent = async () => {
+    try {
+      setEventError('');
+      
+      if (!currentEvent) return;
+
+      await axios.put(`${API}/admin/events/${currentEvent.id}`, newEventData);
+      setShowEditEvent(false);
+      setCurrentEvent(null);
+      setNewEventData({ date: '', time: '', title: '', description: '' });
+      loadEvents(); // Refresh events list
+    } catch (error) {
+      console.error('Error updating event:', error);
+      setEventError('Fehler beim Aktualisieren des Events. Bitte versuchen Sie es erneut.');
+    }
+  };
+
+  const deleteEvent = async (eventId) => {
+    try {
+      if (window.confirm('Möchten Sie dieses Event wirklich löschen?')) {
+        await axios.delete(`${API}/admin/events/${eventId}`);
+        loadEvents(); // Refresh events list
+      }
+    } catch (error) {
+      console.error('Error deleting event:', error);
+      alert('Fehler beim Löschen des Events. Bitte versuchen Sie es erneut.');
+    }
+  };
+
+  const openEditEvent = (event) => {
+    setCurrentEvent(event);
+    setNewEventData({
+      date: event.date,
+      time: event.time,
+      title: event.title,
+      description: event.description || ''
+    });
+    setEventError('');
+    setShowEditEvent(true);
+  };
+
+  const formatEventDate = (dateStr) => {
+    try {
+      const date = new Date(dateStr + 'T00:00:00');
+      const options = { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      };
+      return date.toLocaleDateString('de-DE', options);
+    } catch (error) {
+      return dateStr;
+    }
+  };
+
   const loadInitialData = async () => {
     try {
       // Load chat messages
