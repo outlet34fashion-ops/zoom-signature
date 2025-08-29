@@ -374,6 +374,11 @@ function App() {
         setShowCustomerLogin(false);
         setCustomerLoginData({ customer_number: '' });
         
+        // Set user's preferred language
+        if (customerData.preferred_language) {
+          i18n.changeLanguage(customerData.preferred_language);
+        }
+        
         // Send login message to chat
         await sendLoginMessage(customerData.customer_number);
         
