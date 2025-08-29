@@ -2318,7 +2318,8 @@ class LiveShoppingAPITester:
             ("Manual Customer Creation", manual_creation_success),
             ("Customer Status Check Fix", customer_fix_success),
             ("Comprehensive Customer Flow", comprehensive_flow_success),
-            ("Customer Last Order Display", last_order_success)
+            ("Customer Last Order Display", last_order_success),
+            ("Live Shopping Calendar", calendar_success)
         ]
         
         print(f"\n🎯 CRITICAL FUNCTIONALITY:")
