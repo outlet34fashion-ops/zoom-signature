@@ -1359,7 +1359,7 @@ function App() {
                           onClick={() => setShowRegistration(true)}
                           className="flex-1 min-h-12 text-sm font-medium"
                         >
-                          📝 App Registrierung
+                          📝 {t('auth.register')}
                         </Button>
                         <Button 
                           onClick={() => setShowCustomerLogin(true)}
