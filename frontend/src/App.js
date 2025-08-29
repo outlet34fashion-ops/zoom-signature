@@ -2230,6 +2230,7 @@ function App() {
           <div className="lg:col-span-2">
             <SimpleLiveStream 
               isHost={isAdminView}
+              nextEvent={getNextEvent()}
             />
           </div>
 
