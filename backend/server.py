@@ -519,6 +519,7 @@ async def check_customer_status(customer_number: str):
             "name": customer["name"],
             "email": customer["email"],
             "profile_image": customer.get("profile_image", None),
+            "preferred_language": customer.get("preferred_language", "de"),
             "message": f"Customer status: {customer['activation_status']}"
         }
         
