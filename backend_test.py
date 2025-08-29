@@ -3320,6 +3320,10 @@ class LiveShoppingAPITester:
         # Test Live Shopping Calendar system (NEW FEATURE - Review Request)
         calendar_success = self.test_live_shopping_calendar()
         
+        # Test WebRTC Streaming Backend (NEW FEATURE - Current Review Request)
+        print("\n🎥 PRIORITY: WEBRTC STREAMING BACKEND TESTING...")
+        webrtc_success = self.test_webrtc_streaming_backend()
+        
         # Test WebSocket availability
         ws_success = self.test_websocket_availability()
 
