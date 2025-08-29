@@ -1439,7 +1439,7 @@ function App() {
                     onClick={() => setShowProfileModal(true)}
                     className="text-white hover:bg-pink-600"
                   >
-                    👤 Mein Profil
+                    👤 {t('navigation.profile')}
                   </Button>
                   
                   {/* Kalender Button für Kunden */}
