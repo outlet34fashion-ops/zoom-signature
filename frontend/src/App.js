@@ -1392,7 +1392,7 @@ function App() {
                         variant="outline"
                         className="w-full text-gray-600 hover:text-gray-800 min-h-12 text-sm font-medium"
                       >
-                        🔐 Admin-Anmeldung
+                        🔐 {t('auth.adminLogin')}
                       </Button>
                     </div>
                   </div>
