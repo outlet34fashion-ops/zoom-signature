@@ -309,6 +309,29 @@ function App() {
     return message;
   };
 
+  // Language helper functions
+  const updateCustomerLanguage = async (customerNumber, language) => {
+    try {
+      await axios.put(`${API}/customers/${customerNumber}/language`, {
+        language: language
+      });
+      return true;
+    } catch (error) {
+      console.error('Error updating customer language:', error);
+      return false;
+    }
+  };
+
+  const changeLanguage = async (languageCode) => {
+    // Update i18n language
+    i18n.changeLanguage(languageCode);
+    
+    // Update customer language preference in backend if logged in
+    if (currentCustomer?.customer_number && !isAdminView) {
+      await updateCustomerLanguage(currentCustomer.customer_number, languageCode);
+    }
+  };
+
   // Customer Authentication Functions
   const customerLogin = async () => {
     try {
