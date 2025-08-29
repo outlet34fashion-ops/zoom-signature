@@ -191,7 +191,7 @@ class AdminCustomerCreationTester:
         # Test 5: Duplicate Prevention - Duplicate customer_number
         print("\n❌ Test 5: Duplicate Prevention - customer_number...")
         duplicate_customer_number = {
-            "customer_number": "TEST123",  # Same as Test 1
+            "customer_number": f"TEST{unique_suffix}",  # Same as Test 1
             "name": "Duplicate Number Customer",
             "email": f"duplicate.number.{timestamp}@example.com",
             "preferred_language": "en"
