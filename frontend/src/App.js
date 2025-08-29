@@ -1871,6 +1871,22 @@ function App() {
                     🔄 {t.resetCounter}
                   </Button>
                 </div>
+
+                {/* WebRTC Live Streaming */}
+                <div className="bg-white/10 rounded-lg p-4 mt-4">
+                  <h3 className="text-lg font-semibold mb-3">🎥 Live-Streaming</h3>
+                  <div className="text-center">
+                    <Button 
+                      onClick={startWebRTCStream}
+                      className="bg-red-600 hover:bg-red-700 text-white"
+                    >
+                      📺 Live-Stream starten
+                    </Button>
+                  </div>
+                  <p className="text-sm opacity-75 mt-2 text-center">
+                    Starten Sie einen WebRTC Live-Stream direkt aus dem Browser
+                  </p>
+                </div>
               </CardContent>
             </Card>
 
