@@ -2221,7 +2221,7 @@ function App() {
                       <div className="bg-gray-50 rounded p-2 space-y-1">
                         {/* Compact One-Line Format: quantity I price I size */}
                         <div className="text-center font-medium text-sm text-gray-800">
-                          {customerLastOrder.quantity} I {(customerLastOrder.price / customerLastOrder.quantity).toFixed(2)} I {customerLastOrder.size}
+                          {customerLastOrder.quantity} I {(customerLastOrder.price / customerLastOrder.quantity).toFixed(2).replace('.', ',')} I {customerLastOrder.size}
                         </div>
                         <div className="text-center text-xs text-gray-600">
                           {customerLastOrder.product_name}
