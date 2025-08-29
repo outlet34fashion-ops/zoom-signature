@@ -321,11 +321,11 @@ class AdminCustomerCreationTester:
                 customers_list = response.json()
                 
                 # Look for our test customers
-                test123_found = any(c.get('customer_number') == 'TEST123' and c.get('activation_status') == 'active' for c in customers_list)
+                test_customer_found = any(c.get('customer_number') == f"TEST{unique_suffix}" and c.get('activation_status') == 'active' for c in customers_list)
                 resp_customer_found = any(c.get('customer_number') == f"RESP{timestamp}" and c.get('activation_status') == 'active' for c in customers_list)
                 
-                success = test123_found and resp_customer_found
-                details += f", TEST123 found: {test123_found}, RESP customer found: {resp_customer_found}, Total customers: {len(customers_list)}"
+                success = test_customer_found and resp_customer_found
+                details += f", TEST{unique_suffix} found: {test_customer_found}, RESP customer found: {resp_customer_found}, Total customers: {len(customers_list)}"
                 
             self.log_test("Database Integration - Admin List", success, details)
             
