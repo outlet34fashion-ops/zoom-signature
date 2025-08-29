@@ -1146,22 +1146,22 @@ function App() {
                       </Button>
                       
                       {/* WhatsApp Service Contact */}
-                      <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-3">
-                        <p className="text-xs text-green-600 text-center mb-2 font-semibold">
+                      <div className="mt-4 bg-pink-50 border border-pink-200 rounded-lg p-3">
+                        <p className="text-xs text-pink-600 text-center mb-2 font-semibold">
                           OUTLET34 Service Nummer
                         </p>
                         <a 
                           href="https://wa.me/4917621105848?text=Hallo%20OUTLET34%20Team,%20ich%20habe%20Probleme%20bei%20der%20Anmeldung..." 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="flex items-center justify-center space-x-2 bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-3 rounded-lg transition-colors duration-200 text-sm"
+                          className="flex items-center justify-center space-x-2 bg-pink-500 hover:bg-pink-600 text-white font-medium py-2 px-3 rounded-lg transition-colors duration-200 text-sm w-full"
                         >
                           <img 
                             src="/images/whatsapp-logo-dark.png" 
                             alt="WhatsApp Logo" 
-                            className="w-6 h-6"
+                            className="w-5 h-5"
                           />
-                          <span className="font-semibold">WhatsApp</span>
+                          <span className="font-semibold">WhatsApp Chat</span>
                         </a>
                       </div>
                     </div>
