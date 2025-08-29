@@ -1237,7 +1237,7 @@ function App() {
                           onClick={() => setShowCustomerLogin(true)}
                           className="flex-1 bg-pink-500 hover:bg-pink-600"
                         >
-                          🔑 Anmelden
+                          🔑 Login
                         </Button>
                       </div>
                       
