@@ -2573,6 +2573,372 @@ class LiveShoppingAPITester:
             self.log_test("German Order Format - Exception", False, str(e))
             return False
 
+    def test_multi_language_functionality(self):
+        """Test multi-language functionality as per review request"""
+        print("\n🌍 Testing Multi-Language Functionality...")
+        
+        # Generate unique test data
+        timestamp = int(time.time())
+        
+        # Test customers with different language preferences
+        test_customers = [
+            {
+                "customer_number": f"LANG{timestamp}DE",
+                "email": f"german.{timestamp}@example.com",
+                "name": "German Customer",
+                "preferred_language": "de"
+            },
+            {
+                "customer_number": f"LANG{timestamp}EN",
+                "email": f"english.{timestamp}@example.com", 
+                "name": "English Customer",
+                "preferred_language": "en"
+            },
+            {
+                "customer_number": f"LANG{timestamp}TR",
+                "email": f"turkish.{timestamp}@example.com",
+                "name": "Turkish Customer", 
+                "preferred_language": "tr"
+            },
+            {
+                "customer_number": f"LANG{timestamp}FR",
+                "email": f"french.{timestamp}@example.com",
+                "name": "French Customer",
+                "preferred_language": "fr"
+            }
+        ]
+        
+        registered_customers = []
+        
+        try:
+            # Test 1: Customer Registration with Language Preferences
+            print("  📝 Test 1: Customer Registration with Language Preferences...")
+            for i, customer_data in enumerate(test_customers):
+                try:
+                    response = requests.post(
+                        f"{self.api_url}/customers/register",
+                        json=customer_data,
+                        headers={'Content-Type': 'application/json'},
+                        timeout=10
+                    )
+                    
+                    success = response.status_code == 200
+                    details = f"POST Status: {response.status_code}"
+                    
+                    if success:
+                        data = response.json()
+                        required_fields = ['id', 'customer_number', 'email', 'name', 'preferred_language', 'activation_status']
+                        has_all_fields = all(field in data for field in required_fields)
+                        correct_language = data.get('preferred_language') == customer_data['preferred_language']
+                        is_pending = data.get('activation_status') == 'pending'
+                        
+                        success = has_all_fields and correct_language and is_pending
+                        details += f", Has all fields: {has_all_fields}, Language correct ({customer_data['preferred_language']}): {correct_language}, Status pending: {is_pending}"
+                        
+                        if success:
+                            registered_customers.append(data)
+                    
+                    self.log_test(f"Language Registration - {customer_data['preferred_language'].upper()}", success, details)
+                    
+                except Exception as e:
+                    self.log_test(f"Language Registration - {customer_data['preferred_language'].upper()}", False, str(e))
+            
+            if len(registered_customers) < 4:
+                self.log_test("Multi-Language Setup", False, f"Only {len(registered_customers)}/4 customers registered successfully")
+                return False
+            
+            # Test 2: Customer Registration with Default Language (no preferred_language specified)
+            print("  🔤 Test 2: Customer Registration with Default Language...")
+            default_customer = {
+                "customer_number": f"LANG{timestamp}DEFAULT",
+                "email": f"default.{timestamp}@example.com",
+                "name": "Default Language Customer"
+                # No preferred_language field - should default to "de"
+            }
+            
+            try:
+                response = requests.post(
+                    f"{self.api_url}/customers/register",
+                    json=default_customer,
+                    headers={'Content-Type': 'application/json'},
+                    timeout=10
+                )
+                
+                success = response.status_code == 200
+                details = f"POST Status: {response.status_code}"
+                
+                if success:
+                    data = response.json()
+                    default_language = data.get('preferred_language') == 'de'
+                    success = default_language
+                    details += f", Default language (de): {default_language}, Actual: {data.get('preferred_language')}"
+                    
+                    if success:
+                        registered_customers.append(data)
+                
+                self.log_test("Language Registration - Default (DE)", success, details)
+                
+            except Exception as e:
+                self.log_test("Language Registration - Default (DE)", False, str(e))
+            
+            # Test 3: Customer Status Check Returns preferred_language Field
+            print("  🔍 Test 3: Customer Status Check Returns preferred_language Field...")
+            for customer in registered_customers[:4]:  # Test first 4 customers with explicit languages
+                try:
+                    customer_number = customer['customer_number']
+                    expected_language = customer['preferred_language']
+                    
+                    response = requests.get(
+                        f"{self.api_url}/customers/check/{customer_number}",
+                        timeout=10
+                    )
+                    
+                    success = response.status_code == 200
+                    details = f"GET Status: {response.status_code}"
+                    
+                    if success:
+                        data = response.json()
+                        has_language_field = 'preferred_language' in data
+                        correct_language = data.get('preferred_language') == expected_language
+                        
+                        success = has_language_field and correct_language
+                        details += f", Has preferred_language field: {has_language_field}, Correct language ({expected_language}): {correct_language}"
+                    
+                    self.log_test(f"Status Check Language - {expected_language.upper()}", success, details)
+                    
+                except Exception as e:
+                    self.log_test(f"Status Check Language - {expected_language.upper()}", False, str(e))
+            
+            # Test 4: Admin Customer Creation with Language Preferences
+            print("  👨‍💼 Test 4: Admin Customer Creation with Language Preferences...")
+            admin_customers = [
+                {
+                    "customer_number": f"ADMIN{timestamp}DE",
+                    "email": f"admin.german.{timestamp}@example.com",
+                    "name": "Admin German Customer",
+                    "preferred_language": "de"
+                },
+                {
+                    "customer_number": f"ADMIN{timestamp}EN",
+                    "email": f"admin.english.{timestamp}@example.com",
+                    "name": "Admin English Customer", 
+                    "preferred_language": "en"
+                }
+            ]
+            
+            for admin_customer in admin_customers:
+                try:
+                    response = requests.post(
+                        f"{self.api_url}/admin/customers/create",
+                        json=admin_customer,
+                        headers={'Content-Type': 'application/json'},
+                        timeout=10
+                    )
+                    
+                    success = response.status_code == 200
+                    details = f"POST Status: {response.status_code}"
+                    
+                    if success:
+                        data = response.json()
+                        correct_language = data.get('preferred_language') == admin_customer['preferred_language']
+                        is_active = data.get('activation_status') == 'active'
+                        
+                        success = correct_language and is_active
+                        details += f", Language correct ({admin_customer['preferred_language']}): {correct_language}, Status active: {is_active}"
+                    
+                    self.log_test(f"Admin Creation Language - {admin_customer['preferred_language'].upper()}", success, details)
+                    
+                except Exception as e:
+                    self.log_test(f"Admin Creation Language - {admin_customer['preferred_language'].upper()}", False, str(e))
+            
+            # Test 5: Language Update API - Valid Languages
+            print("  🔄 Test 5: Language Update API - Valid Languages...")
+            if registered_customers:
+                test_customer = registered_customers[0]
+                customer_number = test_customer['customer_number']
+                
+                # Test updating to each valid language
+                valid_languages = ["de", "en", "tr", "fr"]
+                for new_language in valid_languages:
+                    try:
+                        update_data = {"language": new_language}
+                        
+                        response = requests.put(
+                            f"{self.api_url}/customers/{customer_number}/language",
+                            json=update_data,
+                            headers={'Content-Type': 'application/json'},
+                            timeout=10
+                        )
+                        
+                        success = response.status_code == 200
+                        details = f"PUT Status: {response.status_code}"
+                        
+                        if success:
+                            data = response.json()
+                            has_message = 'message' in data
+                            correct_language = data.get('language') == new_language
+                            
+                            success = has_message and correct_language
+                            details += f", Has message: {has_message}, Language updated to {new_language}: {correct_language}"
+                        
+                        self.log_test(f"Language Update - {new_language.upper()}", success, details)
+                        
+                    except Exception as e:
+                        self.log_test(f"Language Update - {new_language.upper()}", False, str(e))
+            
+            # Test 6: Language Update API - Invalid Language Validation
+            print("  ❌ Test 6: Language Update API - Invalid Language Validation...")
+            if registered_customers:
+                test_customer = registered_customers[0]
+                customer_number = test_customer['customer_number']
+                
+                # Test invalid languages
+                invalid_languages = ["es", "it", "zh", "invalid", ""]
+                for invalid_language in invalid_languages:
+                    try:
+                        update_data = {"language": invalid_language}
+                        
+                        response = requests.put(
+                            f"{self.api_url}/customers/{customer_number}/language",
+                            json=update_data,
+                            headers={'Content-Type': 'application/json'},
+                            timeout=10
+                        )
+                        
+                        success = response.status_code == 400
+                        details = f"PUT Status: {response.status_code} (should be 400 for invalid language '{invalid_language}')"
+                        
+                        if success:
+                            error_data = response.json()
+                            has_error_message = 'detail' in error_data
+                            details += f", Has error message: {has_error_message}"
+                        
+                        self.log_test(f"Language Validation - Invalid '{invalid_language}'", success, details)
+                        
+                    except Exception as e:
+                        self.log_test(f"Language Validation - Invalid '{invalid_language}'", False, str(e))
+            
+            # Test 7: Language Update API - Non-existent Customer
+            print("  ❌ Test 7: Language Update API - Non-existent Customer...")
+            try:
+                non_existent_customer = f"NONEXIST{timestamp}"
+                update_data = {"language": "en"}
+                
+                response = requests.put(
+                    f"{self.api_url}/customers/{non_existent_customer}/language",
+                    json=update_data,
+                    headers={'Content-Type': 'application/json'},
+                    timeout=10
+                )
+                
+                success = response.status_code == 404
+                details = f"PUT Status: {response.status_code} (should be 404 for non-existent customer)"
+                
+                self.log_test("Language Update - Non-existent Customer", success, details)
+                
+            except Exception as e:
+                self.log_test("Language Update - Non-existent Customer", False, str(e))
+            
+            # Test 8: Verify Language Persistence After Update
+            print("  💾 Test 8: Verify Language Persistence After Update...")
+            if registered_customers:
+                test_customer = registered_customers[1]  # Use second customer
+                customer_number = test_customer['customer_number']
+                
+                try:
+                    # Update language to French
+                    update_data = {"language": "fr"}
+                    update_response = requests.put(
+                        f"{self.api_url}/customers/{customer_number}/language",
+                        json=update_data,
+                        headers={'Content-Type': 'application/json'},
+                        timeout=10
+                    )
+                    
+                    if update_response.status_code == 200:
+                        # Check if language persisted
+                        check_response = requests.get(
+                            f"{self.api_url}/customers/check/{customer_number}",
+                            timeout=10
+                        )
+                        
+                        success = check_response.status_code == 200
+                        details = f"GET Status: {check_response.status_code}"
+                        
+                        if success:
+                            data = check_response.json()
+                            language_persisted = data.get('preferred_language') == 'fr'
+                            success = language_persisted
+                            details += f", Language persisted (fr): {language_persisted}, Actual: {data.get('preferred_language')}"
+                        
+                        self.log_test("Language Persistence After Update", success, details)
+                    else:
+                        self.log_test("Language Persistence After Update", False, f"Language update failed with status {update_response.status_code}")
+                        
+                except Exception as e:
+                    self.log_test("Language Persistence After Update", False, str(e))
+            
+            # Test 9: Integration Test - Existing Functionality Remains Intact
+            print("  🔗 Test 9: Integration Test - Existing Functionality Remains Intact...")
+            if registered_customers:
+                test_customer = registered_customers[0]
+                customer_number = test_customer['customer_number']
+                customer_id = test_customer['id']
+                
+                try:
+                    # Activate customer
+                    activate_response = requests.post(
+                        f"{self.api_url}/admin/customers/{customer_id}/activate",
+                        headers={'Content-Type': 'application/json'},
+                        timeout=10
+                    )
+                    
+                    # Test order placement still works
+                    products_response = requests.get(f"{self.api_url}/products", timeout=10)
+                    if products_response.status_code == 200 and activate_response.status_code == 200:
+                        products = products_response.json()
+                        if products:
+                            order_data = {
+                                "customer_id": customer_number,
+                                "product_id": products[0]['id'],
+                                "size": "OneSize",
+                                "quantity": 1,
+                                "price": 15.90
+                            }
+                            
+                            order_response = requests.post(
+                                f"{self.api_url}/orders",
+                                json=order_data,
+                                headers={'Content-Type': 'application/json'},
+                                timeout=10
+                            )
+                            
+                            success = order_response.status_code == 200
+                            details = f"Order Status: {order_response.status_code}"
+                            
+                            if success:
+                                order_data_result = order_response.json()
+                                correct_customer = order_data_result.get('customer_id') == customer_number
+                                success = correct_customer
+                                details += f", Correct customer ID: {correct_customer}"
+                            
+                            self.log_test("Multi-Language Integration - Order Functionality", success, details)
+                        else:
+                            self.log_test("Multi-Language Integration - Order Functionality", False, "No products available")
+                    else:
+                        self.log_test("Multi-Language Integration - Order Functionality", False, f"Setup failed - Activate: {activate_response.status_code}, Products: {products_response.status_code}")
+                        
+                except Exception as e:
+                    self.log_test("Multi-Language Integration - Order Functionality", False, str(e))
+            
+            print(f"  🎉 SUCCESS: Multi-language functionality testing completed!")
+            
+            return True
+            
+        except Exception as e:
+            self.log_test("Multi-Language Functionality - Exception", False, str(e))
+            return False
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("🚀 Starting Live Shopping App Backend API Tests")
