@@ -103,6 +103,8 @@
     "sessionOrders": "Session Orders",
     "activeViewers": "Active Viewers",
     "resetCounter": "Reset Counter",
+    "adminView": "Admin View",
+    "customerView": "Customer View",
     "customerManagement": "Customer Management",
     "createCustomer": "Create Customer",
     "editCustomer": "Edit Customer",
