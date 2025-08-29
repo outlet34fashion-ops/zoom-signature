@@ -1237,13 +1237,13 @@ function App() {
                           onClick={() => setShowRegistration(true)}
                           className="flex-1"
                         >
-                          📝 Registrieren
+                          📝 App Registrierung
                         </Button>
                         <Button 
                           onClick={() => setShowCustomerLogin(true)}
                           className="flex-1 bg-pink-500 hover:bg-pink-600"
                         >
-                          🔑 Login
+                          🔑 zum Login
                         </Button>
                       </div>
                       
