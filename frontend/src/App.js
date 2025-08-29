@@ -1555,14 +1555,6 @@ function App() {
       <div className="container mx-auto px-4 py-6">
         
         {/* Admin Dashboard */}
-        {(() => {
-          console.log('🔍 Admin Dashboard Render Check:');
-          console.log('- isAdminAuthenticated:', isAdminAuthenticated);
-          console.log('- isAdminView:', isAdminView);
-          console.log('- Should render admin:', isAdminAuthenticated && isAdminView);
-          return null;
-        })()}
-        
         {isAdminAuthenticated && isAdminView && (
           <div className="space-y-6">
             <Card className="mb-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white">
