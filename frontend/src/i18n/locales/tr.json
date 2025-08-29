@@ -12,6 +12,7 @@
     "logout": "Çıkış Yap",
     "adminLogin": "Yönetici Girişi",
     "customerLogin": "Müşteri Girişi",
+    "customerLoggedIn": "Müşteri giriş yaptı",
     "customerNumber": "Müşteri Numarası",
     "email": "E-posta",
     "name": "Ad",
