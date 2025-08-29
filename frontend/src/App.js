@@ -10,6 +10,8 @@ import { Badge } from './components/ui/badge';
 import { Heart, Bell, ShoppingCart, Send, Users, Clock, MessageCircle } from 'lucide-react';
 import ZoomLiveStream from './components/ZoomLiveStream';
 import SimpleLiveStream from './components/SimpleLiveStream';
+import StreamingInterface from './components/streaming/StreamingInterface';
+import StreamsList from './components/streaming/StreamsList';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
