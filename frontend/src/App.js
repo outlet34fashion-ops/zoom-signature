@@ -371,6 +371,44 @@ function App() {
     return upcomingEvents[0];
   };
 
+  // Berechne Top 3 Käufer für Gamification
+  const getTop3Buyers = () => {
+    const orderMessages = chatMessages.filter(msg => msg.message.includes('Bestellung'));
+    const buyerStats = {};
+
+    orderMessages.forEach(msg => {
+      // Parse: "**Bestellung** [CustomerNumber] I [Quantity]x I [Price] I [Size]"
+      const customerMatch = msg.message.match(/\*\*Bestellung\*\*\s*(\d+)/);
+      const quantityMatch = msg.message.match(/(\d+)x/);
+      const priceMatch = msg.message.match(/([\d,]+)\s*€/);
+
+      if (customerMatch && quantityMatch && priceMatch) {
+        const customerNumber = customerMatch[1];
+        const quantity = parseInt(quantityMatch[1]) || 1;
+        const price = parseFloat(priceMatch[1].replace(',', '.')) || 0;
+        const revenue = quantity * price;
+
+        if (!buyerStats[customerNumber]) {
+          buyerStats[customerNumber] = {
+            customerNumber,
+            totalOrders: 0,
+            totalItems: 0,
+            totalRevenue: 0
+          };
+        }
+
+        buyerStats[customerNumber].totalOrders++;
+        buyerStats[customerNumber].totalItems += quantity;
+        buyerStats[customerNumber].totalRevenue += revenue;
+      }
+    });
+
+    // Sort by total revenue and get top 3
+    return Object.values(buyerStats)
+      .sort((a, b) => b.totalRevenue - a.totalRevenue)
+      .slice(0, 3);
+  };
+
   // Customer Authentication Functions
   const customerLogin = async () => {
     try {
