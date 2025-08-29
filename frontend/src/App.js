@@ -2081,49 +2081,53 @@ function App() {
                   
                   {/* Language Selection */}
                   <div className="border-t pt-4">
-                    <h4 className="text-md font-semibold text-gray-800 mb-3 text-center">
-                      {t('customer.profile.language')}
+                    <h4 className="text-sm font-medium text-gray-700 mb-3 text-center">
+                      🌍 {t('customer.profile.language')}
                     </h4>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="flex justify-center space-x-1">
                       <button
                         onClick={() => changeLanguage('de')}
-                        className={`p-2 rounded border ${
+                        className={`px-3 py-2 rounded text-sm ${
                           i18n.language === 'de' 
-                            ? 'bg-pink-500 text-white border-pink-500' 
-                            : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                            ? 'bg-pink-500 text-white' 
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
+                        title="Deutsch"
                       >
-                        🇩🇪 {t('settings.german')}
+                        🇩🇪
                       </button>
                       <button
                         onClick={() => changeLanguage('en')}
-                        className={`p-2 rounded border ${
+                        className={`px-3 py-2 rounded text-sm ${
                           i18n.language === 'en' 
-                            ? 'bg-pink-500 text-white border-pink-500' 
-                            : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                            ? 'bg-pink-500 text-white' 
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
+                        title="English"
                       >
-                        🇺🇸 {t('settings.english')}
+                        🇺🇸
                       </button>
                       <button
                         onClick={() => changeLanguage('tr')}
-                        className={`p-2 rounded border ${
+                        className={`px-3 py-2 rounded text-sm ${
                           i18n.language === 'tr' 
-                            ? 'bg-pink-500 text-white border-pink-500' 
-                            : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                            ? 'bg-pink-500 text-white' 
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
+                        title="Türkçe"
                       >
-                        🇹🇷 {t('settings.turkish')}
+                        🇹🇷
                       </button>
                       <button
                         onClick={() => changeLanguage('fr')}
-                        className={`p-2 rounded border ${
+                        className={`px-3 py-2 rounded text-sm ${
                           i18n.language === 'fr' 
-                            ? 'bg-pink-500 text-white border-pink-500' 
-                            : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                            ? 'bg-pink-500 text-white' 
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
+                        title="Français"
                       >
-                        🇫🇷 {t('settings.french')}
+                        🇫🇷
                       </button>
                     </div>
                   </div>
