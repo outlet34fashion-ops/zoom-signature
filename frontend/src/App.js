@@ -2158,7 +2158,7 @@ function App() {
                 <CardContent className="p-3">
                 <div className="text-center space-y-3">
                   <div>
-                    <div className="text-xs text-gray-600">{t.size}</div>
+                    <div className="text-xs text-gray-600">{t('orders.size')}</div>
                     <div className="font-medium text-sm">{selectedSize}</div>
                   </div>
                   <div>
