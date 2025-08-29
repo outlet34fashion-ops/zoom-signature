@@ -1,0 +1,200 @@
+{
+  "app": {
+    "title": "OUTLET34 Shopping en Direct",
+    "welcome": "Bienvenue sur OUTLET34 Live!",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès"
+  },
+  "auth": {
+    "login": "Se connecter",
+    "register": "Inscription App", 
+    "logout": "Se déconnecter",
+    "adminLogin": "Connexion Admin",
+    "customerLogin": "Connexion Client",
+    "customerNumber": "Numéro Client",
+    "email": "Email",
+    "name": "Nom",
+    "password": "Mot de passe",
+    "pin": "PIN",
+    "enterCustomerNumber": "Saisir le numéro client...",
+    "enterEmail": "Saisir l'email...",
+    "enterName": "Saisir le nom...",
+    "enterPin": "Saisir le PIN...",
+    "loginError": "Erreur de connexion. Veuillez réessayer.",
+    "registrationError": "Inscription échouée. Veuillez réessayer.",
+    "invalidPin": "PIN invalide. Veuillez réessayer.",
+    "customerNotFound": "Numéro client introuvable. Veuillez vous inscrire d'abord.",
+    "enterCustomerNumberRequired": "Veuillez saisir votre numéro client."
+  },
+  "navigation": {
+    "profile": "Mon Profil",
+    "calendar": "Calendrier",
+    "service": "Numéro Service",
+    "admin": "Admin",
+    "customers": "Clients",
+    "events": "Événements"
+  },
+  "customer": {
+    "status": {
+      "pending": "En attente",
+      "active": "Actif", 
+      "blocked": "Bloqué"
+    },
+    "registration": {
+      "title": "Inscrire un Client",
+      "success": "Inscription réussie!",
+      "pending": "Votre inscription est en cours d'examen",
+      "waitingApproval": "En attente d'approbation"
+    },
+    "profile": {
+      "title": "Mon Profil",
+      "customerNumber": "Numéro Client",
+      "name": "Nom",
+      "email": "Email",
+      "status": "Statut",
+      "language": "Langue",
+      "profileImage": "Photo de Profil",
+      "uploadImage": "Télécharger une Image",
+      "deleteImage": "Supprimer l'Image",
+      "updateLanguage": "Mettre à jour la Langue"
+    }
+  },
+  "live": {
+    "title": "DIRECT",
+    "runtime": "Durée d'exécution:",
+    "endTime": "Heure de fin:",
+    "viewers": "Spectateurs",
+    "streamTitle": "Réservé aux Revendeurs | À partir de 10€ - Aujourd'hui 18h00 - Produits Frais | Mode Jeune & Grande Taille",
+    "demoMessage": "Zoom Live-Stream (Démo)",
+    "demoDescription": "Ceci est un aperçu. Cliquez sur Démarrer la Réunion pour simuler la démo.",
+    "startMeeting": "Démarrer la Réunion"
+  },
+  "chat": {
+    "title": "Chat",
+    "placeholder": "Saisir un message",
+    "send": "Envoyer",
+    "emoji": "Emoji"
+  },
+  "orders": {
+    "title": "Commandes", 
+    "size": "Taille (actuelle):",
+    "price": "Prix (actuel):",
+    "quantity": "Quantité",
+    "order": "Commander",
+    "nextArticle": "Article Suivant",
+    "sendPriceSize": "Envoyer Prix et Taille",
+    "keepPrice": "Conserver le Prix",
+    "selectPrice": "Sélectionner le Prix",
+    "lastOrder": "Dernière Commande",
+    "noOrders": "Aucune Commande"
+  },
+  "products": {
+    "specialOffer": "Offre Spéciale",
+    "freeShipping": "Livraison Gratuite",
+    "topseller": "Bestseller", 
+    "newIn": "Nouveautés",
+    "sale": "Soldes"
+  },
+  "admin": {
+    "dashboard": "Tableau de Bord Admin",
+    "totalOrders": "Commandes Totales",
+    "sessionOrders": "Commandes de Session",
+    "activeViewers": "Spectateurs Actifs",
+    "resetCounter": "Réinitialiser le Compteur",
+    "customerManagement": "Gestion des Clients",
+    "createCustomer": "Créer un Client",
+    "editCustomer": "Modifier le Client",
+    "deleteCustomer": "Supprimer le Client",
+    "activateCustomer": "Activer le Client",
+    "blockCustomer": "Bloquer le Client",
+    "allCustomers": "Tous les Clients",
+    "pendingCustomers": "Clients en Attente",
+    "blockedCustomers": "Clients Bloqués",
+    "searchCustomer": "Rechercher un client...",
+    "eventManagement": "Gestion d'Événements",
+    "createEvent": "Créer un Événement",
+    "editEvent": "Modifier l'Événement",
+    "deleteEvent": "Supprimer l'Événement"
+  },
+  "calendar": {
+    "title": "Calendrier Shopping en Direct",
+    "upcomingEvents": "Événements à Venir",
+    "noEvents": "Aucun événement programmé",
+    "eventDate": "Date",
+    "eventTime": "Heure",
+    "eventTitle": "Titre",
+    "eventDescription": "Description",
+    "enableNotifications": "Activer les Notifications",
+    "notificationEnabled": "Notifications activées",
+    "notificationDenied": "Les notifications ont été refusées. Vous pouvez les activer dans les paramètres du navigateur.",
+    "notificationNotSupported": "Votre navigateur ne prend pas en charge les notifications push."
+  },
+  "settings": {
+    "language": "Langue",
+    "languageSelection": "Sélectionner la Langue",
+    "german": "Deutsch",
+    "english": "English", 
+    "turkish": "Türkçe",
+    "french": "Français",
+    "ticker": {
+      "settings": "Paramètres du Ticker",
+      "text": "Texte du Ticker",
+      "update": "Mettre à jour le Ticker",
+      "enable": "Activer le Ticker"
+    }
+  },
+  "devices": {
+    "mobile": "Mobile",
+    "tablet": "Tablette", 
+    "desktop": "Ordinateur"
+  },
+  "common": {
+    "save": "Sauvegarder",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "create": "Créer",
+    "update": "Mettre à jour",
+    "close": "Fermer",
+    "reset": "Réinitialiser",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "all": "Tous",
+    "yes": "Oui",
+    "no": "Non",
+    "confirm": "Confirmer",
+    "required": "Requis",
+    "optional": "Optionnel"
+  },
+  "errors": {
+    "customerNumberRequired": "Le numéro client est requis.",
+    "emailRequired": "L'email est requis.",
+    "nameRequired": "Le nom est requis.",
+    "customerNumberExists": "Le numéro client existe déjà.",
+    "emailExists": "L'email est déjà enregistré.",
+    "customerCreationFailed": "Erreur lors de la création du client. Veuillez réessayer.",
+    "eventCreationFailed": "Erreur lors de la création de l'événement. Veuillez réessayer.",
+    "eventUpdateFailed": "Erreur lors de la mise à jour de l'événement. Veuillez réessayer.",
+    "eventDeleteFailed": "Erreur lors de la suppression de l'événement. Veuillez réessayer.",
+    "dateTimeRequired": "La date, l'heure et le titre sont requis."
+  },
+  "messages": {
+    "customerCreated": "Client créé avec succès.",
+    "customerActivated": "Client activé avec succès.",
+    "customerBlocked": "Client bloqué avec succès.", 
+    "customerDeleted": "Client supprimé avec succès.",
+    "eventCreated": "Événement créé avec succès.",
+    "eventUpdated": "Événement mis à jour avec succès.",
+    "eventDeleted": "Événement supprimé avec succès.",
+    "languageUpdated": "Langue mise à jour avec succès.",
+    "profileImageUploaded": "Photo de profil téléchargée avec succès.",
+    "profileImageDeleted": "Photo de profil supprimée avec succès."
+  },
+  "registration": {
+    "newCustomerWelcome": "En tant que nouveau client d'OUTLET34, veuillez d'abord vous inscrire:",
+    "existingCustomerLogin": "Les clients déjà enregistrés se connectent ici:",
+    "registerAtWebsite": "Événement en direct possible uniquement après inscription sur https://www.outlet34fashion.com/registrieren",
+    "loginButton": "Connexion à l'App Live"
+  }
+}
