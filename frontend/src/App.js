@@ -1215,12 +1215,18 @@ function App() {
                   <div className="space-y-4">
                     {/* Logo und Titel bleiben oben */}
                     <h2 className="text-xl font-semibold text-gray-800">OUTLET34 Live Shopping</h2>
-                    <p className="text-sm text-gray-600">
-                      Neu bei OUTLET34? Jetzt registrieren und Live Shopping erleben! <br/>
-                      <a href="https://www.outlet34fashion.com/registrieren" className="text-pink-500 hover:underline">
+                    
+                    <div className="text-center space-y-1 pt-4">
+                      <p className="text-sm font-medium text-gray-700">
+                        Neu bei OUTLET34?
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        Jetzt registrieren und Live Shopping erleben!
+                      </p>
+                      <a href="https://www.outlet34fashion.com/registrieren" className="block text-sm text-pink-500 hover:underline">
                         https://www.outlet34fashion.com/registrieren
                       </a>
-                    </p>
+                    </div>
                     
                     {/* Buttons untereinander - neue Reihenfolge */}
                     <div className="space-y-3 pt-4">
