@@ -2447,9 +2447,6 @@ function App() {
                         <div className="text-center font-medium text-sm text-gray-800">
                           {customerLastOrder.quantity} I {(customerLastOrder.price / customerLastOrder.quantity).toFixed(2).replace('.', ',')} I {customerLastOrder.size}
                         </div>
-                        <div className="text-center text-xs text-gray-600">
-                          {customerLastOrder.product_name}
-                        </div>
                         <div className="text-center text-xs text-gray-500">
                           {customerLastOrder.formatted_time}
                         </div>
