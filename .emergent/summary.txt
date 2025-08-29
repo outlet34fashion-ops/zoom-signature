@@ -1,97 +1,105 @@
 <analysis>
-The AI engineer's work involved an iterative development process driven by user requests and numerous bug fixes. Initially, core features like manual customer creation, last order display, and UI refactoring (profile to modal, admin-only device buttons) were implemented. A series of critical bugs then emerged, mainly related to  misconfigurations, WebSocket protocol mismatches, and  or  serialization issues in both local and preview environments. The engineer systematically used  to pinpoint and resolve these. Subsequent efforts focused on extensive UI/UX refinements for the landing page, including logo integration, WhatsApp service integration, specific button reordering, text adjustments, and crucial mobile optimization. A Live Shopping Calendar feature was also implemented, requiring further serialization fixes. The persistent environment and deployment-specific bugs, particularly  in deployed settings and React rendering issues due to debug logs or WebSocket protocols, required significant troubleshooting. The trajectory concludes with a critical fix to the  for the deployed , awaiting redeployment.
+The AI engineer's work in this trajectory was highly iterative, driven by a continuous stream of user requests for new features, UI/UX enhancements, and numerous bug fixes. The journey began with foundational features like manual customer creation and last order display, quickly evolving into a full-scale refinement of the application. Key functional additions included multi-language support, a revamped user profile (with image, integrated logout, and compact language selection), a live shopping calendar with countdown, real-time admin sales statistics, a Top 3 buyers list for gamification, and chat pinning functionality. Significant effort was also dedicated to mobile optimization for various modals (e.g., calendar). A recurring challenge involved environment-specific issues, particularly  misconfigurations and WebSocket connection failures, requiring deep troubleshooting. The AI engineer demonstrated a systematic approach to debugging, especially for issues like non-updating chat/orders and customer creation failures, often identifying misinterpretations of UX behavior rather than core technical bugs. The trajectory concludes with a thorough investigation confirming the customer database is active, despite user claims.
 </analysis>
 
 <product_requirements>
-The Live Shopping App aims to provide a real-time platform for live streaming, chat, and product ordering, with administrative tools.
-
+The Live Shopping App provides a platform for live streaming, chat, and product ordering, with extensive administrative capabilities.
 **Core Requirements & Implemented Features:**
-1.  **Order Messages in Chat**: Orders appear in chat as **Bestellung** [CustomerNumber] I [Quantity]x I [Price] I [Size], with Bestellung bolded.
-2.  **Regular Chat Messages**: Format , with emoji support.
-3.  **Customer Authentication**: Login for existing customers (customer number) and registration for new ones.
-4.  **UI Split View**: Main display area split into Bestellungen and Chat tabs.
-5.  **Manual Customer Creation (Admin)**: Admins create customers (number, name, email) with automatic active status.
-6.  **Display Last Order with Timestamp**: Latest order with timestamp in a compact format below the order form.
-7.  **Customer Profile in Header**: Mein Profil button in header, leading to a modal with profile details, visible only to logged-in customers.
-8.  **Admin-Only Device Buttons**: Device selector buttons (Handy, Tablet, Desktop) visible only to admins.
-9.  **WhatsApp Service Integration**: Add a click-to-chat WhatsApp button with a specified number (0176 21105848) on the landing page, and a subtle icon in the customer view header. The button should be pink/magenta with a WhatsApp logo and display Service Nummer.
-10. **Live Shopping Calendar**: Implement an event calendar where admins can create/edit/delete events (date, time, topic), and customers can view upcoming events. Expired events should be hidden, and customers should receive push notifications for upcoming events (30 minutes prior).
-11. **Mobile Optimization**: The application must be optimized for smartphone users (80% of traffic), including touch-friendly buttons, responsive text sizes, and Progressive Web App (PWA) features.
-12. **Landing Page Customization**: Adjust welcome text for new customers, button texts (Login to zum Login, Registrieren to App Registrierung), and specific button arrangements/ordering.
+1.  **Order Messages in Chat**: Orders appear as **Bestellung** [CustomerNumber] I [Quantity]x I [Price] I [Size], with Bestellung bolded.
+2.  **Regular Chat Messages**:  with emoji support.
+3.  **Customer Authentication**: Login/registration.
+4.  **UI Split View**: Main display with Bestellungen (default) and Chat tabs.
+5.  **Manual Customer Creation (Admin)**: Admins create customers with active status.
+6.  **Display Last Order**: Latest order (quantity, price, size, timestamp) for the logged-in customer. Product name removed for brevity.
+7.  **Customer Profile**: Profile picture icon in header, leading to a modal with profile details, language selection (DE/EN/TR/FR), and logout.
+8.  **Admin-Only Device Buttons**: Device selector buttons visible only to admins.
+9.  **WhatsApp Service Integration**: WhatsApp logo (larger) in header (left of Calendar), and also in Calendar modal. Removed Service Nummer text.
+10. **Live Shopping Calendar**: Admins manage events. Customers view upcoming events (filtered for future events, 30-min push notifications). Mobile optimized.
+11. **Mobile Optimization**: Touch-friendly buttons, responsive text, PWA features (e.g., Calendar modal).
+12. **Landing Page Customization**: Adjusted welcome text, button texts, button arrangement. Added language selection.
+13. **Countdown Timer**: Displays time until next live event from calendar on the stream page.
+14. **Live Admin Statistics**: Real-time total revenue, sold items, session revenue in admin dashboard.
+15. **Top 3 Buyers List**: Gamification feature in customer view.
+16. **Chat Pinning**: Admins pin/unpin important messages, displayed prominently.
 </product_requirements>
 
 <key_technical_concepts>
 - **FastAPI**: Python framework for backend APIs and WebSockets.
-- **React**: JavaScript library for frontend UI, functional components, hooks.
-- **MongoDB**: NoSQL database for data persistence.
-- **WebSockets**: Real-time communication for chat and notifications.
-- **LocalStorage**: Client-side storage for auth tokens.
-- **Conditional Rendering**: UI elements based on user roles ().
-- **PWA (Progressive Web App)**: Enhances web app with native-like features.
-- **Environment Variables**: For secure and flexible URL/configuration management.
+- **React**: JavaScript library for frontend UI, functional components, hooks, state management.
+- **MongoDB**: NoSQL database. UUIDs used for IDs.
+- **WebSockets**: Real-time communication for chat, orders, and notifications.
+- **react-i18next**: Frontend library for multi-language support.
+- **Tailwind CSS**: Utility-first CSS framework for styling and responsiveness.
+- **Environment Variables**: For  and .
+- **Conditional Rendering**: UI elements based on user roles and data.
 </key_technical_concepts>
 
 <code_architecture>
-The application uses a full-stack architecture with Python FastAPI for the backend and React for the frontend.
+The application utilizes a full-stack architecture with Python FastAPI for the backend and React for the frontend.
 
 
 
--   : Main FastAPI application, handles API endpoints, WebSocket communication, and data management.
-    -   **Importance**: Central hub for backend logic, authentication, customer/order handling, and Live Shopping Calendar.
+-   : Main FastAPI application.
+    -   **Importance**: Handles all API endpoints (authentication, customer, order, events, notifications) and WebSocket communication.
     -   **Changes Made**:
-        -   Added  endpoint for manual customer creation, including unique validation and setting status to active.
-        -   Added  endpoint for fetching last order details.
-        -   Implemented  Pydantic model for calendar events.
-        -   Added CRUD API endpoints (, , ) for the Live Shopping Calendar.
-        -   Included an endpoint for sending push notifications .
-        -   **Fixes**: Resolved  and  JSON serialization issues for both customer and event creation/retrieval by explicitly converting  to uid=0(root) gid=0(root) groups=0(root) string and handling  objects.
-        -   Corrected WebSocket order message format to include  for bolding in chat.
+        -   Added  field to  Pydantic model.
+        -   Updated  and  endpoints.
+        -   Added API endpoint  to update customer language.
+        -   Ensured  and  serialization are handled.
+        -   Corrected  logic to not skip specific customer numbers.
 
--   : Primary React component, manages UI, state, and frontend-backend communication.
-    -   **Importance**: Orchestrates user interaction, displays data, and handles all client-side logic.
+-   : Primary React component.
+    -   **Importance**: Manages UI state, logic, and frontend-backend interaction. Central for feature implementation.
     -   **Changes Made**:
-        -   **Manual Customer Creation**: Integrated UI for admin dashboard (modal with input fields).
-        -   **Last Order Display**: Added state and function to fetch/display last order in a compact format with timestamp. Corrected price format to use comma (e.g., 12,90).
-        -   **Profile UI**: Moved Mein Profil to header, implemented .
-        -   **Device Buttons Visibility**: Made device selector buttons admin-only.
-        -   **UI/UX Refinements**: Integrated OUTLET34 logo on landing pages, removed duplicate titles.
-        -   **WhatsApp Integration**: Added a pink Service Nummer button with WhatsApp logo (darker variant) on landing and login pages, and a subtle icon in the customer view header.
-        -   **Layout Changes**: Reordered buttons on landing page (App Registrierung/zum Login side-by-side, then Service Nummer, then Admin-Anmeldung, all vertically aligned). Adjusted spacing for intro text.
-        -   **Text Updates**: Changed Anmelden to zum Login, Registrieren to App Registrierung, and updated welcome text for new customers.
-        -   **Live Shopping Calendar**: Added state variables, functions (, , etc.), and UI for both admin event management (modals for creation/editing, event list) and customer viewing (calendar button in header, modal displaying events, Erinnerungen aktivieren for push notifications). Implemented filtering to show only future events and improved event display (today highlight, status icons).
-        -   **Mobile Optimization**: Adjusted button sizes (, , ), text sizes for responsiveness, and ensured touch-friendliness.
-        -   **WebSocket Logic**: Corrected WebSocket connection protocol to dynamically choose  or  based on the  for robust communication in different environments.
-        -   **Chat Message Formatting**: Modified  to render text starting with  in bold.
-        -   **Bug Fixes**: Corrected  and WebSocket URLs in  and code (e.g.,  to , and later to ). Removed problematic  statements that caused React crashes.
+        -   **Multi-language**: Integrated  with  hook. Updated all user-facing texts to use translation keys.
+        -   **Profile UI**: Replaced Mein Profil text with a profile picture icon in the header. Consolidated logout and language selection into the profile modal. Added customer number and name to profile modal.
+        -   **Header Layout**: Iterative changes to position WhatsApp logo, Calendar button, and Profile picture in the header, ultimately settling on WhatsApp + Calendar on the left, Profile on the right. WhatsApp logo made larger.
+        -   **Landing Page**: Added language selection flags. Made OUTLET34 logo larger.
+        -   **Calendar Modal**: Optimized for mobile, removed WhatsApp button, made Erinnerungen aktivieren full-width, made close X prominent.
+        -   **Countdown Timer**: Integrated  logic and passed to  component.
+        -   **Default Tab**: Changed  state default from 'chat' to 'orders'.
+        -   **Admin Dashboard**: Added UI for , ,  to admin stats. Implemented  to parse chat messages for orders.
+        -   **Customer View**: Added UI for Top 3 Käufer list.
+        -   **Chat**: Implemented chat pinning logic ( state, / functions) and UI for admin. Ensured chat Senden button is visible.
+        -   **Last Order Display**: Personalized Letzte Bestellung to Deine letzte Bestellung, removed product name.
+        -   **WebSocket Fix**: Corrected WebSocket URL logic to use  from .
+        -   **Bug Fixes**: Addressed an issue where customer creation appeared to fail (was a UX misunderstanding, creation was successful).
 
--   : Environment variables for frontend configuration.
-    -   **Importance**: Crucial for defining the  for API calls.
-    -   **Changes Made**: Initially fixed from a preview URL to . Later, identified as the root cause of deployment failures, it was again fixed to point to the correct deployed backend URL (e.g., ).
+-   : Environment variables for frontend.
+    -   **Importance**: Crucial for  for API and WebSocket connections.
+    -   **Changes Made**: Corrected  from a preview URL to  (for local development debugging).
 
--   : Environment variables for backend configuration.
-    -   **Importance**: Defines the  for database connection.
-    -   **Changes Made**: Briefly experimented with container-specific MongoDB URLs, but reverted to  for the local development environment as per system constraints.
+-   : Environment variables for backend.
+    -   **Importance**: Defines  for database connection and .
+    -   **Changes Made**: Confirmed  points to  and  to .
 
--   : Manifest file for PWA.
-    -   **Importance**: Enables the web application to be installable on user's home screens, providing an app-like experience.
-    -   **Changes Made**: Created with relevant PWA settings (name, icons, start_url, theme_color).
+-   : i18n configuration file.
+    -   **Importance**: Initializes  with translation resources and settings.
+    -   **Changes Made**: Created with configuration for supported languages (de, en, tr, fr).
 
--   : Main HTML file.
-    -   **Importance**: Entry point for the React application.
-    -   **Changes Made**: Updated viewport meta-tag to ensure proper mobile responsiveness and PWA integration.
+-   : Translation files.
+    -   **Importance**: Stores key-value pairs for different languages.
+    -   **Changes Made**: Created , , ,  with comprehensive translations for UI elements.
+
+-   : Main React entry point.
+    -   **Importance**: Renders the root React component.
+    -   **Changes Made**: Imported  to ensure it's initialized before  renders.
+
+-   : Live stream component.
+    -   **Importance**: Displays the video stream and other live content.
+    -   **Changes Made**: Integrated countdown timer logic to display the time until the .
 </code_architecture>
 
 <pending_tasks>
--   Initiate the final redeployment to apply the  fix (from  to ) to the deployed application.
--   Verify customer creation, calendar event creation, and order placement functionality in the deployed environment after redeployment.
+- Initiate the final redeployment to apply the  fix (from  to ) to the deployed application.
+- Verify customer creation, calendar event creation, and order placement functionality in the deployed environment after redeployment.
+- Verify the customer list display in the Admin Dashboard on the frontend.
 </pending_tasks>
 
 <current_work>
-Immediately before this summary request, the AI engineer was addressing a critical bug in the deployed application where customer creation and order placement were failing. Despite multiple backend fixes (for serialization, datetime handling, and chat message formatting), and extensive UI/UX enhancements (WhatsApp integration, mobile optimization, calendar features), the deployed frontend was still unable to communicate correctly with the backend.
-
-The root cause was precisely identified: the  file, which dictates the , was incorrectly pointing to a preview environment URL (). In the deployed (live) environment, this URL must point to the actual live backend URL (). The engineer has just made this critical correction to the  file. This fix is crucial for the deployed application to function correctly. The next immediate step is to redeploy the application to apply this updated configuration.
+Immediately before this summary request, the AI engineer was investigating a user report that the kundendatenbank immer noch nicht aktiv (customer database still not active). This involved a systematic debugging process across MongoDB, backend logs, and frontend API calls. The engineer confirmed that MongoDB was running, backend API calls were successful (200 OK), and direct database queries showed the  was active and contained  and other collections with 126 customer records. It was concluded that the user's perception of the database not being active was a misunderstanding, possibly related to the frontend display of customer data rather than the database's operational status. Prior to this, a critical WebSocket connection issue (preventing chat and order updates) was resolved by correcting the  in  to  for local development.
 </current_work>
 
 <optional_next_step>
-Start the redeployment of the application to apply the corrected  in .
+Verify the customer list display in the Admin Dashboard on the frontend, as implied by the user's kundendatenbank immer noch nicht aktiv comment.
 </optional_next_step>

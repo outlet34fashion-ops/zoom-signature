@@ -11,7 +11,7 @@ import json
 import time
 
 class BackendOrderNotificationTester:
-    def __init__(self, base_url="https://realtime-shop.preview.emergentagent.com"):
+    def __init__(self, base_url="https://livesales-portal.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         
