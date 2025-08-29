@@ -1358,7 +1358,7 @@ function App() {
                           href="https://wa.me/4917621105848?text=Hallo%20OUTLET34%20Team,%20ich%20habe%20eine%20Frage%20zum%20Live%20Shopping..." 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="flex items-center justify-center space-x-3 bg-pink-500 hover:bg-pink-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 w-full"
+                          className="flex items-center justify-center space-x-3 bg-pink-500 hover:bg-pink-600 text-white font-medium py-4 px-4 rounded-lg transition-colors duration-200 w-full min-h-12 text-sm"
                         >
                           <img 
                             src="/images/whatsapp-logo-dark.png" 
