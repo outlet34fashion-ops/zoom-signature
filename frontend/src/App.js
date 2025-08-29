@@ -80,6 +80,21 @@ function App() {
   // Last Order States
   const [customerLastOrder, setCustomerLastOrder] = useState(null);
   const [loadingLastOrder, setLoadingLastOrder] = useState(false);
+
+  // Live Shopping Calendar States
+  const [events, setEvents] = useState([]);
+  const [showCreateEvent, setShowCreateEvent] = useState(false);
+  const [showEditEvent, setShowEditEvent] = useState(false);
+  const [currentEvent, setCurrentEvent] = useState(null);
+  const [newEventData, setNewEventData] = useState({
+    date: '',
+    time: '',
+    title: '',
+    description: ''
+  });
+  const [eventError, setEventError] = useState('');
+  const [loadingEvents, setLoadingEvents] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
   
   // Profile Modal States
   const [showProfileModal, setShowProfileModal] = useState(false);
