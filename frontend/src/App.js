@@ -1321,7 +1321,7 @@ function App() {
                     {/* Logo und Titel bleiben oben */}
                     <h2 className="text-xl font-semibold text-gray-800">OUTLET34 Live Shopping</h2>
                     
-                    <div className="text-center space-y-1 pt-8">
+                    <div className="text-center space-y-1 pt-16">
                       <p className="text-sm font-medium text-gray-700">
                         Neu bei OUTLET34?
                       </p>
