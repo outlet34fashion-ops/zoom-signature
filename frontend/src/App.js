@@ -410,6 +410,22 @@ function App() {
       .slice(0, 3);
   };
 
+  // Chat-Pinnung Funktionen
+  const pinMessage = (messageId) => {
+    const message = chatMessages.find(msg => msg.id === messageId);
+    if (message && !pinnedMessages.find(pin => pin.id === messageId)) {
+      setPinnedMessages(prev => [...prev, { ...message, pinnedAt: new Date() }]);
+    }
+  };
+
+  const unpinMessage = (messageId) => {
+    setPinnedMessages(prev => prev.filter(pin => pin.id !== messageId));
+  };
+
+  const isPinned = (messageId) => {
+    return pinnedMessages.some(pin => pin.id === messageId);
+  };
+
   // Customer Authentication Functions
   const customerLogin = async () => {
     try {
