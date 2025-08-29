@@ -2438,6 +2438,155 @@ function App() {
       </div>
       </>
       )}
+
+      {/* Create Event Modal */}
+      {showCreateEvent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-md mx-4">
+            <CardContent className="p-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">📅 Neues Event erstellen</h3>
+              
+              {eventError && (
+                <div className="bg-red-100 border border-red-300 rounded-lg p-3 mb-4">
+                  <p className="text-red-700 text-sm">{eventError}</p>
+                </div>
+              )}
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Datum *</label>
+                  <Input
+                    type="date"
+                    value={newEventData.date}
+                    onChange={(e) => setNewEventData(prev => ({ ...prev, date: e.target.value }))}
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Zeit *</label>
+                  <Input
+                    type="time"
+                    value={newEventData.time}
+                    onChange={(e) => setNewEventData(prev => ({ ...prev, time: e.target.value }))}
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Titel *</label>
+                  <Input
+                    type="text"
+                    placeholder="z.B. Sale und aktuelle Ware"
+                    value={newEventData.title}
+                    onChange={(e) => setNewEventData(prev => ({ ...prev, title: e.target.value }))}
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Beschreibung</label>
+                  <Input
+                    type="text"
+                    placeholder="Zusätzliche Details (optional)"
+                    value={newEventData.description}
+                    onChange={(e) => setNewEventData(prev => ({ ...prev, description: e.target.value }))}
+                  />
+                </div>
+              </div>
+              
+              <div className="flex space-x-3 mt-6">
+                <Button 
+                  variant="outline"
+                  onClick={() => setShowCreateEvent(false)}
+                  className="flex-1"
+                >
+                  Abbrechen
+                </Button>
+                <Button 
+                  onClick={createEvent}
+                  className="flex-1 bg-pink-500 hover:bg-pink-600 text-white"
+                >
+                  Event erstellen
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Edit Event Modal */}
+      {showEditEvent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-md mx-4">
+            <CardContent className="p-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">📅 Event bearbeiten</h3>
+              
+              {eventError && (
+                <div className="bg-red-100 border border-red-300 rounded-lg p-3 mb-4">
+                  <p className="text-red-700 text-sm">{eventError}</p>
+                </div>
+              )}
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Datum *</label>
+                  <Input
+                    type="date"
+                    value={newEventData.date}
+                    onChange={(e) => setNewEventData(prev => ({ ...prev, date: e.target.value }))}
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Zeit *</label>
+                  <Input
+                    type="time"
+                    value={newEventData.time}
+                    onChange={(e) => setNewEventData(prev => ({ ...prev, time: e.target.value }))}
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Titel *</label>
+                  <Input
+                    type="text"
+                    placeholder="z.B. Sale und aktuelle Ware"
+                    value={newEventData.title}
+                    onChange={(e) => setNewEventData(prev => ({ ...prev, title: e.target.value }))}
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Beschreibung</label>
+                  <Input
+                    type="text"
+                    placeholder="Zusätzliche Details (optional)"
+                    value={newEventData.description}
+                    onChange={(e) => setNewEventData(prev => ({ ...prev, description: e.target.value }))}
+                  />
+                </div>
+              </div>
+              
+              <div className="flex space-x-3 mt-6">
+                <Button 
+                  variant="outline"
+                  onClick={() => {
+                    setShowEditEvent(false);
+                    setCurrentEvent(null);
+                  }}
+                  className="flex-1"
+                >
+                  Abbrechen
+                </Button>
+                <Button 
+                  onClick={updateEvent}
+                  className="flex-1 bg-pink-500 hover:bg-pink-600 text-white"
+                >
+                  Event aktualisieren
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }
