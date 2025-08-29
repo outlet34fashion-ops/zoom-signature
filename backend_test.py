@@ -2465,6 +2465,7 @@ class LiveShoppingAPITester:
             ("Customer Status Check Fix", customer_fix_success),
             ("Comprehensive Customer Flow", comprehensive_flow_success),
             ("Customer Last Order Display", last_order_success),
+            ("🎯 ObjectId Serialization Fix", objectid_fix_success),
             ("Live Shopping Calendar", calendar_success)
         ]
         
