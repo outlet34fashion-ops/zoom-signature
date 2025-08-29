@@ -1,0 +1,200 @@
+{
+  "app": {
+    "title": "OUTLET34 Canlı Alışveriş",
+    "welcome": "OUTLET34 Canlı'ya Hoş Geldiniz!",
+    "loading": "Yükleniyor...",
+    "error": "Hata",
+    "success": "Başarılı"
+  },
+  "auth": {
+    "login": "Giriş Yap",
+    "register": "Uygulama Kaydı", 
+    "logout": "Çıkış Yap",
+    "adminLogin": "Yönetici Girişi",
+    "customerLogin": "Müşteri Girişi",
+    "customerNumber": "Müşteri Numarası",
+    "email": "E-posta",
+    "name": "Ad",
+    "password": "Şifre",
+    "pin": "PIN",
+    "enterCustomerNumber": "Müşteri numarasını girin...",
+    "enterEmail": "E-posta girin...",
+    "enterName": "Ad girin...",
+    "enterPin": "PIN girin...",
+    "loginError": "Giriş hatası. Lütfen tekrar deneyin.",
+    "registrationError": "Kayıt başarısız. Lütfen tekrar deneyin.",
+    "invalidPin": "Geçersiz PIN. Lütfen tekrar deneyin.",
+    "customerNotFound": "Müşteri numarası bulunamadı. Lütfen önce kaydolun.",
+    "enterCustomerNumberRequired": "Lütfen müşteri numaranızı girin."
+  },
+  "navigation": {
+    "profile": "Profilim",
+    "calendar": "Takvim",
+    "service": "Servis Numarası",
+    "admin": "Yönetici",
+    "customers": "Müşteriler",
+    "events": "Etkinlikler"
+  },
+  "customer": {
+    "status": {
+      "pending": "Bekliyor",
+      "active": "Aktif", 
+      "blocked": "Engellendi"
+    },
+    "registration": {
+      "title": "Müşteri Kaydı",
+      "success": "Kayıt başarılı!",
+      "pending": "Kaydınız inceleniyor",
+      "waitingApproval": "Onay bekleniyor"
+    },
+    "profile": {
+      "title": "Profilim",
+      "customerNumber": "Müşteri Numarası",
+      "name": "Ad",
+      "email": "E-posta",
+      "status": "Durum",
+      "language": "Dil",
+      "profileImage": "Profil Resmi",
+      "uploadImage": "Resim Yükle",
+      "deleteImage": "Resmi Sil",
+      "updateLanguage": "Dili Güncelle"
+    }
+  },
+  "live": {
+    "title": "CANLI",
+    "runtime": "Çalışma süresi:",
+    "endTime": "Bitiş saati:",
+    "viewers": "İzleyici",
+    "streamTitle": "Sadece Satıcılar İçin | 10 €'dan itibaren - Bugün 18:00 - Taze Ürünler | Genç Moda & Büyük Beden",
+    "demoMessage": "Zoom Canlı Yayın (Demo)",
+    "demoDescription": "Bu bir önizlemedir. Demo katılımını simüle etmek için Toplantı Başlat'a tıklayın.",
+    "startMeeting": "Toplantıyı Başlat"
+  },
+  "chat": {
+    "title": "Sohbet",
+    "placeholder": "Mesaj girin",
+    "send": "Gönder",
+    "emoji": "Emoji"
+  },
+  "orders": {
+    "title": "Siparişler", 
+    "size": "Beden (mevcut):",
+    "price": "Fiyat (mevcut):",
+    "quantity": "Miktar",
+    "order": "Sipariş Ver",
+    "nextArticle": "Sonraki Ürün",
+    "sendPriceSize": "Fiyat ve Beden Gönder",
+    "keepPrice": "Fiyatı Koru",
+    "selectPrice": "Fiyat Seç",
+    "lastOrder": "Son Sipariş",
+    "noOrders": "Sipariş Yok"
+  },
+  "products": {
+    "specialOffer": "Özel Teklif",
+    "freeShipping": "Ücretsiz Kargo",
+    "topseller": "En Çok Satan", 
+    "newIn": "Yeni Gelenler",
+    "sale": "İndirim"
+  },
+  "admin": {
+    "dashboard": "Yönetici Paneli",
+    "totalOrders": "Toplam Siparişler",
+    "sessionOrders": "Oturum Siparişleri",
+    "activeViewers": "Aktif İzleyiciler",
+    "resetCounter": "Sayacı Sıfırla",
+    "customerManagement": "Müşteri Yönetimi",
+    "createCustomer": "Müşteri Oluştur",
+    "editCustomer": "Müşteriyi Düzenle",
+    "deleteCustomer": "Müşteriyi Sil",
+    "activateCustomer": "Müşteriyi Aktifleştir",
+    "blockCustomer": "Müşteriyi Engelle",
+    "allCustomers": "Tüm Müşteriler",
+    "pendingCustomers": "Bekleyen Müşteriler",
+    "blockedCustomers": "Engellenen Müşteriler",
+    "searchCustomer": "Müşteri ara...",
+    "eventManagement": "Etkinlik Yönetimi",
+    "createEvent": "Etkinlik Oluştur",
+    "editEvent": "Etkinliği Düzenle",
+    "deleteEvent": "Etkinliği Sil"
+  },
+  "calendar": {
+    "title": "Canlı Alışveriş Takvimi",
+    "upcomingEvents": "Yaklaşan Etkinlikler",
+    "noEvents": "Planlanmış etkinlik yok",
+    "eventDate": "Tarih",
+    "eventTime": "Saat",
+    "eventTitle": "Başlık",
+    "eventDescription": "Açıklama",
+    "enableNotifications": "Bildirimları Etkinleştir",
+    "notificationEnabled": "Bildirimler etkinleştirildi",
+    "notificationDenied": "Bildirimler reddedildi. Tarayıcı ayarlarından etkinleştirebilirsiniz.",
+    "notificationNotSupported": "Tarayıcınız push bildirimleri desteklemiyor."
+  },
+  "settings": {
+    "language": "Dil",
+    "languageSelection": "Dil Seçin",
+    "german": "Deutsch",
+    "english": "English", 
+    "turkish": "Türkçe",
+    "french": "Français",
+    "ticker": {
+      "settings": "Ticker Ayarları",
+      "text": "Ticker Metni",
+      "update": "Ticker'ı Güncelle",
+      "enable": "Ticker'ı Etkinleştir"
+    }
+  },
+  "devices": {
+    "mobile": "Mobil",
+    "tablet": "Tablet", 
+    "desktop": "Masaüstü"
+  },
+  "common": {
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "create": "Oluştur",
+    "update": "Güncelle",
+    "close": "Kapat",
+    "reset": "Sıfırla",
+    "search": "Ara",
+    "filter": "Filtre",
+    "all": "Tümü",
+    "yes": "Evet",
+    "no": "Hayır",
+    "confirm": "Onayla",
+    "required": "Gerekli",
+    "optional": "İsteğe Bağlı"
+  },
+  "errors": {
+    "customerNumberRequired": "Müşteri numarası gerekli.",
+    "emailRequired": "E-posta gerekli.",
+    "nameRequired": "Ad gerekli.",
+    "customerNumberExists": "Müşteri numarası zaten mevcut.",
+    "emailExists": "E-posta zaten kayıtlı.",
+    "customerCreationFailed": "Müşteri oluşturma hatası. Lütfen tekrar deneyin.",
+    "eventCreationFailed": "Etkinlik oluşturma hatası. Lütfen tekrar deneyin.",
+    "eventUpdateFailed": "Etkinlik güncelleme hatası. Lütfen tekrar deneyin.",
+    "eventDeleteFailed": "Etkinlik silme hatası. Lütfen tekrar deneyin.",
+    "dateTimeRequired": "Tarih, saat ve başlık gerekli."
+  },
+  "messages": {
+    "customerCreated": "Müşteri başarıyla oluşturuldu.",
+    "customerActivated": "Müşteri başarıyla aktifleştirildi.",
+    "customerBlocked": "Müşteri başarıyla engellendi.", 
+    "customerDeleted": "Müşteri başarıyla silindi.",
+    "eventCreated": "Etkinlik başarıyla oluşturuldu.",
+    "eventUpdated": "Etkinlik başarıyla güncellendi.",
+    "eventDeleted": "Etkinlik başarıyla silindi.",
+    "languageUpdated": "Dil başarıyla güncellendi.",
+    "profileImageUploaded": "Profil resmi başarıyla yüklendi.",
+    "profileImageDeleted": "Profil resmi başarıyla silindi."
+  },
+  "registration": {
+    "newCustomerWelcome": "OUTLET34'ün yeni müşterisi olarak lütfen önce kaydolun:",
+    "existingCustomerLogin": "Zaten kayıtlı müşteriler buradan giriş yapar:",
+    "registerAtWebsite": "Canlı etkinlik sadece https://www.outlet34fashion.com/registrieren adresinde kayıt sonrası mümkün",
+    "loginButton": "Canlı Uygulama Girişi"
+  }
+}
