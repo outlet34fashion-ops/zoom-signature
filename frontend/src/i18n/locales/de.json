@@ -1,0 +1,200 @@
+{
+  "app": {
+    "title": "OUTLET34 Live Shopping",
+    "welcome": "Willkommen bei OUTLET34 Live!",
+    "loading": "Lädt...",
+    "error": "Fehler",
+    "success": "Erfolgreich"
+  },
+  "auth": {
+    "login": "zum Login",
+    "register": "App Registrierung", 
+    "logout": "Abmelden",
+    "adminLogin": "Admin-Anmeldung",
+    "customerLogin": "Kunden-Anmeldung",
+    "customerNumber": "Kundennummer",
+    "email": "E-Mail",
+    "name": "Name",
+    "password": "Passwort",
+    "pin": "PIN",
+    "enterCustomerNumber": "Kundennummer eingeben...",
+    "enterEmail": "E-Mail eingeben...",
+    "enterName": "Name eingeben...",
+    "enterPin": "PIN eingeben...",
+    "loginError": "Anmeldefehler. Bitte versuchen Sie es erneut.",
+    "registrationError": "Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "invalidPin": "Ungültige PIN. Bitte versuchen Sie es erneut.",
+    "customerNotFound": "Kundennummer nicht gefunden. Bitte registrieren Sie sich zuerst.",
+    "enterCustomerNumberRequired": "Bitte geben Sie Ihre Kundennummer ein."
+  },
+  "navigation": {
+    "profile": "Mein Profil",
+    "calendar": "Kalender",
+    "service": "Service Nummer",
+    "admin": "Admin",
+    "customers": "Kunden",
+    "events": "Events"
+  },
+  "customer": {
+    "status": {
+      "pending": "Wartend",
+      "active": "Aktiv", 
+      "blocked": "Gesperrt"
+    },
+    "registration": {
+      "title": "Kunde registrieren",
+      "success": "Registrierung erfolgreich!",
+      "pending": "Ihre Registrierung wird geprüft",
+      "waitingApproval": "Warten auf Freischaltung"
+    },
+    "profile": {
+      "title": "Mein Profil",
+      "customerNumber": "Kundennummer",
+      "name": "Name",
+      "email": "E-Mail",
+      "status": "Status",
+      "language": "Sprache",
+      "profileImage": "Profilbild",
+      "uploadImage": "Bild hochladen",
+      "deleteImage": "Bild löschen",
+      "updateLanguage": "Sprache aktualisieren"
+    }
+  },
+  "live": {
+    "title": "LIVE",
+    "runtime": "Laufzeit:",
+    "endTime": "Uhrzeit:",
+    "viewers": "Zuschauer",
+    "streamTitle": "Nur für Händler | Ab 10 € - Heute 18:00 - Frische Ware | Young Fashion & Plus Size",
+    "demoMessage": "Zoom Live-Stream (Demo)",
+    "demoDescription": "Dies ist eine Vorschau. Klicke auf Meeting starten um den Demo-Join zu simulieren.",
+    "startMeeting": "Meeting starten"
+  },
+  "chat": {
+    "title": "Chat",
+    "placeholder": "Nachricht eingeben",
+    "send": "Senden",
+    "emoji": "Emoji"
+  },
+  "orders": {
+    "title": "Bestellungen", 
+    "size": "Größe (aktuell):",
+    "price": "Preis (aktuell):",
+    "quantity": "Menge",
+    "order": "Bestellen",
+    "nextArticle": "Nächster Artikel",
+    "sendPriceSize": "Preis & Größe senden",
+    "keepPrice": "Preis behalten",
+    "selectPrice": "Preis auswählen",
+    "lastOrder": "Letzte Bestellung",
+    "noOrders": "Keine Bestellungen"
+  },
+  "products": {
+    "specialOffer": "Sonderpreis",
+    "freeShipping": "Versandkostenfrei",
+    "topseller": "Topseller", 
+    "newIn": "New In",
+    "sale": "Abverkauf"
+  },
+  "admin": {
+    "dashboard": "Admin Dashboard",
+    "totalOrders": "Gesamtbestellungen",
+    "sessionOrders": "Session Bestellungen",
+    "activeViewers": "Aktive Zuschauer",
+    "resetCounter": "Counter Reset",
+    "customerManagement": "Kundenverwaltung",
+    "createCustomer": "Kunde erstellen",
+    "editCustomer": "Kunde bearbeiten",
+    "deleteCustomer": "Kunde löschen",
+    "activateCustomer": "Kunde aktivieren",
+    "blockCustomer": "Kunde sperren",
+    "allCustomers": "Alle Kunden",
+    "pendingCustomers": "Wartende Kunden",
+    "blockedCustomers": "Gesperrte Kunden",
+    "searchCustomer": "Kunde suchen...",
+    "eventManagement": "Event-Verwaltung",
+    "createEvent": "Event erstellen",
+    "editEvent": "Event bearbeiten",
+    "deleteEvent": "Event löschen"
+  },
+  "calendar": {
+    "title": "Live Shopping Kalender",
+    "upcomingEvents": "Kommende Events",
+    "noEvents": "Keine Events geplant",
+    "eventDate": "Datum",
+    "eventTime": "Zeit",
+    "eventTitle": "Titel",
+    "eventDescription": "Beschreibung",
+    "enableNotifications": "Erinnerungen aktivieren",
+    "notificationEnabled": "Benachrichtigungen aktiviert",
+    "notificationDenied": "Benachrichtigungen wurden abgelehnt. Sie können sie in den Browser-Einstellungen aktivieren.",
+    "notificationNotSupported": "Ihr Browser unterstützt keine Push-Benachrichtigungen."
+  },
+  "settings": {
+    "language": "Sprache",
+    "languageSelection": "Sprache auswählen",
+    "german": "Deutsch",
+    "english": "English", 
+    "turkish": "Türkçe",
+    "french": "Français",
+    "ticker": {
+      "settings": "Ticker Einstellungen",
+      "text": "Ticker Text",
+      "update": "Ticker aktualisieren",
+      "enable": "Ticker aktivieren"
+    }
+  },
+  "devices": {
+    "mobile": "Handy",
+    "tablet": "Tablet", 
+    "desktop": "Desktop"
+  },
+  "common": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "create": "Erstellen",
+    "update": "Aktualisieren",
+    "close": "Schließen",
+    "reset": "Reset",
+    "search": "Suchen",
+    "filter": "Filter",
+    "all": "Alle",
+    "yes": "Ja",
+    "no": "Nein",
+    "confirm": "Bestätigen",
+    "required": "Erforderlich",
+    "optional": "Optional"
+  },
+  "errors": {
+    "customerNumberRequired": "Kundennummer ist erforderlich.",
+    "emailRequired": "E-Mail ist erforderlich.",
+    "nameRequired": "Name ist erforderlich.",
+    "customerNumberExists": "Kundennummer bereits vorhanden.",
+    "emailExists": "E-Mail bereits registriert.",
+    "customerCreationFailed": "Fehler beim Erstellen des Kunden. Bitte versuchen Sie es erneut.",
+    "eventCreationFailed": "Fehler beim Erstellen des Events. Bitte versuchen Sie es erneut.",
+    "eventUpdateFailed": "Fehler beim Aktualisieren des Events. Bitte versuchen Sie es erneut.",
+    "eventDeleteFailed": "Fehler beim Löschen des Events. Bitte versuchen Sie es erneut.",
+    "dateTimeRequired": "Datum, Zeit und Titel sind erforderlich."
+  },
+  "messages": {
+    "customerCreated": "Kunde erfolgreich erstellt.",
+    "customerActivated": "Kunde erfolgreich aktiviert.",
+    "customerBlocked": "Kunde erfolgreich gesperrt.", 
+    "customerDeleted": "Kunde erfolgreich gelöscht.",
+    "eventCreated": "Event erfolgreich erstellt.",
+    "eventUpdated": "Event erfolgreich aktualisiert.",
+    "eventDeleted": "Event erfolgreich gelöscht.",
+    "languageUpdated": "Sprache erfolgreich aktualisiert.",
+    "profileImageUploaded": "Profilbild erfolgreich hochgeladen.",
+    "profileImageDeleted": "Profilbild erfolgreich gelöscht."
+  },
+  "registration": {
+    "newCustomerWelcome": "Als neuer Kunde von OUTLET34 registrieren Sie sich bitte zuerst:",
+    "existingCustomerLogin": "Bereits registrierte Kunden melden sich hier an:",
+    "registerAtWebsite": "Live-Event nur nach Registrierung auf https://www.outlet34fashion.com/registrieren möglich",
+    "loginButton": "Zur Live-App Anmeldung"
+  }
+}
