@@ -103,6 +103,8 @@
     "sessionOrders": "Oturum Siparişleri",
     "activeViewers": "Aktif İzleyiciler",
     "resetCounter": "Sayacı Sıfırla",
+    "adminView": "Yönetici Görünümü",
+    "customerView": "Müşteri Görünümü",
     "customerManagement": "Müşteri Yönetimi",
     "createCustomer": "Müşteri Oluştur",
     "editCustomer": "Müşteriyi Düzenle",
