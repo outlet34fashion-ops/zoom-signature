@@ -1069,6 +1069,195 @@ async def delete_event(event_id: str):
 
 # End of endpoints
 
+# WebRTC Streaming Endpoints
+@api_router.post("/stream/start")
+async def start_streaming(stream_data: StreamSessionCreate, current_user_id: str = "admin"):
+    """Start a new WebRTC streaming session (admin only)"""
+    try:
+        # TODO: Add proper authentication check for admin role
+        
+        stream = await stream_manager.create_stream(current_user_id, stream_data)
+        
+        return {
+            "stream_id": stream.id,
+            "stream_title": stream.stream_title,
+            "status": stream.status,
+            "max_viewers": stream.max_viewers,
+            "created_at": stream.created_at,
+            "signaling_endpoint": f"/ws/stream/{stream.id}/signaling"
+        }
+        
+    except Exception as e:
+        logging.error(f"Error starting stream: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to start streaming session")
+
+@api_router.get("/stream/{stream_id}/join")
+async def join_streaming_session(stream_id: str, current_user_id: str = "viewer"):
+    """Join an existing streaming session as viewer"""
+    try:
+        if stream_id not in stream_manager.active_streams:
+            raise HTTPException(status_code=404, detail="Stream not found")
+            
+        stream = stream_manager.active_streams[stream_id]
+        
+        if len(stream_manager.stream_connections.get(stream_id, [])) >= stream.max_viewers:
+            raise HTTPException(status_code=400, detail="Stream is at maximum capacity")
+        
+        return {
+            "stream_id": stream_id,
+            "stream_title": stream.stream_title,
+            "viewer_count": stream.viewer_count,
+            "max_viewers": stream.max_viewers,
+            "signaling_endpoint": f"/ws/stream/{stream_id}/viewer",
+            "status": "ready_to_join"
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Error joining stream: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to join streaming session")
+
+@api_router.delete("/stream/{stream_id}")
+async def end_streaming_session(stream_id: str, current_user_id: str = "admin"):
+    """End streaming session (admin/streamer only)"""
+    try:
+        success = await stream_manager.end_stream(stream_id, current_user_id)
+        
+        if not success:
+            raise HTTPException(status_code=404, detail="Stream not found or unauthorized")
+        
+        return {"message": "Streaming session ended successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Error ending stream: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to end streaming session")
+
+@api_router.get("/streams/active")
+async def get_active_streams():
+    """Get list of active streaming sessions"""
+    try:
+        active_streams = []
+        
+        for stream_id, stream in stream_manager.active_streams.items():
+            active_streams.append({
+                "stream_id": stream_id,
+                "stream_title": stream.stream_title,
+                "viewer_count": stream.viewer_count,
+                "max_viewers": stream.max_viewers,
+                "created_at": stream.created_at,
+                "status": stream.status
+            })
+        
+        return {"streams": active_streams}
+        
+    except Exception as e:
+        logging.error(f"Error getting active streams: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to get active streams")
+
+@api_router.get("/webrtc/config")
+async def get_webrtc_config():
+    """Get WebRTC configuration including STUN/TURN servers"""
+    return {
+        "rtcConfiguration": {
+            "iceServers": [
+                {"urls": ["stun:stun.l.google.com:19302"]},
+                {"urls": ["stun:stun1.l.google.com:3478"]},
+                {"urls": ["stun:stun2.l.google.com:19302"]},
+                {
+                    "urls": [
+                        "turn:openrelay.metered.ca:80",
+                        "turn:openrelay.metered.ca:443",
+                        "turn:openrelay.metered.ca:443?transport=tcp"
+                    ],
+                    "username": "openrelayproject",
+                    "credential": "openrelayproject"
+                }
+            ],
+            "iceCandidatePoolSize": 10,
+            "iceTransportPolicy": "all"
+        },
+        "mediaConstraints": {
+            "video": {
+                "width": {"ideal": 1280},
+                "height": {"ideal": 720},
+                "frameRate": {"ideal": 30},
+                "facingMode": "user"
+            },
+            "audio": {
+                "echoCancellation": True,
+                "noiseSuppression": True,
+                "autoGainControl": True
+            }
+        }
+    }
+
+# WebRTC Signaling WebSocket Endpoints
+@app.websocket("/ws/stream/{stream_id}/signaling")
+async def webrtc_signaling_streamer(websocket: WebSocket, stream_id: str):
+    """WebSocket for WebRTC signaling (streamer)"""
+    await websocket.accept()
+    
+    # Register streamer connection
+    if stream_id in stream_manager.active_streams:
+        stream_manager.streamer_connections[stream_id] = websocket
+    else:
+        await websocket.close(code=1008, reason="Stream not found")
+        return
+    
+    try:
+        while True:
+            data = await websocket.receive_text()
+            message = json.loads(data)
+            
+            # Broadcast signaling messages to all viewers
+            await stream_manager.broadcast_to_stream(stream_id, {
+                "type": "signaling",
+                "from": "streamer",
+                "data": message
+            })
+            
+    except WebSocketDisconnect:
+        # Clean up streamer connection
+        if stream_id in stream_manager.streamer_connections:
+            del stream_manager.streamer_connections[stream_id]
+        
+        # End the stream when streamer disconnects
+        if stream_id in stream_manager.active_streams:
+            await stream_manager.end_stream(stream_id, stream_manager.active_streams[stream_id].streamer_id)
+
+@app.websocket("/ws/stream/{stream_id}/viewer")
+async def webrtc_signaling_viewer(websocket: WebSocket, stream_id: str):
+    """WebSocket for WebRTC signaling (viewer)"""
+    await websocket.accept()
+    
+    # Join stream as viewer
+    success = await stream_manager.join_stream(stream_id, websocket)
+    if not success:
+        await websocket.close(code=1008, reason="Cannot join stream")
+        return
+    
+    try:
+        while True:
+            data = await websocket.receive_text()
+            message = json.loads(data)
+            
+            # Send signaling message to streamer
+            if stream_id in stream_manager.streamer_connections:
+                streamer_ws = stream_manager.streamer_connections[stream_id]
+                if streamer_ws.client_state == WebSocketState.CONNECTED:
+                    await streamer_ws.send_text(json.dumps({
+                        "type": "signaling",
+                        "from": "viewer",
+                        "data": message
+                    }))
+            
+    except WebSocketDisconnect:
+        # Remove viewer from stream
+        await stream_manager.leave_stream(stream_id, websocket)
+
 # WebSocket endpoint
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
