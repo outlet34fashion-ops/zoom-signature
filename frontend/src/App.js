@@ -2732,10 +2732,10 @@ function App() {
                           />
                           <Button 
                             onClick={sendMessage}
-                            className="bg-pink-500 hover:bg-pink-600"
+                            className="bg-pink-500 hover:bg-pink-600 text-white px-4"
                             size="sm"
                           >
-                            {t.send}
+                            Senden
                           </Button>
                         </div>
 
