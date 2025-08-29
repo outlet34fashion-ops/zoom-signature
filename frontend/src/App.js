@@ -2664,13 +2664,24 @@ function App() {
             <CardContent className="p-6">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-xl font-semibold text-gray-800">📅 Live Shopping Kalender</h3>
-                <Button 
-                  variant="ghost"
-                  onClick={() => setShowCalendar(false)}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  ✕
-                </Button>
+                <div className="flex space-x-2">
+                  {!notificationsEnabled && (
+                    <Button 
+                      onClick={requestNotificationPermission}
+                      className="bg-green-500 hover:bg-green-600 text-white text-sm"
+                      size="sm"
+                    >
+                      🔔 Erinnerungen aktivieren
+                    </Button>
+                  )}
+                  <Button 
+                    variant="ghost"
+                    onClick={() => setShowCalendar(false)}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    ✕
+                  </Button>
+                </div>
               </div>
               
               {loadingEvents ? (
