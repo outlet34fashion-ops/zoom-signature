@@ -1480,7 +1480,7 @@ function App() {
                     onClick={() => setIsAdminView(true)}
                     className={isAdminView ? "bg-white text-pink-600" : "text-white hover:bg-pink-600"}
                   >
-                    {t.adminView}
+                    {t('admin.adminView')}
                   </Button>
                 </>
               )}
