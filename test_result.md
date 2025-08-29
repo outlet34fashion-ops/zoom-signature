@@ -241,6 +241,18 @@ frontend:
         agent: "main"
         comment: "Integrate customer authentication status checks with chat and order functionality"
 
+  - task: "WebRTC Live Video Streaming - Frontend Implementation"
+    implemented: false
+    working: "NA"
+    file: "/app/frontend/src/App.js, /app/frontend/src/components/"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "IMPLEMENTING: React components for WebRTC live streaming. Requirements: 1) iPhone camera access via getUserMedia, 2) WebRTC peer connections with proper STUN/TURN configuration, 3) Streaming interface for admins, 4) Viewing interface for customers, 5) Real-time viewer count and connection status, 6) Socket.IO integration for signaling, 7) Mobile-optimized UI with playsInline video elements. Integration with existing authentication and role management."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"
