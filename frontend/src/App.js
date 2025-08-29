@@ -16,7 +16,7 @@ const API = `${BACKEND_URL}/api`;
 const WS_URL = BACKEND_URL.replace(/^https?:\/\//, BACKEND_URL.startsWith('https://') ? 'wss://' : 'ws://');
 
 function App() {
-  const [language, setLanguage] = useState('de');
+  const { t, i18n } = useTranslation();
   const [isLive, setIsLive] = useState(true);
   const [viewerCount, setViewerCount] = useState(34);
   const [chatMessages, setChatMessages] = useState([]);
