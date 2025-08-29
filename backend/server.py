@@ -765,8 +765,8 @@ async def create_event(event: LiveShoppingEventCreate):
             "time": event_dict["time"],
             "title": event_dict["title"],
             "description": event_dict["description"],
-            "created_at": event_dict["created_at"].isoformat(),
-            "updated_at": event_dict["updated_at"].isoformat()
+            "created_at": event_dict["created_at"].isoformat() if hasattr(event_dict["created_at"], 'isoformat') else str(event_dict["created_at"]),
+            "updated_at": event_dict["updated_at"].isoformat() if hasattr(event_dict["updated_at"], 'isoformat') else str(event_dict["updated_at"])
         }
         
         return {"message": "Event created successfully", "event": created_event}
