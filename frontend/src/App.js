@@ -1036,6 +1036,57 @@ function App() {
                   />
                 </div>
                 
+                {/* Sprachauswahl für Landing Page */}
+                <div className="mb-4">
+                  <p className="text-sm text-gray-600 mb-3 text-center">🌍 {t('settings.language')}</p>
+                  <div className="flex justify-center space-x-2">
+                    <button
+                      onClick={() => changeLanguage('de')}
+                      className={`px-3 py-2 rounded text-sm transition-colors ${
+                        i18n.language === 'de' 
+                          ? 'bg-pink-500 text-white' 
+                          : 'bg-white text-gray-700 hover:bg-gray-100 border'
+                      }`}
+                      title="Deutsch"
+                    >
+                      🇩🇪
+                    </button>
+                    <button
+                      onClick={() => changeLanguage('en')}
+                      className={`px-3 py-2 rounded text-sm transition-colors ${
+                        i18n.language === 'en' 
+                          ? 'bg-pink-500 text-white' 
+                          : 'bg-white text-gray-700 hover:bg-gray-100 border'
+                      }`}
+                      title="English"
+                    >
+                      🇺🇸
+                    </button>
+                    <button
+                      onClick={() => changeLanguage('tr')}
+                      className={`px-3 py-2 rounded text-sm transition-colors ${
+                        i18n.language === 'tr' 
+                          ? 'bg-pink-500 text-white' 
+                          : 'bg-white text-gray-700 hover:bg-gray-100 border'
+                      }`}
+                      title="Türkçe"
+                    >
+                      🇹🇷
+                    </button>
+                    <button
+                      onClick={() => changeLanguage('fr')}
+                      className={`px-3 py-2 rounded text-sm transition-colors ${
+                        i18n.language === 'fr' 
+                          ? 'bg-pink-500 text-white' 
+                          : 'bg-white text-gray-700 hover:bg-gray-100 border'
+                      }`}
+                      title="Français"
+                    >
+                      🇫🇷
+                    </button>
+                  </div>
+                </div>
+                
                 {customerStatus === 'pending' ? (
                   <div className="space-y-4">
                     <div className="bg-yellow-100 border border-yellow-300 rounded-lg p-4">
