@@ -405,6 +405,11 @@ function App() {
         const wasAuthenticated = isAuthenticated;
         setIsAuthenticated(data.activation_status === 'active');
         
+        // Set user's preferred language
+        if (data.preferred_language && data.activation_status === 'active') {
+          i18n.changeLanguage(data.preferred_language);
+        }
+        
         // Send login message if customer just became authenticated
         if (!wasAuthenticated && data.activation_status === 'active') {
           await sendLoginMessage(data.customer_number);
