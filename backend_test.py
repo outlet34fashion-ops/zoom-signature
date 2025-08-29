@@ -2013,8 +2013,223 @@ class LiveShoppingAPITester:
             self.log_test("Critical Auth - Exception", False, str(e))
             return False
 
-    def run_all_tests(self):
-        """Run all backend API tests"""
+    def test_live_shopping_calendar(self):
+        """Test Live Shopping Calendar system endpoints as per review request"""
+        print("\n📅 Testing Live Shopping Calendar System...")
+        
+        # Generate unique test data
+        timestamp = int(time.time())
+        
+        # Test event data as specified in review request
+        test_event = {
+            "date": "2024-08-31",
+            "time": "18:00", 
+            "title": "Taschen Sale",
+            "description": "Exklusive Taschen zu reduzierten Preisen"
+        }
+        
+        created_event_id = None
+        
+        try:
+            # Test 1: Create Event (POST /api/admin/events)
+            print("  ➕ Test 1: Create Event (Admin)...")
+            response = requests.post(
+                f"{self.api_url}/admin/events",
+                json=test_event,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            details = f"POST Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                has_message = 'message' in data and 'event' in data
+                if has_message:
+                    event_data = data['event']
+                    required_fields = ['id', 'date', 'time', 'title', 'description', 'created_at', 'updated_at']
+                    has_all_fields = all(field in event_data for field in required_fields)
+                    correct_data = (event_data.get('date') == test_event['date'] and
+                                  event_data.get('time') == test_event['time'] and
+                                  event_data.get('title') == test_event['title'] and
+                                  event_data.get('description') == test_event['description'])
+                    
+                    success = has_all_fields and correct_data
+                    details += f", Has all fields: {has_all_fields}, Data correct: {correct_data}"
+                    
+                    if success:
+                        created_event_id = event_data['id']
+                        details += f", Event ID: {created_event_id}"
+            
+            self.log_test("Live Calendar - Create Event", success, details)
+            
+            # Test 2: Get Events for Customers (GET /api/events)
+            print("  📋 Test 2: Get Events (Public)...")
+            response = requests.get(f"{self.api_url}/events", timeout=10)
+            
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                events = response.json()
+                is_list = isinstance(events, list)
+                has_created_event = any(
+                    event.get('title') == test_event['title'] and
+                    event.get('date') == test_event['date'] and
+                    event.get('time') == test_event['time']
+                    for event in events
+                )
+                
+                success = is_list and has_created_event
+                details += f", Is list: {is_list}, Has created event: {has_created_event}, Total events: {len(events)}"
+                
+                # Check if events are sorted by date and time
+                if len(events) > 1:
+                    sorted_correctly = all(
+                        f"{events[i]['date']} {events[i]['time']}" <= f"{events[i+1]['date']} {events[i+1]['time']}"
+                        for i in range(len(events)-1)
+                    )
+                    details += f", Sorted correctly: {sorted_correctly}"
+            
+            self.log_test("Live Calendar - Get Events (Public)", success, details)
+            
+            # Test 3: Get Events for Admin (GET /api/admin/events)
+            print("  👨‍💼 Test 3: Get Events (Admin)...")
+            response = requests.get(f"{self.api_url}/admin/events", timeout=10)
+            
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                admin_events = response.json()
+                is_list = isinstance(admin_events, list)
+                has_created_event = any(
+                    event.get('title') == test_event['title'] and
+                    event.get('id') == created_event_id
+                    for event in admin_events
+                )
+                
+                success = is_list and has_created_event
+                details += f", Is list: {is_list}, Has created event: {has_created_event}, Total events: {len(admin_events)}"
+            
+            self.log_test("Live Calendar - Get Events (Admin)", success, details)
+            
+            # Test 4: Update Event (PUT /api/admin/events/{event_id})
+            if created_event_id:
+                print("  ✏️ Test 4: Update Event...")
+                update_data = {
+                    "title": "Taschen Sale - UPDATED",
+                    "time": "19:00",
+                    "description": "Aktualisierte Beschreibung für Taschen Sale"
+                }
+                
+                response = requests.put(
+                    f"{self.api_url}/admin/events/{created_event_id}",
+                    json=update_data,
+                    headers={'Content-Type': 'application/json'},
+                    timeout=10
+                )
+                
+                success = response.status_code == 200
+                details = f"PUT Status: {response.status_code}"
+                
+                if success:
+                    data = response.json()
+                    has_message = 'message' in data
+                    success = has_message
+                    details += f", Has success message: {has_message}"
+                    
+                    # Verify update by getting the event again
+                    if success:
+                        verify_response = requests.get(f"{self.api_url}/admin/events", timeout=10)
+                        if verify_response.status_code == 200:
+                            updated_events = verify_response.json()
+                            updated_event = next((e for e in updated_events if e.get('id') == created_event_id), None)
+                            if updated_event:
+                                title_updated = updated_event.get('title') == update_data['title']
+                                time_updated = updated_event.get('time') == update_data['time']
+                                desc_updated = updated_event.get('description') == update_data['description']
+                                success = title_updated and time_updated and desc_updated
+                                details += f", Title updated: {title_updated}, Time updated: {time_updated}, Desc updated: {desc_updated}"
+                
+                self.log_test("Live Calendar - Update Event", success, details)
+            else:
+                self.log_test("Live Calendar - Update Event", False, "No event ID available for update test")
+            
+            # Test 5: Validation - Missing Required Fields
+            print("  ❌ Test 5: Validation - Missing Fields...")
+            invalid_event = {
+                "date": "2024-09-01",
+                # Missing time and title
+                "description": "Test event with missing fields"
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/admin/events",
+                json=invalid_event,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            success = response.status_code == 422  # Validation error
+            details = f"Status: {response.status_code} (should be 422 for missing required fields)"
+            
+            self.log_test("Live Calendar - Validation Missing Fields", success, details)
+            
+            # Test 6: Delete Event (DELETE /api/admin/events/{event_id})
+            if created_event_id:
+                print("  🗑️ Test 6: Delete Event...")
+                response = requests.delete(
+                    f"{self.api_url}/admin/events/{created_event_id}",
+                    timeout=10
+                )
+                
+                success = response.status_code == 200
+                details = f"DELETE Status: {response.status_code}"
+                
+                if success:
+                    data = response.json()
+                    has_message = 'message' in data
+                    success = has_message
+                    details += f", Has success message: {has_message}"
+                    
+                    # Verify deletion by checking if event is gone
+                    if success:
+                        verify_response = requests.get(f"{self.api_url}/admin/events", timeout=10)
+                        if verify_response.status_code == 200:
+                            remaining_events = verify_response.json()
+                            event_deleted = not any(e.get('id') == created_event_id for e in remaining_events)
+                            success = event_deleted
+                            details += f", Event deleted: {event_deleted}"
+                
+                self.log_test("Live Calendar - Delete Event", success, details)
+            else:
+                self.log_test("Live Calendar - Delete Event", False, "No event ID available for delete test")
+            
+            # Test 7: Delete Non-existent Event
+            print("  ❌ Test 7: Delete Non-existent Event...")
+            fake_event_id = f"fake_event_delete_{timestamp}"
+            
+            response = requests.delete(
+                f"{self.api_url}/admin/events/{fake_event_id}",
+                timeout=10
+            )
+            
+            success = response.status_code == 404
+            details = f"Status: {response.status_code} (should be 404 for non-existent event)"
+            
+            self.log_test("Live Calendar - Delete Non-existent Event", success, details)
+            
+            print(f"  🎉 SUCCESS: Live Shopping Calendar system tested comprehensively!")
+            print(f"  📊 Test Event: '{test_event['title']}' on {test_event['date']} at {test_event['time']}")
+            
+            return True
+            
+        except Exception as e:
+            self.log_test("Live Calendar - Exception", False, str(e))
+            return False
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("🚀 Starting Live Shopping App Backend API Tests")
