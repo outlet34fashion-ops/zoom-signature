@@ -2031,9 +2031,17 @@ function App() {
                     )}
                   </div>
                   
-                  {/* Customer Number Display */}
-                  <div className="text-xl font-bold text-pink-600 text-center">
-                    Kunde #{getCustomerNumber()}
+                  {/* Customer Information */}
+                  <div className="text-center space-y-2">
+                    <div className="text-xl font-bold text-pink-600">
+                      {currentCustomer?.name || 'Kunde'} 
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      #{getCustomerNumber()}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {currentCustomer?.email}
+                    </div>
                   </div>
                   
                   {/* Profile Image Upload */}
