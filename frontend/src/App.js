@@ -1431,6 +1431,17 @@ function App() {
                     👤 Mein Profil
                   </Button>
                   
+                  {/* Kalender Button für Kunden */}
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => setShowCalendar(true)}
+                    className="text-white hover:bg-pink-600"
+                    title="Live Shopping Kalender"
+                  >
+                    📅 Kalender
+                  </Button>
+                  
                   {/* Dezenter WhatsApp Support Button für Kunden */}
                   <a 
                     href="https://wa.me/4917621105848?text=Hallo%20OUTLET34%20Team,%20ich%20brauche%20Hilfe%20beim%20Live%20Shopping..." 
