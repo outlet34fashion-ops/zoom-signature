@@ -807,9 +807,9 @@ function App() {
   };
 
   const loadCustomerLastOrder = async (customerNumber) => {
-    if (!customerNumber || customerNumber === 'undefined' || customerNumber === '10299') {
+    if (!customerNumber || customerNumber === 'undefined') {
       console.log('Skipping last order load for invalid customer number:', customerNumber);
-      return; // Skip for invalid or fallback customer numbers
+      return; // Skip for invalid customer numbers
     }
     
     try {
