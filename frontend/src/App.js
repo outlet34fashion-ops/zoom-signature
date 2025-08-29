@@ -294,6 +294,11 @@ function App() {
     }
   }, [currentCustomer?.customer_number, isAuthenticated, isAdminView]);
 
+  useEffect(() => {
+    // Load events on component mount
+    loadEvents();
+  }, []);
+
   const loadAdminStats = async () => {
     try {
       const statsResponse = await axios.get(`${API}/admin/stats`);
