@@ -246,10 +246,11 @@ metadata:
 
 test_plan:
   current_focus:
-    - "CRITICAL BUG: Order placement and chat integration"
-  stuck_tasks: []
+    - "Live Shopping Calendar API endpoints"
+  stuck_tasks: 
+    - "Live Shopping Calendar - POST event creation (ObjectId serialization issue)"
   test_all: false
-  test_priority: "critical_first"
+  test_priority: "high_first"
 
   - task: "Order chat message format fix"
     implemented: true
