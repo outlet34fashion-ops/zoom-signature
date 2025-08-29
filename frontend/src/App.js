@@ -1213,9 +1213,7 @@ function App() {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {/* 1. Logo ist bereits oben platziert */}
-                    
-                    {/* 2. Registrierungstext/Link */}
+                    {/* Logo und Titel bleiben oben */}
                     <h2 className="text-xl font-semibold text-gray-800">OUTLET34 Live Shopping</h2>
                     <p className="text-sm text-gray-600">
                       Live-Event nur nach Anmeldung möglich bei: <br/>
@@ -1224,56 +1222,58 @@ function App() {
                       </a>
                     </p>
                     
-                    {/* 3. Admin-Anmeldung */}
-                    <div className="pt-2">
-                      <p className="text-xs text-gray-500 text-center mb-2">
-                        Administratoren
-                      </p>
-                      <Button 
-                        onClick={() => setShowAdminLogin(true)}
-                        variant="outline"
-                        className="w-full text-gray-600 hover:text-gray-800"
-                        size="sm"
-                      >
-                        🔐 Admin-Anmeldung
-                      </Button>
-                    </div>
-                    
-                    {/* 4. WhatsApp Service Contact */}
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                      <p className="text-xs text-green-600 text-center mb-2 font-semibold">
-                        OUTLET34 Service Nummer
-                      </p>
-                      <a 
-                        href="https://wa.me/4917621105848?text=Hallo%20OUTLET34%20Team,%20ich%20habe%20eine%20Frage%20zum%20Live%20Shopping..." 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center space-x-2 bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"
-                      >
-                        <span className="text-lg">📱</span>
-                        <span>0176 21105848</span>
-                        <span className="text-lg">💬</span>
-                      </a>
-                      <p className="text-xs text-green-600 text-center mt-1">
-                        Klicken für WhatsApp Chat
-                      </p>
-                    </div>
-                    
-                    {/* Anmelde/Registrierungs-Buttons am Ende */}
-                    <div className="flex space-x-3 pt-2">
+                    {/* Buttons untereinander - neue Reihenfolge */}
+                    <div className="space-y-3 pt-4">
+                      {/* 1. Anmelden Button */}
                       <Button 
                         onClick={() => setShowCustomerLogin(true)}
-                        className="flex-1 bg-pink-500 hover:bg-pink-600"
+                        className="w-full bg-pink-500 hover:bg-pink-600"
                       >
                         🔑 Anmelden
                       </Button>
+                      
+                      {/* 2. Registrieren Button */}
                       <Button 
                         variant="outline"
                         onClick={() => setShowRegistration(true)}
-                        className="flex-1"
+                        className="w-full"
                       >
                         📝 Registrieren
                       </Button>
+                      
+                      {/* 3. Admin-Anmeldung Button */}
+                      <div className="pt-2">
+                        <p className="text-xs text-gray-500 text-center mb-2">
+                          Administratoren
+                        </p>
+                        <Button 
+                          onClick={() => setShowAdminLogin(true)}
+                          variant="outline"
+                          className="w-full text-gray-600 hover:text-gray-800"
+                        >
+                          🔐 Admin-Anmeldung
+                        </Button>
+                      </div>
+                      
+                      {/* 4. WhatsApp Service Contact */}
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-3 mt-4">
+                        <p className="text-xs text-green-600 text-center mb-2 font-semibold">
+                          OUTLET34 Service Nummer
+                        </p>
+                        <a 
+                          href="https://wa.me/4917621105848?text=Hallo%20OUTLET34%20Team,%20ich%20habe%20eine%20Frage%20zum%20Live%20Shopping..." 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center space-x-2 bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 w-full"
+                        >
+                          <span className="text-lg">📱</span>
+                          <span>0176 21105848</span>
+                          <span className="text-lg">💬</span>
+                        </a>
+                        <p className="text-xs text-green-600 text-center mt-1">
+                          Klicken für WhatsApp Chat
+                        </p>
+                      </div>
                     </div>
                   </div>
                 )}
