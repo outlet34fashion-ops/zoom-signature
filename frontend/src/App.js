@@ -2077,13 +2077,62 @@ function App() {
                     )}
                   </div>
                   
+                  {/* Language Selection */}
+                  <div className="border-t pt-4">
+                    <h4 className="text-md font-semibold text-gray-800 mb-3 text-center">
+                      {t('customer.profile.language')}
+                    </h4>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        onClick={() => changeLanguage('de')}
+                        className={`p-2 rounded border ${
+                          i18n.language === 'de' 
+                            ? 'bg-pink-500 text-white border-pink-500' 
+                            : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                        }`}
+                      >
+                        🇩🇪 {t('settings.german')}
+                      </button>
+                      <button
+                        onClick={() => changeLanguage('en')}
+                        className={`p-2 rounded border ${
+                          i18n.language === 'en' 
+                            ? 'bg-pink-500 text-white border-pink-500' 
+                            : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                        }`}
+                      >
+                        🇺🇸 {t('settings.english')}
+                      </button>
+                      <button
+                        onClick={() => changeLanguage('tr')}
+                        className={`p-2 rounded border ${
+                          i18n.language === 'tr' 
+                            ? 'bg-pink-500 text-white border-pink-500' 
+                            : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                        }`}
+                      >
+                        🇹🇷 {t('settings.turkish')}
+                      </button>
+                      <button
+                        onClick={() => changeLanguage('fr')}
+                        className={`p-2 rounded border ${
+                          i18n.language === 'fr' 
+                            ? 'bg-pink-500 text-white border-pink-500' 
+                            : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                        }`}
+                      >
+                        🇫🇷 {t('settings.french')}
+                      </button>
+                    </div>
+                  </div>
+                  
                   {/* Close Button */}
                   <div className="text-center pt-4">
                     <Button 
                       onClick={() => setShowProfileModal(false)}
                       className="w-full bg-gray-500 hover:bg-gray-600 text-white"
                     >
-                      Schließen
+                      {t('common.close')}
                     </Button>
                   </div>
                 </div>
