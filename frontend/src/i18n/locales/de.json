@@ -12,6 +12,7 @@
     "logout": "Abmelden",
     "adminLogin": "Admin-Anmeldung",
     "customerLogin": "Kunden-Anmeldung",
+    "customerLoggedIn": "Kunde angemeldet",
     "customerNumber": "Kundennummer",
     "email": "E-Mail",
     "name": "Name",
