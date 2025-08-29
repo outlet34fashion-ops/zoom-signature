@@ -149,6 +149,27 @@ class ZoomTokenRequest(BaseModel):
     user_name: str
     role: Optional[int] = 0  # 0 for participant, 1 for host
 
+class LiveShoppingEvent(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    date: str  # YYYY-MM-DD format
+    time: str  # HH:MM format
+    title: str
+    description: str = ""
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class LiveShoppingEventCreate(BaseModel):
+    date: str  # YYYY-MM-DD format
+    time: str  # HH:MM format
+    title: str
+    description: str = ""
+
+class LiveShoppingEventUpdate(BaseModel):
+    date: Optional[str] = None
+    time: Optional[str] = None
+    title: Optional[str] = None
+    description: Optional[str] = None
+
 class ZoomSessionRequest(BaseModel):
     topic: str
     duration: Optional[int] = 60  # duration in minutes
