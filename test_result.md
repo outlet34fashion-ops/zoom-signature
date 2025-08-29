@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Implement comprehensive customer management system with: 1) Backend customer database (customer_number, email, name, activation_status), 2) Admin approval/blocking functionality, 3) Customer registration process that creates pending status, 4) Guest blocking with registration message, 5) Admin dashboard for customer management"
+user_problem_statement: "LIVE SHOPPING KALENDER SYSTEM TESTING: Test die neu implementierten Live Shopping Kalender API-Endpoints: 1) GET /api/events - Events für Kunden, 2) POST /api/admin/events - Event erstellen, 3) GET /api/admin/events - Admin Event Management, 4) PUT /api/admin/events/{event_id} - Event aktualisieren, 5) DELETE /api/admin/events/{event_id} - Event löschen. Test-Szenarien: Event erstellen (Datum: 2024-08-31, Zeit: 18:00, Titel: 'Taschen Sale'), Events abrufen, Event aktualisieren, Event löschen, Validierung mit fehlerhaften Daten. Erwartete Funktionalität: Events nach Datum/Zeit sortiert, vollständige CRUD-Operationen, korrektes Error-Handling, MongoDB Integration funktional."
 
 backend:
   - task: "Customer database model and schema"
