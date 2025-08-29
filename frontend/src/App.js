@@ -2016,7 +2016,7 @@ function App() {
               <CardContent className="p-6">
                 <div className="space-y-4">
                   <h3 className="text-lg font-semibold text-gray-800 text-center">
-                    Mein Profil
+                    {t('customer.profile.title')}
                   </h3>
                   
                   {/* Profile Image */}
