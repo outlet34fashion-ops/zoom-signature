@@ -902,6 +902,14 @@ function App() {
           <Card className="w-full max-w-md mx-4">
             <CardContent className="p-8">
               <div className="text-center space-y-6">
+                {/* OUTLET34 Logo */}
+                <div className="flex justify-center mb-4">
+                  <img 
+                    src="/images/outlet34-logo.jpg" 
+                    alt="OUTLET34 Fashion Logo" 
+                    className="w-24 h-24 rounded-full shadow-lg"
+                  />
+                </div>
                 <h1 className="text-2xl font-bold text-gray-800">OUTLET34 Live Shopping</h1>
                 
                 {customerStatus === 'pending' ? (
