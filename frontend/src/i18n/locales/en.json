@@ -12,6 +12,7 @@
     "logout": "Logout",
     "adminLogin": "Admin Login",
     "customerLogin": "Customer Login",
+    "customerLoggedIn": "Customer logged in",
     "customerNumber": "Customer Number",
     "email": "Email",
     "name": "Name",
