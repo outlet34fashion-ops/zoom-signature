@@ -1270,15 +1270,12 @@ function App() {
                           className="flex items-center justify-center space-x-3 bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 w-full"
                         >
                           <img 
-                            src="/images/whatsapp-logo.png" 
+                            src="/images/whatsapp-logo-dark.png" 
                             alt="WhatsApp Logo" 
                             className="w-8 h-8"
                           />
                           <span className="font-semibold">WhatsApp Chat</span>
                         </a>
-                        <p className="text-xs text-green-600 text-center mt-1">
-                          Klicken für WhatsApp Chat
-                        </p>
                       </div>
                     </div>
                   </div>
