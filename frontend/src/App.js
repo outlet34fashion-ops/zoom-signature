@@ -2457,6 +2457,11 @@ function App() {
                     ) : (
                       <div className="text-center py-2">
                         <div className="text-xs text-gray-500">Keine Bestellungen</div>
+                        {isAdminView && currentCustomer && (
+                          <div className="text-xs text-blue-500 mt-1">
+                            Debug: Kunde #{currentCustomer.customer_number}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
