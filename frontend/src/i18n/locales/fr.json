@@ -103,6 +103,8 @@
     "sessionOrders": "Commandes de Session",
     "activeViewers": "Spectateurs Actifs",
     "resetCounter": "Réinitialiser le Compteur",
+    "adminView": "Vue Admin",
+    "customerView": "Vue Client",
     "customerManagement": "Gestion des Clients",
     "createCustomer": "Créer un Client",
     "editCustomer": "Modifier le Client",
