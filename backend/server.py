@@ -450,7 +450,7 @@ async def get_orders():
     return [Order(**order) for order in orders]
 
 # Customer Management Endpoints
-@api_router.post("/customers/register", response_model=Customer)
+@api_router.post("/customers/register")
 async def register_customer(customer: CustomerCreate):
     """Register a new customer with pending status"""
     try:
