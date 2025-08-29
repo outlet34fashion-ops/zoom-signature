@@ -233,6 +233,142 @@ ticker_settings = {
     "enabled": True
 }
 
+# WebRTC Stream Manager
+class WebRTCStreamManager:
+    def __init__(self):
+        self.active_streams: Dict[str, StreamSession] = {}
+        self.stream_connections: Dict[str, List[WebSocket]] = {}  # stream_id -> viewer connections
+        self.streamer_connections: Dict[str, WebSocket] = {}  # stream_id -> streamer connection
+        
+    async def create_stream(self, streamer_id: str, stream_data: StreamSessionCreate) -> StreamSession:
+        """Create new streaming session"""
+        stream = StreamSession(
+            streamer_id=streamer_id,
+            stream_title=stream_data.stream_title,
+            max_viewers=stream_data.max_viewers
+        )
+        
+        self.active_streams[stream.id] = stream
+        self.stream_connections[stream.id] = []
+        
+        # Store in database
+        await db.stream_sessions.insert_one(stream.dict())
+        
+        return stream
+    
+    async def join_stream(self, stream_id: str, viewer_ws: WebSocket) -> bool:
+        """Add viewer to stream"""
+        if stream_id not in self.active_streams:
+            return False
+            
+        stream = self.active_streams[stream_id]
+        if len(self.stream_connections[stream_id]) >= stream.max_viewers:
+            return False
+            
+        self.stream_connections[stream_id].append(viewer_ws)
+        stream.viewer_count = len(self.stream_connections[stream_id])
+        
+        # Update database
+        await db.stream_sessions.update_one(
+            {"id": stream_id},
+            {"$set": {"viewer_count": stream.viewer_count}}
+        )
+        
+        # Broadcast viewer count update
+        await self.broadcast_to_stream(stream_id, {
+            "type": "viewer_count_update",
+            "count": stream.viewer_count
+        })
+        
+        return True
+    
+    async def leave_stream(self, stream_id: str, viewer_ws: WebSocket):
+        """Remove viewer from stream"""
+        if stream_id in self.stream_connections:
+            if viewer_ws in self.stream_connections[stream_id]:
+                self.stream_connections[stream_id].remove(viewer_ws)
+                
+            if stream_id in self.active_streams:
+                stream = self.active_streams[stream_id]
+                stream.viewer_count = len(self.stream_connections[stream_id])
+                
+                # Update database
+                await db.stream_sessions.update_one(
+                    {"id": stream_id},
+                    {"$set": {"viewer_count": stream.viewer_count}}
+                )
+                
+                # Broadcast viewer count update
+                await self.broadcast_to_stream(stream_id, {
+                    "type": "viewer_count_update",
+                    "count": stream.viewer_count
+                })
+    
+    async def end_stream(self, stream_id: str, streamer_id: str) -> bool:
+        """End streaming session"""
+        if stream_id not in self.active_streams:
+            return False
+            
+        stream = self.active_streams[stream_id]
+        if stream.streamer_id != streamer_id:
+            return False
+            
+        # Notify all viewers
+        await self.broadcast_to_stream(stream_id, {
+            "type": "stream_ended",
+            "message": "The stream has ended"
+        })
+        
+        # Update database
+        stream.status = "ended"
+        stream.ended_at = datetime.now(timezone.utc)
+        await db.stream_sessions.update_one(
+            {"id": stream_id},
+            {"$set": {"status": "ended", "ended_at": stream.ended_at}}
+        )
+        
+        # Cleanup
+        if stream_id in self.streamer_connections:
+            del self.streamer_connections[stream_id]
+        if stream_id in self.stream_connections:
+            del self.stream_connections[stream_id]
+        del self.active_streams[stream_id]
+        
+        return True
+    
+    async def broadcast_to_stream(self, stream_id: str, message: dict):
+        """Broadcast message to all participants in stream"""
+        if stream_id not in self.stream_connections:
+            return
+            
+        message_str = json.dumps(message, default=str)
+        disconnected = []
+        
+        # Send to all viewers
+        for ws in self.stream_connections[stream_id]:
+            try:
+                if ws.client_state == WebSocketState.CONNECTED:
+                    await ws.send_text(message_str)
+                else:
+                    disconnected.append(ws)
+            except:
+                disconnected.append(ws)
+        
+        # Send to streamer
+        if stream_id in self.streamer_connections:
+            try:
+                streamer_ws = self.streamer_connections[stream_id]
+                if streamer_ws.client_state == WebSocketState.CONNECTED:
+                    await streamer_ws.send_text(message_str)
+            except:
+                pass
+        
+        # Cleanup disconnected viewers
+        for ws in disconnected:
+            await self.leave_stream(stream_id, ws)
+
+stream_manager = WebRTCStreamManager()
+
 # Routes
 @api_router.get("/")
 async def root():
