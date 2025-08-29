@@ -349,6 +349,15 @@ function App() {
     loadEvents();
   }, []);
 
+  // Schedule notifications for all future events when events load
+  useEffect(() => {
+    if (notificationsEnabled && events.length > 0) {
+      events.forEach(event => {
+        scheduleEventNotification(event);
+      });
+    }
+  }, [events, notificationsEnabled]);
+
   const loadAdminStats = async () => {
     try {
       const statsResponse = await axios.get(`${API}/admin/stats`);
