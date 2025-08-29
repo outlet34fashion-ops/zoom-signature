@@ -547,7 +547,19 @@ async def create_customer_by_admin(customer: CustomerCreate):
         # Store in database
         await db.customers.insert_one(customer_obj.dict())
         
-        return customer_obj
+        # Return clean serializable customer data
+        created_customer = {
+            "id": customer_obj.id,
+            "customer_number": customer_obj.customer_number,
+            "email": customer_obj.email,
+            "name": customer_obj.name,
+            "profile_image": customer_obj.profile_image,
+            "activation_status": customer_obj.activation_status,
+            "created_at": customer_obj.created_at.isoformat() if hasattr(customer_obj.created_at, 'isoformat') else str(customer_obj.created_at),
+            "updated_at": customer_obj.updated_at.isoformat() if hasattr(customer_obj.updated_at, 'isoformat') else str(customer_obj.updated_at)
+        }
+        
+        return created_customer
         
     except HTTPException:
         raise
