@@ -3368,7 +3368,8 @@ class LiveShoppingAPITester:
             ("Comprehensive Customer Flow", comprehensive_flow_success),
             ("Customer Last Order Display", last_order_success),
             ("🎯 ObjectId Serialization Fix", objectid_fix_success),
-            ("Live Shopping Calendar", calendar_success)
+            ("Live Shopping Calendar", calendar_success),
+            ("🎥 WebRTC Streaming Backend", webrtc_success)
         ]
         
         print(f"\n🎯 CRITICAL FUNCTIONALITY:")
