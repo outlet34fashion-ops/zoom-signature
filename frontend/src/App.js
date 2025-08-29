@@ -1241,22 +1241,8 @@ function App() {
                         </Button>
                       </div>
                       
-                      {/* 2. Admin-Anmeldung Button */}
-                      <div className="pt-2">
-                        <p className="text-xs text-gray-500 text-center mb-2">
-                          Administratoren
-                        </p>
-                        <Button 
-                          onClick={() => setShowAdminLogin(true)}
-                          variant="outline"
-                          className="w-full text-gray-600 hover:text-gray-800"
-                        >
-                          🔐 Admin-Anmeldung
-                        </Button>
-                      </div>
-                      
-                      {/* 3. WhatsApp Service Contact */}
-                      <div className="bg-green-50 border border-green-200 rounded-lg p-3 mt-4">
+                      {/* 2. WhatsApp Service Contact */}
+                      <div className="bg-green-50 border border-green-200 rounded-lg p-3">
                         <p className="text-xs text-green-600 text-center mb-2 font-semibold">
                           OUTLET34 Service Nummer
                         </p>
@@ -1274,6 +1260,15 @@ function App() {
                           <span className="font-semibold">WhatsApp Chat</span>
                         </a>
                       </div>
+                      
+                      {/* 3. Admin-Anmeldung Button (ohne Text) */}
+                      <Button 
+                        onClick={() => setShowAdminLogin(true)}
+                        variant="outline"
+                        className="w-full text-gray-600 hover:text-gray-800"
+                      >
+                        🔐 Admin-Anmeldung
+                      </Button>
                     </div>
                   </div>
                 )}
