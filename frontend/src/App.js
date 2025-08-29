@@ -3220,6 +3220,49 @@ function App() {
           </Card>
         </div>
       )}
+
+      {/* WebRTC Streaming Modal */}
+      {showStreaming && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-6xl max-h-[90vh] overflow-auto">
+            <CardContent className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800">
+                  {streamingMode === 'streamer' ? '🎥 Live-Stream' : '📺 Live-Stream ansehen'}
+                </h2>
+                <Button
+                  onClick={() => {
+                    setShowStreaming(false);
+                    handleStreamEnd();
+                  }}
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  ✕
+                </Button>
+              </div>
+
+              <StreamingInterface
+                isStreamer={streamingMode === 'streamer'}
+                streamId={currentStreamId}
+                onStreamEnd={handleStreamEnd}
+                backendUrl={BACKEND_URL}
+              />
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Active Streams List for Customers */}
+      {isAuthenticated && !isAdminView && !showStreaming && (
+        <div className="mt-6">
+          <StreamsList
+            onJoinStream={joinWebRTCStream}
+            backendUrl={BACKEND_URL}
+          />
+        </div>
+      )}
     </div>
   );
 }
