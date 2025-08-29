@@ -1463,8 +1463,8 @@ function App() {
               </button>
             )}
               
-              {/* Only show view switcher for authenticated admin */}
-              {isAdminAuthenticated && (
+            {/* Only show view switcher for authenticated admin */}
+            {isAdminAuthenticated && (
                 <>
                   <Button 
                     variant={!isAdminView ? "secondary" : "ghost"} 
