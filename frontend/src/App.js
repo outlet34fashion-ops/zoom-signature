@@ -2433,7 +2433,9 @@ function App() {
               <Card className="max-w-sm mx-auto">
                 <CardContent className="p-2">
                   <div className="space-y-2">
-                    <h3 className="font-semibold text-gray-700 text-center text-sm">📦 Letzte Bestellung</h3>
+                    <h3 className="font-semibold text-gray-700 text-center text-sm">
+                      📦 Deine letzte Bestellung
+                    </h3>
                     
                     {loadingLastOrder ? (
                       <div className="text-center py-2">
