@@ -2608,6 +2608,40 @@ function App() {
                         </h3>
                       </div>
 
+                      {/* Gepinnte Nachrichten */}
+                      {pinnedMessages.length > 0 && (
+                        <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-3 mb-3">
+                          <div className="flex items-center mb-2">
+                            <span className="text-yellow-600 font-semibold text-sm">📌 GEPINNTE NACHRICHTEN</span>
+                          </div>
+                          <div className="space-y-2">
+                            {pinnedMessages.map((msg) => (
+                              <div key={`pinned-${msg.id}`} className="bg-yellow-100 rounded p-2 border-l-4 border-yellow-500">
+                                <div className="flex items-start justify-between">
+                                  <div className="flex-1">
+                                    <div className="font-medium text-yellow-800 text-sm">
+                                      {formatMessage(msg.message)}
+                                    </div>
+                                    <div className="text-xs text-yellow-600 mt-1">
+                                      📍 Gepinnt • {new Date(msg.timestamp || Date.now()).toLocaleTimeString()}
+                                    </div>
+                                  </div>
+                                  {isAdminView && (
+                                    <button
+                                      onClick={() => unpinMessage(msg.id)}
+                                      className="ml-2 text-yellow-600 hover:text-yellow-800 text-xs"
+                                      title="Nachricht entpinnen"
+                                    >
+                                      📌❌
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
                       {/* Chat Messages */}
                       <div 
                         ref={chatRef}
@@ -2616,8 +2650,10 @@ function App() {
                         {chatMessages
                           .filter(msg => !msg.message.includes('Bestellung'))
                           .map((msg) => (
-                            <div key={msg.id} className="text-sm">
-                              {msg.username === 'System' ? (
+                            <div key={msg.id} className={`text-sm ${isPinned(msg.id) ? 'opacity-60' : ''}`}>
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                  {msg.username === 'System' ? (
                                 <div className="text-gray-600 font-medium">
                                   {formatMessage(msg.message)}
                                 </div>
