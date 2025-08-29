@@ -756,9 +756,20 @@ async def create_event(event: LiveShoppingEventCreate):
         )
         
         event_dict = new_event.dict()
-        await db.events.insert_one(event_dict)
+        result = await db.events.insert_one(event_dict)
         
-        return {"message": "Event created successfully", "event": event_dict}
+        # Convert ObjectId to string and return clean event data
+        created_event = {
+            "id": event_dict["id"],
+            "date": event_dict["date"],
+            "time": event_dict["time"],
+            "title": event_dict["title"],
+            "description": event_dict["description"],
+            "created_at": event_dict["created_at"].isoformat(),
+            "updated_at": event_dict["updated_at"].isoformat()
+        }
+        
+        return {"message": "Event created successfully", "event": created_event}
         
     except Exception as e:
         logging.error(f"Error creating event: {str(e)}")
