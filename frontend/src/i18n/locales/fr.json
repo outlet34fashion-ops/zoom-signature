@@ -12,6 +12,7 @@
     "logout": "Se déconnecter",
     "adminLogin": "Connexion Admin",
     "customerLogin": "Connexion Client",
+    "customerLoggedIn": "Client connecté",
     "customerNumber": "Numéro Client",
     "email": "Email",
     "name": "Nom",
