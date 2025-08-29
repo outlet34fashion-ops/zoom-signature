@@ -175,6 +175,34 @@ class ZoomSessionRequest(BaseModel):
     duration: Optional[int] = 60  # duration in minutes
     password: Optional[str] = None
 
+# WebRTC Streaming Models
+class StreamSession(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    streamer_id: str
+    stream_title: str = "Live Shopping Stream"
+    status: str = "active"  # active, ended
+    viewer_count: int = 0
+    max_viewers: int = 50
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    ended_at: Optional[datetime] = None
+
+class StreamSessionCreate(BaseModel):
+    stream_title: Optional[str] = "Live Shopping Stream"
+    max_viewers: Optional[int] = 50
+
+class WebRTCOffer(BaseModel):
+    sdp: str
+    type: str
+
+class WebRTCAnswer(BaseModel):
+    sdp: str
+    type: str
+
+class ICECandidate(BaseModel):
+    candidate: str
+    sdpMLineIndex: int
+    sdpMid: str
+
 # Customer Management Models
 class Customer(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
