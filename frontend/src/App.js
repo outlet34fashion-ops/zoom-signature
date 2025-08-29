@@ -1420,14 +1420,7 @@ function App() {
                   )
                 }
               </span>
-              <Button 
-                variant="ghost" 
-                size="sm"
-                className="text-white hover:bg-pink-600 text-xs"
-                onClick={() => setLanguage(language === 'de' ? 'en' : 'de')}
-              >
-                {language === 'de' ? 'EN' : 'DE'}
-              </Button>
+
             </div>
             <div className="flex space-x-2">
               {/* Profile Button for authenticated customers */}
