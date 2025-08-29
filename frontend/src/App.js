@@ -1493,7 +1493,7 @@ function App() {
                   }
                 }}
               >
-                {t.logout}
+                {t('auth.logout')}
               </Button>
             </div>
           </div>
