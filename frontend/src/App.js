@@ -1411,19 +1411,19 @@ function App() {
         <div className="container mx-auto px-4 py-2">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-3">
-              {/* WhatsApp Support Button links - nur Logo für Kunden */}
+              {/* WhatsApp Support Button links - dezent und klein für Kunden */}
               {isAuthenticated && !isAdminView && (
                 <a 
                   href="https://wa.me/4917621105848?text=Hallo%20OUTLET34%20Team,%20ich%20brauche%20Hilfe%20beim%20Live%20Shopping..." 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="inline-flex items-center p-2 text-white hover:bg-pink-600 rounded transition-colors duration-200"
+                  className="inline-flex items-center p-1 text-white/70 hover:text-white hover:bg-pink-600/50 rounded transition-colors duration-200 opacity-60 hover:opacity-100"
                   title="WhatsApp Support"
                 >
                   <img 
                     src="/images/whatsapp-logo-dark.png" 
                     alt="WhatsApp" 
-                    className="w-5 h-5"
+                    className="w-3 h-3"
                   />
                 </a>
               )}
