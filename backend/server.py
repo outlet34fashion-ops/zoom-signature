@@ -752,6 +752,37 @@ async def delete_profile_image_by_number(customer_number: str):
         logging.error(f"Profile image deletion error: {str(e)}")
         raise HTTPException(status_code=500, detail="Profile image deletion failed")
 
+class LanguageUpdateRequest(BaseModel):
+    language: str  # de, en, tr, fr
+
+@api_router.put("/customers/{customer_number}/language")
+async def update_customer_language(customer_number: str, request: LanguageUpdateRequest):
+    """Update customer's preferred language"""
+    try:
+        # Validate language
+        valid_languages = ["de", "en", "tr", "fr"]
+        if request.language not in valid_languages:
+            raise HTTPException(status_code=400, detail=f"Language must be one of: {', '.join(valid_languages)}")
+        
+        result = await db.customers.update_one(
+            {"customer_number": customer_number},
+            {"$set": {
+                "preferred_language": request.language,
+                "updated_at": datetime.now(timezone.utc)
+            }}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Customer not found")
+        
+        return {"message": "Language preference updated successfully", "language": request.language}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Language update error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Language update failed")
+
 # Live Shopping Calendar Endpoints
 @api_router.get("/events")
 async def get_events():
