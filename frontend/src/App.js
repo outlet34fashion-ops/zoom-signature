@@ -1032,7 +1032,7 @@ function App() {
                   <img 
                     src="/images/outlet34-logo.jpg" 
                     alt="OUTLET34 Fashion Logo" 
-                    className="w-24 h-24 rounded-full shadow-lg"
+                    className="w-32 h-32 rounded-full shadow-lg"
                   />
                 </div>
                 
