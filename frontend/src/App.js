@@ -95,6 +95,56 @@ function App() {
   const [eventError, setEventError] = useState('');
   const [loadingEvents, setLoadingEvents] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+
+  // Push Notification Functions
+  const requestNotificationPermission = async () => {
+    if (!('Notification' in window)) {
+      alert('Ihr Browser unterstützt keine Push-Benachrichtigungen.');
+      return false;
+    }
+
+    const permission = await Notification.requestPermission();
+    if (permission === 'granted') {
+      setNotificationsEnabled(true);
+      localStorage.setItem('notificationsEnabled', 'true');
+      return true;
+    } else {
+      alert('Benachrichtigungen wurden abgelehnt. Sie können sie in den Browser-Einstellungen aktivieren.');
+      return false;
+    }
+  };
+
+  const scheduleEventNotification = (event) => {
+    if (!notificationsEnabled || !('Notification' in window)) return;
+    
+    const eventDateTime = new Date(event.date + 'T' + event.time);
+    const now = new Date();
+    const timeUntilEvent = eventDateTime.getTime() - now.getTime();
+    
+    // Schedule notification 30 minutes before event
+    const notificationTime = timeUntilEvent - (30 * 60 * 1000); // 30 minutes before
+    
+    if (notificationTime > 0) {
+      setTimeout(() => {
+        new Notification('🛍️ OUTLET34 Live Shopping', {
+          body: `"${event.title}" startet in 30 Minuten! Nicht verpassen!`,
+          icon: '/images/outlet34-logo.jpg',
+          badge: '/images/outlet34-logo.jpg',
+          tag: `event-${event.id}`,
+          requireInteraction: true
+        });
+      }, notificationTime);
+    }
+  };
+
+  // Check notification permission on load
+  useEffect(() => {
+    const savedNotification = localStorage.getItem('notificationsEnabled');
+    if (savedNotification === 'true' && 'Notification' in window && Notification.permission === 'granted') {
+      setNotificationsEnabled(true);
+    }
+  }, []);
   
   // Profile Modal States
   const [showProfileModal, setShowProfileModal] = useState(false);
