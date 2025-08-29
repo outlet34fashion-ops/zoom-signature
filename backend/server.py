@@ -719,6 +719,117 @@ async def delete_profile_image_by_number(customer_number: str):
         logging.error(f"Profile image deletion error: {str(e)}")
         raise HTTPException(status_code=500, detail="Profile image deletion failed")
 
+# Live Shopping Calendar Endpoints
+@api_router.get("/events")
+async def get_events():
+    """Get all live shopping events"""
+    try:
+        events = []
+        async for event in db.events.find():
+            events.append({
+                "id": event["id"],
+                "date": event["date"],
+                "time": event["time"],
+                "title": event["title"],
+                "description": event.get("description", ""),
+                "created_at": event["created_at"],
+                "updated_at": event["updated_at"]
+            })
+        
+        # Sort events by date and time
+        events.sort(key=lambda x: f"{x['date']} {x['time']}")
+        return events
+        
+    except Exception as e:
+        logging.error(f"Error getting events: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to get events")
+
+@api_router.post("/admin/events")
+async def create_event(event: LiveShoppingEventCreate):
+    """Create a new live shopping event (Admin only)"""
+    try:
+        new_event = LiveShoppingEvent(
+            date=event.date,
+            time=event.time,
+            title=event.title,
+            description=event.description
+        )
+        
+        event_dict = new_event.dict()
+        await db.events.insert_one(event_dict)
+        
+        return {"message": "Event created successfully", "event": event_dict}
+        
+    except Exception as e:
+        logging.error(f"Error creating event: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to create event")
+
+@api_router.get("/admin/events")
+async def get_admin_events():
+    """Get all events for admin management"""
+    try:
+        events = []
+        async for event in db.events.find():
+            events.append({
+                "id": event["id"],
+                "date": event["date"],
+                "time": event["time"],
+                "title": event["title"],
+                "description": event.get("description", ""),
+                "created_at": event["created_at"],
+                "updated_at": event["updated_at"]
+            })
+        
+        # Sort events by date and time
+        events.sort(key=lambda x: f"{x['date']} {x['time']}")
+        return events
+        
+    except Exception as e:
+        logging.error(f"Error getting admin events: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to get admin events")
+
+@api_router.put("/admin/events/{event_id}")
+async def update_event(event_id: str, event_update: LiveShoppingEventUpdate):
+    """Update a live shopping event (Admin only)"""
+    try:
+        update_data = {k: v for k, v in event_update.dict().items() if v is not None}
+        update_data["updated_at"] = datetime.now(timezone.utc)
+        
+        result = await db.events.update_one(
+            {"id": event_id},
+            {"$set": update_data}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        return {"message": "Event updated successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Error updating event: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to update event")
+
+@api_router.delete("/admin/events/{event_id}")
+async def delete_event(event_id: str):
+    """Delete a live shopping event (Admin only)"""
+    try:
+        result = await db.events.delete_one({"id": event_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Event not found")
+        
+        return {"message": "Event deleted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Error deleting event: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to delete event")
+
+# End of endpoints
+
 # WebSocket endpoint
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
