@@ -2688,6 +2688,19 @@ function App() {
                       🔔 Erinnerungen aktivieren
                     </Button>
                   )}
+                  <a 
+                    href="https://wa.me/4917621105848?text=Hallo%20OUTLET34%20Team,%20ich%20brauche%20Hilfe%20beim%20Live%20Shopping..." 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded text-sm transition-colors duration-200"
+                    title="WhatsApp Support"
+                  >
+                    <img 
+                      src="/images/whatsapp-logo-dark.png" 
+                      alt="WhatsApp" 
+                      className="w-4 h-4"
+                    />
+                  </a>
                   <Button 
                     variant="ghost"
                     onClick={() => setShowCalendar(false)}
