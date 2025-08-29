@@ -1463,8 +1463,9 @@ function App() {
               </button>
             )}
               
-            {/* Only show view switcher for authenticated admin */}
-            {isAdminAuthenticated && (
+            <div className="flex space-x-2">
+              {/* Only show view switcher for authenticated admin */}
+              {isAdminAuthenticated && (
                 <>
                   <Button 
                     variant={!isAdminView ? "secondary" : "ghost"} 
@@ -1484,6 +1485,7 @@ function App() {
                   </Button>
                 </>
               )}
+            </div>
 
             </div>
           </div>
