@@ -357,33 +357,100 @@ const SimpleLiveStream = ({ isHost = false, nextEvent = null }) => {
           )}
         </div>
       ) : (
-        // Warten auf Stream
+        // Countdown bis Live-Start oder Warten
         <div className="waiting-stream h-full bg-gradient-to-br from-gray-900 via-purple-900 to-black flex items-center justify-center">
           <div className="text-center space-y-8 p-8">
-            <div className="w-32 h-32 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-5xl animate-pulse">
-              ⏰
-            </div>
             
-            <div className="space-y-4">
-              <h3 className="text-3xl font-bold">
-                Live Shopping startet gleich
-              </h3>
-              
-              <p className="text-xl text-gray-300">
-                Moderator bereitet alles vor...
-              </p>
-              
-              <div className="mt-8 p-6 bg-black/60 rounded-lg">
-                <h4 className="text-lg font-semibold mb-3 text-pink-400">
-                  🛍️ Gleich live:
-                </h4>
-                <div className="space-y-2 text-base">
-                  <p className="text-yellow-300">✨ Fashion Collection 2024</p>
-                  <p className="text-green-300">💰 Händlerpreise ab 5€</p>
-                  <p className="text-blue-300">📦 Sofort verfügbar</p>
+            {countdown && nextEvent ? (
+              // COUNTDOWN MODUS - Nächstes Event bekannt
+              <>
+                <div className="w-40 h-40 bg-gradient-to-br from-red-500 to-pink-600 rounded-full flex items-center justify-center text-6xl animate-pulse">
+                  🔥
                 </div>
-              </div>
-            </div>
+                
+                <div className="space-y-6">
+                  <h3 className="text-4xl font-bold text-pink-300">
+                    🛍️ LIVE SHOPPING COUNTDOWN
+                  </h3>
+                  
+                  <div className="bg-black/80 rounded-xl p-6 space-y-4">
+                    <h4 className="text-2xl font-bold text-yellow-300 mb-4">
+                      {nextEvent.title}
+                    </h4>
+                    
+                    {/* COUNTDOWN DISPLAY */}
+                    <div className="grid grid-cols-4 gap-4 max-w-md mx-auto">
+                      {countdown.days > 0 && (
+                        <div className="bg-gradient-to-b from-pink-600 to-red-600 rounded-lg p-4">
+                          <div className="text-3xl font-bold text-white">{countdown.days}</div>
+                          <div className="text-xs text-pink-200">TAGE</div>
+                        </div>
+                      )}
+                      <div className="bg-gradient-to-b from-pink-600 to-red-600 rounded-lg p-4">
+                        <div className="text-3xl font-bold text-white">{countdown.hours.toString().padStart(2, '0')}</div>
+                        <div className="text-xs text-pink-200">STD</div>
+                      </div>
+                      <div className="bg-gradient-to-b from-pink-600 to-red-600 rounded-lg p-4">
+                        <div className="text-3xl font-bold text-white">{countdown.minutes.toString().padStart(2, '0')}</div>
+                        <div className="text-xs text-pink-200">MIN</div>
+                      </div>
+                      <div className="bg-gradient-to-b from-red-600 to-pink-600 rounded-lg p-4 animate-pulse">
+                        <div className="text-3xl font-bold text-white">{countdown.seconds.toString().padStart(2, '0')}</div>
+                        <div className="text-xs text-pink-200">SEK</div>
+                      </div>
+                    </div>
+                    
+                    <div className="mt-6">
+                      <p className="text-lg text-green-300 font-semibold">
+                        📅 Startet am {new Date(nextEvent.date).toLocaleDateString('de-DE')} um {nextEvent.time} Uhr
+                      </p>
+                      {nextEvent.description && (
+                        <p className="text-gray-300 mt-2">
+                          {nextEvent.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="bg-gradient-to-r from-pink-600/40 to-red-600/40 rounded-xl p-6">
+                    <p className="text-2xl font-bold text-pink-300 mb-2">
+                      ⚡ BEREIT MACHEN!
+                    </p>
+                    <p className="text-lg text-gray-300">
+                      Countdown läuft - seien Sie dabei wenn es losgeht! 🚀
+                    </p>
+                  </div>
+                </div>
+              </>
+            ) : (
+              // STANDARD WARTEANZEIGE - Kein Event geplant
+              <>
+                <div className="w-32 h-32 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center text-5xl animate-pulse">
+                  ⏰
+                </div>
+                
+                <div className="space-y-4">
+                  <h3 className="text-3xl font-bold">
+                    Live Shopping startet gleich
+                  </h3>
+                  
+                  <p className="text-xl text-gray-300">
+                    Moderator bereitet alles vor...
+                  </p>
+                  
+                  <div className="mt-8 p-6 bg-black/60 rounded-lg">
+                    <h4 className="text-lg font-semibold mb-3 text-pink-400">
+                      🛍️ Gleich live:
+                    </h4>
+                    <div className="space-y-2 text-base">
+                      <p className="text-yellow-300">✨ Fashion Collection 2024</p>
+                      <p className="text-green-300">💰 Händlerpreise ab 5€</p>
+                      <p className="text-blue-300">📦 Sofort verfügbar</p>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
