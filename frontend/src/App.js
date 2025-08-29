@@ -428,10 +428,7 @@ function App() {
 
   // Admin Authentication Functions
   const adminLogin = () => {
-    console.log('🔍 Admin Login gestartet, PIN:', adminPin);
-    
     if (adminPin === '1924') {
-      console.log('✅ PIN korrekt, setze Admin States...');
       setIsAdminAuthenticated(true);
       setIsAdminView(true);
       setIsAuthenticated(true);
@@ -439,21 +436,7 @@ function App() {
       setAdminPin('');
       setAdminLoginError('');
       localStorage.setItem('adminSession', 'true');
-      
-      console.log('✅ Admin States gesetzt:');
-      console.log('- isAdminAuthenticated:', true);
-      console.log('- isAdminView:', true);
-      console.log('- isAuthenticated:', true);
-      
-      // Force re-render
-      setTimeout(() => {
-        console.log('🔄 Checking states after timeout...');
-        console.log('Current isAdminAuthenticated:', isAdminAuthenticated);
-        console.log('Current isAdminView:', isAdminView);
-      }, 100);
-      
     } else {
-      console.log('❌ PIN falsch:', adminPin);
       setAdminLoginError('Ungültige PIN. Bitte versuchen Sie es erneut.');
     }
   };
