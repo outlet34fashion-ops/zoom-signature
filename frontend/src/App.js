@@ -740,7 +740,11 @@ function App() {
       }
       
       // Create customer via admin API
-      await axios.post(`${API}/admin/customers/create`, newCustomerData);
+      const response = await axios.post(`${API}/admin/customers/create`, newCustomerData);
+      
+      // Store customer info for notification before reset
+      const customerName = newCustomerData.name;
+      const customerNumber = newCustomerData.customer_number;
       
       // Reset form and close modal
       setNewCustomerData({ customer_number: '', email: '', name: '' });
@@ -748,10 +752,14 @@ function App() {
       setCreateCustomerError('');
       
       // Refresh customer list
-      loadCustomers();
+      await loadCustomers();
       
       // Send admin notification
-      await sendAdminNotification(`Neuer Kunde manuell erstellt: ${newCustomerData.name} (${newCustomerData.customer_number}) - Status: Aktiv`);
+      try {
+        await sendAdminNotification(`Neuer Kunde manuell erstellt: ${customerName} (${customerNumber}) - Status: Aktiv`);
+      } catch (notifError) {
+        console.error('Notification error (non-critical):', notifError);
+      }
       
     } catch (error) {
       console.error('Manual customer creation error:', error);
