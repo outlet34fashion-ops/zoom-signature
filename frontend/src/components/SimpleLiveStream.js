@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 
-const SimpleLiveStream = ({ isHost = false }) => {
+const SimpleLiveStream = ({ isHost = false, nextEvent = null }) => {
   const [isLive, setIsLive] = useState(false);
   const [viewerCount, setViewerCount] = useState(47);
   const [cameraSetup, setCameraSetup] = useState('');
   const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [countdown, setCountdown] = useState(null);
 
   useEffect(() => {
     // Viewer count simulation
