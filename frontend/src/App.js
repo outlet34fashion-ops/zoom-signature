@@ -124,6 +124,12 @@ function App() {
     }
   };
 
+  // WebRTC Streaming States
+  const [showStreaming, setShowStreaming] = useState(false);
+  const [currentStreamId, setCurrentStreamId] = useState(null);
+  const [activeStreams, setActiveStreams] = useState([]);
+  const [streamingMode, setStreamingMode] = useState(null); // 'streamer' or 'viewer'
+
   const scheduleEventNotification = (event) => {
     if (!notificationsEnabled || !('Notification' in window)) return;
     
