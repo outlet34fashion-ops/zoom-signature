@@ -562,6 +562,7 @@ async def create_customer_by_admin(customer: CustomerCreate):
             "email": customer_obj.email,
             "name": customer_obj.name,
             "profile_image": customer_obj.profile_image,
+            "preferred_language": customer_obj.preferred_language,
             "activation_status": customer_obj.activation_status,
             "created_at": customer_obj.created_at.isoformat() if hasattr(customer_obj.created_at, 'isoformat') else str(customer_obj.created_at),
             "updated_at": customer_obj.updated_at.isoformat() if hasattr(customer_obj.updated_at, 'isoformat') else str(customer_obj.updated_at)
