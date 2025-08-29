@@ -2168,7 +2168,7 @@ function App() {
                     </div>
                   </div>
                   <div className="flex items-center justify-center space-x-3">
-                    <span className="text-sm">{t.quantity}</span>
+                    <span className="text-sm">{t('orders.quantity')}</span>
                     <Button 
                       variant="outline" 
                       size="sm"
