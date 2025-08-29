@@ -1382,7 +1382,7 @@ function App() {
                             alt="WhatsApp Logo" 
                             className="w-6 h-6"
                           />
-                          <span className="font-semibold">Service Nummer</span>
+                          <span className="font-semibold">{t('navigation.service')}</span>
                         </a>
                       </div>
                       
