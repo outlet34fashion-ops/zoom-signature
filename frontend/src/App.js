@@ -1194,6 +1194,14 @@ function App() {
                   </div>
                 ) : (
                   <div className="space-y-4">
+                    {/* OUTLET34 Logo */}
+                    <div className="flex justify-center mb-4">
+                      <img 
+                        src="/images/outlet34-logo.jpg" 
+                        alt="OUTLET34 Fashion Logo" 
+                        className="w-20 h-20 rounded-full shadow-lg"
+                      />
+                    </div>
                     <h2 className="text-xl font-semibold text-gray-800">OUTLET34 Live Shopping</h2>
                     <p className="text-sm text-gray-600">
                       Live-Event nur nach Anmeldung möglich bei: <br/>
