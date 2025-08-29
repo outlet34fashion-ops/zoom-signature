@@ -1,0 +1,200 @@
+{
+  "app": {
+    "title": "OUTLET34 Live Shopping",
+    "welcome": "Welcome to OUTLET34 Live!",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "App Registration", 
+    "logout": "Logout",
+    "adminLogin": "Admin Login",
+    "customerLogin": "Customer Login",
+    "customerNumber": "Customer Number",
+    "email": "Email",
+    "name": "Name",
+    "password": "Password",
+    "pin": "PIN",
+    "enterCustomerNumber": "Enter customer number...",
+    "enterEmail": "Enter email...",
+    "enterName": "Enter name...",
+    "enterPin": "Enter PIN...",
+    "loginError": "Login error. Please try again.",
+    "registrationError": "Registration failed. Please try again.",
+    "invalidPin": "Invalid PIN. Please try again.",
+    "customerNotFound": "Customer number not found. Please register first.",
+    "enterCustomerNumberRequired": "Please enter your customer number."
+  },
+  "navigation": {
+    "profile": "My Profile",
+    "calendar": "Calendar",
+    "service": "Service Number",
+    "admin": "Admin",
+    "customers": "Customers",
+    "events": "Events"
+  },
+  "customer": {
+    "status": {
+      "pending": "Pending",
+      "active": "Active", 
+      "blocked": "Blocked"
+    },
+    "registration": {
+      "title": "Register Customer",
+      "success": "Registration successful!",
+      "pending": "Your registration is being reviewed",
+      "waitingApproval": "Waiting for approval"
+    },
+    "profile": {
+      "title": "My Profile",
+      "customerNumber": "Customer Number",
+      "name": "Name",
+      "email": "Email",
+      "status": "Status",
+      "language": "Language",
+      "profileImage": "Profile Image",
+      "uploadImage": "Upload Image",
+      "deleteImage": "Delete Image",
+      "updateLanguage": "Update Language"
+    }
+  },
+  "live": {
+    "title": "LIVE",
+    "runtime": "Runtime:",
+    "endTime": "End time:",
+    "viewers": "Viewers",
+    "streamTitle": "For Dealers Only | From €10 - Today 18:00 - Fresh Goods | Young Fashion & Plus Size",
+    "demoMessage": "Zoom Live-Stream (Demo)",
+    "demoDescription": "This is a preview. Click Start Meeting to simulate the demo join.",
+    "startMeeting": "Start Meeting"
+  },
+  "chat": {
+    "title": "Chat",
+    "placeholder": "Enter message",
+    "send": "Send",
+    "emoji": "Emoji"
+  },
+  "orders": {
+    "title": "Orders", 
+    "size": "Size (current):",
+    "price": "Price (current):",
+    "quantity": "Quantity",
+    "order": "Order",
+    "nextArticle": "Next Article",
+    "sendPriceSize": "Send Price & Size",
+    "keepPrice": "Keep Price",
+    "selectPrice": "Select Price",
+    "lastOrder": "Last Order",
+    "noOrders": "No Orders"
+  },
+  "products": {
+    "specialOffer": "Special Offer",
+    "freeShipping": "Free Shipping",
+    "topseller": "Topseller", 
+    "newIn": "New In",
+    "sale": "Sale"
+  },
+  "admin": {
+    "dashboard": "Admin Dashboard",
+    "totalOrders": "Total Orders",
+    "sessionOrders": "Session Orders",
+    "activeViewers": "Active Viewers",
+    "resetCounter": "Reset Counter",
+    "customerManagement": "Customer Management",
+    "createCustomer": "Create Customer",
+    "editCustomer": "Edit Customer",
+    "deleteCustomer": "Delete Customer",
+    "activateCustomer": "Activate Customer",
+    "blockCustomer": "Block Customer",
+    "allCustomers": "All Customers",
+    "pendingCustomers": "Pending Customers",
+    "blockedCustomers": "Blocked Customers",
+    "searchCustomer": "Search customer...",
+    "eventManagement": "Event Management",
+    "createEvent": "Create Event",
+    "editEvent": "Edit Event",
+    "deleteEvent": "Delete Event"
+  },
+  "calendar": {
+    "title": "Live Shopping Calendar",
+    "upcomingEvents": "Upcoming Events",
+    "noEvents": "No events scheduled",
+    "eventDate": "Date",
+    "eventTime": "Time",
+    "eventTitle": "Title",
+    "eventDescription": "Description",
+    "enableNotifications": "Enable Notifications",
+    "notificationEnabled": "Notifications enabled",
+    "notificationDenied": "Notifications were denied. You can enable them in browser settings.",
+    "notificationNotSupported": "Your browser does not support push notifications."
+  },
+  "settings": {
+    "language": "Language",
+    "languageSelection": "Select Language",
+    "german": "Deutsch",
+    "english": "English", 
+    "turkish": "Türkçe",
+    "french": "Français",
+    "ticker": {
+      "settings": "Ticker Settings",
+      "text": "Ticker Text",
+      "update": "Update Ticker",
+      "enable": "Enable Ticker"
+    }
+  },
+  "devices": {
+    "mobile": "Mobile",
+    "tablet": "Tablet", 
+    "desktop": "Desktop"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "update": "Update",
+    "close": "Close",
+    "reset": "Reset",
+    "search": "Search",
+    "filter": "Filter",
+    "all": "All",
+    "yes": "Yes",
+    "no": "No",
+    "confirm": "Confirm",
+    "required": "Required",
+    "optional": "Optional"
+  },
+  "errors": {
+    "customerNumberRequired": "Customer number is required.",
+    "emailRequired": "Email is required.",
+    "nameRequired": "Name is required.",
+    "customerNumberExists": "Customer number already exists.",
+    "emailExists": "Email already registered.",
+    "customerCreationFailed": "Error creating customer. Please try again.",
+    "eventCreationFailed": "Error creating event. Please try again.",
+    "eventUpdateFailed": "Error updating event. Please try again.",
+    "eventDeleteFailed": "Error deleting event. Please try again.",
+    "dateTimeRequired": "Date, time and title are required."
+  },
+  "messages": {
+    "customerCreated": "Customer created successfully.",
+    "customerActivated": "Customer activated successfully.",
+    "customerBlocked": "Customer blocked successfully.", 
+    "customerDeleted": "Customer deleted successfully.",
+    "eventCreated": "Event created successfully.",
+    "eventUpdated": "Event updated successfully.",
+    "eventDeleted": "Event deleted successfully.",
+    "languageUpdated": "Language updated successfully.",
+    "profileImageUploaded": "Profile image uploaded successfully.",
+    "profileImageDeleted": "Profile image deleted successfully."
+  },
+  "registration": {
+    "newCustomerWelcome": "As a new customer of OUTLET34, please register first:",
+    "existingCustomerLogin": "Already registered customers sign in here:",
+    "registerAtWebsite": "Live event only possible after registration at https://www.outlet34fashion.com/registrieren",
+    "loginButton": "To Live App Login"
+  }
+}
