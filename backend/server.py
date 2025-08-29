@@ -414,9 +414,11 @@ async def create_order(order: OrderCreate):
     # Increment counter
     order_counter += 1
     
-    # Broadcast order to chat in the requested format
+    # Broadcast order to chat in the requested German format
     order_id = order.customer_id[-4:] if len(order.customer_id) >= 4 else order.customer_id
-    chat_message = f"Bestellung {order_id} | {order.quantity} | {unit_price:.2f} | {order.size}"
+    # Format price in German style (comma instead of decimal point)
+    formatted_price = f"{order_obj.price:.2f}".replace(".", ",")
+    chat_message = f"Bestellung {order_id} I {order.quantity}x I {formatted_price} I {order.size}"
     
     broadcast_data = {
         "type": "order_notification",
