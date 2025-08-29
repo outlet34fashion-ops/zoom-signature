@@ -1373,7 +1373,7 @@ function App() {
                       <Button 
                         onClick={() => setShowAdminLogin(true)}
                         variant="outline"
-                        className="w-full text-gray-600 hover:text-gray-800"
+                        className="w-full text-gray-600 hover:text-gray-800 min-h-12 text-sm font-medium"
                       >
                         🔐 Admin-Anmeldung
                       </Button>
