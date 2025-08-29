@@ -13,6 +13,32 @@ const SimpleLiveStream = ({ isHost = false, nextEvent = null }) => {
       setViewerCount(prev => prev + Math.floor(Math.random() * 3) - 1);
     }, 4000);
 
+    // Countdown timer for next event
+    let countdownInterval;
+    if (nextEvent && !isLive) {
+      countdownInterval = setInterval(() => {
+        const eventDateTime = new Date(nextEvent.date + 'T' + nextEvent.time);
+        const now = new Date();
+        const timeDiff = eventDateTime - now;
+        
+        if (timeDiff > 0) {
+          const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+          const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+          const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+          
+          setCountdown({ days, hours, minutes, seconds });
+        } else {
+          setCountdown(null);
+        }
+      }, 1000);
+    }
+
+    return () => {
+      clearInterval(interval);
+      if (countdownInterval) clearInterval(countdownInterval);
+    };
+
     // Sync live status across tabs
     if (!isHost) {
       const checkLiveStatus = () => {
