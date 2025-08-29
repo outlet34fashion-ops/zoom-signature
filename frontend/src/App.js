@@ -266,6 +266,17 @@ function App() {
     loadEvents();
   }, []);
 
+  // Update live statistics when chat messages change
+  useEffect(() => {
+    if (isAdminAuthenticated && chatMessages.length > 0) {
+      const liveStats = calculateLiveStats();
+      setAdminStats(prev => ({
+        ...prev,
+        ...liveStats
+      }));
+    }
+  }, [chatMessages, isAdminAuthenticated]);
+
   // Schedule notifications for all future events when events load
   useEffect(() => {
     if (notificationsEnabled && events.length > 0) {
