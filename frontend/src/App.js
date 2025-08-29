@@ -1450,7 +1450,7 @@ function App() {
                     className="text-white hover:bg-pink-600"
                     title="Live Shopping Kalender"
                   >
-                    📅 Kalender
+                    📅 {t('navigation.calendar')}
                   </Button>
                   
                   {/* Dezenter WhatsApp Support Button für Kunden */}
