@@ -1495,17 +1495,7 @@ function App() {
                   </Button>
                 </>
               )}
-              <Button variant="ghost" size="sm" className="text-white hover:bg-pink-600"
-                onClick={() => {
-                  if (isAdminAuthenticated) {
-                    adminLogout();
-                  } else {
-                    customerLogout();
-                  }
-                }}
-              >
-                {t('auth.logout')}
-              </Button>
+
             </div>
           </div>
         </div>
