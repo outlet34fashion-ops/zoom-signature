@@ -335,7 +335,7 @@ class AdminCustomerCreationTester:
         # Test 9: Database Integration - Customer status check API
         print("\n🔍 Test 9: Database Integration - Status check API...")
         try:
-            response = requests.get(f"{self.api_url}/customers/check/TEST123", timeout=10)
+            response = requests.get(f"{self.api_url}/customers/check/TEST{unique_suffix}", timeout=10)
             
             success = response.status_code == 200
             details = f"Status: {response.status_code}"
@@ -345,10 +345,10 @@ class AdminCustomerCreationTester:
                 
                 # Verify status check returns correct data
                 exists_true = status_data.get('exists') == True
-                customer_number_correct = status_data.get('customer_number') == 'TEST123'
+                customer_number_correct = status_data.get('customer_number') == f"TEST{unique_suffix}"
                 status_active = status_data.get('activation_status') == 'active'
                 name_correct = status_data.get('name') == 'Test Customer'
-                email_correct = status_data.get('email') == 'test@example.com'
+                email_correct = status_data.get('email') == f"test.{unique_suffix}@example.com"
                 language_correct = status_data.get('preferred_language') == 'de'
                 
                 all_correct = (exists_true and customer_number_correct and status_active and 
@@ -362,6 +362,14 @@ class AdminCustomerCreationTester:
                     print(f"   ✅ Customer: {status_data['customer_number']}")
                     print(f"   ✅ Status: {status_data['activation_status']}")
                     print(f"   ✅ Language: {status_data['preferred_language']}")
+                else:
+                    print(f"   ❌ Field validation failed:")
+                    print(f"      exists: {status_data.get('exists')} (expected True)")
+                    print(f"      customer_number: {status_data.get('customer_number')} (expected TEST{unique_suffix})")
+                    print(f"      activation_status: {status_data.get('activation_status')} (expected active)")
+                    print(f"      name: {status_data.get('name')} (expected Test Customer)")
+                    print(f"      email: {status_data.get('email')} (expected test.{unique_suffix}@example.com)")
+                    print(f"      preferred_language: {status_data.get('preferred_language')} (expected de)")
                     
             self.log_test("Database Integration - Status Check API", success, details)
             
