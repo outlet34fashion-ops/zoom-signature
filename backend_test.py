@@ -3016,9 +3016,12 @@ class LiveShoppingAPITester:
         print(f"Tests Passed: {self.tests_passed}")
         print(f"Success Rate: {(self.tests_passed/self.tests_run)*100:.1f}%")
         
-        # Highlight priority test result
-        priority_status = "✅ PASSED" if german_format_success else "❌ FAILED"
-        print(f"\n🎯 PRIORITY TEST RESULT: German Order Format Verification - {priority_status}")
+        # Highlight priority test results
+        multi_lang_status = "✅ PASSED" if multi_language_success else "❌ FAILED"
+        german_format_status = "✅ PASSED" if german_format_success else "❌ FAILED"
+        print(f"\n🎯 PRIORITY TEST RESULTS:")
+        print(f"   Multi-Language Functionality - {multi_lang_status}")
+        print(f"   German Order Format Verification - {german_format_status}")
         
         print("\n📋 DETAILED RESULTS:")
         for result in self.test_results:
@@ -3029,6 +3032,7 @@ class LiveShoppingAPITester:
 
         # Critical functionality check
         critical_tests = [
+            ("🌍 MULTI-LANGUAGE FUNCTIONALITY", multi_language_success),
             ("🎯 GERMAN ORDER FORMAT VERIFICATION", german_format_success),
             ("🚨 CRITICAL AUTH ISSUE (Customer 10299)", critical_auth_success),
             ("CRITICAL BUG TEST", critical_success),
