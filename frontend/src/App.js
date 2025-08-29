@@ -332,6 +332,28 @@ function App() {
     }
   };
 
+  // Get next upcoming event for countdown
+  const getNextEvent = () => {
+    if (events.length === 0) return null;
+    
+    const now = new Date();
+    const upcomingEvents = events.filter(event => {
+      const eventDateTime = new Date(event.date + 'T' + event.time);
+      return eventDateTime > now;
+    });
+    
+    if (upcomingEvents.length === 0) return null;
+    
+    // Sort by date/time and return the next one
+    upcomingEvents.sort((a, b) => {
+      const dateTimeA = new Date(a.date + 'T' + a.time);
+      const dateTimeB = new Date(b.date + 'T' + b.time);
+      return dateTimeA - dateTimeB;
+    });
+    
+    return upcomingEvents[0];
+  };
+
   // Customer Authentication Functions
   const customerLogin = async () => {
     try {
