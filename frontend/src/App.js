@@ -1410,32 +1410,21 @@ function App() {
       <header className="bg-pink-500 text-white">
         <div className="container mx-auto px-4 py-2">
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-4">
-              <span className="text-sm font-medium">
-                {isAdminAuthenticated ? 
-                  "👑 Admin angemeldet" :
-                  (isAuthenticated && currentCustomer ? 
-                    `${t('auth.customerLoggedIn')} ${currentCustomer.customer_number || '10299'}` :
-                    `${t('auth.customerLoggedIn')} 10299`
-                  )
-                }
-              </span>
-              
-              {/* WhatsApp Support Button auf der linken Seite für Kunden */}
+            <div className="flex items-center">
+              {/* WhatsApp Support Button - nur Logo für Kunden */}
               {isAuthenticated && !isAdminView && (
                 <a 
                   href="https://wa.me/4917621105848?text=Hallo%20OUTLET34%20Team,%20ich%20brauche%20Hilfe%20beim%20Live%20Shopping..." 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="inline-flex items-center px-3 py-1.5 text-sm text-white hover:bg-pink-600 rounded transition-colors duration-200"
+                  className="inline-flex items-center p-2 text-white hover:bg-pink-600 rounded transition-colors duration-200"
                   title="WhatsApp Support"
                 >
                   <img 
                     src="/images/whatsapp-logo-dark.png" 
                     alt="WhatsApp" 
-                    className="w-4 h-4 mr-2"
+                    className="w-5 h-5"
                   />
-                  {t('navigation.service')}
                 </a>
               )}
             </div>
