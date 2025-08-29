@@ -103,6 +103,8 @@
     "sessionOrders": "Session Bestellungen",
     "activeViewers": "Aktive Zuschauer",
     "resetCounter": "Counter Reset",
+    "adminView": "Adminansicht",
+    "customerView": "Kundenansicht",
     "customerManagement": "Kundenverwaltung",
     "createCustomer": "Kunde erstellen",
     "editCustomer": "Kunde bearbeiten",
