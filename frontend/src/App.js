@@ -3356,9 +3356,9 @@ function App() {
         </div>
       )}
 
-      {/* Simple Video Streaming Modal */}
+      {/* Mobile Live Streaming Interface */}
       {showSimpleStream && (
-        <SimpleVideoStreaming
+        <MobileVideoPlayer
           isAdmin={isAdminAuthenticated}
           currentUser={currentCustomer}
           onClose={handleSimpleStreamClose}
