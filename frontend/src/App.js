@@ -135,10 +135,8 @@ function App() {
   const [activeStreams, setActiveStreams] = useState([]);
   const [streamingMode, setStreamingMode] = useState(null); // 'streamer' or 'viewer'
   
-  // LiveKit Streaming States (New Implementation)
-  const [showLiveKitStream, setShowLiveKitStream] = useState(false);
-  const [livekitMode, setLivekitMode] = useState(null); // 'publisher' or 'viewer'
-  const [selectedRoomName, setSelectedRoomName] = useState(null);
+  // Simple Video Streaming States (New Stable Solution)
+  const [showSimpleStream, setShowSimpleStream] = useState(false);
 
   const scheduleEventNotification = (event) => {
     if (!notificationsEnabled || !('Notification' in window)) return;
