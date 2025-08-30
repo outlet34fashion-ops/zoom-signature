@@ -4188,6 +4188,11 @@ class LiveShoppingAPITester:
         print(f"🔗 Testing against: {self.base_url}")
         print("=" * 60)
 
+        # PRIORITY: LiveKit Cloud Integration Testing (as per review request)
+        print("\n🎥 PRIORITY TESTING: LiveKit Cloud Integration - FUNKTIONIERENDE LÖSUNG")
+        print("=" * 50)
+        livekit_success = self.test_livekit_integration()
+
         # REVIEW REQUEST SPECIFIC TESTS (Current Priority)
         print("\n🎯 REVIEW REQUEST SPECIFIC TESTS - MODERN DESIGN & AUTHENTICATION...")
         customer_10299_success = self.test_review_request_customer_10299()
@@ -4259,10 +4264,6 @@ class LiveShoppingAPITester:
         print("\n🎥 PRIORITY: WEBRTC STREAMING BACKEND TESTING...")
         webrtc_success = self.test_webrtc_streaming_backend()
         
-        # Test LiveKit Cloud Integration (NEW FEATURE - Current Review Request)
-        print("\n🎥 PRIORITY: LIVEKIT CLOUD INTEGRATION TESTING...")
-        livekit_success = self.test_livekit_integration()
-        
         # Test WebSocket availability
         ws_success = self.test_websocket_availability()
 
@@ -4275,13 +4276,24 @@ class LiveShoppingAPITester:
         print(f"Success Rate: {(self.tests_passed/self.tests_run)*100:.1f}%")
         
         # Highlight priority test results
+        livekit_status = "✅ PASSED" if livekit_success else "❌ FAILED"
         review_request_status = "✅ PASSED" if (customer_10299_success and modern_design_success and streaming_countdown_success and existing_functionality_success) else "❌ FAILED"
         multi_lang_status = "✅ PASSED" if multi_language_success else "❌ FAILED"
         german_format_status = "✅ PASSED" if german_format_success else "❌ FAILED"
+        
         print(f"\n🎯 PRIORITY TEST RESULTS:")
+        print(f"   🎥 LiveKit Cloud Integration - {livekit_status}")
         print(f"   🎨 REVIEW REQUEST (Modern Design & Auth) - {review_request_status}")
         print(f"   🌍 Multi-Language Functionality - {multi_lang_status}")
         print(f"   🇩🇪 German Order Format Verification - {german_format_status}")
+        
+        # LiveKit Integration Breakdown
+        if not livekit_success:
+            livekit_tests = [r for r in self.test_results if 'LiveKit' in r['name']]
+            failed_livekit = [t for t in livekit_tests if not t['success']]
+            print(f"\n🔍 LIVEKIT INTEGRATION BREAKDOWN:")
+            for test in failed_livekit:
+                print(f"   ❌ {test['name']}: {test['details']}")
         
         # Review Request Breakdown
         if not (customer_10299_success and modern_design_success and streaming_countdown_success and existing_functionality_success):
@@ -4300,6 +4312,7 @@ class LiveShoppingAPITester:
 
         # Critical functionality check
         critical_tests = [
+            ("🎥 LIVEKIT CLOUD INTEGRATION", livekit_success),
             ("🎯 REVIEW REQUEST - Customer 10299 Auth", customer_10299_success),
             ("🎨 REVIEW REQUEST - Modern Design Support", modern_design_success),
             ("⏰ REVIEW REQUEST - Streaming Countdown", streaming_countdown_success),
