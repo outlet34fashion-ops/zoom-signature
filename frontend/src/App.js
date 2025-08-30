@@ -3304,13 +3304,12 @@ function App() {
               </div>
             </div>
 
-            {/* Embedded Live Stream Video */}
-            <div className="bg-black rounded-xl overflow-hidden mb-4" style={{ aspectRatio: '16/9' }}>
-              <SimpleVideoStreaming
+            {/* Live Video Stream Display - Mobile Optimized */}
+            <div className="live-video-display">
+              <MobileVideoPlayer
                 isAdmin={false}
-                currentUser={currentCustomer}
-                onClose={() => {}}
                 embedded={true}
+                currentUser={currentCustomer}
               />
             </div>
 
