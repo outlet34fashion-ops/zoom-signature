@@ -1628,13 +1628,13 @@ function App() {
                         <Button 
                           variant="outline"
                           onClick={() => setShowRegistration(true)}
-                          className="modern-button flex-1 min-h-12 text-sm font-medium"
+                          className="flex-1 min-h-12 text-sm font-medium"
                         >
                           📝 {t('auth.register')}
                         </Button>
                         <Button 
                           onClick={() => setShowCustomerLogin(true)}
-                          className="modern-button-primary flex-1 min-h-12 text-sm font-medium"
+                          className="flex-1 min-h-12 bg-pink-500 hover:bg-pink-600 text-sm font-medium"
                         >
                           🔑 {t('auth.login')}
                         </Button>
