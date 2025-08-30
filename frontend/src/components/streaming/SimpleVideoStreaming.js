@@ -9,7 +9,8 @@ import './SimpleVideoStreaming.css';
 const SimpleVideoStreaming = ({ 
     isAdmin = false, 
     onClose,
-    currentUser 
+    currentUser,
+    embedded = false // New prop for embedded mode
 }) => {
     const [isStreaming, setIsStreaming] = useState(false);
     const [isConnected, setIsConnected] = useState(false);
