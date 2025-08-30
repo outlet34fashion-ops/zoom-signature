@@ -295,7 +295,9 @@ const SimpleVideoStreaming = ({
         if (isAdmin) {
             startCamera();
         } else {
-            // Initialize viewer WebRTC connection
+            // For viewers: Start immediately trying to connect to admin stream
+            setIsConnected(false); // Start as disconnected
+            setViewerCount(Math.floor(Math.random() * 50) + 40); // Simulate viewer count
             initializeViewer();
         }
 
