@@ -128,11 +128,16 @@ function App() {
     }
   };
 
-  // WebRTC Streaming States
+  // WebRTC Streaming States (Legacy - keeping for backward compatibility)
   const [showStreaming, setShowStreaming] = useState(false);
   const [currentStreamId, setCurrentStreamId] = useState(null);
   const [activeStreams, setActiveStreams] = useState([]);
   const [streamingMode, setStreamingMode] = useState(null); // 'streamer' or 'viewer'
+  
+  // LiveKit Streaming States (New Implementation)
+  const [showLiveKitStream, setShowLiveKitStream] = useState(false);
+  const [livekitMode, setLivekitMode] = useState(null); // 'publisher' or 'viewer'
+  const [selectedRoomName, setSelectedRoomName] = useState(null);
 
   const scheduleEventNotification = (event) => {
     if (!notificationsEnabled || !('Notification' in window)) return;
