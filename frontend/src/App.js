@@ -3308,7 +3308,7 @@ function App() {
       )}
 
       {/* Legacy Active Streams List for Customers (Backward Compatibility) */}
-      {isAuthenticated && !isAdminView && !showStreaming && !showLiveKitStream && (
+      {isAuthenticated && !isAdminView && !showStreaming && !showSimpleStream && (
         <div className="mt-6" style={{display: 'none'}}> {/* Hidden but kept for compatibility */}
           <StreamsList
             onJoinStream={joinWebRTCStream}
@@ -3317,13 +3317,12 @@ function App() {
         </div>
       )}
 
-      {/* LiveKit Room Manager Modal */}
-      {showLiveKitStream && (
-        <LiveKitRoomManager
-          isAdmin={livekitMode === 'publisher'}
+      {/* Simple Video Streaming Modal */}
+      {showSimpleStream && (
+        <SimpleVideoStreaming
+          isAdmin={isAdminAuthenticated}
           currentUser={currentCustomer}
-          onClose={handleLiveKitStreamClose}
-          initialRoomName={selectedRoomName}
+          onClose={handleSimpleStreamClose}
         />
       )}
     </div>
