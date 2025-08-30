@@ -17,6 +17,8 @@ const SimpleVideoStreaming = ({
     const [error, setError] = useState(null);
     const [viewerCount, setViewerCount] = useState(0);
     const [stream, setStream] = useState(null);
+    const [peerConnection, setPeerConnection] = useState(null);
+    const [websocket, setWebsocket] = useState(null);
     const [countdown, setCountdown] = useState({
         hours: 2,
         minutes: 5,
