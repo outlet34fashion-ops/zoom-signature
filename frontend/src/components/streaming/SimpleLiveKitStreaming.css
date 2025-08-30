@@ -206,6 +206,24 @@
   gap: 20px;
 }
 
+.no-stream-message {
+  text-align: center;
+  color: #ccc;
+  padding: 40px;
+}
+
+.no-stream-message h3 {
+  margin: 0 0 10px 0;
+  color: white;
+  font-size: 24px;
+}
+
+.no-stream-message p {
+  margin: 0;
+  color: #999;
+  font-size: 16px;
+}
+
 .remote-participant {
   position: relative;
   width: 100%;
