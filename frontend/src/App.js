@@ -1175,7 +1175,7 @@ function App() {
     };
   };
 
-  // WebRTC Streaming Functions
+  // WebRTC Streaming Functions (Legacy - keeping for backward compatibility)
   const startWebRTCStream = () => {
     if (!isAdminAuthenticated) {
       alert('Sie müssen als Administrator angemeldet sein, um zu streamen.');
@@ -1208,6 +1208,34 @@ function App() {
       console.error('Error loading active streams:', error);
       setActiveStreams([]);
     }
+  };
+
+  // LiveKit Streaming Functions (New Implementation)
+  const startLiveKitStream = () => {
+    if (!isAdminAuthenticated) {
+      alert(t('admin_required_for_streaming'));
+      return;
+    }
+    
+    setLivekitMode('publisher');
+    setShowLiveKitStream(true);
+  };
+
+  const joinLiveKitStream = (roomName = null) => {
+    if (!isAuthenticated) {
+      alert(t('registration_required_for_viewing'));
+      return;
+    }
+    
+    setSelectedRoomName(roomName);
+    setLivekitMode('viewer');
+    setShowLiveKitStream(true);
+  };
+
+  const handleLiveKitStreamClose = () => {
+    setShowLiveKitStream(false);
+    setLivekitMode(null);
+    setSelectedRoomName(null);
   };
 
   const priceOptions = ['5,00 €', '6,90 €', '7,50 €', '8,50 €', '9,00 €', '9,90 €', '11,50 €', '12,90 €', '15,90 €', '18,90 €'];
