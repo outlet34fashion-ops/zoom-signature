@@ -7,7 +7,7 @@ import os
 import logging
 from datetime import timedelta
 from typing import Dict, List, Optional, Any
-from livekit import api, rtc
+from livekit import api
 import asyncio
 
 logger = logging.getLogger(__name__)
