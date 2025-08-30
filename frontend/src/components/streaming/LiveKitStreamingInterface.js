@@ -19,9 +19,10 @@ import {
     ConnectionQualityIndicator,
     Chat,
     ChatEntry,
-    usePersistentUserChoices
+    usePersistentUserChoices,
+    useConnectionState
 } from '@livekit/components-react';
-import { Track, Room, RoomEvent, ConnectionQuality } from 'livekit-client';
+import { Track, Room, RoomEvent, ConnectionQuality, ConnectionState } from 'livekit-client';
 import '@livekit/components-styles';
 import './LiveKitStreamingInterface.css';
 
