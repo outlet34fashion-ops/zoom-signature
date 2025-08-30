@@ -279,12 +279,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "WebRTC Live Video Streaming - Frontend Implementation"
-    - "Video Streaming Bug Fix Verification"
-  stuck_tasks:
-    - "WebRTC Live Video Streaming - Frontend Implementation"
+    - "Mobile Video Player Implementation - Hochformat-optimiert"
+  stuck_tasks: []
   test_all: false
-  test_priority: "critical_bug_fix"
+  test_priority: "mobile_optimization_complete"
 
   - task: "Order chat message format fix"
     implemented: true
