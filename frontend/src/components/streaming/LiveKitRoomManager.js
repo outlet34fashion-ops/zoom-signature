@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
-import LiveKitStreamingInterface from './LiveKitStreamingInterface';
+import SimpleLiveKitStreaming from './SimpleLiveKitStreaming';
 import livekitService from '../../services/livekitService';
 import './LiveKitRoomManager.css';
 
