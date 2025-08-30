@@ -193,7 +193,7 @@ const LiveKitRoomManager = ({
         // Don't automatically leave on error, let user decide
     }, []);
 
-    const handleStreamingDisconnected = useCallback((reason) => {
+    const handleLiveKitStreamClose = useCallback((reason) => {
         console.log('Disconnected from stream:', reason);
         
         // Auto-return to lobby after disconnect
