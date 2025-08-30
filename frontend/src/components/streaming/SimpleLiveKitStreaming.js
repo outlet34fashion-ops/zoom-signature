@@ -143,11 +143,12 @@ const SimpleLiveKitStreaming = ({
                     setConnectionState('connected');
                 });
 
-                // Connect to room with timeout
+                // Connect to room with extended timeout for LiveKit Cloud
                 const connectTimeout = new Promise((_, reject) =>
-                    setTimeout(() => reject(new Error('Connection timeout')), 10000)
+                    setTimeout(() => reject(new Error('Connection timeout after 30 seconds')), 30000)
                 );
 
+                console.log('🔄 Attempting connection to LiveKit Cloud...');
                 await Promise.race([
                     room.connect(serverUrl, token),
                     connectTimeout
@@ -155,16 +156,20 @@ const SimpleLiveKitStreaming = ({
 
                 console.log('✅ Connection established, room state:', room.state);
 
-                // If publisher, enable camera and microphone after connection
+                // Wait for room to be fully ready before enabling media
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                // If publisher, enable camera and microphone after connection stabilizes
                 if (isPublisher) {
-                    setTimeout(async () => {
-                        try {
-                            await enableCamera();
-                            await enableMicrophone();
-                        } catch (err) {
-                            console.warn('Error enabling media after connection:', err);
-                        }
-                    }, 1000);
+                    console.log('📹 Enabling camera and microphone...');
+                    try {
+                        await enableCamera();
+                        await enableMicrophone();
+                        console.log('✅ Media devices enabled successfully');
+                    } catch (err) {
+                        console.warn('⚠️ Error enabling media after connection:', err);
+                        // Continue anyway - media can be enabled later
+                    }
                 }
 
             } catch (err) {
