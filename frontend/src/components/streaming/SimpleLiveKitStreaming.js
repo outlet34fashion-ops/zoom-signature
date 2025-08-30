@@ -50,6 +50,19 @@ const SimpleLiveKitStreaming = ({
                 console.log(`🔄 Connecting to LiveKit (Attempt ${retryCount + 1}/${maxRetries})`);
                 console.log('Server URL:', serverUrl);
                 console.log('Token length:', token.length);
+                console.log('Room name from token:', roomName);
+                console.log('Publisher mode:', isPublisher);
+
+                // Check network connectivity first
+                try {
+                    await fetch(serverUrl.replace('wss://', 'https://').replace('ws://', 'http://'), {
+                        method: 'HEAD',
+                        mode: 'no-cors'
+                    });
+                    console.log('✅ Network connectivity to LiveKit server confirmed');
+                } catch (networkErr) {
+                    console.warn('⚠️ Network connectivity test failed:', networkErr.message);
+                }
 
                 // Create room instance with optimized settings
                 const room = new Room({
