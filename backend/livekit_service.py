@@ -22,16 +22,22 @@ class LiveKitTokenService:
         self.livekit_url = os.getenv("LIVEKIT_URL", "wss://live-stream-q7s7lvvw.livekit.cloud")
         
         if not self.api_key or not self.api_secret:
-            raise ValueError("LiveKit API credentials not configured properly")
+            logger.warning("LiveKit API credentials not configured - LiveKit features will be disabled")
+            self.livekit_api = None
+            return
         
-        # Initialize LiveKit API client
-        self.livekit_api = api.LiveKitAPI(
-            url=self.livekit_url,
-            api_key=self.api_key,
-            api_secret=self.api_secret
-        )
-        
-        logger.info(f"LiveKit service initialized with URL: {self.livekit_url}")
+        try:
+            # Initialize LiveKit API client
+            self.livekit_api = api.LiveKitAPI(
+                url=self.livekit_url,
+                api_key=self.api_key,
+                api_secret=self.api_secret
+            )
+            
+            logger.info(f"LiveKit service initialized with URL: {self.livekit_url}")
+        except Exception as e:
+            logger.error(f"Failed to initialize LiveKit API: {str(e)}")
+            self.livekit_api = None
     
     async def create_publisher_token(
         self,
