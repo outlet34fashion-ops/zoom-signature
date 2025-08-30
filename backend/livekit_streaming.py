@@ -150,7 +150,7 @@ class LiveKitStreamingService:
                 logger.info(f"👤 Viewer permissions granted for {request.participant_name}")
             
             token = token.with_grants(grants)
-            token = token.with_ttl("4h")  # 4 Stunden gültig
+            token = token.with_ttl(timedelta(hours=4))  # 4 Stunden gültig
             
             jwt_token = token.to_jwt()
             
