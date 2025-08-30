@@ -1248,11 +1248,11 @@ function App() {
             <CardContent className="p-8">
               <div className="text-center space-y-6">
                 {/* OUTLET34 Logo */}
-                <div className="flex justify-center mb-6">
+                <div className="flex justify-center mb-4">
                   <img 
                     src="/images/outlet34-logo.jpg" 
                     alt="OUTLET34 Fashion Logo" 
-                    className="w-20 h-20 rounded-full shadow-2xl border-4 border-white border-opacity-30"
+                    className="w-40 h-40 rounded-full shadow-2xl"
                   />
                 </div>
                 
