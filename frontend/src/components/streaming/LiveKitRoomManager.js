@@ -93,7 +93,8 @@ const LiveKitRoomManager = ({
                 { 
                     created_by: currentUser?.customer_number || 'admin',
                     type: 'live_shopping',
-                    timestamp: Date.now()
+                    timestamp: Date.now(),
+                    description: 'HD Live Shopping Stream'
                 }
             );
 
