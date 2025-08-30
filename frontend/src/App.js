@@ -1210,31 +1210,26 @@ function App() {
   };
 
   // LiveKit Streaming Functions (New Implementation)
-  const startLiveKitStream = () => {
+  const startSimpleStream = () => {
     if (!isAdminAuthenticated) {
       alert(t('admin_required_for_streaming'));
       return;
     }
     
-    setLivekitMode('publisher');
-    setShowLiveKitStream(true);
+    setShowSimpleStream(true);
   };
 
-  const joinLiveKitStream = (roomName = null) => {
+  const joinSimpleStream = () => {
     if (!isAuthenticated) {
       alert(t('registration_required_for_viewing'));
       return;
     }
     
-    setSelectedRoomName(roomName);
-    setLivekitMode('viewer');
-    setShowLiveKitStream(true);
+    setShowSimpleStream(true);
   };
 
-  const handleLiveKitStreamClose = () => {
-    setShowLiveKitStream(false);
-    setLivekitMode(null);
-    setSelectedRoomName(null);
+  const handleSimpleStreamClose = () => {
+    setShowSimpleStream(false);
   };
 
   const priceOptions = ['5,00 €', '6,90 €', '7,50 €', '8,50 €', '9,00 €', '9,90 €', '11,50 €', '12,90 €', '15,90 €', '18,90 €'];
