@@ -27,38 +27,95 @@ const MobileVideoPlayer = ({
             
             console.log('📱 Starting mobile camera...');
             
-            const stream = await navigator.mediaDevices.getUserMedia({
+            // Check if getUserMedia is available
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                throw new Error('Camera API not available. HTTPS required in production.');
+            }
+
+            // Simple constraints that work on HTTP for development
+            const constraints = {
                 video: {
-                    facingMode: isAdmin ? 'user' : 'environment', // Admin: Selfie, Viewer: Rückkamera
-                    width: { ideal: 720, min: 480 }, // Mobile-optimiert
-                    height: { ideal: 1280, min: 854 }, // Hochformat
+                    width: { ideal: 640, min: 320 },
+                    height: { ideal: 480, min: 240 },
                     frameRate: { ideal: 30, min: 15 }
                 },
-                audio: true
-            });
+                audio: false // Disable audio for HTTP development
+            };
+
+            // Try to access camera
+            console.log('📷 Requesting camera access with constraints:', constraints);
+            const stream = await navigator.mediaDevices.getUserMedia(constraints);
 
             if (videoRef.current) {
                 videoRef.current.srcObject = stream;
-                videoRef.current.muted = false; // Audio erlauben für Live Shopping
-                await videoRef.current.play();
+                videoRef.current.muted = true; // Always muted for development
                 
-                setIsPlaying(true);
-                setIsLoading(false);
+                // Wait for video to be ready
+                videoRef.current.onloadedmetadata = () => {
+                    console.log('✅ Video metadata loaded, playing...');
+                    videoRef.current.play().then(() => {
+                        setIsPlaying(true);
+                        setIsLoading(false);
+                        console.log('✅ Mobile video erfolgreich gestartet!');
+                    }).catch(playErr => {
+                        console.error('❌ Video play error:', playErr);
+                        setError('Video-Wiedergabe fehlgeschlagen. Browser-Einstellungen prüfen.');
+                        setIsLoading(false);
+                    });
+                };
                 
-                console.log('✅ Mobile video erfolgreich gestartet!');
+                // Handle video errors
+                videoRef.current.onerror = (vidError) => {
+                    console.error('❌ Video element error:', vidError);
+                    setError('Video-Element Fehler. Seite neu laden.');
+                    setIsLoading(false);
+                };
             }
 
         } catch (err) {
             console.error('❌ Mobile camera error:', err);
             setIsLoading(false);
             
+            // Enhanced error handling
             if (err.name === 'NotAllowedError') {
-                setError('Kamera-Zugriff erforderlich. Bitte in Browser-Einstellungen erlauben.');
+                setError('🔒 Kamera-Zugriff verweigert. Bitte in Browser-Einstellungen erlauben und Seite neu laden.');
             } else if (err.name === 'NotFoundError') {
-                setError('Keine Kamera gefunden. Überprüfen Sie Ihr Gerät.');
+                setError('📷 Keine Kamera gefunden. Überprüfen Sie Ihr Gerät oder versuchen Sie ein anderes Gerät.');
+            } else if (err.name === 'NotSupportedError' || err.message.includes('HTTPS')) {
+                setError('🔒 HTTPS erforderlich für Kamera-Zugriff. App über HTTPS öffnen oder lokale Entwicklung verwenden.');
+            } else if (err.name === 'OverconstrainedError') {
+                setError('⚙️ Kamera-Einstellungen nicht unterstützt. Versuche alternative Einstellungen...');
+                // Retry with basic constraints
+                retryWithBasicConstraints();
             } else {
-                setError('Kamera-Fehler. Aktualisieren Sie die Seite und versuchen es erneut.');
+                setError(`❌ Kamera-Fehler: ${err.message || 'Unbekannter Fehler'}. Seite neu laden und erneut versuchen.`);
             }
+        }
+    };
+
+    // Retry with very basic constraints
+    const retryWithBasicConstraints = async () => {
+        try {
+            console.log('🔄 Retrying with basic constraints...');
+            const basicStream = await navigator.mediaDevices.getUserMedia({
+                video: true, // Most basic constraint
+                audio: false
+            });
+
+            if (videoRef.current) {
+                videoRef.current.srcObject = basicStream;
+                videoRef.current.muted = true;
+                await videoRef.current.play();
+                
+                setIsPlaying(true);
+                setIsLoading(false);
+                setError(null);
+                console.log('✅ Basic camera access successful!');
+            }
+        } catch (retryErr) {
+            console.error('❌ Basic constraints also failed:', retryErr);
+            setError('❌ Kamera kann nicht gestartet werden. Gerät oder Browser möglicherweise nicht kompatibel.');
+            setIsLoading(false);
         }
     };
 
