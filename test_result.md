@@ -279,10 +279,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Mobile Video Player Implementation - Hochformat-optimiert"
+    - "Mobile Video Player Camera Bug Fix - COMPLETED"
   stuck_tasks: []
   test_all: false
-  test_priority: "mobile_optimization_complete"
+  test_priority: "camera_bug_fix_verified"
 
   - task: "Order chat message format fix"
     implemented: true
