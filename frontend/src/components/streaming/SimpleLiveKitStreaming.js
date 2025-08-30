@@ -17,42 +17,36 @@ const SimpleLiveKitStreaming = ({
     onError,
     onConnected 
 }) => {
-    // ALL HOOKS MUST BE AT THE TOP - BEFORE ANY CONDITIONAL LOGIC
-    const [connectionState, setConnectionState] = useState('disconnected'); // disconnected, connecting, connected, error
+    // ======= ALL HOOKS MUST BE HERE - NO EXCEPTIONS =======
+    const [connectionState, setConnectionState] = useState('disconnected');
     const [error, setError] = useState(null);
     const [viewerCount, setViewerCount] = useState(0);
     const [showChat, setShowChat] = useState(true);
     const [isCameraEnabled, setIsCameraEnabled] = useState(true);
     const [isMicEnabled, setIsMicEnabled] = useState(true);
     const [facingMode, setFacingMode] = useState('user');
+    const [chatMessages, setChatMessages] = useState([]);
+    const [newMessage, setNewMessage] = useState('');
     
     const roomRef = useRef(null);
     const localVideoRef = useRef(null);
     const remoteVideosRef = useRef(new Map());
     const chatMessagesRef = useRef([]);
-    const [chatMessages, setChatMessages] = useState([]);
-    const [newMessage, setNewMessage] = useState('');
 
-    // Debug: Log publisher status immediately
+    // Debug useEffect - MUST BE AFTER ALL STATE/REF DECLARATIONS
     useEffect(() => {
-        console.log('🔍 SimpleLiveKitStreaming initialized with:');
-        console.log('- isPublisher:', isPublisher);
-        console.log('- token length:', token?.length);
-        console.log('- serverUrl:', serverUrl);
-        console.log('- roomName:', roomName);
-    }, [isPublisher, token, serverUrl, roomName]);
+        console.log('🔍 Component initialized:', { isPublisher, token: !!token, serverUrl: !!serverUrl });
+    }, [isPublisher, token, serverUrl]);
 
-    // Connect on mount - HOOK MOVED TO TOP
+    // Connect useEffect - MUST BE AFTER ALL OTHER HOOKS
     useEffect(() => {
         if (token && serverUrl) {
             connectToRoom();
         }
-        
-        // Cleanup on unmount
-        return () => {
-            cleanup();
-        };
-    }, [token, serverUrl]); // Removed connectToRoom from dependencies to avoid infinite loops
+        return () => cleanup();
+    }, [token, serverUrl]);
+
+    // ======= ALL HOOKS END HERE - NOW SAFE FOR FUNCTIONS =======
 
     // Connect to LiveKit room using direct client API with retry logic
     const connectToRoom = useCallback(async () => {
