@@ -159,6 +159,68 @@ const StreamingContent = ({
     networkStats,
     setNetworkStats
 }) => {
+    // Check connection state first - CRITICAL for avoiding context errors
+    const connectionState = useConnectionState();
+    const room = useRoomContext();
+    
+    // Only initialize hooks after connection is established
+    const [hooksReady, setHooksReady] = useState(false);
+    
+    useEffect(() => {
+        // Wait for connection to be established before using other hooks
+        if (connectionState === ConnectionState.Connected && room) {
+            setHooksReady(true);
+        } else {
+            setHooksReady(false);
+        }
+    }, [connectionState, room]);
+
+    // Show loading state while connecting
+    if (!hooksReady || connectionState !== ConnectionState.Connected) {
+        return (
+            <div className="streaming-content">
+                <div className="connection-loading">
+                    <div className="loading-spinner">🔄</div>
+                    <div className="connection-status">
+                        <h3>Verbindung wird hergestellt...</h3>
+                        <p>Status: {getConnectionStateText(connectionState)}</p>
+                        <div className="loading-progress">
+                            <div className="progress-bar"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Now safe to use LiveKit hooks
+    return <ConnectedStreamingContent
+        isPublisher={isPublisher}
+        showChat={showChat}
+        setShowChat={setShowChat}
+        viewerCount={viewerCount}
+        setViewerCount={setViewerCount}
+        isLive={isLive}
+        connectionQuality={connectionQuality}
+        setConnectionQuality={setConnectionQuality}
+        networkStats={networkStats}
+        setNetworkStats={setNetworkStats}
+    />;
+};
+
+// Component that safely uses LiveKit hooks after connection
+const ConnectedStreamingContent = ({
+    isPublisher, 
+    showChat, 
+    setShowChat, 
+    viewerCount, 
+    setViewerCount,
+    isLive,
+    connectionQuality,
+    setConnectionQuality,
+    networkStats,
+    setNetworkStats
+}) => {
     const room = useRoomContext();
     const localParticipant = useLocalParticipant();
     const remoteParticipants = useRemoteParticipants();
