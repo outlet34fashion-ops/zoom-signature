@@ -3873,6 +3873,315 @@ class LiveShoppingAPITester:
             self.log_test("Existing Functionality - Compatibility", False, str(e))
             return False
 
+    def test_livekit_integration(self):
+        """Test LiveKit Cloud Integration - PRIORITY TESTING"""
+        print("\n🎥 Testing LiveKit Cloud Integration - FUNKTIONIERENDE LÖSUNG...")
+        
+        # Test 1: LiveKit Service Health Check
+        print("  🏥 Test 1: LiveKit Service Health Check...")
+        try:
+            response = requests.get(f"{self.api_url}/livekit/health", timeout=15)
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                is_healthy = data.get('status') == 'healthy'
+                has_livekit_url = 'livekit_url' in data
+                sdk_available = data.get('sdk_available', False)
+                
+                success = is_healthy and has_livekit_url and sdk_available
+                details += f", Healthy: {is_healthy}, SDK Available: {sdk_available}, LiveKit URL: {data.get('livekit_url', 'N/A')}"
+                
+                if success:
+                    details += f", Active Rooms: {data.get('active_rooms', 0)}"
+            
+            self.log_test("LiveKit Health Check", success, details)
+            
+            if not success:
+                print("  ❌ LiveKit Health Check failed - skipping remaining LiveKit tests")
+                return False
+                
+        except Exception as e:
+            self.log_test("LiveKit Health Check", False, str(e))
+            return False
+        
+        # Test 2: Room Creation Testing
+        print("  🏠 Test 2: Room Creation Testing...")
+        
+        # Test 2a: Create Room via /api/livekit/rooms/create
+        timestamp = int(time.time())
+        room_name = f"test-room-{timestamp}"
+        
+        try:
+            room_request = {
+                "name": room_name,
+                "max_participants": 50,
+                "product_id": "test-product-123"
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/livekit/rooms/create",
+                json=room_request,
+                headers={'Content-Type': 'application/json'},
+                timeout=15
+            )
+            
+            success = response.status_code == 200
+            details = f"POST Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                has_room_id = 'room_id' in data
+                success = has_room_id
+                details += f", Has Room ID: {has_room_id}"
+                if has_room_id:
+                    created_room_id = data['room_id']
+                    details += f", Room ID: {created_room_id}"
+            
+            self.log_test("LiveKit Room Creation", success, details)
+            
+        except Exception as e:
+            self.log_test("LiveKit Room Creation", False, str(e))
+            success = False
+        
+        # Test 2b: Quick Create Room (OUTLET34 Auto-Setup)
+        print("  🚀 Test 2b: Quick Create Room (OUTLET34 Auto-Setup)...")
+        try:
+            quick_room_request = {
+                "product_id": "outlet34-test-product",
+                "admin_name": "test-admin"
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/livekit/rooms/quick-create",
+                json=quick_room_request,
+                headers={'Content-Type': 'application/json'},
+                timeout=15
+            )
+            
+            success = response.status_code == 200
+            details = f"POST Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                has_success = data.get('success', False)
+                has_room = 'room' in data
+                has_admin_token = 'admin_token' in data
+                
+                success = has_success and has_room and has_admin_token
+                details += f", Success: {has_success}, Has Room: {has_room}, Has Admin Token: {has_admin_token}"
+                
+                if success:
+                    room_data = data['room']
+                    room_name_created = room_data.get('room_name', '')
+                    details += f", Room Name: {room_name_created}"
+            
+            self.log_test("LiveKit Quick Room Creation", success, details)
+            
+        except Exception as e:
+            self.log_test("LiveKit Quick Room Creation", False, str(e))
+        
+        # Test 3: Token Generation Testing
+        print("  🎫 Test 3: Token Generation Testing...")
+        
+        # Test 3a: Generate Admin Token
+        try:
+            admin_token_request = {
+                "room_name": room_name,
+                "participant_name": "test-admin",
+                "is_admin": True
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/livekit/tokens/generate",
+                json=admin_token_request,
+                headers={'Content-Type': 'application/json'},
+                timeout=15
+            )
+            
+            success = response.status_code == 200
+            details = f"POST Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                has_token = 'token' in data
+                has_permissions = 'permissions' in data
+                
+                success = has_token
+                details += f", Has Token: {has_token}"
+                
+                if has_permissions:
+                    permissions = data['permissions']
+                    can_publish = permissions.get('can_publish', False)
+                    room_admin = permissions.get('room_admin', False)
+                    details += f", Can Publish: {can_publish}, Room Admin: {room_admin}"
+                    success = success and can_publish and room_admin
+            
+            self.log_test("LiveKit Admin Token Generation", success, details)
+            
+        except Exception as e:
+            self.log_test("LiveKit Admin Token Generation", False, str(e))
+        
+        # Test 3b: Generate Viewer Token
+        try:
+            viewer_token_request = {
+                "room_name": room_name,
+                "participant_name": "test-viewer",
+                "is_admin": False
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/livekit/tokens/generate",
+                json=viewer_token_request,
+                headers={'Content-Type': 'application/json'},
+                timeout=15
+            )
+            
+            success = response.status_code == 200
+            details = f"POST Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                has_token = 'token' in data
+                has_permissions = 'permissions' in data
+                
+                success = has_token
+                details += f", Has Token: {has_token}"
+                
+                if has_permissions:
+                    permissions = data['permissions']
+                    can_subscribe = permissions.get('can_subscribe', False)
+                    can_publish = permissions.get('can_publish', False)
+                    details += f", Can Subscribe: {can_subscribe}, Can Publish: {can_publish}"
+                    success = success and can_subscribe and not can_publish  # Viewer should NOT be able to publish
+            
+            self.log_test("LiveKit Viewer Token Generation", success, details)
+            
+        except Exception as e:
+            self.log_test("LiveKit Viewer Token Generation", False, str(e))
+        
+        # Test 3c: Quick Token Generation
+        try:
+            quick_token_request = {
+                "room_name": room_name,
+                "user_id": "test-user-123",
+                "is_admin": False
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/livekit/tokens/quick-generate",
+                json=quick_token_request,
+                headers={'Content-Type': 'application/json'},
+                timeout=15
+            )
+            
+            success = response.status_code == 200
+            details = f"POST Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                has_token = 'token' in data
+                success = has_token
+                details += f", Has Token: {has_token}"
+            
+            self.log_test("LiveKit Quick Token Generation", success, details)
+            
+        except Exception as e:
+            self.log_test("LiveKit Quick Token Generation", False, str(e))
+        
+        # Test 4: Room Management Testing
+        print("  📋 Test 4: Room Management Testing...")
+        
+        # Test 4a: List Rooms
+        try:
+            response = requests.get(f"{self.api_url}/livekit/rooms/list", timeout=15)
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                has_total_rooms = 'total_rooms' in data
+                has_rooms_list = 'rooms' in data
+                
+                success = has_total_rooms and has_rooms_list
+                details += f", Has Total Rooms: {has_total_rooms}, Has Rooms List: {has_rooms_list}"
+                
+                if success:
+                    total_rooms = data['total_rooms']
+                    rooms_list = data['rooms']
+                    details += f", Total Rooms: {total_rooms}, Rooms Count: {len(rooms_list)}"
+            
+            self.log_test("LiveKit Room Listing", success, details)
+            
+        except Exception as e:
+            self.log_test("LiveKit Room Listing", False, str(e))
+        
+        # Test 4b: Get Room Status
+        try:
+            response = requests.get(f"{self.api_url}/livekit/rooms/{room_name}/status", timeout=15)
+            success = response.status_code in [200, 404]  # 404 is acceptable if room doesn't exist
+            details = f"GET Status: {response.status_code}"
+            
+            if response.status_code == 200:
+                data = response.json()
+                has_participant_count = 'participant_count' in data
+                success = has_participant_count
+                details += f", Has Participant Count: {has_participant_count}"
+                if has_participant_count:
+                    participant_count = data['participant_count']
+                    details += f", Participants: {participant_count}"
+            elif response.status_code == 404:
+                details += " (Room not found - acceptable)"
+            
+            self.log_test("LiveKit Room Status", success, details)
+            
+        except Exception as e:
+            self.log_test("LiveKit Room Status", False, str(e))
+        
+        # Test 5: Frontend Configuration
+        print("  ⚙️ Test 5: Frontend Configuration...")
+        try:
+            response = requests.get(f"{self.api_url}/livekit/config/frontend", timeout=15)
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                has_success = data.get('success', False)
+                has_config = 'config' in data
+                
+                success = has_success and has_config
+                details += f", Success: {has_success}, Has Config: {has_config}"
+                
+                if has_config:
+                    config = data['config']
+                    has_url = 'url' in config
+                    details += f", Has URL in Config: {has_url}"
+            
+            self.log_test("LiveKit Frontend Config", success, details)
+            
+        except Exception as e:
+            self.log_test("LiveKit Frontend Config", False, str(e))
+        
+        # Calculate LiveKit test success rate
+        livekit_tests = [r for r in self.test_results if 'LiveKit' in r['name']]
+        livekit_tests_recent = livekit_tests[-10:]  # Get the last 10 LiveKit tests
+        livekit_success_count = sum(1 for test in livekit_tests_recent if test['success'])
+        
+        print(f"  📊 LiveKit Integration Tests: {livekit_success_count}/{len(livekit_tests_recent)} passed")
+        
+        success_rate = (livekit_success_count / len(livekit_tests_recent)) * 100 if livekit_tests_recent else 0
+        
+        if success_rate >= 80:
+            print("  🎉 LiveKit Integration: EXCELLENT - Live streaming functionality working!")
+        elif success_rate >= 60:
+            print("  ✅ LiveKit Integration: GOOD - Most features working with minor issues")
+        else:
+            print("  ❌ LiveKit Integration: NEEDS ATTENTION - Major issues detected")
+        
+        return success_rate >= 60
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("🚀 Starting Live Shopping App Backend API Tests")
