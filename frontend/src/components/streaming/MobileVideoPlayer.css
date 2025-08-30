@@ -1,0 +1,483 @@
+/* Mobile Video Player - Hochformat-optimiert für Handys */
+
+.mobile-video-player {
+  width: 100%;
+  height: 100vh;
+  background: #000;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Mobile Header */
+.mobile-video-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6));
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 100;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.outlet-logo {
+  font-size: 16px;
+  font-weight: 900;
+  color: #ff6b9d;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 68, 68, 0.9);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.live-dot {
+  animation: pulseLive 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseLive {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.viewer-count {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.current-time {
+  background: rgba(0, 0, 0, 0.6);
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+}
+
+.close-mobile-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.close-mobile-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Video Container - Mobile Portrait Optimized */
+.mobile-video-container {
+  flex: 1;
+  position: relative;
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #333;
+  border-radius: 0;
+}
+
+/* Video Overlay */
+.video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.video-overlay button {
+  pointer-events: all;
+}
+
+/* Shopping Info Overlay */
+.shopping-info {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 15;
+}
+
+.product-badge {
+  background: linear-gradient(45deg, #ff6b9d, #4ecdc4);
+  padding: 8px 12px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Loading State */
+.loading-overlay {
+  text-align: center;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 40px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+}
+
+.loading-spinner {
+  font-size: 48px;
+  margin-bottom: 16px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.loading-overlay p {
+  font-size: 16px;
+  color: #ccc;
+  margin: 0;
+}
+
+/* Error State */
+.error-overlay {
+  text-align: center;
+  background: rgba(255, 68, 68, 0.9);
+  padding: 30px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  max-width: 320px;
+}
+
+.error-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.error-overlay p {
+  font-size: 14px;
+  margin: 0 0 20px 0;
+  line-height: 1.4;
+}
+
+.retry-mobile-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid white;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.retry-mobile-btn:hover {
+  background: white;
+  color: #ff4444;
+}
+
+/* Start Screen */
+.start-overlay {
+  text-align: center;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 40px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  max-width: 350px;
+}
+
+.start-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.start-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+}
+
+.start-overlay h2 {
+  font-size: 24px;
+  font-weight: 900;
+  margin: 0 0 12px 0;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.start-overlay p {
+  font-size: 16px;
+  color: #ccc;
+  margin: 0 0 30px 0;
+}
+
+.start-mobile-btn,
+.join-mobile-btn {
+  background: linear-gradient(135deg, #ff6b9d, #4ecdc4);
+  border: none;
+  color: white;
+  padding: 16px 24px;
+  border-radius: 15px;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
+  transition: all 0.3s ease;
+}
+
+.start-mobile-btn:hover,
+.join-mobile-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 107, 157, 0.5);
+}
+
+.viewer-waiting {
+  text-align: center;
+}
+
+.viewer-waiting p {
+  margin: 0 0 20px 0;
+  color: #ccc;
+  font-size: 14px;
+}
+
+/* Mobile Control Bar */
+.mobile-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.7));
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.control-left {
+  display: flex;
+  align-items: center;
+}
+
+.live-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #ff4444;
+}
+
+.pulse-dot {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.control-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.stop-mobile-btn {
+  background: #ff4444;
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.stop-mobile-btn:hover {
+  background: #e03e3e;
+}
+
+.quality-indicator {
+  background: rgba(76, 175, 80, 0.8);
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Mobile Chat */
+.mobile-chat-quick {
+  background: rgba(0, 0, 0, 0.9);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  max-height: 150px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-messages-mobile {
+  flex: 1;
+  padding: 8px 12px;
+  overflow-y: auto;
+  max-height: 100px;
+}
+
+.chat-msg {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 6px 8px;
+  margin-bottom: 4px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.chat-msg strong {
+  color: #4ecdc4;
+}
+
+.chat-input-mobile {
+  display: flex;
+  padding: 8px 12px;
+  gap: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mobile-input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.mobile-input::placeholder {
+  color: #999;
+}
+
+.send-mobile-btn {
+  background: #4ecdc4;
+  border: none;
+  color: white;
+  width: 40px;
+  height: 36px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.send-mobile-btn:hover {
+  background: #45b7aa;
+}
+
+/* Mobile Responsive Optimizations */
+@media (max-width: 480px) {
+  .mobile-video-header {
+    padding: 8px 12px;
+  }
+  
+  .outlet-logo {
+    font-size: 14px;
+  }
+  
+  .header-right {
+    font-size: 11px;
+    gap: 6px;
+  }
+  
+  .start-overlay {
+    padding: 30px 20px;
+    max-width: 300px;
+  }
+  
+  .start-overlay h2 {
+    font-size: 20px;
+  }
+  
+  .start-mobile-btn,
+  .join-mobile-btn {
+    padding: 14px 20px;
+    font-size: 14px;
+  }
+}
+
+/* Landscape Mode Adjustments */
+@media (orientation: landscape) and (max-height: 600px) {
+  .mobile-video-player {
+    height: 100vh;
+  }
+  
+  .mobile-video-header {
+    padding: 6px 12px;
+  }
+  
+  .mobile-controls {
+    padding: 8px 12px;
+  }
+  
+  .mobile-chat-quick {
+    max-height: 80px;
+  }
+  
+  .chat-messages-mobile {
+    max-height: 40px;
+  }
+}
+
+/* Full Screen Video (no controls) */
+.mobile-video-player.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+}
+
+.mobile-video-player.fullscreen .mobile-video-header,
+.mobile-video-player.fullscreen .mobile-controls,
+.mobile-video-player.fullscreen .mobile-chat-quick {
+  display: none;
+}
+
+.mobile-video-player.fullscreen .mobile-video-container {
+  height: 100vh;
+}
