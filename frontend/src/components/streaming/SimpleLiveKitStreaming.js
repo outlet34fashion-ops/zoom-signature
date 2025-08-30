@@ -326,13 +326,38 @@ const SimpleLiveKitStreaming = ({
 
     // Enable microphone
     const enableMicrophone = async () => {
-        if (!roomRef.current) return;
+        if (!roomRef.current) {
+            console.error('❌ No room reference available for microphone');
+            return;
+        }
 
         try {
+            console.log('🎤 Requesting microphone access...');
+            
+            // Request microphone permission
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: false,
+                audio: {
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    autoGainControl: true,
+                    sampleRate: 48000
+                }
+            });
+            
+            console.log('✅ Microphone permission granted');
+            
             await roomRef.current.localParticipant.setMicrophoneEnabled(true);
+            console.log('✅ LiveKit microphone enabled');
+            
             setIsMicEnabled(true);
         } catch (error) {
-            console.error('Error enabling microphone:', error);
+            console.error('❌ Error enabling microphone:', error);
+            
+            if (error.name === 'NotAllowedError') {
+                console.warn('⚠️ Microphone access denied, continuing without audio');
+                setError('Mikrofon-Zugriff verweigert. Video läuft ohne Audio.');
+            }
         }
     };
 
