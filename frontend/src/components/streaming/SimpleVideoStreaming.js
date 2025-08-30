@@ -204,48 +204,76 @@ const SimpleVideoStreaming = ({
                 {/* Viewer View */}
                 {!isAdmin && (
                     <div className="viewer-view">
-                        {/* Show Live Shopping Countdown instead of waiting message */}
-                        <div className="countdown-display">
-                            <div className="countdown-content">
-                                <div className="countdown-header">
-                                    <div className="fire-icon">🔥</div>
-                                    <h2>🛍️ LIVE SHOPPING COUNTDOWN</h2>
+                        {/* Mobile-Optimized Live Shopping Countdown */}
+                        <div className="mobile-countdown-display">
+                            {/* Top Header Bar */}
+                            <div className="mobile-header">
+                                <div className="live-status">
+                                    <span className="live-dot-small">🔴</span>
+                                    <span>LIVE STREAM</span>
                                 </div>
+                                <div className="viewer-info">
+                                    <span className="viewer-icon">👥</span>
+                                    <span>{Math.floor(Math.random() * 50) + 40} Zuschauer online</span>
+                                </div>
+                                <div className="store-info">
+                                    <div className="store-name">OUTLET34 Fashion Store</div>
+                                    <div className="stream-quality">Jetzt live • HD Qualität</div>
+                                </div>
+                            </div>
+
+                            {/* Main Countdown Content */}
+                            <div className="mobile-countdown-content">
+                                {/* Fire Icon */}
+                                <div className="mobile-fire-icon">🔥</div>
                                 
-                                <div className="countdown-timer">
-                                    <div className="sale-label">sale</div>
-                                    <div className="timer-boxes">
-                                        <div className="time-box">
-                                            <div className="time-number">
-                                                {countdown.hours.toString().padStart(2, '0')}
-                                            </div>
-                                            <div className="time-label">STD</div>
-                                        </div>
-                                        <div className="time-box">
-                                            <div className="time-number">
-                                                {countdown.minutes.toString().padStart(2, '0')}
-                                            </div>
-                                            <div className="time-label">MIN</div>
-                                        </div>
-                                        <div className="time-box">
-                                            <div className="time-number">
-                                                {countdown.seconds.toString().padStart(2, '0')}
-                                            </div>
-                                            <div className="time-label">SEK</div>
-                                        </div>
+                                {/* Title */}
+                                <div className="mobile-title">
+                                    <span className="shopping-bag">🛍️</span>
+                                    <div className="title-text">
+                                        <div>LIVE SHOPPING</div>
+                                        <div>COUNTDOWN</div>
                                     </div>
-                                    
-                                    <div className="event-info">
-                                        📅 Startet am 30.8.2025 um 15:00 Uhr
-                                    </div>
-                                    
-                                    <div className="sale-label-bottom">sale</div>
                                 </div>
 
-                                <div className="ready-banner">
-                                    ⚡ BEREIT MACHEN!
-                                    <div className="ready-subtitle">
-                                        Countdown läuft - seien Sie dabei wenn es losgeht! 🚀
+                                {/* Timer Boxes */}
+                                <div className="mobile-timer-container">
+                                    <div className="sale-badge-top">SALE</div>
+                                    <div className="mobile-timer-boxes">
+                                        <div className="mobile-time-box">
+                                            <div className="mobile-time-number">
+                                                {countdown.hours.toString().padStart(2, '0')}
+                                            </div>
+                                            <div className="mobile-time-label">STD</div>
+                                        </div>
+                                        <div className="mobile-time-box">
+                                            <div className="mobile-time-number">
+                                                {countdown.minutes.toString().padStart(2, '0')}
+                                            </div>
+                                            <div className="mobile-time-label">MIN</div>
+                                        </div>
+                                        <div className="mobile-time-box">
+                                            <div className="mobile-time-number">
+                                                {countdown.seconds.toString().padStart(2, '0')}
+                                            </div>
+                                            <div className="mobile-time-label">SEK</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Event Info Box */}
+                                <div className="mobile-event-info">
+                                    <span className="calendar-icon">📅</span>
+                                    Startet am 30.8.2025 um 15:00 Uhr
+                                    <div className="sale-badge-corner">SALE</div>
+                                </div>
+
+                                {/* Ready Banner */}
+                                <div className="mobile-ready-banner">
+                                    <span className="lightning-icon">⚡</span>
+                                    BEREIT MACHEN!
+                                    <div className="mobile-ready-subtitle">
+                                        Countdown läuft - seien Sie dabei wenn es losgeht!
                                     </div>
                                 </div>
                             </div>
