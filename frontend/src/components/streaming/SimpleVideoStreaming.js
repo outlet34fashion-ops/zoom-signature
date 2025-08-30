@@ -388,6 +388,7 @@ const SimpleVideoStreaming = ({
                 {/* Viewer View - Real Video Stream */}
                 {!isAdmin && (
                     <div className="viewer-view">
+                        {/* Show real video if connected, otherwise show connection screen */}
                         {isConnected ? (
                             // Real video from admin stream
                             <div className="remote-stream-container">
@@ -415,14 +416,52 @@ const SimpleVideoStreaming = ({
                                 </div>
                             </div>
                         ) : (
-                            // Loading/Connection state
-                            <div className="connection-screen">
-                                <div className="connection-content">
-                                    <div className="loading-spinner">📡</div>
-                                    <h2>Verbindung wird hergestellt...</h2>
-                                    <p>Warten auf Live-Stream von OUTLET34</p>
-                                    <div className="connection-progress">
-                                        <div className="progress-bar"></div>
+                            // Show countdown while waiting for admin to start streaming
+                            <div className="countdown-display">
+                                <div className="countdown-content">
+                                    {/* Fire Icon */}
+                                    <div className="fire-icon">🔥</div>
+                                    
+                                    {/* Title */}
+                                    <h2>🛍️ LIVE SHOPPING COUNTDOWN</h2>
+
+                                    {/* Timer Boxes */}
+                                    <div className="countdown-timer">
+                                        <div className="sale-label">SALE</div>
+                                        <div className="timer-boxes">
+                                            <div className="time-box">
+                                                <div className="time-number">
+                                                    {countdown.hours.toString().padStart(2, '0')}
+                                                </div>
+                                                <div className="time-label">STD</div>
+                                            </div>
+                                            <div className="time-box">
+                                                <div className="time-number">
+                                                    {countdown.minutes.toString().padStart(2, '0')}
+                                                </div>
+                                                <div className="time-label">MIN</div>
+                                            </div>
+                                            <div className="time-box">
+                                                <div className="time-number">
+                                                    {countdown.seconds.toString().padStart(2, '0')}
+                                                </div>
+                                                <div className="time-label">SEK</div>
+                                            </div>
+                                        </div>
+                                        <div className="sale-label-bottom">SALE</div>
+                                    </div>
+
+                                    {/* Event Info */}
+                                    <div className="event-info">
+                                        📅 Startet am 30.8.2025 um 15:00 Uhr
+                                    </div>
+
+                                    {/* Ready Banner */}
+                                    <div className="ready-banner">
+                                        ⚡ BEREIT MACHEN!
+                                        <div className="ready-subtitle">
+                                            Warten auf Live-Stream...
+                                        </div>
                                     </div>
                                 </div>
                             </div>
