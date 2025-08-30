@@ -291,6 +291,7 @@
 
 .room-info {
   flex: 1;
+  min-width: 0;
 }
 
 .room-name {
