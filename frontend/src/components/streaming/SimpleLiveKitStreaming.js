@@ -17,6 +17,7 @@ const SimpleLiveKitStreaming = ({
     onError,
     onConnected 
 }) => {
+    // ALL HOOKS MUST BE AT THE TOP - BEFORE ANY CONDITIONAL LOGIC
     const [connectionState, setConnectionState] = useState('disconnected'); // disconnected, connecting, connected, error
     const [error, setError] = useState(null);
     const [viewerCount, setViewerCount] = useState(0);
@@ -31,6 +32,27 @@ const SimpleLiveKitStreaming = ({
     const chatMessagesRef = useRef([]);
     const [chatMessages, setChatMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
+
+    // Debug: Log publisher status immediately - HOOK MOVED TO TOP
+    useEffect(() => {
+        console.log('🔍 SimpleLiveKitStreaming initialized with:');
+        console.log('- isPublisher:', isPublisher);
+        console.log('- token length:', token?.length);
+        console.log('- serverUrl:', serverUrl);
+        console.log('- roomName:', roomName);
+    }, [isPublisher, token, serverUrl, roomName]);
+
+    // Connect on mount - HOOK MOVED TO TOP
+    useEffect(() => {
+        if (token && serverUrl) {
+            connectToRoom();
+        }
+        
+        // Cleanup on unmount
+        return () => {
+            cleanup();
+        };
+    }, [token, serverUrl]); // Removed connectToRoom from dependencies to avoid infinite loops
 
     // Connect to LiveKit room using direct client API with retry logic
     const connectToRoom = useCallback(async () => {
