@@ -80,7 +80,6 @@ class LiveKitTokenService:
                 can_subscribe=True,      # Can subscribe to other streams
                 can_publish_data=True,   # Can send chat messages
                 can_update_own_metadata=True, # Can update own metadata
-                admin=True,              # Admin privileges
                 # High quality settings for publisher
                 room_admin=True,
                 room_create=True
