@@ -3254,6 +3254,260 @@ class LiveShoppingAPITester:
             self.log_test("WebRTC Streaming - Exception", False, str(e))
             return False
 
+    def test_livekit_integration(self):
+        """Test LiveKit Cloud integration endpoints as per review request"""
+        print("\n🎥 Testing LiveKit Cloud Integration...")
+        
+        # Test data
+        timestamp = int(time.time())
+        test_room_name = f"live_shopping_test_{timestamp}"
+        test_admin_user = f"admin_{timestamp}"
+        test_customer_user = f"customer_{timestamp}"
+        
+        try:
+            # Test 1: LiveKit Configuration Endpoint
+            print("  ⚙️ Test 1: LiveKit Configuration...")
+            config_response = requests.get(f"{self.api_url}/livekit/config", timeout=10)
+            
+            config_success = config_response.status_code == 200
+            config_details = f"GET Status: {config_response.status_code}"
+            
+            if config_success:
+                config_data = config_response.json()
+                required_config_fields = ['url', 'simulcast', 'dynacast', 'videoSettings', 'audioSettings']
+                has_all_config_fields = all(field in config_data for field in required_config_fields)
+                
+                # Check video settings for 1080p@30fps as specified
+                video_settings = config_data.get('videoSettings', {})
+                resolution = video_settings.get('resolution', {})
+                is_1080p = resolution.get('width') == 1920 and resolution.get('height') == 1080
+                is_30fps = video_settings.get('frameRate') == 30
+                
+                config_success = has_all_config_fields and is_1080p and is_30fps
+                config_details += f", Has all fields: {has_all_config_fields}, 1080p: {is_1080p}, 30fps: {is_30fps}"
+            
+            self.log_test("LiveKit Config Endpoint", config_success, config_details)
+            
+            # Test 2: Generate Publisher Token (Admin)
+            print("  🎬 Test 2: Generate Publisher Token (Admin)...")
+            publisher_token_request = {
+                "room_name": test_room_name,
+                "participant_type": "publisher",
+                "participant_name": "Admin Streamer",
+                "metadata": {"role": "admin", "user_id": test_admin_user}
+            }
+            
+            pub_token_response = requests.post(
+                f"{self.api_url}/livekit/token",
+                json=publisher_token_request,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            pub_token_success = pub_token_response.status_code == 200
+            pub_token_details = f"POST Status: {pub_token_response.status_code}"
+            
+            if pub_token_success:
+                pub_token_data = pub_token_response.json()
+                required_token_fields = ['token', 'room_name', 'participant_identity', 'participant_type', 'livekit_url']
+                has_all_token_fields = all(field in pub_token_data for field in required_token_fields)
+                
+                token_is_jwt = isinstance(pub_token_data.get('token'), str) and len(pub_token_data.get('token', '')) > 50
+                correct_type = pub_token_data.get('participant_type') == 'publisher'
+                correct_room = pub_token_data.get('room_name') == test_room_name
+                
+                pub_token_success = has_all_token_fields and token_is_jwt and correct_type and correct_room
+                pub_token_details += f", Has all fields: {has_all_token_fields}, JWT valid: {token_is_jwt}, Type: {pub_token_data.get('participant_type')}"
+                
+                if pub_token_success:
+                    publisher_token = pub_token_data['token']
+                    publisher_identity = pub_token_data['participant_identity']
+            
+            self.log_test("LiveKit Publisher Token Generation", pub_token_success, pub_token_details)
+            
+            # Test 3: Generate Viewer Token (Customer)
+            print("  👥 Test 3: Generate Viewer Token (Customer)...")
+            viewer_token_request = {
+                "room_name": test_room_name,
+                "participant_type": "viewer",
+                "participant_name": "Customer Viewer",
+                "metadata": {"role": "customer", "user_id": test_customer_user}
+            }
+            
+            viewer_token_response = requests.post(
+                f"{self.api_url}/livekit/token",
+                json=viewer_token_request,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            viewer_token_success = viewer_token_response.status_code == 200
+            viewer_token_details = f"POST Status: {viewer_token_response.status_code}"
+            
+            if viewer_token_success:
+                viewer_token_data = viewer_token_response.json()
+                required_token_fields = ['token', 'room_name', 'participant_identity', 'participant_type', 'livekit_url']
+                has_all_token_fields = all(field in viewer_token_data for field in required_token_fields)
+                
+                token_is_jwt = isinstance(viewer_token_data.get('token'), str) and len(viewer_token_data.get('token', '')) > 50
+                correct_type = viewer_token_data.get('participant_type') == 'viewer'
+                correct_room = viewer_token_data.get('room_name') == test_room_name
+                
+                viewer_token_success = has_all_token_fields and token_is_jwt and correct_type and correct_room
+                viewer_token_details += f", Has all fields: {has_all_token_fields}, JWT valid: {token_is_jwt}, Type: {viewer_token_data.get('participant_type')}"
+                
+                if viewer_token_success:
+                    viewer_token = viewer_token_data['token']
+                    viewer_identity = viewer_token_data['participant_identity']
+            
+            self.log_test("LiveKit Viewer Token Generation", viewer_token_success, viewer_token_details)
+            
+            # Test 4: Create LiveKit Room
+            print("  🏠 Test 4: Create LiveKit Room...")
+            room_create_request = {
+                "room_name": test_room_name,
+                "max_participants": 50,
+                "empty_timeout": 300,
+                "metadata": {"created_by": test_admin_user, "type": "live_shopping"}
+            }
+            
+            room_create_response = requests.post(
+                f"{self.api_url}/livekit/room/create",
+                json=room_create_request,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            room_create_success = room_create_response.status_code == 200
+            room_create_details = f"POST Status: {room_create_response.status_code}"
+            
+            if room_create_success:
+                room_data = room_create_response.json()
+                required_room_fields = ['room_name', 'sid', 'max_participants', 'num_participants', 'creation_time']
+                has_all_room_fields = all(field in room_data for field in required_room_fields)
+                
+                correct_name = room_data.get('room_name') == test_room_name
+                correct_max = room_data.get('max_participants') == 50
+                
+                room_create_success = has_all_room_fields and correct_name and correct_max
+                room_create_details += f", Has all fields: {has_all_room_fields}, Name: {room_data.get('room_name')}, Max: {room_data.get('max_participants')}"
+            
+            self.log_test("LiveKit Room Creation", room_create_success, room_create_details)
+            
+            # Test 5: List Active Rooms
+            print("  📋 Test 5: List Active Rooms...")
+            rooms_response = requests.get(f"{self.api_url}/livekit/rooms", timeout=10)
+            
+            rooms_success = rooms_response.status_code == 200
+            rooms_details = f"GET Status: {rooms_response.status_code}"
+            
+            if rooms_success:
+                rooms_data = rooms_response.json()
+                has_rooms_key = 'rooms' in rooms_data
+                rooms_list = rooms_data.get('rooms', [])
+                
+                # Check if our test room is in the list
+                test_room_found = any(room.get('room_name') == test_room_name for room in rooms_list)
+                
+                rooms_success = has_rooms_key and test_room_found
+                rooms_details += f", Has rooms key: {has_rooms_key}, Test room found: {test_room_found}, Total rooms: {len(rooms_list)}"
+            
+            self.log_test("LiveKit List Active Rooms", rooms_success, rooms_details)
+            
+            # Test 6: Get Room Info
+            print("  🔍 Test 6: Get Room Info...")
+            room_info_response = requests.get(f"{self.api_url}/livekit/room/{test_room_name}", timeout=10)
+            
+            room_info_success = room_info_response.status_code == 200
+            room_info_details = f"GET Status: {room_info_response.status_code}"
+            
+            if room_info_success:
+                room_info_data = room_info_response.json()
+                has_room_key = 'room' in room_info_data
+                has_participants_key = 'participants' in room_info_data
+                has_is_live_key = 'is_live' in room_info_data
+                
+                room_info_success = has_room_key and has_participants_key and has_is_live_key
+                room_info_details += f", Has room: {has_room_key}, Has participants: {has_participants_key}, Has is_live: {has_is_live_key}"
+            
+            self.log_test("LiveKit Get Room Info", room_info_success, room_info_details)
+            
+            # Test 7: Test Error Handling - Invalid Room Name
+            print("  ❌ Test 7: Error Handling - Invalid Room...")
+            invalid_room_response = requests.get(f"{self.api_url}/livekit/room/nonexistent_room_{timestamp}", timeout=10)
+            
+            invalid_room_success = invalid_room_response.status_code == 404
+            invalid_room_details = f"GET Status: {invalid_room_response.status_code} (should be 404)"
+            
+            self.log_test("LiveKit Error Handling - Invalid Room", invalid_room_success, invalid_room_details)
+            
+            # Test 8: Test Participant Removal (if we have identities)
+            if pub_token_success and 'publisher_identity' in locals():
+                print("  🚫 Test 8: Remove Participant...")
+                remove_participant_response = requests.post(
+                    f"{self.api_url}/livekit/room/{test_room_name}/participant/{publisher_identity}/remove",
+                    headers={'Content-Type': 'application/json'},
+                    timeout=10
+                )
+                
+                remove_success = remove_participant_response.status_code in [200, 404]  # 404 is OK if participant not actually connected
+                remove_details = f"POST Status: {remove_participant_response.status_code}"
+                
+                if remove_success and remove_participant_response.status_code == 200:
+                    remove_data = remove_participant_response.json()
+                    has_message = 'message' in remove_data
+                    remove_details += f", Has message: {has_message}"
+                
+                self.log_test("LiveKit Remove Participant", remove_success, remove_details)
+            else:
+                self.log_test("LiveKit Remove Participant", False, "Skipped - no participant identity available")
+            
+            # Test 9: Test Invalid Token Request
+            print("  ❌ Test 9: Invalid Token Request...")
+            invalid_token_request = {
+                "room_name": "",  # Empty room name
+                "participant_type": "invalid_type"
+            }
+            
+            invalid_token_response = requests.post(
+                f"{self.api_url}/livekit/token",
+                json=invalid_token_request,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            invalid_token_success = invalid_token_response.status_code in [400, 422, 500]  # Should return error
+            invalid_token_details = f"POST Status: {invalid_token_response.status_code} (should be error code)"
+            
+            self.log_test("LiveKit Invalid Token Request", invalid_token_success, invalid_token_details)
+            
+            # Test 10: Delete Room (Cleanup)
+            print("  🗑️ Test 10: Delete Room...")
+            delete_room_response = requests.delete(f"{self.api_url}/livekit/room/{test_room_name}", timeout=10)
+            
+            delete_success = delete_room_response.status_code == 200
+            delete_details = f"DELETE Status: {delete_room_response.status_code}"
+            
+            if delete_success:
+                delete_data = delete_room_response.json()
+                has_message = 'message' in delete_data
+                delete_details += f", Has message: {has_message}"
+            
+            self.log_test("LiveKit Room Deletion", delete_success, delete_details)
+            
+            # Calculate LiveKit test success rate
+            livekit_tests = [r for r in self.test_results if 'LiveKit' in r['name']]
+            livekit_tests_recent = livekit_tests[-10:]  # Get the last 10 LiveKit tests
+            livekit_success_count = sum(1 for test in livekit_tests_recent if test['success'])
+            
+            print(f"  📊 LiveKit Integration Tests: {livekit_success_count}/{len(livekit_tests_recent)} passed")
+            
+            return livekit_success_count >= 7  # At least 7/10 tests should pass for success
+            
+        except Exception as e:
+            self.log_test("LiveKit Integration - Exception", False, str(e))
+            return False
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("🚀 Starting Live Shopping App Backend API Tests")
