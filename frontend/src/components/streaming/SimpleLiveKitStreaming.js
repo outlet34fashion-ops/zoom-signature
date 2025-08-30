@@ -33,7 +33,7 @@ const SimpleLiveKitStreaming = ({
     const [chatMessages, setChatMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
 
-    // Debug: Log publisher status immediately - HOOK MOVED TO TOP
+    // Debug: Log publisher status immediately
     useEffect(() => {
         console.log('🔍 SimpleLiveKitStreaming initialized with:');
         console.log('- isPublisher:', isPublisher);
