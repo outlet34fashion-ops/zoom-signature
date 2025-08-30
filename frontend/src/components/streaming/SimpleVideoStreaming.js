@@ -185,6 +185,11 @@ const SimpleVideoStreaming = ({
             setIsConnected(true);
             setViewerCount(1); // Simulate viewer
 
+            // Initialize WebRTC peer connection for admin (streamer)
+            if (isAdmin) {
+                await initializeStreamerConnection(mediaStream);
+            }
+
         } catch (err) {
             console.error('❌ Camera error:', err);
             
@@ -195,6 +200,77 @@ const SimpleVideoStreaming = ({
             } else {
                 setError(`Kamera-Fehler: ${err.message}`);
             }
+        }
+    };
+
+    // Initialize streamer WebRTC connection
+    const initializeStreamerConnection = async (mediaStream) => {
+        try {
+            console.log('🎬 Initializing streamer WebRTC connection...');
+            
+            // Connect to WebSocket signaling server for streamer
+            const wsUrl = `${process.env.REACT_APP_BACKEND_URL.replace('http', 'ws')}/ws/stream/main/signaling`;
+            const ws = new WebSocket(wsUrl);
+            
+            ws.onopen = () => {
+                console.log('✅ WebSocket connected for streamer');
+                setWebsocket(ws);
+            };
+            
+            ws.onmessage = async (event) => {
+                const message = JSON.parse(event.data);
+                console.log('📨 Streamer received signaling message:', message);
+                
+                if (message.type === 'viewer-joined') {
+                    // Create offer for new viewer
+                    await createOfferForViewer(mediaStream, ws);
+                }
+            };
+            
+            ws.onerror = (error) => {
+                console.error('❌ Streamer WebSocket error:', error);
+                setError('Signaling-Server Verbindungsfehler');
+            };
+            
+        } catch (err) {
+            console.error('❌ Streamer connection error:', err);
+            setError(`Streamer-Fehler: ${err.message}`);
+        }
+    };
+
+    // Create offer for viewer
+    const createOfferForViewer = async (mediaStream, ws) => {
+        try {
+            const pc = new RTCPeerConnection(rtcConfiguration);
+            
+            // Add local stream to peer connection
+            mediaStream.getTracks().forEach(track => {
+                pc.addTrack(track, mediaStream);
+            });
+            
+            // Handle ICE candidates
+            pc.onicecandidate = (event) => {
+                if (event.candidate && ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({
+                        type: 'ice-candidate',
+                        candidate: event.candidate
+                    }));
+                }
+            };
+            
+            // Create and send offer
+            const offer = await pc.createOffer();
+            await pc.setLocalDescription(offer);
+            
+            ws.send(JSON.stringify({
+                type: 'offer',
+                offer: offer
+            }));
+            
+            console.log('✅ Offer sent to viewer');
+            
+        } catch (err) {
+            console.error('❌ Error creating offer:', err);
         }
     };
 
