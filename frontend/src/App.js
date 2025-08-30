@@ -3305,9 +3305,9 @@ function App() {
               </div>
             </div>
 
-            {/* Live Video Stream Display - Mobile Optimized */}
+            {/* Live Video Stream Display - LiveKit Integration */}
             <div className="live-video-display">
-              <MobileVideoPlayer
+              <LiveKitStreaming
                 isAdmin={false}
                 embedded={true}
                 currentUser={currentCustomer}
