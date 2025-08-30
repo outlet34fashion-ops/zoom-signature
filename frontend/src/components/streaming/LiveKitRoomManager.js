@@ -337,12 +337,21 @@ const LiveKitRoomManager = ({
                                         <span>👥 {room.numParticipants} Zuschauer</span>
                                         <span>📅 {new Date(room.creationTime * 1000).toLocaleTimeString('de-DE')}</span>
                                     </div>
+                                    {/* DEBUG INFO */}
+                                    <div className="debug-info" style={{fontSize: '10px', color: '#666'}}>
+                                        Admin: {isAdmin ? 'Ja' : 'Nein'} | Loading: {loading ? 'Ja' : 'Nein'} | State: {currentState}
+                                    </div>
                                 </div>
                                 <div className="room-actions">
                                     <button
                                         onClick={() => handleJoinRoom(room.roomName)}
                                         disabled={loading || currentState !== 'lobby'}
                                         className="join-room-btn"
+                                        style={{
+                                            display: 'block',
+                                            visibility: 'visible',
+                                            opacity: 1
+                                        }}
                                     >
                                         {loading && currentState === 'joining' 
                                             ? '🔄 Beitritt...' 
