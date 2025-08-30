@@ -256,30 +256,6 @@ const SimpleVideoStreaming = ({
         setViewerCount(0);
     };
 
-    // Auto-start for admin or initialize viewer
-    useEffect(() => {
-        if (isAdmin) {
-            startCamera();
-        } else {
-            // For viewers: Start immediately trying to connect to admin stream
-            setIsConnected(false); // Start as disconnected
-            setViewerCount(Math.floor(Math.random() * 50) + 40); // Simulate viewer count
-            initializeViewer();
-        }
-
-        return () => {
-            stopStreaming();
-            // Clean up WebSocket
-            if (websocket) {
-                websocket.close();
-            }
-            // Clean up peer connection
-            if (peerConnection) {
-                peerConnection.close();
-            }
-        };
-    }, [isAdmin]);
-
     return (
         <div className={embedded ? "embedded-video-container" : "simple-video-container"}>
             {/* Header - Hide in embedded mode */}
