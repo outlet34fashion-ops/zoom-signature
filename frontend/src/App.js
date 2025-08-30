@@ -1257,41 +1257,41 @@ function App() {
                 </div>
                 
                 {/* Language Selection */}
-                <div className="mb-4">
-                  <p className="text-sm text-gray-600 mb-3 text-center">🌍 {t('settings.language')}</p>
+                <div className="mb-6">
+                  <p className="text-sm text-gray-500 mb-3 text-center">🌍 Sprache</p>
                   <div className="flex justify-center space-x-2">
                     <button
                       onClick={() => changeLanguage('de')}
-                      className={`px-3 py-2 rounded text-sm transition-colors ${
+                      className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
                         i18n.language === 'de' 
                           ? 'bg-pink-500 text-white' 
                           : 'bg-white text-gray-700 hover:bg-gray-100 border'
                       }`}
                       title="Deutsch"
                     >
-                      🇩🇪
+                      DE
                     </button>
                     <button
                       onClick={() => changeLanguage('en')}
-                      className={`px-3 py-2 rounded text-sm transition-colors ${
+                      className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
                         i18n.language === 'en' 
                           ? 'bg-pink-500 text-white' 
                           : 'bg-white text-gray-700 hover:bg-gray-100 border'
                       }`}
                       title="English"
                     >
-                      🇺🇸
+                      US
                     </button>
                     <button
                       onClick={() => changeLanguage('tr')}
-                      className={`px-3 py-2 rounded text-sm transition-colors ${
+                      className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
                         i18n.language === 'tr' 
                           ? 'bg-pink-500 text-white' 
                           : 'bg-white text-gray-700 hover:bg-gray-100 border'
                       }`}
                       title="Türkçe"
                     >
-                      🇹🇷
+                      TR
                     </button>
                     <button
                       onClick={() => changeLanguage('fr')}
@@ -1302,7 +1302,7 @@ function App() {
                       }`}
                       title="Français"
                     >
-                      🇫🇷
+                      FR
                     </button>
                   </div>
                 </div>
