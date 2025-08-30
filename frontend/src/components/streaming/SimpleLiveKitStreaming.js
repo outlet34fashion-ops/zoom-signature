@@ -542,6 +542,15 @@ const SimpleLiveKitStreaming = ({
         );
     }
 
+    // Debug: Log publisher status immediately
+    useEffect(() => {
+        console.log('🔍 SimpleLiveKitStreaming initialized with:');
+        console.log('- isPublisher:', isPublisher);
+        console.log('- token length:', token?.length);
+        console.log('- serverUrl:', serverUrl);
+        console.log('- roomName:', roomName);
+    }, [isPublisher, token, serverUrl, roomName]);
+
     // Connected streaming interface
     return (
         <div className="simple-livekit-container">
@@ -554,6 +563,10 @@ const SimpleLiveKitStreaming = ({
                     </div>
                     <div className="viewer-count">
                         👥 {viewerCount} Zuschauer
+                    </div>
+                    {/* DEBUG: Show current mode */}
+                    <div className="debug-mode">
+                        {isPublisher ? '📹 PUBLISHER MODE' : '👀 VIEWER MODE'}
                     </div>
                 </div>
                 
@@ -568,8 +581,8 @@ const SimpleLiveKitStreaming = ({
             <div className={`streaming-layout ${showChat ? 'with-chat' : 'full-width'}`}>
                 {/* Video Area */}
                 <div className="video-area">
-                    {/* Publisher's own video (large display) */}
-                    {isPublisher && (
+                    {/* FORCE PUBLISHER VIDEO - Always show if we should be publisher */}
+                    {isPublisher ? (
                         <div className="main-publisher-video">
                             <video
                                 ref={localVideoRef}
@@ -586,24 +599,26 @@ const SimpleLiveKitStreaming = ({
                                 }}
                             />
                             <div className="publisher-overlay">
-                                <div className="publisher-label">📹 Sie sind LIVE</div>
+                                <div className="publisher-label">📹 Sie sind LIVE (Publisher Mode)</div>
+                                <div className="camera-status">
+                                    Kamera: {isCameraEnabled ? '✅ AN' : '❌ AUS'}
+                                </div>
                             </div>
+                        </div>
+                    ) : (
+                        /* Viewer mode - show waiting message */
+                        <div className="no-stream-message">
+                            <h3>🎥 Warten auf Live-Stream...</h3>
+                            <p>Der Streamer ist verbunden, startet aber noch nicht das Video</p>
                         </div>
                     )}
 
                     {/* Remote videos container */}
                     <div id="remote-videos-container" className="remote-videos">
-                        {/* If no remote participants and we're a viewer, show message */}
-                        {!isPublisher && remoteVideosRef.current.size === 0 && (
-                            <div className="no-stream-message">
-                                <h3>🎥 Warten auf Live-Stream...</h3>
-                                <p>Der Streamer ist verbunden, startet aber noch nicht das Video</p>
-                            </div>
-                        )}
                         {/* Remote participant videos will be added here dynamically */}
                     </div>
 
-                    {/* Publisher controls */}
+                    {/* Publisher controls - Only show if publisher */}
                     {isPublisher && (
                         <div className="publisher-controls">
                             <button 
@@ -628,6 +643,15 @@ const SimpleLiveKitStreaming = ({
                                 title="Kamera wechseln"
                             >
                                 🔄
+                            </button>
+
+                            {/* Manual camera enable button */}
+                            <button 
+                                className="control-btn"
+                                onClick={enableCamera}
+                                title="Kamera manuell aktivieren"
+                            >
+                                🔧
                             </button>
                         </div>
                     )}
