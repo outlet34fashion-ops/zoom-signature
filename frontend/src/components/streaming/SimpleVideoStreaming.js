@@ -28,7 +28,104 @@ const SimpleVideoStreaming = ({
     const localVideoRef = useRef(null);
     const remoteVideoRef = useRef(null);
 
-    // Countdown timer effect
+    // WebRTC Configuration
+    const rtcConfiguration = {
+        iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun1.l.google.com:19302' }
+        ]
+    };
+
+    // Initialize WebRTC for viewers
+    const initializeViewer = async () => {
+        try {
+            console.log('🔗 Initializing viewer WebRTC connection...');
+            
+            // Create peer connection
+            const pc = new RTCPeerConnection(rtcConfiguration);
+            
+            // Set up event handlers
+            pc.onicecandidate = (event) => {
+                if (event.candidate && websocket && websocket.readyState === WebSocket.OPEN) {
+                    websocket.send(JSON.stringify({
+                        type: 'ice-candidate',
+                        candidate: event.candidate
+                    }));
+                }
+            };
+            
+            pc.ontrack = (event) => {
+                console.log('✅ Received remote stream:', event.streams[0]);
+                if (remoteVideoRef.current && event.streams[0]) {
+                    remoteVideoRef.current.srcObject = event.streams[0];
+                    setIsConnected(true);
+                }
+            };
+            
+            pc.onconnectionstatechange = () => {
+                console.log('📡 Connection state:', pc.connectionState);
+                if (pc.connectionState === 'connected') {
+                    setIsConnected(true);
+                    setViewerCount(prev => prev + 1);
+                } else if (pc.connectionState === 'disconnected' || pc.connectionState === 'failed') {
+                    setIsConnected(false);
+                }
+            };
+            
+            setPeerConnection(pc);
+            
+            // Connect to WebSocket signaling server
+            const wsUrl = `${process.env.REACT_APP_BACKEND_URL.replace('http', 'ws')}/ws/stream/main/viewer`;
+            const ws = new WebSocket(wsUrl);
+            
+            ws.onopen = () => {
+                console.log('✅ WebSocket connected for viewer');
+                setWebsocket(ws);
+            };
+            
+            ws.onmessage = async (event) => {
+                const message = JSON.parse(event.data);
+                console.log('📨 Received signaling message:', message);
+                
+                switch (message.type) {
+                    case 'offer':
+                        await pc.setRemoteDescription(new RTCSessionDescription(message.offer));
+                        const answer = await pc.createAnswer();
+                        await pc.setLocalDescription(answer);
+                        
+                        ws.send(JSON.stringify({
+                            type: 'answer',
+                            answer: answer
+                        }));
+                        break;
+                        
+                    case 'ice-candidate':
+                        if (message.candidate) {
+                            await pc.addIceCandidate(new RTCIceCandidate(message.candidate));
+                        }
+                        break;
+                        
+                    case 'viewer-count':
+                        setViewerCount(message.count || 0);
+                        break;
+                }
+            };
+            
+            ws.onerror = (error) => {
+                console.error('❌ WebSocket error:', error);
+                setError('Verbindungsfehler zum Live-Stream');
+            };
+            
+            ws.onclose = () => {
+                console.log('📡 WebSocket closed');
+                setIsConnected(false);
+            };
+            
+        } catch (err) {
+            console.error('❌ Viewer initialization error:', err);
+            setError(`Viewer-Fehler: ${err.message}`);
+        }
+    };
     useEffect(() => {
         const timer = setInterval(() => {
             setCountdown(prev => {
