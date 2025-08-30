@@ -195,78 +195,19 @@ const StreamingContent = ({
     networkStats,
     setNetworkStats
 }) => {
-    // Check connection state first - CRITICAL for avoiding context errors
-    const connectionState = useConnectionState();
-    const room = useRoomContext();
-    
-    // Only initialize hooks after connection is established
-    const [hooksReady, setHooksReady] = useState(false);
-    
-    useEffect(() => {
-        // Wait for connection to be established before using other hooks
-        if (connectionState === ConnectionState.Connected && room) {
-            setHooksReady(true);
-        } else {
-            setHooksReady(false);
-        }
-    }, [connectionState, room]);
-
-    // Show loading state while connecting
-    if (!hooksReady || connectionState !== ConnectionState.Connected) {
-        return (
-            <div className="streaming-content">
-                <div className="connection-loading">
-                    <div className="loading-spinner">🔄</div>
-                    <div className="connection-status">
-                        <h3>Verbindung wird hergestellt...</h3>
-                        <p>Status: {getConnectionStateText(connectionState)}</p>
-                        <div className="loading-progress">
-                            <div className="progress-bar"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    // Now safe to use LiveKit hooks
-    return <ConnectedStreamingContent
-        isPublisher={isPublisher}
-        showChat={showChat}
-        setShowChat={setShowChat}
-        viewerCount={viewerCount}
-        setViewerCount={setViewerCount}
-        isLive={isLive}
-        connectionQuality={connectionQuality}
-        setConnectionQuality={setConnectionQuality}
-        networkStats={networkStats}
-        setNetworkStats={setNetworkStats}
-    />;
-};
-
-// Component that safely uses LiveKit hooks after connection
-const ConnectedStreamingContent = ({
-    isPublisher, 
-    showChat, 
-    setShowChat, 
-    viewerCount, 
-    setViewerCount,
-    isLive,
-    connectionQuality,
-    setConnectionQuality,
-    networkStats,
-    setNetworkStats
-}) => {
+    // Now SAFE to use all LiveKit hooks - context is guaranteed to exist
     const room = useRoomContext();
     const localParticipant = useLocalParticipant();
     const remoteParticipants = useRemoteParticipants();
+    const connectionState = useConnectionState();
+    
     const [isCameraEnabled, setIsCameraEnabled] = useState(true);
     const [isMicEnabled, setIsMicEnabled] = useState(true);
     const [facingMode, setFacingMode] = useState('user'); // 'user' or 'environment'
     const statsIntervalRef = useRef(null);
     const userChoices = usePersistentUserChoices();
 
-    // Get video and audio tracks
+    // Get video and audio tracks - now safe to call
     const tracks = useTracks([
         { source: Track.Source.Camera, withPlaceholder: true },
         { source: Track.Source.Microphone, withPlaceholder: false },
