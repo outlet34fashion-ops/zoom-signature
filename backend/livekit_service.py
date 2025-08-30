@@ -179,6 +179,9 @@ class LiveKitTokenService:
         Returns:
             Room information dictionary
         """
+        if not self.livekit_api:
+            raise Exception("LiveKit service not properly initialized - credentials missing")
+            
         try:
             # Create room request
             room_request = api.CreateRoomRequest(
