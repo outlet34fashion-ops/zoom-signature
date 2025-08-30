@@ -3322,6 +3322,16 @@ function App() {
           />
         </div>
       )}
+
+      {/* LiveKit Room Manager Modal */}
+      {showLiveKitStream && (
+        <LiveKitRoomManager
+          isAdmin={livekitMode === 'publisher'}
+          currentUser={currentCustomer}
+          onClose={handleLiveKitStreamClose}
+          initialRoomName={selectedRoomName}
+        />
+      )}
     </div>
   );
 }
