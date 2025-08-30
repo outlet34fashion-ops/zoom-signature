@@ -1446,7 +1446,7 @@ function App() {
                             alt="WhatsApp Logo" 
                             className="w-5 h-5"
                           />
-                          <span className="font-semibold">{t('navigation.service')}</span>
+                          <span className="font-semibold">Service Nummer</span>
                         </a>
                       </div>
                     </div>
