@@ -243,11 +243,11 @@ frontend:
 
   - task: "WebRTC Live Video Streaming - Frontend Implementation"
     implemented: true
-    working: "NA"
+    working: false
     file: "/app/frontend/src/App.js, /app/frontend/src/components/"
-    stuck_count: 0
+    stuck_count: 1
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
@@ -255,6 +255,9 @@ frontend:
       - working: "NA"
         agent: "main"
         comment: "✅ FRONTEND IMPLEMENTATION COMPLETED: Successfully implemented comprehensive React WebRTC streaming interface: 1) StreamingInterface component with dual modes (streamer/viewer), 2) StreamsList component for displaying active streams, 3) iPhone camera support with getUserMedia constraints (facingMode: 'user'), 4) WebRTC peer connections with automatic STUN/TURN configuration fetching, 5) WebSocket signaling for real-time communication, 6) Mobile-optimized UI with playsInline video elements, 7) Real-time viewer count and connection status display, 8) German UI localization, 9) Admin streaming button in dashboard, 10) Customer streaming list view, 11) Comprehensive error handling and connection state management. Dependencies installed: socket.io-client, webrtc-adapter. Integrated with existing authentication and admin role management."
+      - working: false
+        agent: "testing"
+        comment: "❌ CRITICAL BUG CONFIRMED - VIDEO STREAMING NOT WORKING: Comprehensive testing reveals the exact issue described in review request. 1) ✅ ADMIN FUNCTIONALITY: Admin login (PIN 1924) works, admin can access streaming interface with 'HD Live-Stream starten' button, streaming components are present. 2) ❌ CRITICAL VIEWER ISSUE: Customer login (10299) works but viewers see COUNTDOWN DISPLAY instead of real video! Screenshots show 'LIVE SHOPPING COUNTDOWN' with timer (16 STD 42 MIN 57 SEK) and message 'Startet am 31.8.2025 um 15:00 Uhr'. 3) ❌ ROOT CAUSE IDENTIFIED: SimpleVideoStreaming component (/app/frontend/src/components/streaming/SimpleVideoStreaming.js) shows hardcoded countdown for viewers (lines 22-26, 129-153) instead of establishing WebRTC connection to admin's video stream. Console shows '🔗 Initializing viewer WebRTC connection...' but NO video elements (0 found) on customer side. 4) ❌ WEBRTC CONNECTION FAILURE: Backend WebRTC infrastructure is working (100% success rate), but frontend viewer component fails to display real admin video stream. The bug 'admin starts camera but viewers only see countdown instead of actual video' is CONFIRMED and needs immediate fix in SimpleVideoStreaming.js viewer logic."
 
 metadata:
   created_by: "main_agent"
