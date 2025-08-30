@@ -3283,25 +3283,64 @@ function App() {
         </div>
       )}
 
-      {/* Simple Video Streams for Customers */}
+      {/* Live Stream Integration for Customers */}
       {isAuthenticated && !isAdminView && !showSimpleStream && (
-        <div className="mt-6">
+        <div className="container mx-auto px-4 py-4">
+          {/* Embedded Live Stream Section */}
+          <div className="bg-gradient-to-br from-purple-600 via-purple-700 to-pink-600 rounded-2xl p-6 mb-6 text-white">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="bg-red-500 px-3 py-1 rounded-full text-sm font-bold animate-pulse">
+                  🔴 LIVE STREAM
+                </div>
+                <div className="text-sm opacity-90">
+                  👥 {Math.floor(Math.random() * 50) + 15} Zuschauer online
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-sm opacity-90">OUTLET34 Fashion Store</div>
+                <div className="text-xs opacity-75">Jetzt live • HD Qualität</div>
+              </div>
+            </div>
+
+            {/* Embedded Live Stream Video */}
+            <div className="bg-black rounded-xl overflow-hidden mb-4" style={{ aspectRatio: '16/9' }}>
+              <SimpleVideoStreaming
+                isAdmin={false}
+                currentUser={currentCustomer}
+                onClose={() => {}}
+                embedded={true}
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-bold mb-1">🛍️ Live Shopping Event</h3>
+                <p className="text-sm opacity-90">
+                  Exklusive Fashion Angebote • Live Beratung • Sofort bestellen
+                </p>
+              </div>
+              <button 
+                onClick={() => setShowSimpleStream(true)}
+                className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors"
+              >
+                💬 Vollbild & Chat
+              </button>
+            </div>
+          </div>
+
+          {/* Additional Customer Content */}
           <div className="bg-white rounded-lg shadow-lg p-6">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold text-gray-900">
-                🎥 Live HD-Streams
+                🎥 Live Shopping Funktionen
               </h3>
-              <Button
-                onClick={() => joinSimpleStream()}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-                size="sm"
-              >
-                📺 Live Stream ansehen
-              </Button>
             </div>
-            <div className="text-sm text-gray-600">
-              <p>🔥 Stabiler HD-Video-Stream ohne komplexe Technik!</p>
-              <p>💎 Einfache Bedienung • Sofort funktionsfähig</p>
+            <div className="text-sm text-gray-600 space-y-2">
+              <p>🔥 <strong>Live Video:</strong> Sehen Sie Produkte in Echtzeit</p>
+              <p>💬 <strong>Live Chat:</strong> Stellen Sie direkt Fragen</p>
+              <p>🛒 <strong>Sofort bestellen:</strong> Produkte während dem Stream kaufen</p>
+              <p>📱 <strong>Mobile optimiert:</strong> Perfekt für iPhone und Android</p>
             </div>
           </div>
         </div>
