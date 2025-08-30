@@ -99,28 +99,30 @@ const SimpleVideoStreaming = ({
     }, [isAdmin]);
 
     return (
-        <div className="simple-video-container">
-            {/* Header */}
-            <div className="video-header">
-                <div className="header-left">
-                    {isConnected && (
-                        <div className="live-badge">
-                            <span className="live-dot"></span>
-                            LIVE
+        <div className={embedded ? "embedded-video-container" : "simple-video-container"}>
+            {/* Header - Hide in embedded mode */}
+            {!embedded && (
+                <div className="video-header">
+                    <div className="header-left">
+                        {isConnected && (
+                            <div className="live-badge">
+                                <span className="live-dot"></span>
+                                LIVE
+                            </div>
+                        )}
+                        <div className="viewer-count">
+                            👥 {viewerCount} Zuschauer
                         </div>
-                    )}
-                    <div className="viewer-count">
-                        👥 {viewerCount} Zuschauer
+                        <div className="mode-badge">
+                            {isAdmin ? '📹 STREAMER' : '👀 VIEWER'}
+                        </div>
                     </div>
-                    <div className="mode-badge">
-                        {isAdmin ? '📹 STREAMER' : '👀 VIEWER'}
-                    </div>
+                    
+                    <button onClick={onClose} className="close-btn">
+                        ✕ Schließen
+                    </button>
                 </div>
-                
-                <button onClick={onClose} className="close-btn">
-                    ✕ Schließen
-                </button>
-            </div>
+            )}
 
             {/* Error Display */}
             {error && (
