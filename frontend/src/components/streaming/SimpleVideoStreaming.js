@@ -214,18 +214,25 @@ const SimpleVideoStreaming = ({
         setViewerCount(0);
     };
 
-    // Auto-start for admin
+    // Auto-start for admin or initialize viewer
     useEffect(() => {
         if (isAdmin) {
             startCamera();
         } else {
-            // Simulate viewer joining existing stream
-            setIsConnected(true);
-            setViewerCount(2); // Simulate 2 viewers
+            // Initialize viewer WebRTC connection
+            initializeViewer();
         }
 
         return () => {
             stopStreaming();
+            // Clean up WebSocket
+            if (websocket) {
+                websocket.close();
+            }
+            // Clean up peer connection
+            if (peerConnection) {
+                peerConnection.close();
+            }
         };
     }, [isAdmin]);
 
