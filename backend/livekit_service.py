@@ -220,6 +220,9 @@ class LiveKitTokenService:
         Returns:
             Room information or None if room doesn't exist
         """
+        if not self.livekit_api:
+            raise Exception("LiveKit service not properly initialized - credentials missing")
+            
         try:
             # List rooms and find the specific one
             request = api.ListRoomsRequest()
@@ -250,6 +253,9 @@ class LiveKitTokenService:
         Returns:
             List of room information dictionaries
         """
+        if not self.livekit_api:
+            raise Exception("LiveKit service not properly initialized - credentials missing")
+            
         try:
             request = api.ListRoomsRequest()
             response = await self.livekit_api.room.list_rooms(request)
@@ -282,6 +288,9 @@ class LiveKitTokenService:
         Returns:
             True if successful, False otherwise
         """
+        if not self.livekit_api:
+            raise Exception("LiveKit service not properly initialized - credentials missing")
+            
         try:
             request = api.DeleteRoomRequest(room=room_name)
             await self.livekit_api.room.delete_room(request)
@@ -303,6 +312,9 @@ class LiveKitTokenService:
         Returns:
             List of participant information
         """
+        if not self.livekit_api:
+            raise Exception("LiveKit service not properly initialized - credentials missing")
+            
         try:
             request = api.ListParticipantsRequest(room=room_name)
             response = await self.livekit_api.room.list_participants(request)
@@ -344,6 +356,9 @@ class LiveKitTokenService:
         Returns:
             True if successful, False otherwise
         """
+        if not self.livekit_api:
+            raise Exception("LiveKit service not properly initialized - credentials missing")
+            
         try:
             request = api.RemoveParticipantRequest(
                 room=room_name,
