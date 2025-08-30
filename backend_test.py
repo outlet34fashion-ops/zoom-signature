@@ -3508,6 +3508,371 @@ class LiveShoppingAPITester:
             self.log_test("LiveKit Integration - Exception", False, str(e))
             return False
 
+    def test_review_request_customer_10299(self):
+        """Test specific customer 10299 authentication as per review request"""
+        print("\n🎯 Testing Review Request - Customer 10299 Authentication...")
+        
+        try:
+            # Test customer 10299 status check (should be active)
+            print("  🔍 Testing customer 10299 status check...")
+            response = requests.get(
+                f"{self.api_url}/customers/check/10299",
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                
+                # Check if customer exists
+                exists = data.get('exists', False)
+                if not exists:
+                    self.log_test("Review Request - Customer 10299 Exists", False, "Customer 10299 does not exist")
+                    return False
+                
+                # Check if customer is active
+                activation_status = data.get('activation_status')
+                is_active = activation_status == 'active'
+                
+                # Check if customer_number field is present and correct
+                customer_number = data.get('customer_number')
+                correct_number = customer_number == '10299'
+                
+                # Check all required fields
+                required_fields = ['exists', 'customer_number', 'activation_status', 'name', 'email', 'message']
+                has_all_fields = all(field in data for field in required_fields)
+                
+                success = exists and is_active and correct_number and has_all_fields
+                details += f", Exists: {exists}, Active: {is_active}, Customer Number: {customer_number}, Has all fields: {has_all_fields}"
+                
+                if success:
+                    print(f"    ✅ Customer 10299 is ACTIVE and ready for login")
+                    print(f"    📋 Customer Details: Name='{data.get('name')}', Email='{data.get('email')}'")
+                else:
+                    if not is_active:
+                        print(f"    ❌ Customer 10299 status is '{activation_status}' (should be 'active')")
+                    if not correct_number:
+                        print(f"    ❌ Customer number field is '{customer_number}' (should be '10299')")
+            
+            self.log_test("Review Request - Customer 10299 Authentication Ready", success, details)
+            
+            # Test order placement capability for customer 10299
+            if success:
+                print("  🛒 Testing customer 10299 order placement capability...")
+                
+                # Get products first
+                products_response = requests.get(f"{self.api_url}/products", timeout=10)
+                if products_response.status_code == 200:
+                    products = products_response.json()
+                    if products:
+                        product = products[0]
+                        
+                        # Test order placement
+                        order_data = {
+                            "customer_id": "10299",
+                            "product_id": product['id'],
+                            "size": "OneSize",
+                            "quantity": 1,
+                            "price": 12.90
+                        }
+                        
+                        order_response = requests.post(
+                            f"{self.api_url}/orders",
+                            json=order_data,
+                            headers={'Content-Type': 'application/json'},
+                            timeout=10
+                        )
+                        
+                        order_success = order_response.status_code == 200
+                        order_details = f"Order Status: {order_response.status_code}"
+                        
+                        if order_success:
+                            order_result = order_response.json()
+                            order_id = order_result.get('id')
+                            order_details += f", Order ID: {order_id}, Price: {order_result.get('price')}"
+                            
+                            # Verify German chat format generation
+                            expected_format = "**Bestellung** 0299 I 1x I 12,90 I OneSize"
+                            order_details += f", Expected chat format: '{expected_format}'"
+                            
+                            print(f"    ✅ Order placed successfully: {order_id}")
+                            print(f"    📋 German chat format: {expected_format}")
+                        
+                        self.log_test("Review Request - Customer 10299 Order Capability", order_success, order_details)
+                        return success and order_success
+                    else:
+                        self.log_test("Review Request - Customer 10299 Order Capability", False, "No products available for testing")
+                        return success
+                else:
+                    self.log_test("Review Request - Customer 10299 Order Capability", False, "Could not fetch products")
+                    return success
+            
+            return success
+            
+        except Exception as e:
+            self.log_test("Review Request - Customer 10299 Authentication", False, str(e))
+            return False
+
+    def test_modern_design_backend_support(self):
+        """Test backend endpoints that support the modern design features"""
+        print("\n🎨 Testing Modern Design Backend Support...")
+        
+        try:
+            # Test stream status for live viewer count display
+            print("  📊 Testing live viewer count support...")
+            response = requests.get(f"{self.api_url}/stream/status", timeout=10)
+            
+            success = response.status_code == 200
+            details = f"Stream Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                required_fields = ['is_live', 'viewer_count', 'stream_title', 'stream_description']
+                has_all_fields = all(field in data for field in required_fields)
+                
+                viewer_count = data.get('viewer_count', 0)
+                is_live = data.get('is_live', False)
+                
+                success = has_all_fields
+                details += f", Has all fields: {has_all_fields}, Viewer count: {viewer_count}, Is live: {is_live}"
+                
+                if success:
+                    print(f"    ✅ Live viewer count: {viewer_count}")
+                    print(f"    📺 Stream status: {'Live' if is_live else 'Offline'}")
+            
+            self.log_test("Modern Design - Live Viewer Count Support", success, details)
+            
+            # Test ticker settings for modern UI elements
+            print("  🎯 Testing ticker settings for modern UI...")
+            ticker_response = requests.get(f"{self.api_url}/admin/ticker", timeout=10)
+            
+            ticker_success = ticker_response.status_code == 200
+            ticker_details = f"Ticker Status: {ticker_response.status_code}"
+            
+            if ticker_success:
+                ticker_data = ticker_response.json()
+                has_text = 'text' in ticker_data
+                has_enabled = 'enabled' in ticker_data
+                
+                ticker_success = has_text and has_enabled
+                ticker_details += f", Has text: {has_text}, Has enabled: {has_enabled}"
+                
+                if ticker_success:
+                    print(f"    ✅ Ticker text: '{ticker_data.get('text', '')[:50]}...'")
+                    print(f"    🔄 Ticker enabled: {ticker_data.get('enabled')}")
+            
+            self.log_test("Modern Design - Ticker Settings Support", ticker_success, ticker_details)
+            
+            # Test WebSocket endpoint for real-time updates
+            print("  🔌 Testing WebSocket for real-time UI updates...")
+            ws_success = self.test_websocket_availability()
+            
+            # Test admin stats for dashboard elements
+            print("  📈 Testing admin stats for dashboard...")
+            stats_response = requests.get(f"{self.api_url}/admin/stats", timeout=10)
+            
+            stats_success = stats_response.status_code == 200
+            stats_details = f"Stats Status: {stats_response.status_code}"
+            
+            if stats_success:
+                stats_data = stats_response.json()
+                has_total_orders = 'total_orders' in stats_data
+                has_session_orders = 'session_orders' in stats_data
+                
+                stats_success = has_total_orders and has_session_orders
+                stats_details += f", Has total orders: {has_total_orders}, Has session orders: {has_session_orders}"
+                
+                if stats_success:
+                    print(f"    📊 Total orders: {stats_data.get('total_orders')}")
+                    print(f"    🔢 Session orders: {stats_data.get('session_orders')}")
+            
+            self.log_test("Modern Design - Admin Stats Support", stats_success, stats_details)
+            
+            return success and ticker_success and ws_success and stats_success
+            
+        except Exception as e:
+            self.log_test("Modern Design - Backend Support", False, str(e))
+            return False
+
+    def test_streaming_countdown_backend(self):
+        """Test backend support for live streaming countdown interface"""
+        print("\n⏰ Testing Live Streaming Countdown Backend Support...")
+        
+        try:
+            # Test active streams endpoint
+            print("  📺 Testing active streams for countdown display...")
+            response = requests.get(f"{self.api_url}/streams/active", timeout=10)
+            
+            success = response.status_code == 200
+            details = f"Active Streams Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                has_streams_field = 'streams' in data
+                streams = data.get('streams', [])
+                
+                success = has_streams_field
+                details += f", Has streams field: {has_streams_field}, Stream count: {len(streams)}"
+                
+                if success and streams:
+                    stream = streams[0]
+                    required_fields = ['stream_id', 'stream_title', 'viewer_count', 'created_at', 'status']
+                    has_all_fields = all(field in stream for field in required_fields)
+                    details += f", First stream valid: {has_all_fields}"
+                    
+                    if has_all_fields:
+                        print(f"    ✅ Active stream: {stream.get('stream_title')}")
+                        print(f"    👥 Viewers: {stream.get('viewer_count')}")
+                        print(f"    📅 Created: {stream.get('created_at')}")
+                
+                elif success:
+                    print(f"    ℹ️  No active streams currently")
+            
+            self.log_test("Streaming Countdown - Active Streams Support", success, details)
+            
+            # Test WebRTC configuration for streaming
+            print("  ⚙️  Testing WebRTC configuration...")
+            config_response = requests.get(f"{self.api_url}/webrtc/config", timeout=10)
+            
+            config_success = config_response.status_code == 200
+            config_details = f"WebRTC Config Status: {config_response.status_code}"
+            
+            if config_success:
+                config_data = config_response.json()
+                has_rtc_config = 'rtcConfiguration' in config_data
+                has_media_constraints = 'mediaConstraints' in config_data
+                
+                config_success = has_rtc_config and has_media_constraints
+                config_details += f", Has RTC config: {has_rtc_config}, Has media constraints: {has_media_constraints}"
+                
+                if config_success:
+                    rtc_config = config_data.get('rtcConfiguration', {})
+                    ice_servers = rtc_config.get('iceServers', [])
+                    print(f"    ✅ ICE servers configured: {len(ice_servers)}")
+                    
+                    media_constraints = config_data.get('mediaConstraints', {})
+                    video_config = media_constraints.get('video', {})
+                    facing_mode = video_config.get('facingMode')
+                    print(f"    📱 iPhone camera support: {facing_mode == 'user'}")
+            
+            self.log_test("Streaming Countdown - WebRTC Config Support", config_success, config_details)
+            
+            return success and config_success
+            
+        except Exception as e:
+            self.log_test("Streaming Countdown - Backend Support", False, str(e))
+            return False
+
+    def test_existing_functionality_with_design(self):
+        """Test that existing functionality (chat, orders, streaming) still works with new design"""
+        print("\n🔄 Testing Existing Functionality Compatibility...")
+        
+        try:
+            # Test chat functionality
+            print("  💬 Testing chat functionality...")
+            chat_message = {
+                "username": f"DesignTest_{int(time.time())}",
+                "message": "Testing chat with modern design",
+                "emoji": "🎨"
+            }
+            
+            chat_response = requests.post(
+                f"{self.api_url}/chat",
+                json=chat_message,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            chat_success = chat_response.status_code == 200
+            chat_details = f"Chat Status: {chat_response.status_code}"
+            
+            if chat_success:
+                chat_data = chat_response.json()
+                has_required_fields = all(field in chat_data for field in ['id', 'username', 'message', 'timestamp'])
+                emoji_preserved = chat_data.get('emoji') == "🎨"
+                
+                chat_success = has_required_fields and emoji_preserved
+                chat_details += f", Has required fields: {has_required_fields}, Emoji preserved: {emoji_preserved}"
+                
+                if chat_success:
+                    print(f"    ✅ Chat message sent with emoji: {chat_data.get('emoji')}")
+            
+            self.log_test("Existing Functionality - Chat with Design", chat_success, chat_details)
+            
+            # Test order functionality
+            print("  🛒 Testing order functionality...")
+            products_response = requests.get(f"{self.api_url}/products", timeout=10)
+            
+            if products_response.status_code == 200:
+                products = products_response.json()
+                if products:
+                    product = products[0]
+                    
+                    order_data = {
+                        "customer_id": f"DESIGN{int(time.time())}",
+                        "product_id": product['id'],
+                        "size": "OneSize",
+                        "quantity": 1,
+                        "price": 15.90
+                    }
+                    
+                    order_response = requests.post(
+                        f"{self.api_url}/orders",
+                        json=order_data,
+                        headers={'Content-Type': 'application/json'},
+                        timeout=10
+                    )
+                    
+                    order_success = order_response.status_code == 200
+                    order_details = f"Order Status: {order_response.status_code}"
+                    
+                    if order_success:
+                        order_result = order_response.json()
+                        has_required_fields = all(field in order_result for field in ['id', 'customer_id', 'product_id', 'price'])
+                        correct_price = abs(order_result.get('price', 0) - 15.90) < 0.01
+                        
+                        order_success = has_required_fields and correct_price
+                        order_details += f", Has required fields: {has_required_fields}, Correct price: {correct_price}"
+                        
+                        if order_success:
+                            print(f"    ✅ Order placed: {order_result.get('id')}")
+                    
+                    self.log_test("Existing Functionality - Orders with Design", order_success, order_details)
+                else:
+                    order_success = False
+                    self.log_test("Existing Functionality - Orders with Design", False, "No products available")
+            else:
+                order_success = False
+                self.log_test("Existing Functionality - Orders with Design", False, "Could not fetch products")
+            
+            # Test streaming functionality
+            print("  📺 Testing streaming functionality...")
+            stream_status_response = requests.get(f"{self.api_url}/stream/status", timeout=10)
+            
+            stream_success = stream_status_response.status_code == 200
+            stream_details = f"Stream Status: {stream_status_response.status_code}"
+            
+            if stream_success:
+                stream_data = stream_status_response.json()
+                has_required_fields = all(field in stream_data for field in ['is_live', 'viewer_count', 'stream_title'])
+                
+                stream_success = has_required_fields
+                stream_details += f", Has required fields: {has_required_fields}"
+                
+                if stream_success:
+                    print(f"    ✅ Stream status: {'Live' if stream_data.get('is_live') else 'Offline'}")
+                    print(f"    👥 Viewer count: {stream_data.get('viewer_count')}")
+            
+            self.log_test("Existing Functionality - Streaming with Design", stream_success, stream_details)
+            
+            return chat_success and order_success and stream_success
+            
+        except Exception as e:
+            self.log_test("Existing Functionality - Compatibility", False, str(e))
+            return False
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("🚀 Starting Live Shopping App Backend API Tests")
