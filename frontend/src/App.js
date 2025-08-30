@@ -15,6 +15,7 @@ import StreamsList from './components/streaming/StreamsList';
 import LiveKitRoomManager from './components/streaming/LiveKitRoomManager';
 import SimpleVideoStreaming from './components/streaming/SimpleVideoStreaming';
 import MobileVideoPlayer from './components/streaming/MobileVideoPlayer';
+import LiveKitStreaming from './components/streaming/LiveKitStreaming';
 import livekitService from './services/livekitService';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
