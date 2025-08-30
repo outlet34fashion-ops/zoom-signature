@@ -514,66 +514,65 @@ const SimpleLiveKitStreaming = ({
         setViewerCount(0);
     };
 
-    // Error state
-    if (connectionState === 'error') {
-        return (
-            <div className="livekit-error-container">
-                <div className="livekit-error-message">
-                    <h3>🚨 Verbindungsfehler</h3>
-                    <p>{error}</p>
-                    <button 
-                        onClick={connectToRoom}
-                        className="retry-btn"
-                    >
-                        🔄 Erneut versuchen
-                    </button>
-                </div>
-            </div>
-        );
-    }
-
-    // Connecting state
-    if (connectionState === 'connecting') {
-        return (
-            <div className="livekit-connecting-container">
-                <div className="connecting-animation">
-                    <div className="spinner">🔄</div>
-                    <h3>Verbindung zu LiveKit...</h3>
-                    <p>HD-Stream wird initialisiert...</p>
-                    <div className="progress-bar">
-                        <div className="progress-fill"></div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    // Connected streaming interface
+    // ======= SINGLE RENDER RETURN - NO EARLY RETURNS ALLOWED =======
     return (
         <div className="simple-livekit-container">
-            {/* Header */}
-            <div className="streaming-header">
-                <div className="live-info">
-                    <div className="live-badge">
-                        <span className="live-dot"></span>
-                        LIVE
-                    </div>
-                    <div className="viewer-count">
-                        👥 {viewerCount} Zuschauer
-                    </div>
-                    {/* DEBUG: Show current mode */}
-                    <div className="debug-mode">
-                        {isPublisher ? '📹 PUBLISHER MODE' : '👀 VIEWER MODE'}
+            {/* ERROR STATE */}
+            {connectionState === 'error' && (
+                <div className="livekit-error-container">
+                    <div className="livekit-error-message">
+                        <h3>🚨 Verbindungsfehler</h3>
+                        <p>{error}</p>
+                        <button 
+                            onClick={connectToRoom}
+                            className="retry-btn"
+                        >
+                            🔄 Erneut versuchen
+                        </button>
                     </div>
                 </div>
-                
-                <button 
-                    className="chat-toggle"
-                    onClick={() => setShowChat(!showChat)}
-                >
-                    💬 Chat {showChat ? 'ausblenden' : 'einblenden'}
-                </button>
-            </div>
+            )}
+
+            {/* CONNECTING STATE */}
+            {connectionState === 'connecting' && (
+                <div className="livekit-connecting-container">
+                    <div className="connecting-animation">
+                        <div className="spinner">🔄</div>
+                        <h3>Verbindung zu LiveKit...</h3>
+                        <p>HD-Stream wird initialisiert...</p>
+                        <div className="progress-bar">
+                            <div className="progress-fill"></div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* CONNECTED STATE */}
+            {connectionState === 'connected' && (
+                <>
+                    {/* Header */}
+                    <div className="streaming-header">
+                        <div className="live-info">
+                            <div className="live-badge">
+                                <span className="live-dot"></span>
+                                LIVE
+                            </div>
+                            <div className="viewer-count">
+                                👥 {viewerCount} Zuschauer
+                            </div>
+                            {/* DEBUG: Show current mode */}
+                            <div className="debug-mode">
+                                {isPublisher ? '📹 PUBLISHER MODE' : '👀 VIEWER MODE'}
+                            </div>
+                        </div>
+                        
+                        <button 
+                            className="chat-toggle"
+                            onClick={() => setShowChat(!showChat)}
+                        >
+                            💬 Chat {showChat ? 'ausblenden' : 'einblenden'}
+                        </button>
+                    </div>
 
             <div className={`streaming-layout ${showChat ? 'with-chat' : 'full-width'}`}>
                 {/* Video Area */}
