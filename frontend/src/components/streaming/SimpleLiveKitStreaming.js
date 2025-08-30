@@ -693,7 +693,8 @@ const SimpleLiveKitStreaming = ({
                         </div>
                     </div>
                 )}
-            </div>
+                </>
+            )}
         </div>
     );
 };
