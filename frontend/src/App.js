@@ -3289,9 +3289,33 @@ function App() {
         </div>
       )}
 
-      {/* Active Streams List for Customers */}
-      {isAuthenticated && !isAdminView && !showStreaming && (
+      {/* LiveKit Streams for Customers */}
+      {isAuthenticated && !isAdminView && !showLiveKitStream && (
         <div className="mt-6">
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-gray-900">
+                🎥 Live HD-Streams
+              </h3>
+              <Button
+                onClick={() => joinLiveKitStream()}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+                size="sm"
+              >
+                📺 Streams anzeigen
+              </Button>
+            </div>
+            <div className="text-sm text-gray-600">
+              <p>🔥 Erleben Sie Live Shopping in HD-Qualität!</p>
+              <p>💎 1080p @ 30fps • Niedriger Latenz • iPhone optimiert</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Legacy Active Streams List for Customers (Backward Compatibility) */}
+      {isAuthenticated && !isAdminView && !showStreaming && !showLiveKitStream && (
+        <div className="mt-6" style={{display: 'none'}}> {/* Hidden but kept for compatibility */}
           <StreamsList
             onJoinStream={joinWebRTCStream}
             backendUrl={BACKEND_URL}
