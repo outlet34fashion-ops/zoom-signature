@@ -568,23 +568,26 @@ const SimpleLiveKitStreaming = ({
             <div className={`streaming-layout ${showChat ? 'with-chat' : 'full-width'}`}>
                 {/* Video Area */}
                 <div className="video-area">
-                    {/* Local video (publisher only) */}
+                    {/* Publisher's own video (large display) */}
                     {isPublisher && (
-                        <div className="local-video-container">
+                        <div className="main-publisher-video">
                             <video
                                 ref={localVideoRef}
                                 autoPlay
                                 playsInline
                                 muted
-                                className="local-video"
+                                className="publisher-main-video"
                                 style={{
                                     width: '100%',
                                     height: '100%',
                                     objectFit: 'cover',
-                                    backgroundColor: '#333'
+                                    backgroundColor: '#333',
+                                    borderRadius: '8px'
                                 }}
                             />
-                            <div className="local-label">Sie (Live)</div>
+                            <div className="publisher-overlay">
+                                <div className="publisher-label">📹 Sie sind LIVE</div>
+                            </div>
                         </div>
                     )}
 
@@ -606,6 +609,7 @@ const SimpleLiveKitStreaming = ({
                             <button 
                                 className={`control-btn ${isCameraEnabled ? 'active' : 'inactive'}`}
                                 onClick={toggleCamera}
+                                title="Kamera ein/aus"
                             >
                                 {isCameraEnabled ? '📹' : '📹❌'}
                             </button>
@@ -613,6 +617,7 @@ const SimpleLiveKitStreaming = ({
                             <button 
                                 className={`control-btn ${isMicEnabled ? 'active' : 'inactive'}`}
                                 onClick={toggleMicrophone}
+                                title="Mikrofon ein/aus"
                             >
                                 {isMicEnabled ? '🎤' : '🎤❌'}
                             </button>
@@ -620,6 +625,7 @@ const SimpleLiveKitStreaming = ({
                             <button 
                                 className="control-btn"
                                 onClick={flipCamera}
+                                title="Kamera wechseln"
                             >
                                 🔄
                             </button>
