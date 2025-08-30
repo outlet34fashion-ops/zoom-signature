@@ -205,14 +205,14 @@ const LiveKitRoomManager = ({
     // Render streaming interface
     if (currentState === 'streaming' && token && serverUrl) {
         return (
-            <LiveKitStreamingInterface
+            <SimpleLiveKitStreaming
                 token={token}
                 serverUrl={serverUrl}
                 roomName={selectedRoom?.roomName}
                 isPublisher={isAdmin}
-                onDisconnected={handleStreamingDisconnected}
+                onDisconnected={handleLiveKitStreamClose}
                 onError={handleStreamingError}
-                onConnected={() => console.log('Connected to streaming')}
+                onConnected={() => console.log('Connected to LiveKit streaming')}
             />
         );
     }
