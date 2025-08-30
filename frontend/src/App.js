@@ -1295,7 +1295,7 @@ function App() {
                     </button>
                     <button
                       onClick={() => changeLanguage('fr')}
-                      className={`px-3 py-2 rounded text-sm transition-colors ${
+                      className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
                         i18n.language === 'fr' 
                           ? 'bg-pink-500 text-white' 
                           : 'bg-white text-gray-700 hover:bg-gray-100 border'
