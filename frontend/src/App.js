@@ -3283,8 +3283,8 @@ function App() {
         </div>
       )}
 
-      {/* LiveKit Streams for Customers */}
-      {isAuthenticated && !isAdminView && !showLiveKitStream && (
+      {/* Simple Video Streams for Customers */}
+      {isAuthenticated && !isAdminView && !showSimpleStream && (
         <div className="mt-6">
           <div className="bg-white rounded-lg shadow-lg p-6">
             <div className="flex justify-between items-center mb-4">
@@ -3292,16 +3292,16 @@ function App() {
                 🎥 Live HD-Streams
               </h3>
               <Button
-                onClick={() => joinLiveKitStream()}
+                onClick={() => joinSimpleStream()}
                 className="bg-blue-600 hover:bg-blue-700 text-white"
                 size="sm"
               >
-                📺 Streams anzeigen
+                📺 Live Stream ansehen
               </Button>
             </div>
             <div className="text-sm text-gray-600">
-              <p>🔥 Erleben Sie Live Shopping in HD-Qualität!</p>
-              <p>💎 1080p @ 30fps • Niedriger Latenz • iPhone optimiert</p>
+              <p>🔥 Stabiler HD-Video-Stream ohne komplexe Technik!</p>
+              <p>💎 Einfache Bedienung • Sofort funktionsfähig</p>
             </div>
           </div>
         </div>
