@@ -137,8 +137,7 @@ class LiveKitStreamingService:
                     room_admin=True,
                     can_publish=True,
                     can_subscribe=True,
-                    can_publish_data=True,
-                    can_update_metadata=True
+                    can_publish_data=True
                 )
                 logger.info(f"👑 Admin permissions granted for {request.participant_name}")
             else:
