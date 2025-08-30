@@ -17,9 +17,41 @@ const SimpleVideoStreaming = ({
     const [error, setError] = useState(null);
     const [viewerCount, setViewerCount] = useState(0);
     const [stream, setStream] = useState(null);
+    const [countdown, setCountdown] = useState({
+        hours: 2,
+        minutes: 5,
+        seconds: 50
+    });
     
     const localVideoRef = useRef(null);
     const remoteVideoRef = useRef(null);
+
+    // Countdown timer effect
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCountdown(prev => {
+                let { hours, minutes, seconds } = prev;
+                
+                if (seconds > 0) {
+                    seconds--;
+                } else if (minutes > 0) {
+                    minutes--;
+                    seconds = 59;
+                } else if (hours > 0) {
+                    hours--;
+                    minutes = 59;
+                    seconds = 59;
+                } else {
+                    // Countdown finished - reset or show live stream
+                    return { hours: 0, minutes: 0, seconds: 0 };
+                }
+                
+                return { hours, minutes, seconds };
+            });
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, []);
 
     // Start camera stream (Admin only)
     const startCamera = async () => {
