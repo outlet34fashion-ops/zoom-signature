@@ -417,6 +417,9 @@ class LiveKitTokenService:
     
     async def close(self):
         """Close the LiveKit API connection"""
+        if not self.livekit_api:
+            return
+            
         try:
             await self.livekit_api.aclose()
             logger.info("LiveKit service connection closed")
