@@ -133,7 +133,56 @@ const LiveKitStreamingInterface = ({
     );
 };
 
-// Main streaming content component
+// SafeLiveKitContent - Only renders when LiveKit context is ready
+const SafeLiveKitContent = ({ isPublisher }) => {
+    const [showChat, setShowChat] = useState(true);
+    const [viewerCount, setViewerCount] = useState(0);
+    const [isLive, setIsLive] = useState(true);
+    const [connectionQuality, setConnectionQuality] = useState('excellent');
+    const [networkStats, setNetworkStats] = useState({
+        rtt: 0,
+        bitrate: 0,
+        packetLoss: 0,
+        fps: 0
+    });
+
+    // Check if we have a room context - this is the SAFE way to check
+    const room = useRoomContext();
+    
+    // If no room context yet, show connecting state
+    if (!room) {
+        return (
+            <div className="connection-loading">
+                <div className="loading-spinner">🔄</div>
+                <div className="connection-status">
+                    <h3>Verbindung wird hergestellt...</h3>
+                    <p>LiveKit wird initialisiert...</p>
+                    <div className="loading-progress">
+                        <div className="progress-bar"></div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Now safe to render the full streaming interface
+    return (
+        <StreamingContent 
+            isPublisher={isPublisher}
+            showChat={showChat}
+            setShowChat={setShowChat}
+            viewerCount={viewerCount}
+            setViewerCount={setViewerCount}
+            isLive={isLive}
+            connectionQuality={connectionQuality}
+            setConnectionQuality={setConnectionQuality}
+            networkStats={networkStats}
+            setNetworkStats={setNetworkStats}
+        />
+    );
+};
+
+// StreamingContent - Now SAFE to use LiveKit hooks
 const StreamingContent = ({ 
     isPublisher, 
     showChat, 
