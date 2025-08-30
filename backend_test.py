@@ -3991,6 +3991,10 @@ class LiveShoppingAPITester:
 
         # Critical functionality check
         critical_tests = [
+            ("🎯 REVIEW REQUEST - Customer 10299 Auth", customer_10299_success),
+            ("🎨 REVIEW REQUEST - Modern Design Support", modern_design_success),
+            ("⏰ REVIEW REQUEST - Streaming Countdown", streaming_countdown_success),
+            ("🔄 REVIEW REQUEST - Existing Functionality", existing_functionality_success),
             ("🌍 MULTI-LANGUAGE FUNCTIONALITY", multi_language_success),
             ("🎯 GERMAN ORDER FORMAT VERIFICATION", german_format_success),
             ("🚨 CRITICAL AUTH ISSUE (Customer 10299)", critical_auth_success),
