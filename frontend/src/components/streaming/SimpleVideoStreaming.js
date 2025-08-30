@@ -27,6 +27,13 @@ const SimpleVideoStreaming = ({
     const localVideoRef = useRef(null);
     const remoteVideoRef = useRef(null);
 
+    // Simple WebRTC Configuration (for remaining functions)
+    const rtcConfiguration = {
+        iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' }
+        ]
+    };
+
     // Auto-start for admin or initialize viewer
     useEffect(() => {
         if (isAdmin) {
