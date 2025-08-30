@@ -3578,6 +3578,10 @@ class LiveShoppingAPITester:
         print("\n🎥 PRIORITY: WEBRTC STREAMING BACKEND TESTING...")
         webrtc_success = self.test_webrtc_streaming_backend()
         
+        # Test LiveKit Cloud Integration (NEW FEATURE - Current Review Request)
+        print("\n🎥 PRIORITY: LIVEKIT CLOUD INTEGRATION TESTING...")
+        livekit_success = self.test_livekit_integration()
+        
         # Test WebSocket availability
         ws_success = self.test_websocket_availability()
 
