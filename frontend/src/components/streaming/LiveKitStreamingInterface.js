@@ -47,18 +47,7 @@ const LiveKitStreamingInterface = ({
     onError,
     onConnected 
 }) => {
-    const [isConnected, setIsConnected] = useState(false);
     const [connectionError, setConnectionError] = useState(null);
-    const [showChat, setShowChat] = useState(true);
-    const [viewerCount, setViewerCount] = useState(0);
-    const [isLive, setIsLive] = useState(false);
-    const [connectionQuality, setConnectionQuality] = useState('excellent');
-    const [networkStats, setNetworkStats] = useState({
-        rtt: 0,
-        bitrate: 0,
-        packetLoss: 0,
-        fps: 0
-    });
 
     // Room options optimized for mobile and iPhone Safari
     const roomOptions = {
@@ -97,16 +86,12 @@ const LiveKitStreamingInterface = ({
 
     const handleConnected = useCallback(() => {
         console.log('Connected to LiveKit room:', roomName);
-        setIsConnected(true);
         setConnectionError(null);
-        setIsLive(true);
         if (onConnected) onConnected();
     }, [roomName, onConnected]);
 
     const handleDisconnected = useCallback((reason) => {
         console.log('Disconnected from LiveKit room:', reason);
-        setIsConnected(false);
-        setIsLive(false);
         if (onDisconnected) onDisconnected(reason);
     }, [onDisconnected]);
 
@@ -141,18 +126,8 @@ const LiveKitStreamingInterface = ({
                 onError={handleError}
                 className="livekit-room"
             >
-                <StreamingContent 
-                    isPublisher={isPublisher}
-                    showChat={showChat}
-                    setShowChat={setShowChat}
-                    viewerCount={viewerCount}
-                    setViewerCount={setViewerCount}
-                    isLive={isLive}
-                    connectionQuality={connectionQuality}
-                    setConnectionQuality={setConnectionQuality}
-                    networkStats={networkStats}
-                    setNetworkStats={setNetworkStats}
-                />
+                {/* Only render children when inside LiveKit context */}
+                <SafeLiveKitContent isPublisher={isPublisher} />
             </LiveKitRoom>
         </div>
     );
