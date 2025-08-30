@@ -119,7 +119,64 @@ const MobileVideoPlayer = ({
         }
     };
 
-    // Stop video
+    // Demo video fallback if camera is not available
+    const startDemoVideo = () => {
+        try {
+            setIsLoading(false);
+            setError(null);
+            setIsPlaying(true);
+            
+            // Create a demo video element with colored background
+            if (videoRef.current) {
+                // Create a canvas for demo content
+                const canvas = document.createElement('canvas');
+                canvas.width = 640;
+                canvas.height = 480;
+                const ctx = canvas.getContext('2d');
+                
+                // Draw demo content
+                const drawDemo = () => {
+                    const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                    gradient.addColorStop(0, '#667eea');
+                    gradient.addColorStop(0.5, '#764ba2');
+                    gradient.addColorStop(1, '#f093fb');
+                    
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Add text
+                    ctx.fillStyle = 'white';
+                    ctx.font = 'bold 24px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('OUTLET34 DEMO', canvas.width/2, canvas.height/2 - 20);
+                    ctx.font = '16px Arial';
+                    ctx.fillText('Live Shopping Simulation', canvas.width/2, canvas.height/2 + 20);
+                    ctx.fillText(new Date().toLocaleTimeString(), canvas.width/2, canvas.height/2 + 50);
+                };
+                
+                // Draw initial frame
+                drawDemo();
+                
+                // Convert canvas to video stream
+                const stream = canvas.captureStream(30);
+                videoRef.current.srcObject = stream;
+                videoRef.current.muted = true;
+                videoRef.current.play();
+                
+                // Update demo every second
+                const interval = setInterval(drawDemo, 1000);
+                
+                // Store interval reference for cleanup
+                videoRef.current._demoInterval = interval;
+                
+                console.log('✅ Demo video started as camera fallback');
+            }
+            
+        } catch (demoErr) {
+            console.error('❌ Demo video failed:', demoErr);
+            setError('Demo-Video konnte nicht gestartet werden.');
+        }
+    };
     const stopVideo = () => {
         if (videoRef.current && videoRef.current.srcObject) {
             const stream = videoRef.current.srcObject;
