@@ -21,6 +21,9 @@ load_dotenv(ROOT_DIR / '.env')
 # Import livekit_service after loading environment variables
 from livekit_service import livekit_service
 
+# LiveKit Imports
+from livekit_endpoints import livekit_router
+
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
