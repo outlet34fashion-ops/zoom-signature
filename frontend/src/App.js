@@ -1811,6 +1811,16 @@ function App() {
       </header>
 
       {/* Main Content */}
+      {/* OUTLET34 Branding */}
+      <div className="outlet34-branding outlet34-top-left">
+        <div className="outlet34-main">🔴 OUTLET34</div>
+      </div>
+      
+      <div className="outlet34-branding outlet34-bottom-right">
+        <div className="outlet34-main">OUTLET34</div>
+        <div className="outlet34-subtitle">Fashion Store</div>
+      </div>
+
       <div className="container mx-auto px-4 py-6">
         
         {/* Admin Dashboard */}
