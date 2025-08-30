@@ -258,21 +258,69 @@ const SimpleLiveKitStreaming = ({
 
     // Enable camera
     const enableCamera = async () => {
-        if (!roomRef.current) return;
+        if (!roomRef.current) {
+            console.error('❌ No room reference available for camera');
+            return;
+        }
 
         try {
+            console.log('📹 Requesting camera access...');
+            
+            // First, request camera permission manually
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                    width: { ideal: 1920, max: 1920 },
+                    height: { ideal: 1080, max: 1080 },
+                    frameRate: { ideal: 30, max: 30 },
+                    facingMode: facingMode
+                },
+                audio: false // Handle audio separately
+            });
+            
+            console.log('✅ Camera permission granted, stream:', stream);
+            
+            // Enable camera in LiveKit
             await roomRef.current.localParticipant.setCameraEnabled(true);
+            console.log('✅ LiveKit camera enabled');
+            
+            // Wait a moment for track to be available
+            await new Promise(resolve => setTimeout(resolve, 1000));
             
             // Get local video track and attach to video element
-            const videoTrack = roomRef.current.localParticipant.videoTrackPublications.values().next().value?.track;
-            if (videoTrack && localVideoRef.current) {
-                videoTrack.attach(localVideoRef.current);
+            const videoPublication = Array.from(roomRef.current.localParticipant.videoTrackPublications.values())[0];
+            if (videoPublication && videoPublication.track && localVideoRef.current) {
+                console.log('📹 Attaching video track to element');
+                videoPublication.track.attach(localVideoRef.current);
+                
+                // Make sure video element is properly configured
+                localVideoRef.current.autoplay = true;
+                localVideoRef.current.playsInline = true;
+                localVideoRef.current.muted = true;
+                
+                console.log('✅ Video attached successfully');
+            } else {
+                console.warn('⚠️ Video track not available yet, will try alternative approach');
+                
+                // Alternative: use the manual stream directly
+                if (stream && localVideoRef.current) {
+                    localVideoRef.current.srcObject = stream;
+                    console.log('✅ Direct stream assigned to video element');
+                }
             }
             
             setIsCameraEnabled(true);
+            console.log('✅ Camera enable process completed');
+            
         } catch (error) {
-            console.error('Error enabling camera:', error);
+            console.error('❌ Error enabling camera:', error);
             setError(`Kamera-Fehler: ${error.message}`);
+            
+            // Try to show a more helpful error message
+            if (error.name === 'NotAllowedError') {
+                setError('Kamera-Zugriff verweigert. Bitte erlauben Sie den Kamera-Zugriff in den Browser-Einstellungen.');
+            } else if (error.name === 'NotFoundError') {
+                setError('Keine Kamera gefunden. Bitte stellen Sie sicher, dass eine Kamera angeschlossen ist.');
+            }
         }
     };
 
