@@ -137,7 +137,7 @@ const SimpleVideoStreaming = ({
             )}
 
             {/* Video Area */}
-            <div className="video-area">
+            <div className={embedded ? "embedded-video-area" : "video-area"}>
                 {/* Admin Streaming View */}
                 {isAdmin && (
                     <div className="publisher-view">
