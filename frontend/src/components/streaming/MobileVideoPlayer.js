@@ -177,12 +177,24 @@ const MobileVideoPlayer = ({
             setError('Demo-Video konnte nicht gestartet werden.');
         }
     };
+    // Stop video
     const stopVideo = () => {
-        if (videoRef.current && videoRef.current.srcObject) {
-            const stream = videoRef.current.srcObject;
-            const tracks = stream.getTracks();
-            tracks.forEach(track => track.stop());
-            videoRef.current.srcObject = null;
+        if (videoRef.current) {
+            // Clear demo interval if exists
+            if (videoRef.current._demoInterval) {
+                clearInterval(videoRef.current._demoInterval);
+                delete videoRef.current._demoInterval;
+            }
+            
+            // Stop camera stream if exists
+            if (videoRef.current.srcObject) {
+                const stream = videoRef.current.srcObject;
+                if (stream.getTracks) {
+                    const tracks = stream.getTracks();
+                    tracks.forEach(track => track.stop());
+                }
+                videoRef.current.srcObject = null;
+            }
         }
         setIsPlaying(false);
     };
