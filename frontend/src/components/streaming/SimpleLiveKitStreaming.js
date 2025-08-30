@@ -32,110 +32,162 @@ const SimpleLiveKitStreaming = ({
     const [chatMessages, setChatMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
 
-    // Connect to LiveKit room using direct client API
+    // Connect to LiveKit room using direct client API with retry logic
     const connectToRoom = useCallback(async () => {
         if (!token || !serverUrl) {
             setError('Token oder Server URL fehlt');
             return;
         }
 
-        try {
-            setConnectionState('connecting');
-            setError(null);
+        const maxRetries = 3;
+        let retryCount = 0;
 
-            // Create room instance
-            const room = new Room({
-                videoCaptureDefaults: {
-                    resolution: { width: 1920, height: 1080 },
-                    frameRate: 30
-                },
-                publishDefaults: {
-                    videoSimulcastLayers: [
-                        { resolution: { width: 1920, height: 1080 }, encoding: { maxBitrate: 3500000 } },
-                        { resolution: { width: 1280, height: 720 }, encoding: { maxBitrate: 1500000 } },
-                        { resolution: { width: 640, height: 360 }, encoding: { maxBitrate: 500000 } }
-                    ],
-                    audioPreset: {
-                        maxBitrate: 128000
+        const attemptConnection = async () => {
+            try {
+                setConnectionState('connecting');
+                setError(null);
+
+                console.log(`🔄 Connecting to LiveKit (Attempt ${retryCount + 1}/${maxRetries})`);
+                console.log('Server URL:', serverUrl);
+                console.log('Token length:', token.length);
+
+                // Create room instance with optimized settings
+                const room = new Room({
+                    videoCaptureDefaults: {
+                        resolution: { width: 1920, height: 1080 },
+                        frameRate: 30
+                    },
+                    publishDefaults: {
+                        videoSimulcastLayers: [
+                            { resolution: { width: 1920, height: 1080 }, encoding: { maxBitrate: 3500000 } },
+                            { resolution: { width: 1280, height: 720 }, encoding: { maxBitrate: 1500000 } },
+                            { resolution: { width: 640, height: 360 }, encoding: { maxBitrate: 500000 } }
+                        ],
+                        audioPreset: {
+                            maxBitrate: 128000
+                        }
+                    },
+                    audioCaptureDefaults: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true
+                    },
+                    // Add connection options for better stability
+                    adaptiveStream: true,
+                    dynacast: true
+                });
+
+                roomRef.current = room;
+
+                // Set up event listeners
+                room.on(RoomEvent.Connected, () => {
+                    console.log('✅ Successfully connected to LiveKit room');
+                    setConnectionState('connected');
+                    if (onConnected) onConnected();
+                });
+
+                room.on(RoomEvent.Disconnected, (reason) => {
+                    console.log('❌ Disconnected from room:', reason);
+                    setConnectionState('disconnected');
+                    if (onDisconnected) onDisconnected(reason);
+                    cleanup();
+                });
+
+                room.on(RoomEvent.ParticipantConnected, (participant) => {
+                    console.log('👤 Participant connected:', participant.identity);
+                    updateViewerCount();
+                    handleParticipantTracks(participant);
+                });
+
+                room.on(RoomEvent.ParticipantDisconnected, () => {
+                    console.log('👤 Participant disconnected');
+                    updateViewerCount();
+                });
+
+                room.on(RoomEvent.TrackPublished, (publication, participant) => {
+                    console.log('🎥 Track published:', publication.trackSid);
+                });
+
+                room.on(RoomEvent.TrackSubscribed, (track, publication, participant) => {
+                    console.log('🎥 Track subscribed:', track.sid);
+                    handleTrackSubscribed(track, participant);
+                });
+
+                room.on(RoomEvent.DataReceived, (payload, participant) => {
+                    // Handle chat messages
+                    try {
+                        const message = JSON.parse(new TextDecoder().decode(payload));
+                        if (message.type === 'chat') {
+                            const newMsg = {
+                                id: Date.now(),
+                                participant: participant?.identity || 'Unknown',
+                                message: message.text,
+                                timestamp: new Date()
+                            };
+                            chatMessagesRef.current.push(newMsg);
+                            setChatMessages([...chatMessagesRef.current]);
+                        }
+                    } catch (error) {
+                        console.error('Error parsing chat message:', error);
                     }
-                },
-                audioCaptureDefaults: {
-                    echoCancellation: true,
-                    noiseSuppression: true,
-                    autoGainControl: true
+                });
+
+                // Add error handling
+                room.on(RoomEvent.Reconnecting, () => {
+                    console.log('🔄 Reconnecting to LiveKit...');
+                    setConnectionState('connecting');
+                });
+
+                room.on(RoomEvent.Reconnected, () => {
+                    console.log('✅ Reconnected to LiveKit');
+                    setConnectionState('connected');
+                });
+
+                // Connect to room with timeout
+                const connectTimeout = new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('Connection timeout')), 10000)
+                );
+
+                await Promise.race([
+                    room.connect(serverUrl, token),
+                    connectTimeout
+                ]);
+
+                console.log('✅ Connection established, room state:', room.state);
+
+                // If publisher, enable camera and microphone after connection
+                if (isPublisher) {
+                    setTimeout(async () => {
+                        try {
+                            await enableCamera();
+                            await enableMicrophone();
+                        } catch (err) {
+                            console.warn('Error enabling media after connection:', err);
+                        }
+                    }, 1000);
                 }
-            });
 
-            roomRef.current = room;
-
-            // Set up event listeners
-            room.on(RoomEvent.Connected, () => {
-                console.log('✅ Connected to LiveKit room');
-                setConnectionState('connected');
-                if (onConnected) onConnected();
-            });
-
-            room.on(RoomEvent.Disconnected, (reason) => {
-                console.log('❌ Disconnected from room:', reason);
-                setConnectionState('disconnected');
-                if (onDisconnected) onDisconnected(reason);
-                cleanup();
-            });
-
-            room.on(RoomEvent.ParticipantConnected, (participant) => {
-                console.log('👤 Participant connected:', participant.identity);
-                updateViewerCount();
-                handleParticipantTracks(participant);
-            });
-
-            room.on(RoomEvent.ParticipantDisconnected, () => {
-                console.log('👤 Participant disconnected');
-                updateViewerCount();
-            });
-
-            room.on(RoomEvent.TrackPublished, (publication, participant) => {
-                console.log('🎥 Track published:', publication.trackSid);
-            });
-
-            room.on(RoomEvent.TrackSubscribed, (track, publication, participant) => {
-                console.log('🎥 Track subscribed:', track.sid);
-                handleTrackSubscribed(track, participant);
-            });
-
-            room.on(RoomEvent.DataReceived, (payload, participant) => {
-                // Handle chat messages
-                try {
-                    const message = JSON.parse(new TextDecoder().decode(payload));
-                    if (message.type === 'chat') {
-                        const newMsg = {
-                            id: Date.now(),
-                            participant: participant?.identity || 'Unknown',
-                            message: message.text,
-                            timestamp: new Date()
-                        };
-                        chatMessagesRef.current.push(newMsg);
-                        setChatMessages([...chatMessagesRef.current]);
-                    }
-                } catch (error) {
-                    console.error('Error parsing chat message:', error);
+            } catch (err) {
+                console.error(`❌ Connection attempt ${retryCount + 1} failed:`, err);
+                
+                retryCount++;
+                
+                if (retryCount < maxRetries) {
+                    console.log(`🔄 Retrying connection in ${retryCount * 2} seconds...`);
+                    setError(`Verbindungsversuch ${retryCount}/${maxRetries} - Erneuter Versuch...`);
+                    
+                    await new Promise(resolve => setTimeout(resolve, retryCount * 2000));
+                    return attemptConnection();
+                } else {
+                    console.error('❌ All connection attempts failed');
+                    setError(`Verbindung fehlgeschlagen nach ${maxRetries} Versuchen: ${err.message}`);
+                    setConnectionState('error');
+                    if (onError) onError(err);
                 }
-            });
-
-            // Connect to room
-            await room.connect(serverUrl, token);
-
-            // If publisher, enable camera and microphone
-            if (isPublisher) {
-                await enableCamera();
-                await enableMicrophone();
             }
+        };
 
-        } catch (err) {
-            console.error('❌ Failed to connect to room:', err);
-            setError(`Verbindungsfehler: ${err.message}`);
-            setConnectionState('error');
-            if (onError) onError(err);
-        }
+        return attemptConnection();
     }, [token, serverUrl, isPublisher, onConnected, onDisconnected, onError]);
 
     // Handle participant tracks
