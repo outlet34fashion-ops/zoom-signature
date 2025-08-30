@@ -548,15 +548,6 @@ const SimpleLiveKitStreaming = ({
         );
     }
 
-    // Debug: Log publisher status immediately
-    useEffect(() => {
-        console.log('🔍 SimpleLiveKitStreaming initialized with:');
-        console.log('- isPublisher:', isPublisher);
-        console.log('- token length:', token?.length);
-        console.log('- serverUrl:', serverUrl);
-        console.log('- roomName:', roomName);
-    }, [isPublisher, token, serverUrl, roomName]);
-
     // Connected streaming interface
     return (
         <div className="simple-livekit-container">
