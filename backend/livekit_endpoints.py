@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from typing import Optional, Dict, Any
 import logging
 
-from .livekit_streaming import (
+from livekit_streaming import (
     livekit_service,
     RoomCreateRequest,
     TokenRequest,
