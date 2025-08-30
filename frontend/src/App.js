@@ -1256,7 +1256,7 @@ function App() {
                   />
                 </div>
                 
-                {/* Sprachauswahl für Landing Page */}
+                {/* Language Selection */}
                 <div className="mb-4">
                   <p className="text-sm text-gray-600 mb-3 text-center">🌍 {t('settings.language')}</p>
                   <div className="flex justify-center space-x-2">
