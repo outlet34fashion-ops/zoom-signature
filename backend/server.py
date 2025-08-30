@@ -1097,6 +1097,197 @@ async def delete_event(event_id: str):
         logging.error(f"Error deleting event: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to delete event")
 
+# LiveKit Cloud Integration Endpoints
+@api_router.post("/livekit/token", response_model=LiveKitTokenResponse)
+async def generate_livekit_token(request: LiveKitTokenRequest, current_user_id: str = "user"):
+    """
+    Generate LiveKit access token for authenticated user
+    Supports both publisher (admin) and viewer (customer) roles
+    """
+    try:
+        # Generate unique participant identity
+        participant_identity = f"{current_user_id}_{int(time.time())}"
+        participant_name = request.participant_name or current_user_id
+        
+        # Generate appropriate token based on participant type
+        if request.participant_type == "publisher":
+            # Admin/publisher token with full permissions
+            token = await livekit_service.create_publisher_token(
+                room_name=request.room_name,
+                participant_identity=participant_identity,
+                participant_name=participant_name,
+                metadata=request.metadata or {"role": "publisher", "user_id": current_user_id}
+            )
+        else:
+            # Customer/viewer token with view-only permissions
+            token = await livekit_service.create_viewer_token(
+                room_name=request.room_name,
+                participant_identity=participant_identity,
+                participant_name=participant_name,
+                metadata=request.metadata or {"role": "viewer", "user_id": current_user_id}
+            )
+        
+        return LiveKitTokenResponse(
+            token=token,
+            room_name=request.room_name,
+            participant_identity=participant_identity,
+            participant_type=request.participant_type,
+            livekit_url=livekit_service.livekit_url
+        )
+        
+    except Exception as e:
+        logging.error(f"LiveKit token generation error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to generate LiveKit token: {str(e)}")
+
+@api_router.post("/livekit/room/create", response_model=LiveKitRoomResponse)
+async def create_livekit_room(request: LiveKitRoomRequest, current_user_id: str = "admin"):
+    """
+    Create a new LiveKit room for streaming (Admin only)
+    """
+    try:
+        # TODO: Add proper admin authentication check
+        
+        # Check if room already exists
+        existing_room = await livekit_service.get_room_info(request.room_name)
+        if existing_room:
+            return LiveKitRoomResponse(
+                room_name=existing_room["name"],
+                sid=existing_room["sid"],
+                max_participants=existing_room["max_participants"],
+                num_participants=existing_room["num_participants"],
+                creation_time=existing_room["creation_time"],
+                status="existing"
+            )
+        
+        # Create new room
+        room_info = await livekit_service.create_room(
+            room_name=request.room_name,
+            max_participants=request.max_participants,
+            empty_timeout=request.empty_timeout,
+            metadata=request.metadata or {"created_by": current_user_id}
+        )
+        
+        return LiveKitRoomResponse(
+            room_name=room_info["name"],
+            sid=room_info["sid"],
+            max_participants=room_info["max_participants"],
+            num_participants=room_info["num_participants"],
+            creation_time=room_info["creation_time"]
+        )
+        
+    except Exception as e:
+        logging.error(f"LiveKit room creation error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to create LiveKit room: {str(e)}")
+
+@api_router.get("/livekit/rooms")
+async def list_livekit_rooms():
+    """
+    List all active LiveKit rooms
+    """
+    try:
+        rooms = await livekit_service.list_active_rooms()
+        
+        # Format rooms for frontend
+        formatted_rooms = []
+        for room in rooms:
+            formatted_rooms.append({
+                "room_name": room["name"],
+                "sid": room["sid"],
+                "num_participants": room["num_participants"],
+                "max_participants": room["max_participants"],
+                "creation_time": room["creation_time"],
+                "is_live": room["num_participants"] > 0,
+                "metadata": room.get("metadata", "")
+            })
+        
+        return {"rooms": formatted_rooms}
+        
+    except Exception as e:
+        logging.error(f"Error listing LiveKit rooms: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to list rooms: {str(e)}")
+
+@api_router.get("/livekit/room/{room_name}")
+async def get_livekit_room_info(room_name: str):
+    """
+    Get detailed information about a specific LiveKit room
+    """
+    try:
+        room_info = await livekit_service.get_room_info(room_name)
+        if not room_info:
+            raise HTTPException(status_code=404, detail="Room not found")
+        
+        # Get participants
+        participants = await livekit_service.get_participants(room_name)
+        
+        return {
+            "room": room_info,
+            "participants": participants,
+            "is_live": room_info["num_participants"] > 0
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Error getting room info: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to get room info: {str(e)}")
+
+@api_router.delete("/livekit/room/{room_name}")
+async def end_livekit_room(room_name: str, current_user_id: str = "admin"):
+    """
+    End/delete a LiveKit room (Admin only)
+    """
+    try:
+        # TODO: Add proper admin authentication check
+        
+        success = await livekit_service.end_room(room_name)
+        if not success:
+            raise HTTPException(status_code=404, detail="Room not found or could not be ended")
+        
+        return {"message": f"Room {room_name} ended successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Error ending room: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to end room: {str(e)}")
+
+@api_router.get("/livekit/config")
+async def get_livekit_config():
+    """
+    Get LiveKit client configuration with optimized settings
+    """
+    try:
+        config = await livekit_service.get_livekit_config()
+        return config
+        
+    except Exception as e:
+        logging.error(f"Error getting LiveKit config: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to get config: {str(e)}")
+
+@api_router.post("/livekit/room/{room_name}/participant/{participant_identity}/remove")
+async def remove_participant_from_room(
+    room_name: str, 
+    participant_identity: str, 
+    current_user_id: str = "admin"
+):
+    """
+    Remove a participant from a LiveKit room (Admin only)
+    """
+    try:
+        # TODO: Add proper admin authentication check
+        
+        success = await livekit_service.remove_participant(room_name, participant_identity)
+        if not success:
+            raise HTTPException(status_code=404, detail="Participant not found or could not be removed")
+        
+        return {"message": f"Participant {participant_identity} removed from room {room_name}"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Error removing participant: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to remove participant: {str(e)}")
+
 # End of endpoints
 
 # WebRTC Streaming Endpoints
