@@ -140,7 +140,6 @@ class LiveKitTokenService:
                 can_subscribe=True,      # Can subscribe to streams
                 can_publish_data=True,   # Can send chat messages
                 can_update_own_metadata=False, # Cannot update metadata
-                admin=False,             # No admin privileges
                 room_admin=False,
                 room_create=False
             )
