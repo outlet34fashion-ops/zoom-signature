@@ -1243,9 +1243,9 @@ function App() {
     <div className="min-h-screen bg-gray-50">
       {/* Guest Registration/Blocking Screen */}
       {!isAuthenticated && !isAdminView && (
-        <div className="min-h-screen flex items-center justify-center p-4">
-          <Card className="modern-card w-full max-w-md mx-4">
-            <CardContent className="modern-card-content">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-400 to-purple-600">
+          <Card className="w-full max-w-md mx-4">
+            <CardContent className="p-8">
               <div className="text-center space-y-6">
                 {/* OUTLET34 Logo */}
                 <div className="flex justify-center mb-6">
