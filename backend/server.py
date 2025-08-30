@@ -14,10 +14,12 @@ import json
 import jwt
 import time
 import base64
-from livekit_service import livekit_service
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
+
+# Import livekit_service after loading environment variables
+from livekit_service import livekit_service
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
