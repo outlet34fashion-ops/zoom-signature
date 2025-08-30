@@ -192,12 +192,17 @@ const SimpleLiveKitStreaming = ({
                 if (isPublisher) {
                     console.log('📹 Publisher mode - enabling camera and microphone...');
                     try {
-                        // First try to get direct media access
+                        // Add extra delay for LiveKit to be ready
+                        await new Promise(resolve => setTimeout(resolve, 3000));
+                        
+                        // First try to get direct media access with more aggressive settings
+                        console.log('📹 Requesting camera permission...');
                         const mediaStream = await navigator.mediaDevices.getUserMedia({
                             video: {
-                                width: { ideal: 1920, max: 1920 },
-                                height: { ideal: 1080, max: 1080 },
-                                frameRate: { ideal: 30, max: 30 }
+                                width: { ideal: 1280, min: 640, max: 1920 },
+                                height: { ideal: 720, min: 480, max: 1080 },
+                                frameRate: { ideal: 30, min: 15, max: 30 },
+                                facingMode: 'user'
                             },
                             audio: {
                                 echoCancellation: true,
@@ -206,28 +211,48 @@ const SimpleLiveKitStreaming = ({
                             }
                         });
 
-                        console.log('✅ Direct media access granted:', mediaStream);
+                        console.log('✅ Camera permission granted:', mediaStream);
+                        console.log('📹 Video tracks:', mediaStream.getVideoTracks());
+                        console.log('🎤 Audio tracks:', mediaStream.getAudioTracks());
 
-                        // Attach direct stream to local video element immediately
+                        // Force attach to video element immediately
                         if (localVideoRef.current) {
+                            console.log('📹 Attaching stream to video element...');
                             localVideoRef.current.srcObject = mediaStream;
-                            localVideoRef.current.play();
-                            console.log('✅ Direct video stream attached to local video element');
+                            localVideoRef.current.muted = true;
+                            localVideoRef.current.autoplay = true;
+                            localVideoRef.current.playsInline = true;
+                            
+                            // Force play
+                            try {
+                                await localVideoRef.current.play();
+                                console.log('✅ Video element playing successfully');
+                            } catch (playError) {
+                                console.error('❌ Video play error:', playError);
+                            }
+                        } else {
+                            console.error('❌ Local video ref not available');
                         }
 
-                        // Now enable LiveKit camera and microphone
+                        // Now try LiveKit camera/mic
+                        console.log('📹 Enabling LiveKit camera...');
                         await roomRef.current.localParticipant.setCameraEnabled(true);
+                        
+                        console.log('🎤 Enabling LiveKit microphone...');
                         await roomRef.current.localParticipant.setMicrophoneEnabled(true);
                         
                         setIsCameraEnabled(true);
                         setIsMicEnabled(true);
                         
-                        console.log('✅ Media devices enabled successfully in LiveKit');
+                        console.log('✅ All media devices enabled successfully');
                         
                     } catch (err) {
-                        console.error('⚠️ Error enabling media:', err);
-                        setError(`Media-Fehler: ${err.message}`);
+                        console.error('❌ Critical media error:', err);
+                        setError(`Media-Fehler: ${err.message}. Bitte erlauben Sie Kamera-Zugriff.`);
                     }
+                } else {
+                    // Viewer mode - just connect and wait for remote streams
+                    console.log('👀 Viewer mode - waiting for remote streams');
                 }
 
             } catch (err) {
