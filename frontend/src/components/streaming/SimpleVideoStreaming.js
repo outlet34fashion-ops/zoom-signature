@@ -174,7 +174,6 @@ const SimpleVideoStreaming = ({
             
             ws.onopen = () => {
                 console.log('✅ WebSocket connected for streamer');
-                setWebsocket(ws);
             };
             
             ws.onmessage = async (event) => {
