@@ -26,6 +26,18 @@ import { Track, Room, RoomEvent, ConnectionQuality, ConnectionState } from 'live
 import '@livekit/components-styles';
 import './LiveKitStreamingInterface.css';
 
+// Helper function to get connection state text
+const getConnectionStateText = (state) => {
+    switch (state) {
+        case ConnectionState.Disconnected: return 'Getrennt';
+        case ConnectionState.Connecting: return 'Verbindung wird aufgebaut...';
+        case ConnectionState.Connected: return 'Verbunden';
+        case ConnectionState.Reconnecting: return 'Verbindung wird wiederhergestellt...';
+        case ConnectionState.Disconnecting: return 'Verbindung wird getrennt...';
+        default: return 'Unbekannt';
+    }
+};
+
 const LiveKitStreamingInterface = ({ 
     token, 
     serverUrl, 
