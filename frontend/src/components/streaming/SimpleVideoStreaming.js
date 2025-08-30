@@ -205,33 +205,35 @@ const SimpleVideoStreaming = ({
                 </div>
             )}
 
-            {/* Simple Chat Area */}
-            <div className="simple-chat">
-                <div className="chat-header">
-                    <h4>💬 Live Chat</h4>
-                </div>
-                
-                <div className="chat-messages">
-                    <div className="chat-message">
-                        <strong>System:</strong> Live-Stream gestartet
+            {/* Simple Chat Area - Hide in embedded mode */}
+            {!embedded && (
+                <div className="simple-chat">
+                    <div className="chat-header">
+                        <h4>💬 Live Chat</h4>
                     </div>
-                    <div className="chat-message">
-                        <strong>Kunde123:</strong> Hallo! Sind die Angebote heute gut?
+                    
+                    <div className="chat-messages">
+                        <div className="chat-message">
+                            <strong>System:</strong> Live-Stream gestartet
+                        </div>
+                        <div className="chat-message">
+                            <strong>Kunde123:</strong> Hallo! Sind die Angebote heute gut?
+                        </div>
+                        <div className="chat-message">
+                            <strong>Admin:</strong> Willkommen! Heute haben wir tolle Deals!
+                        </div>
                     </div>
-                    <div className="chat-message">
-                        <strong>Admin:</strong> Willkommen! Heute haben wir tolle Deals!
-                    </div>
-                </div>
 
-                <div className="chat-input">
-                    <input 
-                        type="text" 
-                        placeholder="Nachricht eingeben..."
-                        className="message-input"
-                    />
-                    <button className="send-btn">➤</button>
+                    <div className="chat-input">
+                        <input 
+                            type="text" 
+                            placeholder="Nachricht eingeben..."
+                            className="message-input"
+                        />
+                        <button className="send-btn">➤</button>
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 };
