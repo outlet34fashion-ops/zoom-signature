@@ -274,12 +274,14 @@
 .room-card {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   padding: 15px;
   background: rgba(249, 250, 251, 0.8);
   border-radius: 8px;
   border: 1px solid rgba(229, 231, 235, 0.8);
   transition: all 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .room-card:hover {
