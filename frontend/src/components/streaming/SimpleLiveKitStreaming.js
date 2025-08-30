@@ -178,14 +178,15 @@ const SimpleLiveKitStreaming = ({
                 retryCount++;
                 
                 if (retryCount < maxRetries) {
-                    console.log(`🔄 Retrying connection in ${retryCount * 2} seconds...`);
-                    setError(`Verbindungsversuch ${retryCount}/${maxRetries} - Erneuter Versuch...`);
+                    const delaySeconds = Math.min(retryCount * 3, 10); // Progressive delay: 3s, 6s, 9s max
+                    console.log(`🔄 Retrying connection in ${delaySeconds} seconds...`);
+                    setError(`Verbindungsversuch ${retryCount}/${maxRetries} - Erneuter Versuch in ${delaySeconds}s...`);
                     
-                    await new Promise(resolve => setTimeout(resolve, retryCount * 2000));
+                    await new Promise(resolve => setTimeout(resolve, delaySeconds * 1000));
                     return attemptConnection();
                 } else {
                     console.error('❌ All connection attempts failed');
-                    setError(`Verbindung fehlgeschlagen nach ${maxRetries} Versuchen: ${err.message}`);
+                    setError(`Verbindung fehlgeschlagen nach ${maxRetries} Versuchen. Möglicherweise Netzwerkprobleme oder LiveKit Cloud überlastet. Fehler: ${err.message}`);
                     setConnectionState('error');
                     if (onError) onError(err);
                 }
