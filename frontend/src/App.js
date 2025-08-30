@@ -3357,9 +3357,9 @@ function App() {
         </div>
       )}
 
-      {/* Mobile Live Streaming Interface */}
+      {/* LiveKit Admin Streaming Interface */}
       {showSimpleStream && (
-        <MobileVideoPlayer
+        <LiveKitStreaming
           isAdmin={isAdminAuthenticated}
           currentUser={currentCustomer}
           onClose={handleSimpleStreamClose}
