@@ -1630,13 +1630,13 @@ function App() {
                           onClick={() => setShowRegistration(true)}
                           className="flex-1 min-h-12 text-sm font-medium"
                         >
-                          📝 {t('auth.register')}
+                          📝 App Registrierung
                         </Button>
                         <Button 
                           onClick={() => setShowCustomerLogin(true)}
                           className="flex-1 min-h-12 bg-pink-500 hover:bg-pink-600 text-sm font-medium"
                         >
-                          🔑 {t('auth.login')}
+                          🔑 zum Login
                         </Button>
                       </div>
                       
