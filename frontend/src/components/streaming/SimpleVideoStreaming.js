@@ -327,11 +327,11 @@ const SimpleVideoStreaming = ({
                     </div>
                 )}
 
-                {/* Viewer View - Real Video Stream */}
+                {/* Viewer View - Smart Display Logic */}
                 {!isAdmin && (
                     <div className="viewer-view">
-                        {/* Show real video if connected, otherwise show connection screen */}
-                        {isConnected ? (
+                        {/* Show video if connected AND countdown is hidden, otherwise show countdown */}
+                        {isConnected && !showCountdown ? (
                             // Real video from admin stream
                             <div className="remote-stream-container">
                                 <video
@@ -400,9 +400,9 @@ const SimpleVideoStreaming = ({
 
                                     {/* Ready Banner */}
                                     <div className="ready-banner">
-                                        ⚡ BEREIT MACHEN!
+                                        ⚡ {isConnected ? 'VERBINDUNG HERGESTELLT!' : 'BEREIT MACHEN!'}
                                         <div className="ready-subtitle">
-                                            Warten auf Live-Stream...
+                                            {isConnected ? 'Video wird gleich angezeigt...' : 'Warten auf Live-Stream...'}
                                         </div>
                                     </div>
                                 </div>
