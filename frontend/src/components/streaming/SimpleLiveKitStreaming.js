@@ -520,16 +520,6 @@ const SimpleLiveKitStreaming = ({
         setViewerCount(0);
     };
 
-    // Connect on mount
-    useEffect(() => {
-        connectToRoom();
-        
-        // Cleanup on unmount
-        return () => {
-            cleanup();
-        };
-    }, [connectToRoom]);
-
     // Error state
     if (connectionState === 'error') {
         return (
