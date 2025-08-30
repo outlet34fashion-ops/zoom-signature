@@ -272,6 +272,10 @@ const MobileVideoPlayer = ({
                             <button onClick={startMobileCamera} className="retry-mobile-btn">
                                 🔄 Erneut versuchen
                             </button>
+                            
+                            <button onClick={startDemoVideo} className="demo-mobile-btn" style={{marginTop: '10px'}}>
+                                🎬 Demo-Video starten
+                            </button>
                         </div>
                     )}
 
