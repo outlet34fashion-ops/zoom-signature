@@ -1,37 +1,23 @@
 <analysis>
-The AI engineer's work in this trajectory was highly iterative, driven by a continuous stream of user requests for new features, UI/UX enhancements, and numerous bug fixes. The journey began with foundational features like manual customer creation and last order display, quickly evolving into a full-scale refinement of the application. Key functional additions included multi-language support, a revamped user profile (with image, integrated logout, and compact language selection), a live shopping calendar with countdown, real-time admin sales statistics, a Top 3 buyers list for gamification, and chat pinning functionality. Significant effort was also dedicated to mobile optimization for various modals (e.g., calendar). A recurring challenge involved environment-specific issues, particularly  misconfigurations and WebSocket connection failures, requiring deep troubleshooting. The AI engineer demonstrated a systematic approach to debugging, especially for issues like non-updating chat/orders and customer creation failures, often identifying misinterpretations of UX behavior rather than core technical bugs. The trajectory concludes with a thorough investigation confirming the customer database is active, despite user claims.
+The trajectory chronicles a complex development journey, beginning with verifying a pre-existing WebRTC live streaming implementation. A significant pivot occurred when the user requested to replace WebRTC with LiveKit Cloud, specifying stringent requirements for quality and mobile optimization. This LiveKit integration became a major focus, marked by numerous bug reports related to React Context, rendering race conditions, connection timeouts, and video display. Despite multiple architectural refactorings and direct API interventions, the LiveKit solution remained unstable. Consequently, the AI engineer decided to revert to a simpler, native WebRTC solution. This re-established basic video streaming, which was then directly embedded into the customer's main view. The final stage involved replacing an inactive stream's blank placeholder with an animated Live Shopping Countdown, enhancing user experience. The work concludes with a new request to fully update the application's design.
 </analysis>
 
 <product_requirements>
-The Live Shopping App provides a platform for live streaming, chat, and product ordering, with extensive administrative capabilities.
-**Core Requirements & Implemented Features:**
-1.  **Order Messages in Chat**: Orders appear as **Bestellung** [CustomerNumber] I [Quantity]x I [Price] I [Size], with Bestellung bolded.
-2.  **Regular Chat Messages**:  with emoji support.
-3.  **Customer Authentication**: Login/registration.
-4.  **UI Split View**: Main display with Bestellungen (default) and Chat tabs.
-5.  **Manual Customer Creation (Admin)**: Admins create customers with active status.
-6.  **Display Last Order**: Latest order (quantity, price, size, timestamp) for the logged-in customer. Product name removed for brevity.
-7.  **Customer Profile**: Profile picture icon in header, leading to a modal with profile details, language selection (DE/EN/TR/FR), and logout.
-8.  **Admin-Only Device Buttons**: Device selector buttons visible only to admins.
-9.  **WhatsApp Service Integration**: WhatsApp logo (larger) in header (left of Calendar), and also in Calendar modal. Removed Service Nummer text.
-10. **Live Shopping Calendar**: Admins manage events. Customers view upcoming events (filtered for future events, 30-min push notifications). Mobile optimized.
-11. **Mobile Optimization**: Touch-friendly buttons, responsive text, PWA features (e.g., Calendar modal).
-12. **Landing Page Customization**: Adjusted welcome text, button texts, button arrangement. Added language selection.
-13. **Countdown Timer**: Displays time until next live event from calendar on the stream page.
-14. **Live Admin Statistics**: Real-time total revenue, sold items, session revenue in admin dashboard.
-15. **Top 3 Buyers List**: Gamification feature in customer view.
-16. **Chat Pinning**: Admins pin/unpin important messages, displayed prominently.
+The Live Shopping App offers live streaming, chat, product ordering, and comprehensive admin features.
+**Initial Core Requirements:** Chat (order/regular, emojis), Customer Auth, UI split view, Admin customer creation, Last order display, Customer profile (picture, language, logout), Admin-only device buttons, WhatsApp integration, Live Shopping Calendar, Mobile optimization, Customizable landing page, Countdown timer, Live admin statistics, Top 3 Buyers, Chat pinning, and **Live Video Streaming (WebRTC)**.
+**LiveKit Streaming Evolution:** The WebRTC was to be replaced by **LiveKit Cloud** with specific demands: Admin publisher via iPhone (Safari, 1080p@30fps, 3.5–5 Mbit/s), view-only viewers, Simulcast/AdaptiveStream for low latency, H.264 for iOS, UI with Start/Stop, Live-Badge, Viewer Count, Chat, Token-Server, Mobile-first (Auto-Reconnect, Mute/Unmute, Camera-Swap), and display of metrics (RTT, Bitrate, FPS, Packet-Loss).
+**Current State:** The unstable LiveKit was replaced by a **simple native WebRTC solution**. This stream is now directly embedded into the customer view. If no stream is active, an **animated Live Shopping Countdown** (based on a user-provided image) is displayed instead of an empty video area. The next explicit request is a complete design overhaul based on Bild 2.
 </product_requirements>
 
 <key_technical_concepts>
-- **FastAPI**: Python framework for backend APIs and WebSockets.
-- **React**: JavaScript library for frontend UI, functional components, hooks, state management.
-- **MongoDB**: NoSQL database. UUIDs used for IDs.
-- **WebSockets**: Real-time communication for chat, orders, and notifications.
-- **react-i18next**: Frontend library for multi-language support.
-- **Tailwind CSS**: Utility-first CSS framework for styling and responsiveness.
-- **Environment Variables**: For  and .
-- **Conditional Rendering**: UI elements based on user roles and data.
+-   **FastAPI**: Python backend for APIs, WebSockets, token services.
+-   **React**: JavaScript frontend for UI, state management.
+-   **MongoDB**: NoSQL database.
+-   **WebSockets**: Real-time communication.
+-   **WebRTC**: Native browser real-time communication for video streaming.
+-   **LiveKit Cloud**: Third-party platform for video streaming (attempted, then abandoned).
+-   ****: Multi-language support.
+-   **Tailwind CSS**: Utility-first CSS framework.
 </key_technical_concepts>
 
 <code_architecture>
@@ -39,67 +25,67 @@ The application utilizes a full-stack architecture with Python FastAPI for the b
 
 
 
+-   :
+    -   **Importance**: Lists Python dependencies.
+    -   **Changes Made**:  and  were added for initial WebRTC.  was added for LiveKit.
 -   : Main FastAPI application.
-    -   **Importance**: Handles all API endpoints (authentication, customer, order, events, notifications) and WebSocket communication.
-    -   **Changes Made**:
-        -   Added  field to  Pydantic model.
-        -   Updated  and  endpoints.
-        -   Added API endpoint  to update customer language.
-        -   Ensured  and  serialization are handled.
-        -   Corrected  logic to not skip specific customer numbers.
-
+    -   **Importance**: Handles API endpoints, WebSockets.
+    -   **Changes Made**: Initially included WebRTC signaling. Later, LiveKit-specific Pydantic models and API endpoints (, ) were added, and  was modified.
+-   : Backend environment variables.
+    -   **Importance**: Stores configuration.
+    -   **Changes Made**: , ,  were added.
+-   : **NEW FILE**.
+    -   **Importance**: Manages LiveKit API interactions for token generation.
+    -   **Changes Made**: Created for LiveKit integration.
+-   :
+    -   **Importance**: Defines frontend dependencies.
+    -   **Changes Made**:  and emoji libraries were added. ,  were added for LiveKit, then implicitly removed when LiveKit was abandoned.
+-   : Frontend environment variables.
+    -   **Importance**: Stores configuration.
+    -   **Changes Made**:  was added.
 -   : Primary React component.
-    -   **Importance**: Manages UI state, logic, and frontend-backend interaction. Central for feature implementation.
-    -   **Changes Made**:
-        -   **Multi-language**: Integrated  with  hook. Updated all user-facing texts to use translation keys.
-        -   **Profile UI**: Replaced Mein Profil text with a profile picture icon in the header. Consolidated logout and language selection into the profile modal. Added customer number and name to profile modal.
-        -   **Header Layout**: Iterative changes to position WhatsApp logo, Calendar button, and Profile picture in the header, ultimately settling on WhatsApp + Calendar on the left, Profile on the right. WhatsApp logo made larger.
-        -   **Landing Page**: Added language selection flags. Made OUTLET34 logo larger.
-        -   **Calendar Modal**: Optimized for mobile, removed WhatsApp button, made Erinnerungen aktivieren full-width, made close X prominent.
-        -   **Countdown Timer**: Integrated  logic and passed to  component.
-        -   **Default Tab**: Changed  state default from 'chat' to 'orders'.
-        -   **Admin Dashboard**: Added UI for , ,  to admin stats. Implemented  to parse chat messages for orders.
-        -   **Customer View**: Added UI for Top 3 Käufer list.
-        -   **Chat**: Implemented chat pinning logic ( state, / functions) and UI for admin. Ensured chat Senden button is visible.
-        -   **Last Order Display**: Personalized Letzte Bestellung to Deine letzte Bestellung, removed product name.
-        -   **WebSocket Fix**: Corrected WebSocket URL logic to use  from .
-        -   **Bug Fixes**: Addressed an issue where customer creation appeared to fail (was a UX misunderstanding, creation was successful).
-
--   : Environment variables for frontend.
-    -   **Importance**: Crucial for  for API and WebSocket connections.
-    -   **Changes Made**: Corrected  from a preview URL to  (for local development debugging).
-
--   : Environment variables for backend.
-    -   **Importance**: Defines  for database connection and .
-    -   **Changes Made**: Confirmed  points to  and  to .
-
--   : i18n configuration file.
-    -   **Importance**: Initializes  with translation resources and settings.
-    -   **Changes Made**: Created with configuration for supported languages (de, en, tr, fr).
-
--   : Translation files.
-    -   **Importance**: Stores key-value pairs for different languages.
-    -   **Changes Made**: Created , , ,  with comprehensive translations for UI elements.
-
--   : Main React entry point.
-    -   **Importance**: Renders the root React component.
-    -   **Changes Made**: Imported  to ensure it's initialized before  renders.
-
--   : Live stream component.
-    -   **Importance**: Displays the video stream and other live content.
-    -   **Changes Made**: Integrated countdown timer logic to display the time until the .
+    -   **Importance**: Central orchestrator for UI, state, and interaction.
+    -   **Changes Made**: Initially integrated WebRTC components. Heavily modified to integrate LiveKit (imports, states, functions, UI elements), then reverted/cleaned up LiveKit code to integrate . Finally, modified to embed  directly into the customer view and to display an animated Live Shopping Countdown when no stream is active.
+-   :
+    -   **Importance**: Original WebRTC video display.
+    -   **Changes Made**: Likely became deprecated/unused after LiveKit/SimpleVideoStreaming.
+-   :
+    -   **Importance**: Original WebRTC stream listing.
+    -   **Changes Made**: Likely deprecated/unused.
+-   : **NEW FILE**.
+    -   **Importance**: Client-side service for LiveKit APIs.
+    -   **Changes Made**: Created for LiveKit integration.
+-    & : **NEW FILES**.
+    -   **Importance**: LiveKit specific components for video.
+    -   **Changes Made**: Created, but later replaced due to issues.
+-    & : **NEW FILES**.
+    -   **Importance**: Manages LiveKit room UI.
+    -   **Changes Made**: Created for LiveKit, heavily modified for bug fixes (context, rendering, buttons). It served as the container for  and was central to many failed LiveKit debug attempts.
+-    & : **NEW FILES**.
+    -   **Importance**: Attempted direct LiveKit Client API.
+    -   **Changes Made**: Created as a radical fix for LiveKit Context, undergoing many modifications before being abandoned.
+-    & : **NEW FILES**.
+    -   **Importance**: Current stable native WebRTC streaming solution.
+    -   **Changes Made**: Created to replace LiveKit. Modified to be embeddable and to display the animated Live Shopping Countdown when a stream is not active.
 </code_architecture>
 
 <pending_tasks>
-- Initiate the final redeployment to apply the  fix (from  to ) to the deployed application.
-- Verify customer creation, calendar event creation, and order placement functionality in the deployed environment after redeployment.
-- Verify the customer list display in the Admin Dashboard on the frontend.
+-   Replace the complete design of the application with the modern layout from Bild 2.
+-   Verify existing features (customer management, orders, chat) still work correctly. (Asked by AI, but not explicitly confirmed/tested by user).
 </pending_tasks>
 
 <current_work>
-Immediately before this summary request, the AI engineer was investigating a user report that the kundendatenbank immer noch nicht aktiv (customer database still not active). This involved a systematic debugging process across MongoDB, backend logs, and frontend API calls. The engineer confirmed that MongoDB was running, backend API calls were successful (200 OK), and direct database queries showed the  was active and contained  and other collections with 126 customer records. It was concluded that the user's perception of the database not being active was a misunderstanding, possibly related to the frontend display of customer data rather than the database's operational status. Prior to this, a critical WebSocket connection issue (preventing chat and order updates) was resolved by correcting the  in  to  for local development.
+Immediately before this summary request, the AI engineer successfully implemented a stable, simple WebRTC video streaming solution, , after abandoning the problematic LiveKit Cloud integration. This  component is now directly embedded into the customer-facing main page (), aiming to provide an immediate live stream view upon login.
+
+Following user feedback that the video was not always displayed (showing a black area when no stream was active), the AI engineer replaced this empty placeholder with a dynamic, animated Live Shopping Countdown interface. This involved:
+1.  Modifying  and  to conditionally render the countdown.
+2.  Integrating visual elements: an animated fire icon, 🛍️ LIVE SHOPPING COUNTDOWN header, sale labels, and a gradient background.
+3.  Implementing a real-time countdown timer that decrements (e.g., from 02:05:50).
+4.  Adding specific CSS in  to style the countdown with glassmorphism effects and animations.
+
+The last successful action was the deployment of this animated countdown display, providing an engaging experience when no live stream is active. The work is now poised for a broader UI/UX overhaul, with the user's latest instruction being to replace the complete design with the modern layout from Bild 2.
 </current_work>
 
 <optional_next_step>
-Verify the customer list display in the Admin Dashboard on the frontend, as implied by the user's kundendatenbank immer noch nicht aktiv comment.
+Begin replacing the complete application design with the modern layout from Bild 2.
 </optional_next_step>
