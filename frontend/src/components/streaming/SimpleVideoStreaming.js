@@ -216,15 +216,21 @@ const SimpleVideoStreaming = ({
                                     <div className="sale-label">sale</div>
                                     <div className="timer-boxes">
                                         <div className="time-box">
-                                            <div className="time-number">02</div>
+                                            <div className="time-number">
+                                                {countdown.hours.toString().padStart(2, '0')}
+                                            </div>
                                             <div className="time-label">STD</div>
                                         </div>
                                         <div className="time-box">
-                                            <div className="time-number">05</div>
+                                            <div className="time-number">
+                                                {countdown.minutes.toString().padStart(2, '0')}
+                                            </div>
                                             <div className="time-label">MIN</div>
                                         </div>
                                         <div className="time-box">
-                                            <div className="time-number">50</div>
+                                            <div className="time-number">
+                                                {countdown.seconds.toString().padStart(2, '0')}
+                                            </div>
                                             <div className="time-label">SEK</div>
                                         </div>
                                     </div>
