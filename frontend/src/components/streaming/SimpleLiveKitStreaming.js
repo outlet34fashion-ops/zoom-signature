@@ -174,14 +174,43 @@ const SimpleLiveKitStreaming = ({
 
                 // If publisher, enable camera and microphone after connection stabilizes
                 if (isPublisher) {
-                    console.log('📹 Enabling camera and microphone...');
+                    console.log('📹 Publisher mode - enabling camera and microphone...');
                     try {
-                        await enableCamera();
-                        await enableMicrophone();
-                        console.log('✅ Media devices enabled successfully');
+                        // First try to get direct media access
+                        const mediaStream = await navigator.mediaDevices.getUserMedia({
+                            video: {
+                                width: { ideal: 1920, max: 1920 },
+                                height: { ideal: 1080, max: 1080 },
+                                frameRate: { ideal: 30, max: 30 }
+                            },
+                            audio: {
+                                echoCancellation: true,
+                                noiseSuppression: true,
+                                autoGainControl: true
+                            }
+                        });
+
+                        console.log('✅ Direct media access granted:', mediaStream);
+
+                        // Attach direct stream to local video element immediately
+                        if (localVideoRef.current) {
+                            localVideoRef.current.srcObject = mediaStream;
+                            localVideoRef.current.play();
+                            console.log('✅ Direct video stream attached to local video element');
+                        }
+
+                        // Now enable LiveKit camera and microphone
+                        await roomRef.current.localParticipant.setCameraEnabled(true);
+                        await roomRef.current.localParticipant.setMicrophoneEnabled(true);
+                        
+                        setIsCameraEnabled(true);
+                        setIsMicEnabled(true);
+                        
+                        console.log('✅ Media devices enabled successfully in LiveKit');
+                        
                     } catch (err) {
-                        console.warn('⚠️ Error enabling media after connection:', err);
-                        // Continue anyway - media can be enabled later
+                        console.error('⚠️ Error enabling media:', err);
+                        setError(`Media-Fehler: ${err.message}`);
                     }
                 }
 
