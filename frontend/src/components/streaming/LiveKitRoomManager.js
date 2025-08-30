@@ -342,15 +342,21 @@ const LiveKitRoomManager = ({
                                         Admin: {isAdmin ? 'Ja' : 'Nein'} | Loading: {loading ? 'Ja' : 'Nein'} | State: {currentState}
                                     </div>
                                 </div>
-                                <div className="room-actions">
+                                <div className="room-actions" style={{ display: 'flex !important', visibility: 'visible', opacity: 1 }}>
                                     <button
                                         onClick={() => handleJoinRoom(room.roomName)}
                                         disabled={loading || currentState !== 'lobby'}
                                         className="join-room-btn"
                                         style={{
-                                            display: 'block',
-                                            visibility: 'visible',
-                                            opacity: 1
+                                            display: 'block !important',
+                                            visibility: 'visible !important',
+                                            opacity: '1 !important',
+                                            backgroundColor: isAdmin ? '#f59e0b' : '#10b981',
+                                            color: 'white',
+                                            padding: '8px 16px',
+                                            border: 'none',
+                                            borderRadius: '6px',
+                                            cursor: 'pointer'
                                         }}
                                     >
                                         {loading && currentState === 'joining' 
