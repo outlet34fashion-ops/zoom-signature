@@ -215,9 +215,17 @@ const MobileVideoPlayer = ({
                                 <p>Handy-optimierte Live-Übertragung</p>
                                 
                                 {isAdmin ? (
-                                    <button onClick={startMobileCamera} className="start-mobile-btn">
-                                        📱 Live-Stream starten
-                                    </button>
+                                    <>
+                                        <button onClick={startMobileCamera} className="start-mobile-btn">
+                                            📱 Live-Stream starten
+                                        </button>
+                                        
+                                        {/* Development Note */}
+                                        <div style={{marginTop: '20px', fontSize: '12px', color: '#ccc', textAlign: 'center'}}>
+                                            <p>💡 Hinweis: Kamera benötigt HTTPS in Produktion</p>
+                                            <p>Für Entwicklung: Erlauben Sie Kamera-Zugriff im Browser</p>
+                                        </div>
+                                    </>
                                 ) : (
                                     <div className="viewer-waiting">
                                         <p>Warten auf Live-Übertragung...</p>
