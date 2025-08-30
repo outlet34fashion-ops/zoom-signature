@@ -1907,20 +1907,20 @@ function App() {
                   </Button>
                 </div>
 
-                {/* WebRTC Live Streaming */}
+                {/* LiveKit Live Streaming */}
                 <div className="bg-white/10 rounded-lg p-4 mt-4">
-                  <h3 className="text-lg font-semibold mb-3">🎥 Live-Streaming</h3>
-                  <div className="text-center">
+                  <h3 className="text-lg font-semibold mb-3">🎥 LiveKit HD-Streaming</h3>
+                  <div className="text-center space-y-2">
                     <Button 
-                      onClick={startWebRTCStream}
-                      className="bg-red-600 hover:bg-red-700 text-white"
+                      onClick={startLiveKitStream}
+                      className="bg-red-600 hover:bg-red-700 text-white w-full"
                     >
-                      📺 Live-Stream starten
+                      📺 HD Live-Stream starten
                     </Button>
+                    <div className="text-xs text-white/70">
+                      1080p @ 30fps • H.264 Codec • iPhone optimiert
+                    </div>
                   </div>
-                  <p className="text-sm opacity-75 mt-2 text-center">
-                    Starten Sie einen WebRTC Live-Stream direkt aus dem Browser
-                  </p>
                 </div>
               </CardContent>
             </Card>
