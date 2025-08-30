@@ -201,83 +201,48 @@ const SimpleVideoStreaming = ({
                     </div>
                 )}
 
-                {/* Viewer View */}
+                {/* Viewer View - Real Video Stream */}
                 {!isAdmin && (
                     <div className="viewer-view">
-                        {/* Mobile-Optimized Live Shopping Countdown */}
-                        <div className="mobile-countdown-display">
-                            {/* Top Header Bar */}
-                            <div className="mobile-header">
-                                <div className="live-status">
-                                    <span className="live-dot-small">🔴</span>
-                                    <span>LIVE STREAM</span>
-                                </div>
-                                <div className="viewer-info">
-                                    <span className="viewer-icon">👥</span>
-                                    <span>{Math.floor(Math.random() * 50) + 40} Zuschauer online</span>
-                                </div>
-                                <div className="store-info">
-                                    <div className="store-name">OUTLET34 Fashion Store</div>
-                                    <div className="stream-quality">Jetzt live • HD Qualität</div>
-                                </div>
-                            </div>
-
-                            {/* Main Countdown Content */}
-                            <div className="mobile-countdown-content">
-                                {/* Fire Icon */}
-                                <div className="mobile-fire-icon">🔥</div>
+                        {isConnected ? (
+                            // Real video from admin stream
+                            <div className="remote-stream-container">
+                                <video
+                                    ref={remoteVideoRef}
+                                    autoPlay
+                                    playsInline
+                                    className="remote-video"
+                                />
                                 
-                                {/* Title */}
-                                <div className="mobile-title">
-                                    <span className="shopping-bag">🛍️</span>
-                                    <div className="title-text">
-                                        <div>LIVE SHOPPING</div>
-                                        <div>COUNTDOWN</div>
+                                <div className="viewer-overlay">
+                                    <div className="live-badge">
+                                        <span className="live-dot"></span>
+                                        LIVE
+                                    </div>
+                                    <div className="viewer-count-display">
+                                        👥 {viewerCount} Zuschauer
                                     </div>
                                 </div>
-
-                                {/* Timer Boxes */}
-                                <div className="mobile-timer-container">
-                                    <div className="sale-badge-top">SALE</div>
-                                    <div className="mobile-timer-boxes">
-                                        <div className="mobile-time-box">
-                                            <div className="mobile-time-number">
-                                                {countdown.hours.toString().padStart(2, '0')}
-                                            </div>
-                                            <div className="mobile-time-label">STD</div>
-                                        </div>
-                                        <div className="mobile-time-box">
-                                            <div className="mobile-time-number">
-                                                {countdown.minutes.toString().padStart(2, '0')}
-                                            </div>
-                                            <div className="mobile-time-label">MIN</div>
-                                        </div>
-                                        <div className="mobile-time-box">
-                                            <div className="mobile-time-number">
-                                                {countdown.seconds.toString().padStart(2, '0')}
-                                            </div>
-                                            <div className="mobile-time-label">SEK</div>
-                                        </div>
-                                    </div>
+                                
+                                {/* Stream info overlay */}
+                                <div className="stream-info-overlay">
+                                    <div className="store-badge">OUTLET34 Fashion Store</div>
+                                    <div className="quality-badge">HD • LIVE</div>
                                 </div>
-
-                                {/* Event Info Box */}
-                                <div className="mobile-event-info">
-                                    <span className="calendar-icon">📅</span>
-                                    Startet am 30.8.2025 um 15:00 Uhr
-                                    <div className="sale-badge-corner">SALE</div>
-                                </div>
-
-                                {/* Ready Banner */}
-                                <div className="mobile-ready-banner">
-                                    <span className="lightning-icon">⚡</span>
-                                    BEREIT MACHEN!
-                                    <div className="mobile-ready-subtitle">
-                                        Countdown läuft - seien Sie dabei wenn es losgeht!
+                            </div>
+                        ) : (
+                            // Loading/Connection state
+                            <div className="connection-screen">
+                                <div className="connection-content">
+                                    <div className="loading-spinner">📡</div>
+                                    <h2>Verbindung wird hergestellt...</h2>
+                                    <p>Warten auf Live-Stream von OUTLET34</p>
+                                    <div className="connection-progress">
+                                        <div className="progress-bar"></div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 )}
             </div>
