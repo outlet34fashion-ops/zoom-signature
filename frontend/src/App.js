@@ -1641,12 +1641,12 @@ function App() {
                       </div>
                       
                       {/* 2. WhatsApp Service Contact */}
-                      <div className="bg-pink-50 border border-pink-200 rounded-lg p-3">
+                      <div className="modern-card bg-white bg-opacity-10 border border-white border-opacity-20 rounded-lg p-3">
                         <a 
                           href="https://wa.me/4917621105848?text=Hallo%20OUTLET34%20Team,%20ich%20habe%20eine%20Frage%20zum%20Live%20Shopping..." 
                           target="_blank" 
                           rel="noopener noreferrer"
-                          className="flex items-center justify-center space-x-3 bg-pink-500 hover:bg-pink-600 text-white font-medium py-4 px-4 rounded-lg transition-colors duration-200 w-full min-h-12 text-sm"
+                          className="modern-button-primary flex items-center justify-center space-x-3 font-medium py-4 px-4 rounded-lg transition-all duration-200 w-full min-h-12 text-sm"
                         >
                           <img 
                             src="/images/whatsapp-logo-dark.png" 
@@ -1661,7 +1661,7 @@ function App() {
                       <Button 
                         onClick={() => setShowAdminLogin(true)}
                         variant="outline"
-                        className="w-full text-gray-600 hover:text-gray-800 min-h-12 text-sm font-medium"
+                        className="modern-button w-full text-gray-200 hover:text-white min-h-12 text-sm font-medium"
                       >
                         🔐 {t('auth.adminLogin')}
                       </Button>
