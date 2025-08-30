@@ -119,6 +119,9 @@ class LiveKitTokenService:
         Returns:
             JWT token string for LiveKit access
         """
+        if not self.livekit_api:
+            raise Exception("LiveKit service not properly initialized - credentials missing")
+            
         try:
             # Create access token with viewer permissions only
             token = api.AccessToken(self.api_key, self.api_secret)
