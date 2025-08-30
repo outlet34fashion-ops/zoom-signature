@@ -162,7 +162,7 @@ class LiveKitTokenService:
         self,
         room_name: str,
         max_participants: int = 50,
-        empty_timeout: int = 300,
+        empty_timeout: int = 600,  # Increased to 10 minutes
         metadata: Dict[str, Any] = None
     ) -> Dict[str, Any]:
         """
