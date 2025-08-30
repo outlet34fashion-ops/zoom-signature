@@ -1901,18 +1901,18 @@ function App() {
                   </Button>
                 </div>
 
-                {/* LiveKit Live Streaming */}
+                {/* Simple Video Streaming */}
                 <div className="bg-white/10 rounded-lg p-4 mt-4">
-                  <h3 className="text-lg font-semibold mb-3">🎥 LiveKit HD-Streaming</h3>
+                  <h3 className="text-lg font-semibold mb-3">🎥 HD-Video-Streaming</h3>
                   <div className="text-center space-y-2">
                     <Button 
-                      onClick={startLiveKitStream}
+                      onClick={startSimpleStream}
                       className="bg-red-600 hover:bg-red-700 text-white w-full"
                     >
                       📺 HD Live-Stream starten
                     </Button>
                     <div className="text-xs text-white/70">
-                      1080p @ 30fps • H.264 Codec • iPhone optimiert
+                      Einfach • Stabil • Sofort funktionsfähig
                     </div>
                   </div>
                 </div>
