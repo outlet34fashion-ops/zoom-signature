@@ -317,10 +317,11 @@
 }
 
 .room-actions {
-  display: flex;
+  display: flex !important;
   gap: 8px;
   flex-shrink: 0;
   min-width: 120px;
+  margin-left: 15px;
 }
 
 .join-room-btn,
