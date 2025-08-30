@@ -282,13 +282,12 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Review Request - Modern Design Backend Support COMPLETED"
-    - "Customer 10299 Authentication VERIFIED"
-    - "Live Streaming Countdown Backend WORKING"
-    - "Existing Functionality Compatibility CONFIRMED"
-  stuck_tasks: []
+    - "WebRTC Live Video Streaming - Frontend Implementation"
+    - "Video Streaming Bug Fix Verification"
+  stuck_tasks:
+    - "WebRTC Live Video Streaming - Frontend Implementation"
   test_all: false
-  test_priority: "review_request_completed"
+  test_priority: "critical_bug_fix"
 
   - task: "Order chat message format fix"
     implemented: true
