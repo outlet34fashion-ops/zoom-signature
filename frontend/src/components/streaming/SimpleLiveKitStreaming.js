@@ -523,6 +523,12 @@ const SimpleLiveKitStreaming = ({
                                 playsInline
                                 muted
                                 className="local-video"
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'cover',
+                                    backgroundColor: '#333'
+                                }}
                             />
                             <div className="local-label">Sie (Live)</div>
                         </div>
@@ -530,6 +536,13 @@ const SimpleLiveKitStreaming = ({
 
                     {/* Remote videos container */}
                     <div id="remote-videos-container" className="remote-videos">
+                        {/* If no remote participants and we're a viewer, show message */}
+                        {!isPublisher && remoteVideosRef.current.size === 0 && (
+                            <div className="no-stream-message">
+                                <h3>🎥 Warten auf Live-Stream...</h3>
+                                <p>Der Streamer ist verbunden, startet aber noch nicht das Video</p>
+                            </div>
+                        )}
                         {/* Remote participant videos will be added here dynamically */}
                     </div>
 
