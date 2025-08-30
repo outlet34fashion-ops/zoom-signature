@@ -326,64 +326,108 @@ const LiveKitRoomManager = ({
                     </div>
                 ) : (
                     <div className="rooms-list">
-                        {rooms.map((room) => (
-                            <div key={room.roomName} className="room-card">
-                                <div className="room-info">
-                                    <div className="room-name">
-                                        <span className="live-indicator">🔴</span>
-                                        {room.roomName}
+                        {console.log('🔍 Rendering rooms:', rooms.length, 'rooms')}
+                        {rooms.map((room, index) => {
+                            console.log(`🔍 Room ${index}:`, room);
+                            console.log(`🔍 isAdmin: ${isAdmin}, loading: ${loading}, currentState: ${currentState}`);
+                            return (
+                                <div key={room.roomName} className="room-card">
+                                    <div className="room-info">
+                                        <div className="room-name">
+                                            <span className="live-indicator">🔴</span>
+                                            {room.roomName}
+                                        </div>
+                                        <div className="room-stats">
+                                            <span>👥 {room.numParticipants} Zuschauer</span>
+                                            <span>📅 {new Date(room.creationTime * 1000).toLocaleTimeString('de-DE')}</span>
+                                        </div>
+                                        {/* DEBUG INFO */}
+                                        <div className="debug-info" style={{fontSize: '10px', color: '#666'}}>
+                                            Admin: {isAdmin ? 'Ja' : 'Nein'} | Loading: {loading ? 'Ja' : 'Nein'} | State: {currentState}
+                                        </div>
                                     </div>
-                                    <div className="room-stats">
-                                        <span>👥 {room.numParticipants} Zuschauer</span>
-                                        <span>📅 {new Date(room.creationTime * 1000).toLocaleTimeString('de-DE')}</span>
-                                    </div>
-                                    {/* DEBUG INFO */}
-                                    <div className="debug-info" style={{fontSize: '10px', color: '#666'}}>
-                                        Admin: {isAdmin ? 'Ja' : 'Nein'} | Loading: {loading ? 'Ja' : 'Nein'} | State: {currentState}
-                                    </div>
-                                </div>
-                                <div className="room-actions" style={{ display: 'flex !important', visibility: 'visible', opacity: 1 }}>
-                                    <button
-                                        onClick={() => handleJoinRoom(room.roomName)}
-                                        disabled={loading || currentState !== 'lobby'}
-                                        className="join-room-btn"
-                                        style={{
-                                            display: 'block !important',
-                                            visibility: 'visible !important',
-                                            opacity: '1 !important',
-                                            backgroundColor: isAdmin ? '#f59e0b' : '#10b981',
-                                            color: 'white',
-                                            padding: '8px 16px',
-                                            border: 'none',
-                                            borderRadius: '6px',
-                                            cursor: 'pointer'
+                                    
+                                    {/* FORCE RENDER BUTTON SECTION */}
+                                    <div 
+                                        className="room-actions" 
+                                        style={{ 
+                                            display: 'flex', 
+                                            gap: '8px',
+                                            backgroundColor: 'red', // DEBUG: Make container visible
+                                            padding: '10px',
+                                            minWidth: '150px'
                                         }}
                                     >
-                                        {loading && currentState === 'joining' 
-                                            ? '🔄 Beitritt...' 
-                                            : isAdmin ? '⚙️ Verwalten' : '👀 Zuschauen'
-                                        }
-                                    </button>
-                                    
-                                    {isAdmin && (
+                                        {console.log('🔍 Rendering button section for room:', room.roomName)}
+                                        
+                                        {/* HARDCODED BUTTON - ALWAYS RENDER */}
                                         <button
-                                            onClick={async () => {
-                                                try {
-                                                    await livekitService.endRoom(room.roomName);
-                                                    await loadActiveRooms();
-                                                } catch (err) {
-                                                    setError(`Stream konnte nicht beendet werden: ${err.message}`);
-                                                }
+                                            onClick={() => {
+                                                console.log('🔄 Button clicked for room:', room.roomName);
+                                                handleJoinRoom(room.roomName);
                                             }}
-                                            disabled={loading}
-                                            className="end-room-btn"
+                                            disabled={false}
+                                            style={{
+                                                backgroundColor: '#10b981',
+                                                color: 'white',
+                                                border: 'none',
+                                                padding: '10px 15px',
+                                                borderRadius: '6px',
+                                                cursor: 'pointer',
+                                                fontSize: '14px',
+                                                fontWeight: 'bold'
+                                            }}
                                         >
-                                            🛑 Beenden
+                                            🔧 FORCE BUTTON
                                         </button>
-                                    )}
+
+                                        {/* ORIGINAL BUTTON WITH FULL DEBUG */}
+                                        <button
+                                            onClick={() => handleJoinRoom(room.roomName)}
+                                            disabled={loading || currentState !== 'lobby'}
+                                            style={{
+                                                backgroundColor: isAdmin ? '#f59e0b' : '#10b981',
+                                                color: 'white',
+                                                padding: '8px 16px',
+                                                border: 'none',
+                                                borderRadius: '6px',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            {loading && currentState === 'joining' 
+                                                ? '🔄 Beitritt...' 
+                                                : isAdmin ? '⚙️ Verwalten' : '👀 Zuschauen'
+                                            }
+                                        </button>
+                                        
+                                        {/* ADMIN END BUTTON */}
+                                        {isAdmin && (
+                                            <button
+                                                onClick={async () => {
+                                                    try {
+                                                        await livekitService.endRoom(room.roomName);
+                                                        await loadActiveRooms();
+                                                    } catch (err) {
+                                                        setError(`Stream konnte nicht beendet werden: ${err.message}`);
+                                                    }
+                                                }}
+                                                disabled={loading}
+                                                style={{
+                                                    backgroundColor: '#ef4444',
+                                                    color: 'white',
+                                                    padding: '8px 16px',
+                                                    border: 'none',
+                                                    borderRadius: '6px',
+                                                    cursor: 'pointer'
+                                                }}
+                                            >
+                                                🛑 Beenden
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 )}
             </div>
