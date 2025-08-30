@@ -1678,7 +1678,7 @@ function App() {
       {(isAuthenticated || isAdminView) && (
       <>
       {/* Header */}
-      <header className="modern-header">
+      <header className="bg-pink-500 text-white">
         <div className="container mx-auto px-4 py-2">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-3">
@@ -1688,7 +1688,7 @@ function App() {
                   href="https://wa.me/4917621105848?text=Hallo%20OUTLET34%20Team,%20ich%20brauche%20Hilfe%20beim%20Live%20Shopping..." 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="inline-flex items-center p-2 text-white hover:bg-white hover:bg-opacity-20 rounded-lg transition-all duration-200"
+                  className="inline-flex items-center p-2 text-white hover:bg-pink-600 rounded transition-colors duration-200"
                   title="WhatsApp Support"
                 >
                   <img 
@@ -1705,19 +1705,11 @@ function App() {
                   variant="ghost" 
                   size="sm"
                   onClick={() => setShowCalendar(true)}
-                  className="text-white hover:bg-white hover:bg-opacity-20 modern-button"
+                  className="text-white hover:bg-pink-600"
                   title="Live Shopping Kalender"
                 >
                   📅 {t('navigation.calendar')}
                 </Button>
-              )}
-
-              {/* Live Viewer Count - Modern Design */}
-              {(isAuthenticated || isAdminView) && (
-                <div className="live-viewer-count">
-                  <div className="live-dot-modern"></div>
-                  <span>{Math.floor(Math.random() * 50) + 40} live</span>
-                </div>
               )}
             </div>
             
