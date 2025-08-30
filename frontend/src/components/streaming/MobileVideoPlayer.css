@@ -193,7 +193,8 @@
   line-height: 1.4;
 }
 
-.retry-mobile-btn {
+.retry-mobile-btn,
+.demo-mobile-btn {
   background: rgba(255, 255, 255, 0.2);
   border: 2px solid white;
   color: white;
@@ -202,11 +203,24 @@
   font-weight: 600;
   cursor: pointer;
   font-size: 14px;
+  margin: 5px;
+  display: inline-block;
 }
 
-.retry-mobile-btn:hover {
+.retry-mobile-btn:hover,
+.demo-mobile-btn:hover {
   background: white;
   color: #ff4444;
+}
+
+.demo-mobile-btn {
+  background: rgba(76, 175, 80, 0.3);
+  border-color: #4caf50;
+}
+
+.demo-mobile-btn:hover {
+  background: #4caf50;
+  color: white;
 }
 
 /* Start Screen */
