@@ -316,6 +316,8 @@
 .room-actions {
   display: flex;
   gap: 8px;
+  flex-shrink: 0;
+  min-width: 120px;
 }
 
 .join-room-btn,
@@ -327,6 +329,8 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  white-space: nowrap;
+  min-width: 100px;
 }
 
 .join-room-btn {
