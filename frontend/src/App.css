@@ -17,132 +17,13 @@ body {
   min-height: 100vh;
 }
 
-/* Modern Card Styles with Glassmorphism */
-.modern-card {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-}
-
-.modern-card:hover {
-  background: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
-}
-
-.modern-card-content {
-  padding: 2rem;
-  color: white;
-}
-
-/* Live Viewer Count Display */
-.live-viewer-count {
-  background: rgba(0, 0, 0, 0.6);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.live-dot-modern {
-  width: 8px;
-  height: 8px;
-  background: #ff4444;
-  border-radius: 50%;
-  animation: pulseLive 2s ease-in-out infinite;
-}
-
-@keyframes pulseLive {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(1.2); }
-}
-
-/* Modern Typography */
-.modern-title {
-  font-size: 2.5rem;
-  font-weight: 900;
-  color: white;
-  text-align: center;
-  margin-bottom: 1rem;
-  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  background: linear-gradient(45deg, #fff, #f0f0f0, #fff);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: shimmerText 3s ease-in-out infinite;
-}
-
-@keyframes shimmerText {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
-.modern-subtitle {
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.9);
-  text-align: center;
-  margin-bottom: 2rem;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-/* Modern Button Styles */
-.modern-button {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
-  padding: 14px 28px;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-}
-
-.modern-button:hover {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.2));
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-}
-
-.modern-button-primary {
-  background: linear-gradient(135deg, #ff6b9d, #c44569);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.modern-button-primary:hover {
-  background: linear-gradient(135deg, #ff5a8a, #b03e5f);
-}
-
-/* Modern Header */
-.modern-header {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 1rem 2rem;
-  color: white;
-}
-
 /* Professional Live Video Stream Styling */
 .live-video-display {
   position: relative;
   overflow: hidden;
-  border-radius: 20px;
+  border-radius: 12px;
   min-height: 500px;
   max-height: 600px;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .video-stream-container {
@@ -150,8 +31,6 @@ body {
   width: 100%;
   height: 100%;
   background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
-  border-radius: 20px;
-  overflow: hidden;
 }
 
 .mock-video-feed {
