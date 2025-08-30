@@ -172,18 +172,44 @@ const SimpleVideoStreaming = ({
                 {/* Viewer View */}
                 {!isAdmin && (
                     <div className="viewer-view">
-                        <video
-                            ref={remoteVideoRef}
-                            autoPlay
-                            playsInline
-                            className="remote-video"
-                            poster="/images/logo.jfif"
-                        />
-                        
-                        <div className="viewer-overlay">
-                            <div className="stream-info">
-                                <h3>🎥 Live Shopping Stream</h3>
-                                <p>Warten auf Stream vom Verkäufer...</p>
+                        {/* Show Live Shopping Countdown instead of waiting message */}
+                        <div className="countdown-display">
+                            <div className="countdown-content">
+                                <div className="countdown-header">
+                                    <div className="fire-icon">🔥</div>
+                                    <h2>🛍️ LIVE SHOPPING COUNTDOWN</h2>
+                                </div>
+                                
+                                <div className="countdown-timer">
+                                    <div className="sale-label">sale</div>
+                                    <div className="timer-boxes">
+                                        <div className="time-box">
+                                            <div className="time-number">02</div>
+                                            <div className="time-label">STD</div>
+                                        </div>
+                                        <div className="time-box">
+                                            <div className="time-number">05</div>
+                                            <div className="time-label">MIN</div>
+                                        </div>
+                                        <div className="time-box">
+                                            <div className="time-number">50</div>
+                                            <div className="time-label">SEK</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="event-info">
+                                        📅 Startet am 30.8.2025 um 15:00 Uhr
+                                    </div>
+                                    
+                                    <div className="sale-label-bottom">sale</div>
+                                </div>
+
+                                <div className="ready-banner">
+                                    ⚡ BEREIT MACHEN!
+                                    <div className="ready-subtitle">
+                                        Countdown läuft - seien Sie dabei wenn es losgeht! 🚀
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
