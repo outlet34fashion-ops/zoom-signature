@@ -1500,6 +1500,10 @@ async def websocket_endpoint(websocket: WebSocket):
 # Include the router in the main app
 app.include_router(api_router)
 
+# Include routers
+app.include_router(livekit_router)
+
+# CORS configuration
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
