@@ -4117,8 +4117,8 @@ class LiveShoppingAPITester:
         print("\n🎯 PRIORITY 2: ADMIN DASHBOARD BLOCKS VERIFICATION...")
         admin_dashboard_success = self.test_admin_dashboard_blocks()
 
-        # PRIORITY 2: MULTI-LANGUAGE FUNCTIONALITY TESTING
-        print("\n🎯 PRIORITY 2: MULTI-LANGUAGE FUNCTIONALITY TESTING...")
+        # PRIORITY 3: MULTI-LANGUAGE FUNCTIONALITY TESTING
+        print("\n🎯 PRIORITY 3: MULTI-LANGUAGE FUNCTIONALITY TESTING...")
         multi_language_success = self.test_multi_language_functionality()
 
         # PRIORITY 3: GERMAN ORDER FORMAT VERIFICATION
