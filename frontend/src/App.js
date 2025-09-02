@@ -2693,6 +2693,21 @@ function App() {
                         >
                           🗑️ Ticker löschen
                         </Button>
+                        <Button 
+                          onClick={resetOrderCounter}
+                          className="bg-red-600 hover:bg-red-700 text-white"
+                        >
+                          🔄 Session Reset
+                        </Button>
+                        <Button 
+                          onClick={() => {
+                            loadAllOrders();
+                            loadAdminStats();
+                          }}
+                          className="bg-blue-600 hover:bg-blue-700 text-white"
+                        >
+                          🔃 Daten aktualisieren
+                        </Button>
                       </div>
                     </div>
 
