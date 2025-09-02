@@ -1679,19 +1679,26 @@ function App() {
                           </p>
                         </div>
                         
-                        <div className="space-y-2">
-                          <p className="text-white/80 text-sm">
-                            Neu bei OUTLET34?
-                          </p>
-                          <p className="text-white/60 text-xs leading-relaxed">
-                            Registrieren Sie sich kostenlos und erleben Sie Live Shopping mit exklusiven Angeboten
-                          </p>
+                        {/* Registration Call-to-Action Button */}
+                        <div className="space-y-3">
                           <a 
                             href="https://www.outlet34fashion.com/registrieren" 
-                            className="inline-block text-pink-400 hover:text-pink-300 text-xs underline transition-colors duration-300"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block w-full bg-gradient-to-r from-pink-500/20 to-purple-600/20 hover:from-pink-500/30 hover:to-purple-600/30 border border-pink-400/30 hover:border-pink-400/50 text-white py-4 px-6 rounded-xl font-medium transition-all duration-300 hover:scale-105 text-center backdrop-blur-sm"
                           >
-                            → outlet34fashion.com/registrieren
+                            <div className="space-y-1">
+                              <div className="text-sm font-semibold">
+                                Neu bei OUTLET34?
+                              </div>
+                              <div className="text-xs text-white/70">
+                                Jetzt registrieren
+                              </div>
+                            </div>
                           </a>
+                          <p className="text-white/60 text-xs text-center leading-relaxed">
+                            Registrieren Sie sich kostenlos und erleben Sie Live Shopping mit exklusiven Angeboten
+                          </p>
                         </div>
                       </div>
                       
