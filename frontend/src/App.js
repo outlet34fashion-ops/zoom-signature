@@ -419,18 +419,20 @@ function App() {
       // Handle ISO timestamp string (2025-09-02T12:13:25.446000)
       let date;
       if (typeof timestamp === 'string') {
-        // Parse ISO timestamp as UTC
-        date = new Date(timestamp + (timestamp.includes('Z') ? '' : 'Z'));
+        // Parse ISO timestamp correctly - browser will handle timezone
+        if (timestamp.includes('T')) {
+          // ISO format - parse as UTC if no timezone info
+          date = new Date(timestamp + (timestamp.includes('Z') || timestamp.includes('+') ? '' : 'Z'));
+        } else {
+          date = new Date(timestamp);
+        }
       } else {
         date = new Date(timestamp);
       }
       
-      // Convert to German time (UTC+2) manually for precision
-      const utcTime = date.getTime();
-      const germanTime = new Date(utcTime + (2 * 60 * 60 * 1000)); // Add 2 hours in milliseconds
-      
-      // Format as German datetime
-      return germanTime.toLocaleString('de-DE', {
+      // Let browser handle timezone conversion automatically to Europe/Berlin
+      return date.toLocaleString('de-DE', {
+        timeZone: 'Europe/Berlin',
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',
