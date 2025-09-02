@@ -2988,11 +2988,8 @@ function App() {
                             <div className="font-bold text-sm text-gray-800">
                               Kunde {buyer.customerNumber}
                             </div>
-                            <div className="flex justify-between text-xs text-gray-600">
+                            <div className="text-xs text-gray-600">
                               <span>{buyer.totalItems} Artikel</span>
-                              <span className="font-semibold text-green-600">
-                                {buyer.totalRevenue.toFixed(2).replace('.', ',')} €
-                              </span>
                             </div>
                           </div>
                           
