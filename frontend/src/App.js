@@ -2437,21 +2437,42 @@ function App() {
 
         {/* Live Shopping Calendar Management (Admin) */}
         {isAdminAuthenticated && isAdminView && (
-          <Card className="mb-6">
-            <CardContent className="p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-800">📅 Live Shopping Kalender</h3>
-                <Button 
-                  onClick={() => {
-                    setNewEventData({ date: '', time: '', title: '', description: '' });
-                    setEventError('');
-                    setShowCreateEvent(true);
-                  }}
-                  className="bg-pink-500 hover:bg-pink-600 text-white"
-                >
-                  ➕ Event erstellen
-                </Button>
-              </div>
+          <Card className="border-l-4 border-l-pink-500 shadow-lg mb-6">
+            <CardContent className="p-0">
+              <button
+                onClick={() => setShowCalendarManagement(!showCalendarManagement)}
+                className="w-full p-6 text-left bg-gradient-to-r from-pink-50 to-pink-100 hover:from-pink-100 hover:to-pink-150 transition-all duration-300 flex justify-between items-center"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-pink-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-lg">📅</span>
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-800">Live Shopping Kalender</h2>
+                    <p className="text-gray-600 text-sm">Events erstellen und verwalten</p>
+                  </div>
+                </div>
+                <div className="text-gray-400">
+                  {showCalendarManagement ? '▼' : '▶'}
+                </div>
+              </button>
+              
+              {showCalendarManagement && (
+                <div className="p-6 border-t border-gray-200">
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-lg font-semibold text-gray-800">📅 Live Shopping Kalender</h3>
+                      <Button 
+                        onClick={() => {
+                          setNewEventData({ date: '', time: '', title: '', description: '' });
+                          setEventError('');
+                          setShowCreateEvent(true);
+                        }}
+                        className="bg-pink-500 hover:bg-pink-600 text-white"
+                      >
+                        ➕ Event erstellen
+                      </Button>
+                    </div>
               
               {loadingEvents ? (
                 <div className="text-center py-4">
