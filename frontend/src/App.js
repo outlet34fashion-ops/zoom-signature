@@ -2214,6 +2214,14 @@ function App() {
                                         ✓
                                       </Button>
                                     )}
+                                    
+                                    <Button 
+                                      onClick={() => deleteCustomer(customer.id)}
+                                      className="bg-red-800 hover:bg-red-900 text-white"
+                                      size="sm"
+                                    >
+                                      🗑️
+                                    </Button>
                                   </div>
                                 </div>
                               </div>
