@@ -3092,7 +3092,7 @@ function App() {
                             <div key={order.id} className="text-sm bg-white rounded p-2 border-l-4 border-pink-500 shadow-sm">
                               <div className="flex justify-between items-center">
                                 <div className="font-medium text-gray-800">
-                                  {order.customer_id || 'N/A'} | {order.size || 'N/A'} | {order.quantity || 1} | {(order.price || 0).toFixed(2).replace('.', ',')} €
+                                  {order.customer_id || 'N/A'} | {order.size || 'N/A'} | {order.quantity || 1} | {((order.price || 0) / (order.quantity || 1)).toFixed(2).replace('.', ',')} €
                                 </div>
                                 <div className="text-xs text-gray-500 ml-2">
                                   {new Date(order.timestamp).toLocaleString('de-DE', { 
