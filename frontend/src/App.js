@@ -2044,55 +2044,55 @@ function App() {
                           }).length})
                         </h3>
                       </div>
-                  
-                  {/* Search Field */}
-                  <div className="mb-4">
-                    <Input
-                      placeholder="🔍 Suche nach Kundennummer..."
-                      value={customerSearch}
-                      onChange={(e) => setCustomerSearch(e.target.value)}
-                      className="bg-white/20 border-white/30 text-white placeholder-white/70"
-                    />
-                  </div>
-                  
-                  {/* Filter Buttons */}
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    <Button 
-                      onClick={() => setShowCreateCustomer(true)}
-                      className="bg-green-600 hover:bg-green-700 text-white"
-                      size="sm"
-                    >
-                      ➕ Kunde erstellen
-                    </Button>
-                    <Button 
-                      onClick={() => setCustomerFilter('pending')}
-                      className={customerFilter === 'pending' ? "bg-yellow-500 hover:bg-yellow-600 text-white" : "bg-white/20 hover:bg-white/30 text-white"}
-                      size="sm"
-                    >
-                      ⏳ Freigabe ({customers.filter(c => c.activation_status === 'pending').length})
-                    </Button>
-                    <Button 
-                      onClick={() => setCustomerFilter('blocked')}
-                      className={customerFilter === 'blocked' ? "bg-red-500 hover:bg-red-600 text-white" : "bg-white/20 hover:bg-white/30 text-white"}
-                      size="sm"
-                    >
-                      🚫 Gesperrt ({customers.filter(c => c.activation_status === 'blocked').length})
-                    </Button>
-                    <Button 
-                      onClick={() => setCustomerFilter('all')}
-                      className={customerFilter === 'all' ? "bg-blue-500 hover:bg-blue-600 text-white" : "bg-white/20 hover:bg-white/30 text-white"}
-                      size="sm"
-                    >
-                      📋 Alle
-                    </Button>
-                    <Button 
-                      onClick={loadCustomers}
-                      className="bg-white/20 hover:bg-white/30 text-white"
-                      size="sm"
-                    >
-                      🔄 Aktualisieren
-                    </Button>
-                  </div>
+                      
+                      {/* Search Field */}
+                      <div className="mb-4">
+                        <Input
+                          placeholder="🔍 Suche nach Kundennummer..."
+                          value={customerSearch}
+                          onChange={(e) => setCustomerSearch(e.target.value)}
+                          className="w-full"
+                        />
+                      </div>
+                      
+                      {/* Filter Buttons */}
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        <Button 
+                          onClick={() => setShowCreateCustomer(true)}
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                          size="sm"
+                        >
+                          ➕ Kunde erstellen
+                        </Button>
+                        <Button 
+                          onClick={() => setCustomerFilter('pending')}
+                          className={customerFilter === 'pending' ? "bg-yellow-500 hover:bg-yellow-600 text-white" : "bg-gray-200 hover:bg-gray-300 text-gray-800"}
+                          size="sm"
+                        >
+                          ⏳ Freigabe ({customers.filter(c => c.activation_status === 'pending').length})
+                        </Button>
+                        <Button 
+                          onClick={() => setCustomerFilter('blocked')}
+                          className={customerFilter === 'blocked' ? "bg-red-500 hover:bg-red-600 text-white" : "bg-gray-200 hover:bg-gray-300 text-gray-800"}
+                          size="sm"
+                        >
+                          🚫 Gesperrt ({customers.filter(c => c.activation_status === 'blocked').length})
+                        </Button>
+                        <Button 
+                          onClick={() => setCustomerFilter('all')}
+                          className={customerFilter === 'all' ? "bg-blue-500 hover:bg-blue-600 text-white" : "bg-gray-200 hover:bg-gray-300 text-gray-800"}
+                          size="sm"
+                        >
+                          📋 Alle
+                        </Button>
+                        <Button 
+                          onClick={loadCustomers}
+                          className="bg-gray-200 hover:bg-gray-300 text-gray-800"
+                          size="sm"
+                        >
+                          🔄 Aktualisieren
+                        </Button>
+                      </div>
                   
                   <div className="space-y-3 max-h-64 overflow-y-auto">
                     {customers.filter(customer => {
