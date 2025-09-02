@@ -1989,17 +1989,20 @@ function App() {
               </CardContent>
             </Card>
 
-            {/* Customer Management Dashboard */}
-            <Card className="bg-gradient-to-r from-blue-500 to-teal-500 text-white">
-              <CardContent className="p-6">
-                <h2 className="text-2xl font-bold mb-4 flex items-center">
-                  👥 Kundenverwaltung
-                </h2>
-                
-                <div className="bg-white/10 rounded-lg p-4">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-semibold">
-                      👥 Kundenverwaltung ({customers.filter(c => {
+            {/* Block 2: Kundenverwaltung */}
+            <Card className="border-l-4 border-l-blue-500 shadow-lg">
+              <CardContent className="p-0">
+                <button
+                  onClick={() => setShowCustomerManagement(!showCustomerManagement)}
+                  className="w-full p-6 text-left bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-150 transition-all duration-300 flex justify-between items-center"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-lg">👥</span>
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-bold text-gray-800">Kundenverwaltung</h2>
+                      <p className="text-gray-600 text-sm">Kunden erstellen, verwalten und bearbeiten ({customers.filter(c => {
                         // Filter by status
                         let matchesFilter = true;
                         if (customerFilter === 'pending') matchesFilter = c.activation_status === 'pending';
@@ -2012,9 +2015,17 @@ function App() {
                         }
                         
                         return matchesFilter && matchesSearch;
-                      }).length})
-                    </h3>
+                      }).length} Kunden)</p>
+                    </div>
                   </div>
+                  <div className="text-gray-400">
+                    {showCustomerManagement ? '▼' : '▶'}
+                  </div>
+                </button>
+                
+                {showCustomerManagement && (
+                  <div className="p-6 border-t border-gray-200">
+                    <div className="bg-gray-50 rounded-lg p-4">
                   
                   {/* Search Field */}
                   <div className="mb-4">
