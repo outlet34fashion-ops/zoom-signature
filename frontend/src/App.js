@@ -3095,7 +3095,7 @@ function App() {
                                   Bestellung #{order.id}
                                 </div>
                                 <div className="text-xs text-gray-500">
-                                  {new Date(order.created_at).toLocaleString('de-DE')}
+                                  {new Date(order.timestamp).toLocaleString('de-DE')}
                                 </div>
                               </div>
                               <div className="space-y-1">
