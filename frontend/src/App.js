@@ -1905,109 +1905,87 @@ function App() {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-6">
         
-        {/* Admin Dashboard */}
+        {/* Admin Dashboard - Organized in Collapsible Blocks */}
         {isAdminAuthenticated && isAdminView && (
-          <div className="space-y-6">
-            <Card className="mb-6 bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-              <CardContent className="p-6">
-                <h2 className="text-2xl font-bold mb-4 flex items-center">
-                  📊 {t.adminDashboard}
-                </h2>
-                
-                {/* Live-Bestellstatistik */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                  {/* Gesamtumsatz */}
-                  <div className="bg-gradient-to-br from-green-400/30 to-green-600/30 rounded-lg p-4 text-center border border-green-300/30">
-                    <div className="text-3xl font-bold text-green-200">
-                      {(adminStats.total_revenue || 0).toLocaleString('de-DE')} €
-                    </div>
-                    <div className="text-sm opacity-90 font-medium">💰 Gesamtumsatz</div>
-                    <div className="text-xs opacity-70 mt-1">Live-Statistik</div>
-                  </div>
-                  
-                  {/* Verkaufte Artikel */}
-                  <div className="bg-gradient-to-br from-blue-400/30 to-blue-600/30 rounded-lg p-4 text-center border border-blue-300/30">
-                    <div className="text-3xl font-bold text-blue-200">
-                      {adminStats.total_items || 0}
-                    </div>
-                    <div className="text-sm opacity-90 font-medium">📦 Verkaufte Artikel</div>
-                    <div className="text-xs opacity-70 mt-1">Gesamt Stückzahl</div>
-                  </div>
-                  
-                  {/* Session Umsatz */}
-                  <div className="bg-gradient-to-br from-yellow-400/30 to-orange-500/30 rounded-lg p-4 text-center border border-yellow-300/30">
-                    <div className="text-3xl font-bold text-yellow-200">
-                      {(adminStats.session_revenue || 0).toLocaleString('de-DE')} €
-                    </div>
-                    <div className="text-sm opacity-90 font-medium">🔥 Session Umsatz</div>
-                    <div className="text-xs opacity-70 mt-1">Aktuelle Session</div>
-                  </div>
-                  
-                  {/* Bestellungen */}
-                  <div className="bg-gradient-to-br from-pink-400/30 to-purple-500/30 rounded-lg p-4 text-center border border-pink-300/30">
-                    <div className="text-3xl font-bold text-pink-200">
-                      {adminStats.total_orders || 0}
-                    </div>
-                    <div className="text-sm opacity-90 font-medium">📋 Bestellungen</div>
-                    <div className="text-xs opacity-70 mt-1">Gesamtanzahl</div>
-                  </div>
-                </div>
+          <div className="space-y-4">
+            {/* Main Dashboard Header */}
+            <div className="text-center mb-6">
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">📊 {t.adminDashboard}</h1>
+              <p className="text-gray-600">Verwaltung und Übersicht für Administratoren</p>
+            </div>
 
-                {/* Ticker Settings */}
-                <div className="bg-white/10 rounded-lg p-4 mb-4">
-                  <h3 className="text-lg font-semibold mb-3">⚙️ {t.tickerSettings}</h3>
-                  <div className="space-y-3">
+            {/* Block 1: Live-Statistiken */}
+            <Card className="border-l-4 border-l-green-500 shadow-lg">
+              <CardContent className="p-0">
+                <button
+                  onClick={() => setShowStatistics(!showStatistics)}
+                  className="w-full p-6 text-left bg-gradient-to-r from-green-50 to-green-100 hover:from-green-100 hover:to-green-150 transition-all duration-300 flex justify-between items-center"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-lg">💰</span>
+                    </div>
                     <div>
-                      <label className="block text-sm font-medium mb-1">{t.tickerText}</label>
-                      <Input
-                        value={newTickerText}
-                        onChange={(e) => setNewTickerText(e.target.value)}
-                        className="bg-white/20 border-white/30 text-white placeholder-white/70"
-                        placeholder="Ticker Text eingeben..."
-                      />
+                      <h2 className="text-xl font-bold text-gray-800">Live-Statistiken</h2>
+                      <p className="text-gray-600 text-sm">Umsatz, Bestellungen und Verkaufszahlen</p>
                     </div>
-                    <div className="flex space-x-2">
+                  </div>
+                  <div className="text-gray-400">
+                    {showStatistics ? '▼' : '▶'}
+                  </div>
+                </button>
+                
+                {showStatistics && (
+                  <div className="p-6 border-t border-gray-200">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      {/* Gesamtumsatz */}
+                      <div className="bg-gradient-to-br from-green-400 to-green-600 rounded-xl p-6 text-center text-white shadow-lg">
+                        <div className="text-3xl font-bold mb-2">
+                          {(adminStats.total_revenue || 0).toLocaleString('de-DE')} €
+                        </div>
+                        <div className="text-sm opacity-90 font-medium">💰 Gesamtumsatz</div>
+                        <div className="text-xs opacity-70 mt-1">Live-Statistik</div>
+                      </div>
+                      
+                      {/* Verkaufte Artikel */}
+                      <div className="bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl p-6 text-center text-white shadow-lg">
+                        <div className="text-3xl font-bold mb-2">
+                          {adminStats.total_items || 0}
+                        </div>
+                        <div className="text-sm opacity-90 font-medium">📦 Verkaufte Artikel</div>
+                        <div className="text-xs opacity-70 mt-1">Gesamt Stückzahl</div>
+                      </div>
+                      
+                      {/* Session Umsatz */}
+                      <div className="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl p-6 text-center text-white shadow-lg">
+                        <div className="text-3xl font-bold mb-2">
+                          {(adminStats.session_revenue || 0).toLocaleString('de-DE')} €
+                        </div>
+                        <div className="text-sm opacity-90 font-medium">🔥 Session Umsatz</div>
+                        <div className="text-xs opacity-70 mt-1">Aktuelle Session</div>
+                      </div>
+                      
+                      {/* Bestellungen */}
+                      <div className="bg-gradient-to-br from-pink-400 to-purple-500 rounded-xl p-6 text-center text-white shadow-lg">
+                        <div className="text-3xl font-bold mb-2">
+                          {adminStats.total_orders || 0}
+                        </div>
+                        <div className="text-sm opacity-90 font-medium">📋 Bestellungen</div>
+                        <div className="text-xs opacity-70 mt-1">Gesamtanzahl</div>
+                      </div>
+                    </div>
+                    
+                    {/* Reset Counter */}
+                    <div className="text-center mt-6">
                       <Button 
-                        onClick={updateTicker}
-                        className="bg-green-500 hover:bg-green-600 text-white"
+                        onClick={resetOrderCounter}
+                        className="bg-red-500 hover:bg-red-600 text-white px-8 py-3"
                       >
-                        📝 {t.updateTicker}
-                      </Button>
-                      <Button 
-                        onClick={toggleTicker}
-                        className={tickerSettings.enabled ? "bg-orange-500 hover:bg-orange-600" : "bg-gray-500 hover:bg-gray-600"}
-                      >
-                        {tickerSettings.enabled ? "⏸️ Ticker Stop" : "▶️ Ticker Start"}
+                        🔄 {t.resetCounter}
                       </Button>
                     </div>
                   </div>
-                </div>
-
-                {/* Reset Counter */}
-                <div className="text-center">
-                  <Button 
-                    onClick={resetOrderCounter}
-                    className="bg-red-500 hover:bg-red-600 text-white"
-                  >
-                    🔄 {t.resetCounter}
-                  </Button>
-                </div>
-
-                {/* Simple Video Streaming */}
-                <div className="bg-white/10 rounded-lg p-4 mt-4">
-                  <h3 className="text-lg font-semibold mb-3">🎥 HD-Video-Streaming</h3>
-                  <div className="text-center space-y-2">
-                    <Button 
-                      onClick={startSimpleStream}
-                      className="bg-red-600 hover:bg-red-700 text-white w-full"
-                    >
-                      📺 HD Live-Stream starten
-                    </Button>
-                    <div className="text-xs text-white/70">
-                      Einfach • Stabil • Sofort funktionsfähig
-                    </div>
-                  </div>
-                </div>
+                )}
               </CardContent>
             </Card>
 
