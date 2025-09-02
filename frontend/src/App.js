@@ -2381,10 +2381,10 @@ function App() {
                 {showTickerSettings && (
                   <div className="p-6 border-t border-gray-200">
                     <div className="bg-gray-50 rounded-lg p-4">
-                      <h3 className="text-lg font-semibold mb-3 text-gray-800">⚙️ {t.tickerSettings}</h3>
+                      <h3 className="text-lg font-semibold mb-3 text-gray-800">⚙️ Ticker-Einstellungen</h3>
                       <div className="space-y-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">{t.tickerText}</label>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Ticker Text</label>
                           <Input
                             value={newTickerText}
                             onChange={(e) => setNewTickerText(e.target.value)}
@@ -2397,7 +2397,7 @@ function App() {
                             onClick={updateTicker}
                             className="bg-green-500 hover:bg-green-600 text-white flex-1"
                           >
-                            📝 {t.updateTicker}
+                            📝 Ticker aktualisieren
                           </Button>
                           <Button 
                             onClick={toggleTicker}
