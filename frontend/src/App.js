@@ -4096,8 +4096,6 @@ function App() {
           onClose={handleSimpleStreamClose}
         />
       )}
-      </>
-      )}
     </div>
   );
 }
