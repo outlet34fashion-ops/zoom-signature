@@ -4582,6 +4582,204 @@ TIMEZONE BUG ANALYSIS COMPLETE:
             self.log_test("Timezone Debug - Exception", False, str(e))
             return False
 
+    def test_customer_10299_last_order_sync(self):
+        """Test specific customer 10299 last order sync issue as per review request"""
+        print("\n🚨 CRITICAL: Testing Customer 10299 Last Order Sync Issue...")
+        print("   Issue: 'Deine letzte Bestellung' not updating when new orders are placed")
+        
+        customer_number = "10299"
+        
+        try:
+            # Test 1: Verify customer 10299 exists and is active
+            print("  🔍 Test 1: Verify customer 10299 exists and status...")
+            check_response = requests.get(
+                f"{self.api_url}/customers/check/{customer_number}",
+                timeout=10
+            )
+            
+            if check_response.status_code != 200:
+                self.log_test("Customer 10299 - Status Check", False, f"Status check failed with {check_response.status_code}")
+                return False
+            
+            status_data = check_response.json()
+            
+            if not status_data.get('exists'):
+                self.log_test("Customer 10299 - Exists", False, "Customer 10299 does not exist")
+                return False
+            
+            if status_data.get('activation_status') != 'active':
+                self.log_test("Customer 10299 - Active Status", False, f"Customer 10299 status: {status_data.get('activation_status')} (should be active)")
+                return False
+            
+            self.log_test("Customer 10299 - Verification", True, f"Customer 10299 exists and is ACTIVE - ready for testing")
+            
+            # Test 2: Get current last order for customer 10299
+            print("  📋 Test 2: Get current last order for customer 10299...")
+            last_order_response = requests.get(
+                f"{self.api_url}/customers/{customer_number}/last-order",
+                timeout=10
+            )
+            
+            if last_order_response.status_code != 200:
+                self.log_test("Customer 10299 - Get Last Order", False, f"Last order API failed with {last_order_response.status_code}")
+                return False
+            
+            last_order_data = last_order_response.json()
+            
+            # Store current last order for comparison
+            current_last_order = None
+            if last_order_data.get('has_order'):
+                current_last_order = last_order_data['order']
+                self.log_test("Customer 10299 - Current Last Order", True, f"Found existing last order: ID {current_last_order['id']}, Time: {current_last_order.get('formatted_time', 'N/A')}")
+            else:
+                self.log_test("Customer 10299 - Current Last Order", True, "No existing orders found")
+            
+            # Test 3: Get all orders to compare with last order endpoint
+            print("  📊 Test 3: Compare GET /api/orders vs GET /api/customers/10299/last-order...")
+            all_orders_response = requests.get(f"{self.api_url}/orders", timeout=10)
+            
+            if all_orders_response.status_code != 200:
+                self.log_test("Customer 10299 - Get All Orders", False, f"Get orders failed with {all_orders_response.status_code}")
+                return False
+            
+            all_orders = all_orders_response.json()
+            customer_orders = [order for order in all_orders if order.get('customer_id') == customer_number]
+            
+            if customer_orders:
+                # Sort by timestamp to get the most recent
+                customer_orders.sort(key=lambda x: x.get('timestamp', ''), reverse=True)
+                most_recent_order = customer_orders[0]
+                
+                # Compare with last order endpoint
+                if current_last_order:
+                    orders_match = current_last_order['id'] == most_recent_order['id']
+                    self.log_test("Customer 10299 - Endpoint Consistency", orders_match, 
+                                f"Last order endpoint {'matches' if orders_match else 'DOES NOT match'} most recent order from orders list")
+                else:
+                    self.log_test("Customer 10299 - Endpoint Consistency", False, "Last order endpoint shows no orders but orders list has orders")
+            else:
+                if not current_last_order:
+                    self.log_test("Customer 10299 - Endpoint Consistency", True, "Both endpoints correctly show no orders")
+                else:
+                    self.log_test("Customer 10299 - Endpoint Consistency", False, "Last order endpoint shows order but orders list is empty")
+            
+            # Test 4: Create a new order for customer 10299 RIGHT NOW
+            print("  🛒 Test 4: Create NEW order for customer 10299 to test sync...")
+            
+            # Get products
+            products_response = requests.get(f"{self.api_url}/products", timeout=10)
+            if products_response.status_code != 200:
+                self.log_test("Customer 10299 - Get Products", False, "Could not fetch products for order test")
+                return False
+            
+            products = products_response.json()
+            if not products:
+                self.log_test("Customer 10299 - Products Available", False, "No products available for order test")
+                return False
+            
+            # Create order with current timestamp for tracking
+            current_time = datetime.now()
+            order_data = {
+                "customer_id": customer_number,
+                "product_id": products[0]['id'],
+                "size": "OneSize",
+                "quantity": 1,
+                "price": 12.90
+            }
+            
+            order_response = requests.post(
+                f"{self.api_url}/orders",
+                json=order_data,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            if order_response.status_code != 200:
+                self.log_test("Customer 10299 - New Order Creation", False, f"Order creation failed with {order_response.status_code}")
+                return False
+            
+            new_order = order_response.json()
+            self.log_test("Customer 10299 - New Order Creation", True, f"New order created successfully: ID {new_order['id']}, Price: {new_order['price']}")
+            
+            # Test 5: IMMEDIATELY check if new order appears in last-order endpoint
+            print("  ⚡ Test 5: IMMEDIATE check - Does new order appear in last-order endpoint?")
+            
+            # Small delay to ensure database consistency
+            time.sleep(1)
+            
+            updated_last_order_response = requests.get(
+                f"{self.api_url}/customers/{customer_number}/last-order",
+                timeout=10
+            )
+            
+            if updated_last_order_response.status_code != 200:
+                self.log_test("Customer 10299 - Updated Last Order Check", False, f"Updated last order check failed with {updated_last_order_response.status_code}")
+                return False
+            
+            updated_last_order_data = updated_last_order_response.json()
+            
+            if not updated_last_order_data.get('has_order'):
+                self.log_test("Customer 10299 - Last Order Sync", False, "Last order endpoint shows no orders after creating new order")
+                return False
+            
+            updated_order = updated_last_order_data['order']
+            
+            # Check if the new order is now the last order
+            sync_success = updated_order['id'] == new_order['id']
+            
+            if sync_success:
+                self.log_test("Customer 10299 - Last Order Sync", True, f"✅ SUCCESS: New order immediately appears as last order! ID: {updated_order['id']}")
+            else:
+                self.log_test("Customer 10299 - Last Order Sync", False, f"❌ SYNC ISSUE: Last order ID {updated_order['id']} != New order ID {new_order['id']}")
+                return False
+            
+            # Test 6: Verify timestamp formatting (German format)
+            print("  🕐 Test 6: Verify German timestamp formatting...")
+            formatted_time = updated_order.get('formatted_time', '')
+            
+            # Check German format: DD.MM.YYYY HH:MM:SS
+            import re
+            german_time_pattern = r'^\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}:\d{2}$'
+            time_format_correct = bool(re.match(german_time_pattern, formatted_time))
+            
+            if time_format_correct:
+                self.log_test("Customer 10299 - German Time Format", True, f"Timestamp correctly formatted: {formatted_time}")
+            else:
+                self.log_test("Customer 10299 - German Time Format", False, f"Timestamp format incorrect: {formatted_time}")
+            
+            # Test 7: Final consistency check - verify both endpoints show same order
+            print("  🔄 Test 7: Final consistency check...")
+            
+            # Get all orders again
+            final_orders_response = requests.get(f"{self.api_url}/orders", timeout=10)
+            final_orders = final_orders_response.json()
+            final_customer_orders = [order for order in final_orders if order.get('customer_id') == customer_number]
+            final_customer_orders.sort(key=lambda x: x.get('timestamp', ''), reverse=True)
+            
+            if final_customer_orders:
+                final_most_recent = final_customer_orders[0]
+                final_consistency = final_most_recent['id'] == updated_order['id']
+                
+                if final_consistency:
+                    self.log_test("Customer 10299 - Final Consistency", True, "✅ Both endpoints show the same newest order")
+                else:
+                    self.log_test("Customer 10299 - Final Consistency", False, f"❌ Endpoints inconsistent: Orders list {final_most_recent['id']} vs Last order {updated_order['id']}")
+            
+            print(f"  🎉 CUSTOMER 10299 LAST ORDER SYNC TEST COMPLETED!")
+            print(f"  📊 New Order Details:")
+            print(f"     - Order ID: {new_order['id']}")
+            print(f"     - Customer: {customer_number}")
+            print(f"     - Product: {products[0]['name']}")
+            print(f"     - Price: {new_order['price']} €")
+            print(f"     - Quantity: {new_order['quantity']}")
+            print(f"     - Formatted Time: {updated_order.get('formatted_time', 'N/A')}")
+            
+            return True
+            
+        except Exception as e:
+            self.log_test("Customer 10299 - Exception", False, str(e))
+            return False
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("🚀 Starting Live Shopping App Backend API Tests")
