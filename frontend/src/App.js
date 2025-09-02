@@ -1241,69 +1241,94 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Guest Registration/Blocking Screen */}
+      {/* Modern Guest Landing Screen */}
       {!isAuthenticated && !isAdminView && (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-400 to-purple-600">
-          <Card className="w-full max-w-md mx-4">
-            <CardContent className="p-8">
-              <div className="text-center space-y-6">
-                {/* OUTLET34 Logo */}
-                <div className="flex justify-center mb-4">
-                  <img 
-                    src="/images/outlet34-logo.jpg" 
-                    alt="OUTLET34 Fashion Logo" 
-                    className="w-40 h-40 rounded-full shadow-2xl"
-                  />
-                </div>
-                
-                {/* Sprachauswahl für Landing Page */}
-                <div className="mb-4">
-                  <p className="text-sm text-gray-600 mb-3 text-center">🌍 {t('settings.language')}</p>
-                  <div className="flex justify-center space-x-2">
-                    <button
-                      onClick={() => changeLanguage('de')}
-                      className={`px-3 py-2 rounded text-sm transition-colors ${
-                        i18n.language === 'de' 
-                          ? 'bg-pink-500 text-white' 
-                          : 'bg-white text-gray-700 hover:bg-gray-100 border'
-                      }`}
-                      title="Deutsch"
-                    >
-                      🇩🇪
-                    </button>
-                    <button
-                      onClick={() => changeLanguage('en')}
-                      className={`px-3 py-2 rounded text-sm transition-colors ${
-                        i18n.language === 'en' 
-                          ? 'bg-pink-500 text-white' 
-                          : 'bg-white text-gray-700 hover:bg-gray-100 border'
-                      }`}
-                      title="English"
-                    >
-                      🇺🇸
-                    </button>
-                    <button
-                      onClick={() => changeLanguage('tr')}
-                      className={`px-3 py-2 rounded text-sm transition-colors ${
-                        i18n.language === 'tr' 
-                          ? 'bg-pink-500 text-white' 
-                          : 'bg-white text-gray-700 hover:bg-gray-100 border'
-                      }`}
-                      title="Türkçe"
-                    >
-                      🇹🇷
-                    </button>
-                    <button
-                      onClick={() => changeLanguage('fr')}
-                      className={`px-3 py-2 rounded text-sm transition-colors ${
-                        i18n.language === 'fr' 
-                          ? 'bg-pink-500 text-white' 
-                          : 'bg-white text-gray-700 hover:bg-gray-100 border'
-                      }`}
-                      title="Français"
-                    >
-                      🇫🇷
-                    </button>
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
+          {/* Animated Background Elements */}
+          <div className="absolute inset-0">
+            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-pink-500/10 via-purple-600/5 to-indigo-600/10"></div>
+            <div className="absolute top-20 left-20 w-64 h-64 bg-pink-500/20 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute bottom-20 right-20 w-80 h-80 bg-purple-600/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl animate-pulse delay-2000"></div>
+          </div>
+          
+          <div className="relative z-10 min-h-screen flex flex-col">
+            {/* Top Header */}
+            <div className="flex justify-between items-center p-6">
+              {/* Language Selector - Modern Pills */}
+              <div className="flex space-x-1 bg-white/10 backdrop-blur-md rounded-full p-1">
+                <button
+                  onClick={() => changeLanguage('de')}
+                  className={`px-3 py-2 rounded-full text-xs font-medium transition-all duration-300 ${
+                    i18n.language === 'de' 
+                      ? 'bg-white text-gray-900 shadow-lg' 
+                      : 'text-white/70 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  🇩🇪 DE
+                </button>
+                <button
+                  onClick={() => changeLanguage('en')}
+                  className={`px-3 py-2 rounded-full text-xs font-medium transition-all duration-300 ${
+                    i18n.language === 'en' 
+                      ? 'bg-white text-gray-900 shadow-lg' 
+                      : 'text-white/70 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  🇺🇸 EN
+                </button>
+                <button
+                  onClick={() => changeLanguage('tr')}
+                  className={`px-3 py-2 rounded-full text-xs font-medium transition-all duration-300 ${
+                    i18n.language === 'tr' 
+                      ? 'bg-white text-gray-900 shadow-lg' 
+                      : 'text-white/70 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  🇹🇷 TR
+                </button>
+                <button
+                  onClick={() => changeLanguage('fr')}
+                  className={`px-3 py-2 rounded-full text-xs font-medium transition-all duration-300 ${
+                    i18n.language === 'fr' 
+                      ? 'bg-white text-gray-900 shadow-lg' 
+                      : 'text-white/70 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  🇫🇷 FR
+                </button>
+              </div>
+              
+              {/* Status Indicator */}
+              <div className="flex items-center space-x-2 bg-green-500/20 backdrop-blur-md rounded-full px-4 py-2">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-green-200 text-xs font-medium">LIVE</span>
+              </div>
+            </div>
+            
+            {/* Main Content */}
+            <div className="flex-1 flex items-center justify-center px-6">
+              <div className="w-full max-w-md space-y-8">
+                {/* Logo Section */}
+                <div className="text-center space-y-4">
+                  <div className="relative inline-block">
+                    <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full blur-2xl opacity-30 animate-pulse"></div>
+                    <img 
+                      src="/images/outlet34-logo.jpg" 
+                      alt="OUTLET34 Fashion Logo" 
+                      className="relative w-32 h-32 rounded-full shadow-2xl border-4 border-white/20 mx-auto hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <h1 className="text-4xl font-bold text-white">
+                      OUTLET<span className="text-pink-400">34</span>
+                    </h1>
+                    <div className="flex items-center justify-center space-x-2">
+                      <div className="h-px bg-gradient-to-r from-transparent via-pink-400 to-transparent flex-1"></div>
+                      <p className="text-purple-200 text-sm font-medium px-4">Live Shopping Experience</p>
+                      <div className="h-px bg-gradient-to-r from-transparent via-pink-400 to-transparent flex-1"></div>
+                    </div>
                   </div>
                 </div>
                 
