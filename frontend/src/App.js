@@ -1894,8 +1894,8 @@ function App() {
           </div>
         </div>
 
-        {/* Stream Title */}
-        {tickerSettings.enabled && (
+        {/* Stream Title - Only show for customers, not admins */}
+        {tickerSettings.enabled && !isAdminView && (
           <div className="bg-pink-500 py-3">
             <div className="container mx-auto px-4 text-center">
               <p className="text-white font-medium">{tickerSettings.text}</p>
