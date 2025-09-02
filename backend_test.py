@@ -5102,7 +5102,11 @@ TIMEZONE BUG ANALYSIS COMPLETE:
         print(f"🔗 Testing against: {self.base_url}")
         print("=" * 60)
 
-        # CRITICAL PRIORITY: CUSTOMER 10299 LAST ORDER SYNC ISSUE (Current Review Request)
+        # CRITICAL PRIORITY: CHAT FUNCTIONALITY COMPREHENSIVE TEST (Current Review Request)
+        print("\n🚨 CRITICAL PRIORITY: CHAT FUNCTIONALITY COMPREHENSIVE TEST...")
+        chat_comprehensive_success = self.test_chat_functionality_comprehensive()
+
+        # CRITICAL PRIORITY: CUSTOMER 10299 LAST ORDER SYNC ISSUE (Previous Review Request)
         print("\n🚨 CRITICAL PRIORITY: CUSTOMER 10299 LAST ORDER SYNC ISSUE...")
         customer_10299_success = self.test_customer_10299_last_order_sync()
 
