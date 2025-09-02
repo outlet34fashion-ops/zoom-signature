@@ -1832,6 +1832,16 @@ function App() {
                   >
                     {t('admin.adminView')}
                   </Button>
+                  {/* Admin Logout Button */}
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={adminLogout}
+                    className="text-white hover:bg-red-600 border border-white/30 hover:border-red-400 transition-all duration-300"
+                    title="Als Admin abmelden"
+                  >
+                    🚪 Abmelden
+                  </Button>
                 </>
               )}
             </div>
