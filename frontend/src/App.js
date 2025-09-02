@@ -2926,52 +2926,50 @@ function App() {
               </CardContent>
               </Card>
 
-              {/* Last Order Block - Compact Format */}
+              {/* Last Order Block + Top 3 Käufer - Combined */}
               <Card className="max-w-sm mx-auto">
-                <CardContent className="p-2">
-                  <div className="space-y-2">
-                    <h3 className="font-semibold text-gray-700 text-center text-sm">
-                      📦 Deine letzte Bestellung
-                    </h3>
-                    
-                    {loadingLastOrder ? (
-                      <div className="text-center py-2">
-                        <div className="text-xs text-gray-600">Lädt...</div>
-                      </div>
-                    ) : customerLastOrder ? (
-                      <div className="bg-gray-50 rounded p-2 space-y-1">
-                        {/* Compact One-Line Format: quantity I price I size */}
-                        <div className="text-center font-medium text-sm text-gray-800">
-                          {customerLastOrder.quantity} I {(customerLastOrder.price / customerLastOrder.quantity).toFixed(2).replace('.', ',')} I {customerLastOrder.size}
+                <CardContent className="p-3">
+                  <div className="space-y-4">
+                    {/* Deine letzte Bestellung */}
+                    <div className="space-y-2">
+                      <h3 className="font-semibold text-gray-700 text-center text-sm">
+                        📦 Deine letzte Bestellung
+                      </h3>
+                      
+                      {loadingLastOrder ? (
+                        <div className="text-center py-2">
+                          <div className="text-xs text-gray-600">Lädt...</div>
                         </div>
-                        <div className="text-center text-xs text-gray-500">
-                          {customerLastOrder.formatted_time}
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="text-center py-2">
-                        <div className="text-xs text-gray-500">Keine Bestellungen</div>
-                        {isAdminView && currentCustomer && (
-                          <div className="text-xs text-blue-500 mt-1">
-                            Debug: Kunde #{currentCustomer.customer_number}
+                      ) : customerLastOrder ? (
+                        <div className="bg-gray-50 rounded p-2 space-y-1">
+                          {/* Compact One-Line Format: quantity I price I size */}
+                          <div className="text-center font-medium text-sm text-gray-800">
+                            {customerLastOrder.quantity} I {(customerLastOrder.price / customerLastOrder.quantity).toFixed(2).replace('.', ',')} I {customerLastOrder.size}
                           </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
+                          <div className="text-center text-xs text-gray-500">
+                            {customerLastOrder.formatted_time}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="text-center py-2">
+                          <div className="text-xs text-gray-500">Keine Bestellungen</div>
+                          {isAdminView && currentCustomer && (
+                            <div className="text-xs text-blue-500 mt-1">
+                              Debug: Kunde #{currentCustomer.customer_number}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
 
-          {/* Top 3 Käufer-Liste - Gamification für Kunden */}
-          {!isAdminView && (
-            <Card className="max-w-sm mx-auto">
-              <CardContent className="p-3">
-                <div className="space-y-3">
-                  <h3 className="font-bold text-center text-sm text-pink-600 flex items-center justify-center">
-                    🏆 TOP 3 KÄUFER 🏆
-                  </h3>
+                    {/* Trennlinie */}
+                    <div className="border-t border-gray-200"></div>
+
+                    {/* Top 3 Käufer - direkt darunter */}
+                    <div className="space-y-3">
+                      <h3 className="font-bold text-center text-sm text-pink-600 flex items-center justify-center">
+                        🏆 TOP 3 KÄUFER 🏆
+                      </h3>
                   
                   <div className="space-y-2">
                     {getTop3Buyers().map((buyer, index) => (
