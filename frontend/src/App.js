@@ -2224,8 +2224,6 @@ function App() {
                 )}
               </CardContent>
             </Card>
-          </div>
-        )}
 
         {/* Create Customer Modal */}
         {showCreateCustomer && (
