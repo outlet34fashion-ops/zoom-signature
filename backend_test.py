@@ -3508,6 +3508,320 @@ class LiveShoppingAPITester:
             self.log_test("LiveKit Integration - Exception", False, str(e))
             return False
 
+    def test_admin_dashboard_blocks(self):
+        """Test admin dashboard functionality for all 5 collapsible blocks"""
+        print("\n🏢 Testing Admin Dashboard Blocks Functionality...")
+        
+        # Block 1: Live-Statistiken (Statistics Block) - GREEN
+        print("  📊 Block 1: Live-Statistiken (Statistics Block)...")
+        
+        # Test GET admin stats
+        try:
+            response = requests.get(f"{self.api_url}/admin/stats", timeout=10)
+            stats_success = response.status_code == 200
+            stats_details = f"GET Status: {response.status_code}"
+            
+            if stats_success:
+                data = response.json()
+                required_fields = ['total_orders', 'session_orders']
+                has_all_fields = all(field in data for field in required_fields)
+                stats_success = has_all_fields
+                stats_details += f", Has required fields: {has_all_fields}, Data: {data}"
+            
+            self.log_test("Admin Dashboard - Statistics Block (GET)", stats_success, stats_details)
+        except Exception as e:
+            self.log_test("Admin Dashboard - Statistics Block (GET)", False, str(e))
+            stats_success = False
+        
+        # Test reset counter functionality
+        try:
+            response = requests.post(
+                f"{self.api_url}/admin/reset-counter",
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            reset_success = response.status_code == 200
+            reset_details = f"POST Status: {response.status_code}"
+            
+            if reset_success:
+                data = response.json()
+                has_message = 'message' in data and 'new_count' in data
+                count_is_zero = data.get('new_count') == 0
+                reset_success = has_message and count_is_zero
+                reset_details += f", Response valid: {has_message}, Counter reset to 0: {count_is_zero}"
+            
+            self.log_test("Admin Dashboard - Statistics Reset Counter", reset_success, reset_details)
+        except Exception as e:
+            self.log_test("Admin Dashboard - Statistics Reset Counter", False, str(e))
+            reset_success = False
+        
+        # Block 2: Kundenverwaltung (Customer Management Block) - BLUE
+        print("  👥 Block 2: Kundenverwaltung (Customer Management Block)...")
+        
+        # Test GET all customers for admin dashboard
+        try:
+            response = requests.get(f"{self.api_url}/admin/customers", timeout=10)
+            customers_success = response.status_code == 200
+            customers_details = f"GET Status: {response.status_code}"
+            
+            if customers_success:
+                data = response.json()
+                is_list = isinstance(data, list)
+                customers_success = is_list
+                customers_details += f", Is list: {is_list}, Customer count: {len(data)}"
+                
+                # Test customer search functionality by checking data structure
+                if data:
+                    first_customer = data[0]
+                    required_fields = ['id', 'customer_number', 'email', 'name', 'activation_status']
+                    has_all_fields = all(field in first_customer for field in required_fields)
+                    customers_details += f", Customer structure valid: {has_all_fields}"
+            
+            self.log_test("Admin Dashboard - Customer Management List", customers_success, customers_details)
+        except Exception as e:
+            self.log_test("Admin Dashboard - Customer Management List", False, str(e))
+            customers_success = False
+        
+        # Test customer status filtering by creating test customers with different statuses
+        test_customer_data = {
+            "customer_number": f"ADMIN_DASH_{int(time.time())}",
+            "email": f"admin.dash.{int(time.time())}@example.com",
+            "name": "Admin Dashboard Test Customer"
+        }
+        
+        try:
+            # Create customer via admin (should be active)
+            create_response = requests.post(
+                f"{self.api_url}/admin/customers/create",
+                json=test_customer_data,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            create_success = create_response.status_code == 200
+            create_details = f"POST Status: {create_response.status_code}"
+            
+            if create_success:
+                created_customer = create_response.json()
+                is_active = created_customer.get('activation_status') == 'active'
+                create_success = is_active
+                create_details += f", Customer created with active status: {is_active}"
+            
+            self.log_test("Admin Dashboard - Customer Creation", create_success, create_details)
+        except Exception as e:
+            self.log_test("Admin Dashboard - Customer Creation", False, str(e))
+            create_success = False
+        
+        # Block 3: Live-Streaming (Streaming Block) - RED
+        print("  📹 Block 3: Live-Streaming (Streaming Block)...")
+        
+        # Test WebRTC configuration endpoint
+        try:
+            response = requests.get(f"{self.api_url}/webrtc/config", timeout=10)
+            webrtc_success = response.status_code == 200
+            webrtc_details = f"GET Status: {response.status_code}"
+            
+            if webrtc_success:
+                data = response.json()
+                required_fields = ['rtcConfiguration', 'mediaConstraints']
+                has_all_fields = all(field in data for field in required_fields)
+                
+                # Check STUN/TURN servers configuration
+                rtc_config = data.get('rtcConfiguration', {})
+                ice_servers = rtc_config.get('iceServers', [])
+                has_stun_servers = any('stun' in str(server.get('urls', [])) for server in ice_servers)
+                has_turn_servers = any('turn' in str(server.get('urls', [])) for server in ice_servers)
+                
+                webrtc_success = has_all_fields and has_stun_servers and has_turn_servers
+                webrtc_details += f", Has all fields: {has_all_fields}, STUN servers: {has_stun_servers}, TURN servers: {has_turn_servers}"
+            
+            self.log_test("Admin Dashboard - WebRTC Configuration", webrtc_success, webrtc_details)
+        except Exception as e:
+            self.log_test("Admin Dashboard - WebRTC Configuration", False, str(e))
+            webrtc_success = False
+        
+        # Test active streams endpoint
+        try:
+            response = requests.get(f"{self.api_url}/streams/active", timeout=10)
+            streams_success = response.status_code == 200
+            streams_details = f"GET Status: {response.status_code}"
+            
+            if streams_success:
+                data = response.json()
+                has_streams_field = 'streams' in data
+                is_list = isinstance(data.get('streams'), list)
+                streams_success = has_streams_field and is_list
+                streams_details += f", Has streams field: {has_streams_field}, Is list: {is_list}, Active streams: {len(data.get('streams', []))}"
+            
+            self.log_test("Admin Dashboard - Active Streams List", streams_success, streams_details)
+        except Exception as e:
+            self.log_test("Admin Dashboard - Active Streams List", False, str(e))
+            streams_success = False
+        
+        # Block 4: Ticker-Einstellungen (Ticker Settings Block) - PURPLE
+        print("  📰 Block 4: Ticker-Einstellungen (Ticker Settings Block)...")
+        
+        # Test GET ticker settings
+        try:
+            response = requests.get(f"{self.api_url}/admin/ticker", timeout=10)
+            ticker_get_success = response.status_code == 200
+            ticker_get_details = f"GET Status: {response.status_code}"
+            
+            if ticker_get_success:
+                data = response.json()
+                required_fields = ['text', 'enabled']
+                has_all_fields = all(field in data for field in required_fields)
+                ticker_get_success = has_all_fields
+                ticker_get_details += f", Has all fields: {has_all_fields}, Text length: {len(data.get('text', ''))}, Enabled: {data.get('enabled')}"
+            
+            self.log_test("Admin Dashboard - Ticker Settings (GET)", ticker_get_success, ticker_get_details)
+        except Exception as e:
+            self.log_test("Admin Dashboard - Ticker Settings (GET)", False, str(e))
+            ticker_get_success = False
+        
+        # Test POST ticker settings update
+        try:
+            test_ticker_data = {
+                "text": f"Admin Dashboard Test Ticker - {int(time.time())}",
+                "enabled": True
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/admin/ticker",
+                json=test_ticker_data,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            ticker_post_success = response.status_code == 200
+            ticker_post_details = f"POST Status: {response.status_code}"
+            
+            if ticker_post_success:
+                data = response.json()
+                text_updated = data.get('text') == test_ticker_data['text']
+                enabled_updated = data.get('enabled') == test_ticker_data['enabled']
+                ticker_post_success = text_updated and enabled_updated
+                ticker_post_details += f", Text updated: {text_updated}, Enabled updated: {enabled_updated}"
+            
+            self.log_test("Admin Dashboard - Ticker Settings (UPDATE)", ticker_post_success, ticker_post_details)
+        except Exception as e:
+            self.log_test("Admin Dashboard - Ticker Settings (UPDATE)", False, str(e))
+            ticker_post_success = False
+        
+        # Block 5: Live Shopping Kalender (Calendar Block) - PINK
+        print("  📅 Block 5: Live Shopping Kalender (Calendar Block)...")
+        
+        # Test GET events (public endpoint for calendar display)
+        try:
+            response = requests.get(f"{self.api_url}/events", timeout=10)
+            events_success = response.status_code == 200
+            events_details = f"GET Status: {response.status_code}"
+            
+            if events_success:
+                data = response.json()
+                is_list = isinstance(data, list)
+                events_success = is_list
+                events_details += f", Is list: {is_list}, Events count: {len(data)}"
+                
+                # Check event structure if events exist
+                if data:
+                    first_event = data[0]
+                    required_fields = ['id', 'date', 'time', 'title']
+                    has_all_fields = all(field in first_event for field in required_fields)
+                    events_details += f", Event structure valid: {has_all_fields}"
+            
+            self.log_test("Admin Dashboard - Calendar Events (GET)", events_success, events_details)
+        except Exception as e:
+            self.log_test("Admin Dashboard - Calendar Events (GET)", False, str(e))
+            events_success = False
+        
+        # Test GET admin events (admin management endpoint)
+        try:
+            response = requests.get(f"{self.api_url}/admin/events", timeout=10)
+            admin_events_success = response.status_code == 200
+            admin_events_details = f"GET Status: {response.status_code}"
+            
+            if admin_events_success:
+                data = response.json()
+                is_list = isinstance(data, list)
+                admin_events_success = is_list
+                admin_events_details += f", Is list: {is_list}, Admin events count: {len(data)}"
+            
+            self.log_test("Admin Dashboard - Calendar Admin Events", admin_events_success, admin_events_details)
+        except Exception as e:
+            self.log_test("Admin Dashboard - Calendar Admin Events", False, str(e))
+            admin_events_success = False
+        
+        # Test POST create new event
+        try:
+            test_event_data = {
+                "date": "2024-12-31",
+                "time": "20:00",
+                "title": f"Admin Dashboard Test Event - {int(time.time())}",
+                "description": "Test event created by admin dashboard test"
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/admin/events",
+                json=test_event_data,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            create_event_success = response.status_code == 200
+            create_event_details = f"POST Status: {response.status_code}"
+            
+            if create_event_success:
+                data = response.json()
+                has_message = 'message' in data and 'event' in data
+                if has_message:
+                    event_data = data['event']
+                    correct_data = (event_data.get('title') == test_event_data['title'] and
+                                  event_data.get('date') == test_event_data['date'] and
+                                  event_data.get('time') == test_event_data['time'])
+                    create_event_success = correct_data
+                    create_event_details += f", Event created correctly: {correct_data}"
+            
+            self.log_test("Admin Dashboard - Calendar Create Event", create_event_success, create_event_details)
+        except Exception as e:
+            self.log_test("Admin Dashboard - Calendar Create Event", False, str(e))
+            create_event_success = False
+        
+        # Test WebSocket endpoint availability for real-time updates
+        print("  🔌 Testing WebSocket for Real-time Updates...")
+        try:
+            ws_url = self.base_url.replace('https://', 'http://') + '/ws'
+            response = requests.get(ws_url, timeout=5)
+            ws_success = response.status_code in [200, 426, 400, 405]
+            ws_details = f"Status: {response.status_code} (WebSocket endpoint accessible for real-time updates)"
+            
+            self.log_test("Admin Dashboard - WebSocket Real-time Updates", ws_success, ws_details)
+        except Exception as e:
+            self.log_test("Admin Dashboard - WebSocket Real-time Updates", False, str(e))
+            ws_success = False
+        
+        # Calculate overall admin dashboard success
+        block_tests = [
+            stats_success and reset_success,  # Block 1: Statistics
+            customers_success and create_success,  # Block 2: Customer Management  
+            webrtc_success and streams_success,  # Block 3: Live Streaming
+            ticker_get_success and ticker_post_success,  # Block 4: Ticker Settings
+            events_success and admin_events_success and create_event_success  # Block 5: Calendar
+        ]
+        
+        successful_blocks = sum(block_tests)
+        total_blocks = len(block_tests)
+        
+        print(f"  📊 Admin Dashboard Blocks Summary:")
+        print(f"    ✅ Block 1 (Statistics): {'PASS' if block_tests[0] else 'FAIL'}")
+        print(f"    ✅ Block 2 (Customer Management): {'PASS' if block_tests[1] else 'FAIL'}")
+        print(f"    ✅ Block 3 (Live Streaming): {'PASS' if block_tests[2] else 'FAIL'}")
+        print(f"    ✅ Block 4 (Ticker Settings): {'PASS' if block_tests[3] else 'FAIL'}")
+        print(f"    ✅ Block 5 (Calendar): {'PASS' if block_tests[4] else 'FAIL'}")
+        print(f"    📈 Overall Success: {successful_blocks}/{total_blocks} blocks working")
+        
+        return successful_blocks == total_blocks
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("🚀 Starting Live Shopping App Backend API Tests")
