@@ -3019,21 +3019,23 @@ function App() {
                     )}
                   </div>
                   
-                  {/* Motivations-Text für aktuellen Kunden */}
-                  {currentCustomer && getTop3Buyers().length > 0 && (
-                    <div className="mt-3 p-2 bg-pink-50 rounded-lg border border-pink-200">
-                      <div className="text-xs text-center text-pink-700">
-                        {getTop3Buyers().some(buyer => buyer.customerNumber === currentCustomer.customer_number) ? (
-                          <>🎉 <strong>Sie sind in den Top 3!</strong> Halten Sie Ihre Position! 💪</>
-                        ) : (
-                          <>⚡ <strong>Jetzt bestellen</strong> und in die Top 3 aufsteigen! 🏆</>
-                        )}
-                      </div>
+                      {/* Motivations-Text für aktuellen Kunden */}
+                      {currentCustomer && getTop3Buyers().length > 0 && (
+                        <div className="mt-3 p-2 bg-pink-50 rounded-lg border border-pink-200">
+                          <div className="text-xs text-center text-pink-700">
+                            {getTop3Buyers().some(buyer => buyer.customerNumber === currentCustomer.customer_number) ? (
+                              <>🎉 <strong>Sie sind in den Top 3!</strong> Halten Sie Ihre Position! 💪</>
+                            ) : (
+                              <>⚡ <strong>Jetzt bestellen</strong> und in die Top 3 aufsteigen! 🏆</>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           )}
 
           {/* Split View - Chat and Orders */}
