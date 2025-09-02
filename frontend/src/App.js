@@ -1667,18 +1667,8 @@ function App() {
                     </div>
                   ) : (
                     <div className="space-y-8">
-                      {/* Live Shopping Status */}
+                      {/* Registration Call-to-Action Section */}
                       <div className="text-center space-y-4">
-                        <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20">
-                          <div className="flex items-center justify-center space-x-2 mb-2">
-                            <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                            <span className="text-white font-semibold text-sm">LIVE SHOPPING AKTIV</span>
-                          </div>
-                          <p className="text-white/70 text-xs">
-                            Jetzt einloggen und exklusive Deals sichern!
-                          </p>
-                        </div>
-                        
                         {/* Registration Call-to-Action Button */}
                         <div className="space-y-3">
                           <a 
