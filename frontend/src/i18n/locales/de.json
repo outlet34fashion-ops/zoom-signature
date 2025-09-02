@@ -79,7 +79,7 @@
   },
   "orders": {
     "title": "Bestellungen", 
-    "size": "Größe (aktuell):",
+    "size": "Größe:",
     "price": "Preis (aktuell):",
     "quantity": "Menge",
     "order": "Bestellen",
