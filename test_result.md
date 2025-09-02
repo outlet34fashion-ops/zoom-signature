@@ -288,7 +288,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "WebRTC Live Video Streaming - Frontend Implementation"
+    - "Admin Dashboard Blocks Verification"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
