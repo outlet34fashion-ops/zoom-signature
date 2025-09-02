@@ -411,6 +411,11 @@ function App() {
     if (!timestamp) return 'N/A';
     
     try {
+      // If already formatted as German datetime string (DD.MM.YYYY HH:MM:SS), return as is
+      if (typeof timestamp === 'string' && /^\d{2}\.\d{2}\.\d{4}/.test(timestamp)) {
+        return timestamp; // Already formatted in German format
+      }
+      
       // Handle ISO timestamp string (2025-09-02T12:13:25.446000)
       let date;
       if (typeof timestamp === 'string') {
@@ -435,7 +440,7 @@ function App() {
       });
     } catch (error) {
       console.error('formatGermanDateTime error:', error, 'with timestamp:', timestamp);
-      return 'Invalid Date';
+      return timestamp || 'Invalid Date'; // Return original timestamp if parsing fails
     }
   };
 
