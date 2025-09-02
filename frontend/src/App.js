@@ -1712,13 +1712,13 @@ function App() {
                           </button>
                         </div>
                         
-                        {/* WhatsApp Support */}
+                        {/* WhatsApp Support - Modern Style */}
                         <div className="bg-white/5 rounded-xl p-3">
                           <a 
                             href="https://wa.me/4917621105848?text=Hallo%20OUTLET34%20Team,%20ich%20habe%20eine%20Frage%20zum%20Live%20Shopping..." 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="flex items-center justify-center space-x-3 bg-green-500 hover:bg-green-600 text-white font-medium py-4 px-4 rounded-xl transition-all duration-300 hover:scale-105 w-full"
+                            className="flex items-center justify-center space-x-3 bg-gradient-to-r from-green-500/80 to-emerald-600/80 hover:from-green-500 hover:to-emerald-600 border border-green-400/30 hover:border-green-400/50 text-white font-medium py-4 px-4 rounded-xl transition-all duration-300 hover:scale-105 w-full backdrop-blur-sm"
                           >
                             <img 
                               src="/images/whatsapp-logo-dark.png" 
