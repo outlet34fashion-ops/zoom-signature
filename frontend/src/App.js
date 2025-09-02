@@ -455,13 +455,32 @@ function App() {
   const formatGermanTime = (timestamp) => {
     if (!timestamp) return 'N/A';
     
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString('de-DE', {
+    console.log('formatGermanTime input:', timestamp, typeof timestamp);
+    
+    // Ensure we have a proper Date object
+    let date;
+    if (timestamp instanceof Date) {
+      date = timestamp;
+    } else if (typeof timestamp === 'string') {
+      // Handle ISO string format
+      date = new Date(timestamp);
+    } else if (typeof timestamp === 'number') {
+      date = new Date(timestamp);
+    } else {
+      console.error('Invalid timestamp format:', timestamp);
+      return 'N/A';
+    }
+    
+    // Force German timezone conversion
+    const germanTime = date.toLocaleTimeString('de-DE', {
       timeZone: 'Europe/Berlin',
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit'
     });
+    
+    console.log('formatGermanTime output:', germanTime, 'from date:', date);
+    return germanTime;
   };
 
   const formatGermanDate = (timestamp) => {
