@@ -1875,24 +1875,26 @@ function App() {
           </div>
         )}
 
-        {/* Live Status Bar */}
-        <div className="bg-black text-white py-2">
-          <div className="container mx-auto px-4">
-            <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-2">
-                <Badge className="bg-red-600 text-white">
-                  {t.live}
-                </Badge>
-                <span className="text-sm">{t.runtime} 01:43</span>
-                <span className="text-sm">{t.endTime} 15:45:11</span>
-                <div className="flex items-center space-x-1">
-                  <Users size={16} />
-                  <span className="text-sm">{t.viewers} {viewerCount}</span>
+        {/* Live Status Bar - Only show for customers, not admins */}
+        {!isAdminView && (
+          <div className="bg-black text-white py-2">
+            <div className="container mx-auto px-4">
+              <div className="flex items-center space-x-6">
+                <div className="flex items-center space-x-2">
+                  <Badge className="bg-red-600 text-white">
+                    {t.live}
+                  </Badge>
+                  <span className="text-sm">{t.runtime} 01:43</span>
+                  <span className="text-sm">{t.endTime} 15:45:11</span>
+                  <div className="flex items-center space-x-1">
+                    <Users size={16} />
+                    <span className="text-sm">{t.viewers} {viewerCount}</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Stream Title - Only show for customers, not admins */}
         {tickerSettings.enabled && !isAdminView && (
