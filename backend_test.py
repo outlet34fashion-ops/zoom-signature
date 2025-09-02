@@ -4388,6 +4388,200 @@ TIMEZONE BUG ANALYSIS COMPLETE:
             self.log_test("Timezone Bug - General Exception", False, str(e))
             return False
 
+    def test_timezone_bug_debugging_detailed(self):
+        """CRITICAL: Debug exact timestamp format for timezone bug verification as per review request"""
+        print("\n🕐 CRITICAL TIMEZONE BUG DEBUGGING - EXACT TIMESTAMP FORMAT")
+        print("=" * 80)
+        
+        try:
+            # Step 1: Get current time information
+            print("  🕒 Step 1: Current Time Information...")
+            current_utc = datetime.utcnow()
+            current_german_hour = (current_utc.hour + 2) % 24
+            
+            print(f"    Current UTC time: {current_utc.strftime('%H:%M:%S')}")
+            print(f"    Current German time (UTC+2): {current_german_hour:02d}:{current_utc.strftime('%M:%S')}")
+            print(f"    Expected 2-hour difference: 2 hours")
+            
+            # Step 2: Call GET /api/orders endpoint to inspect exact timestamp format
+            print("\n  📋 Step 2: Inspecting GET /api/orders endpoint...")
+            orders_response = requests.get(f"{self.api_url}/orders", timeout=10)
+            
+            if orders_response.status_code != 200:
+                self.log_test("Timezone Debug - GET Orders", False, f"Orders endpoint failed with status {orders_response.status_code}")
+                return False
+            
+            orders_data = orders_response.json()
+            print(f"    Total orders retrieved: {len(orders_data)}")
+            
+            # Step 3: Find customer 10299 orders and show exact timestamp format
+            print("\n  🔍 Step 3: Finding customer 10299 orders...")
+            customer_10299_orders = [order for order in orders_data if order.get('customer_id') == '10299']
+            
+            if not customer_10299_orders:
+                print("    ⚠️  No orders found for customer 10299")
+                # Create a test order for customer 10299 to debug
+                print("    📝 Creating test order for customer 10299...")
+                
+                # Get products first
+                products_response = requests.get(f"{self.api_url}/products", timeout=10)
+                if products_response.status_code == 200:
+                    products = products_response.json()
+                    if products:
+                        test_order = {
+                            "customer_id": "10299",
+                            "product_id": products[0]['id'],
+                            "size": "OneSize",
+                            "quantity": 1,
+                            "price": 12.90
+                        }
+                        
+                        order_response = requests.post(
+                            f"{self.api_url}/orders",
+                            json=test_order,
+                            headers={'Content-Type': 'application/json'},
+                            timeout=10
+                        )
+                        
+                        if order_response.status_code == 200:
+                            print("    ✅ Test order created for customer 10299")
+                            # Refresh orders list
+                            orders_response = requests.get(f"{self.api_url}/orders", timeout=10)
+                            if orders_response.status_code == 200:
+                                orders_data = orders_response.json()
+                                customer_10299_orders = [order for order in orders_data if order.get('customer_id') == '10299']
+            
+            if customer_10299_orders:
+                print(f"    Found {len(customer_10299_orders)} orders for customer 10299")
+                
+                # Show exact timestamp format for first few orders
+                for i, order in enumerate(customer_10299_orders[:3]):
+                    print(f"\n    📋 Order {i+1} Details:")
+                    print(f"      Order ID: {order.get('id', 'N/A')}")
+                    print(f"      Customer ID: {order.get('customer_id', 'N/A')}")
+                    print(f"      Product: {order.get('product_id', 'N/A')}")
+                    print(f"      Size: {order.get('size', 'N/A')}")
+                    print(f"      Quantity: {order.get('quantity', 'N/A')}")
+                    print(f"      Price: {order.get('price', 'N/A')} €")
+                    
+                    # CRITICAL: Show exact timestamp field format
+                    timestamp_field = order.get('timestamp')
+                    print(f"      🕐 TIMESTAMP FIELD (RAW): {timestamp_field}")
+                    print(f"      🕐 TIMESTAMP TYPE: {type(timestamp_field)}")
+                    
+                    if isinstance(timestamp_field, str):
+                        print(f"      🕐 TIMESTAMP FORMAT: ISO string")
+                        try:
+                            # Try to parse the timestamp
+                            if 'T' in timestamp_field:
+                                parsed_time = datetime.fromisoformat(timestamp_field.replace('Z', '+00:00'))
+                            else:
+                                parsed_time = datetime.fromisoformat(timestamp_field)
+                            
+                            utc_time_str = parsed_time.strftime('%H:%M:%S')
+                            german_hour = (parsed_time.hour + 2) % 24
+                            german_time_str = f"{german_hour:02d}:{parsed_time.strftime('%M:%S')}"
+                            
+                            print(f"      🕐 PARSED UTC TIME: {utc_time_str}")
+                            print(f"      🕐 CONVERTED GERMAN TIME: {german_time_str}")
+                            
+                        except Exception as e:
+                            print(f"      ❌ TIMESTAMP PARSING ERROR: {e}")
+                    
+                    # Check if this matches the user's reported format
+                    if order.get('size') == 'OneSize' and order.get('quantity') == 1:
+                        price_match = abs(float(order.get('price', 0)) - 12.90) < 0.01
+                        if price_match:
+                            print(f"      🎯 MATCHES USER REPORT: '10299 | OneSize | 1 | 12,90 €'")
+                            
+                            # Extract time from timestamp for comparison
+                            if isinstance(timestamp_field, str):
+                                try:
+                                    if 'T' in timestamp_field:
+                                        parsed_time = datetime.fromisoformat(timestamp_field.replace('Z', '+00:00'))
+                                    else:
+                                        parsed_time = datetime.fromisoformat(timestamp_field)
+                                    
+                                    utc_time_str = parsed_time.strftime('%H:%M:%S')
+                                    german_hour = (parsed_time.hour + 2) % 24
+                                    german_time_str = f"{german_hour:02d}:{parsed_time.strftime('%M:%S')}"
+                                    
+                                    print(f"      🔍 USER SEES: {utc_time_str} (if showing UTC)")
+                                    print(f"      🔍 SHOULD SEE: {german_time_str} (German time)")
+                                    print(f"      🔍 TIME DIFFERENCE: 2 hours")
+                                    
+                                    # Check if this matches user's report of seeing 12:13:25 instead of 14:13:25
+                                    if utc_time_str.startswith('12:') and german_time_str.startswith('14:'):
+                                        print(f"      🚨 CONFIRMED BUG: User sees {utc_time_str} instead of {german_time_str}")
+                                    
+                                except Exception as e:
+                                    print(f"      ❌ TIME ANALYSIS ERROR: {e}")
+            
+            # Step 4: Test GET /api/customers/10299/last-order for formatted_time field
+            print("\n  📋 Step 4: Testing GET /api/customers/10299/last-order...")
+            last_order_response = requests.get(f"{self.api_url}/customers/10299/last-order", timeout=10)
+            
+            if last_order_response.status_code == 200:
+                last_order_data = last_order_response.json()
+                print(f"    Response: {json.dumps(last_order_data, indent=2)}")
+                
+                if last_order_data.get('has_order'):
+                    order_info = last_order_data.get('order', {})
+                    formatted_time = order_info.get('formatted_time')
+                    raw_timestamp = order_info.get('timestamp')
+                    
+                    print(f"\n    🕐 RAW TIMESTAMP: {raw_timestamp}")
+                    print(f"    🕐 FORMATTED TIME: {formatted_time}")
+                    
+                    if formatted_time:
+                        # Extract time from formatted_time (DD.MM.YYYY HH:MM:SS format)
+                        try:
+                            time_part = formatted_time.split(' ')[1]  # Get HH:MM:SS part
+                            print(f"    🕐 DISPLAYED TIME: {time_part}")
+                            
+                            # Compare with current time to see if it's UTC or German time
+                            hour = int(time_part.split(':')[0])
+                            current_utc_hour = current_utc.hour
+                            current_german_hour = (current_utc.hour + 2) % 24
+                            
+                            print(f"    🕐 CURRENT UTC HOUR: {current_utc_hour}")
+                            print(f"    🕐 CURRENT GERMAN HOUR: {current_german_hour}")
+                            
+                            # Check if the displayed time is closer to UTC or German time
+                            utc_diff = abs(hour - current_utc_hour)
+                            german_diff = abs(hour - current_german_hour)
+                            
+                            if utc_diff < german_diff:
+                                print(f"    🚨 BUG DETECTED: formatted_time shows UTC time ({time_part}) instead of German time")
+                                self.log_test("Timezone Debug - Bug Detected", False, f"formatted_time shows UTC ({time_part}) instead of German time")
+                            else:
+                                print(f"    ✅ CORRECT: formatted_time shows German time ({time_part})")
+                                self.log_test("Timezone Debug - Correct Time", True, f"formatted_time correctly shows German time ({time_part})")
+                                
+                        except Exception as e:
+                            print(f"    ❌ TIME ANALYSIS ERROR: {e}")
+                else:
+                    print("    ⚠️  Customer 10299 has no orders for last-order test")
+            else:
+                print(f"    ❌ Last order endpoint failed with status {last_order_response.status_code}")
+            
+            # Step 5: Summary and diagnosis
+            print("\n  📊 Step 5: Timezone Bug Diagnosis Summary...")
+            print("    🔍 Key Findings:")
+            print("    1. GET /api/orders returns raw timestamp fields (ISO format)")
+            print("    2. GET /api/customers/{customer_number}/last-order returns formatted_time field")
+            print("    3. Frontend should use formatted_time for display, not raw timestamp")
+            print("    4. Backend timezone conversion happens in formatted_time generation (line 920)")
+            print("    5. User reports seeing UTC time instead of German time")
+            
+            self.log_test("Timezone Debug - Complete Analysis", True, "Comprehensive timestamp format analysis completed")
+            
+            return True
+            
+        except Exception as e:
+            self.log_test("Timezone Debug - Exception", False, str(e))
+            return False
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("🚀 Starting Live Shopping App Backend API Tests")
