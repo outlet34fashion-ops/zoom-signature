@@ -1734,10 +1734,6 @@ function App() {
             <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-slate-900 to-transparent pointer-events-none"></div>
           </div>
         </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
       )}
 
       {/* Main App - Only shown when authenticated */}
