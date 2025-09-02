@@ -81,6 +81,7 @@ function App() {
   const [showCustomerManagement, setShowCustomerManagement] = useState(true);
   const [showStreamingControls, setShowStreamingControls] = useState(false);
   const [showTickerSettings, setShowTickerSettings] = useState(false);
+  const [showCalendarManagement, setShowCalendarManagement] = useState(false);
   
   // Manual Customer Creation States
   const [showCreateCustomer, setShowCreateCustomer] = useState(false);
