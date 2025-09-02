@@ -292,6 +292,13 @@ function App() {
     // Load events on component mount
     loadEvents();
   }, []);
+  // Lade Bestellungen auch bei View-Wechsel neu (für Timezone-Fix)
+  useEffect(() => {
+    if (activeView === 'orders') {
+      console.log('Orders tab activated - refreshing data for timezone fix');
+      loadAllOrders();
+    }
+  }, [activeView]);
 
   // Update live statistics when chat messages change
   useEffect(() => {
