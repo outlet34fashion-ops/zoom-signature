@@ -2093,24 +2093,24 @@ function App() {
                           🔄 Aktualisieren
                         </Button>
                       </div>
-                  
-                  <div className="space-y-3 max-h-64 overflow-y-auto">
-                    {customers.filter(customer => {
-                      // Filter by status
-                      let matchesFilter = true;
-                      if (customerFilter === 'pending') matchesFilter = customer.activation_status === 'pending';
-                      if (customerFilter === 'blocked') matchesFilter = customer.activation_status === 'blocked';
                       
-                      // Filter by search (customer number)
-                      let matchesSearch = true;
-                      if (customerSearch.trim()) {
-                        matchesSearch = customer.customer_number.toLowerCase().includes(customerSearch.toLowerCase());
-                      }
-                      
-                      return matchesFilter && matchesSearch;
-                    }).length === 0 ? (
-                      <p className="text-white/70 text-center py-4">
-                        {customerSearch.trim() ? `Keine Kunden mit Nummer "${customerSearch}" gefunden` :
+                      <div className="space-y-3 max-h-64 overflow-y-auto bg-white rounded-lg p-3">
+                        {customers.filter(customer => {
+                          // Filter by status
+                          let matchesFilter = true;
+                          if (customerFilter === 'pending') matchesFilter = customer.activation_status === 'pending';
+                          if (customerFilter === 'blocked') matchesFilter = customer.activation_status === 'blocked';
+                          
+                          // Filter by search (customer number)
+                          let matchesSearch = true;
+                          if (customerSearch.trim()) {
+                            matchesSearch = customer.customer_number.toLowerCase().includes(customerSearch.toLowerCase());
+                          }
+                          
+                          return matchesFilter && matchesSearch;
+                        }).length === 0 ? (
+                          <p className="text-gray-600 text-center py-4">
+                            {customerSearch.trim() ? `Keine Kunden mit Nummer "${customerSearch}" gefunden` :
                          customerFilter === 'pending' ? 'Keine wartenden Kunden' : 
                          customerFilter === 'blocked' ? 'Keine gesperrten Kunden' : 
                          'Noch keine Kunden registriert'}
