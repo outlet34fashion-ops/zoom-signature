@@ -4086,7 +4086,6 @@ function App() {
             backendUrl={BACKEND_URL}
           />
         </div>
-      )}
       </>
       )}
 
