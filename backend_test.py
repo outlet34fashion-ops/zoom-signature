@@ -8,12 +8,15 @@ import threading
 import asyncio
 
 class LiveShoppingAPITester:
-    def __init__(self, base_url="https://customerchat-fix.preview.emergentagent.com"):
+    def __init__(self, base_url="http://localhost:8001"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
+        self.ws_url = f"ws://localhost:8001/ws"
         self.tests_run = 0
         self.tests_passed = 0
         self.test_results = []
+        self.websocket_messages = []
+        self.websocket_connected = False
 
     def log_test(self, name, success, details=""):
         """Log test results"""
