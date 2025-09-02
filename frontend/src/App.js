@@ -1255,51 +1255,51 @@ function App() {
           <div className="relative z-10 min-h-screen flex flex-col">
             {/* Top Header */}
             <div className="flex justify-between items-center p-6">
-              {/* Language Selector - Modern Pills with Flags */}
-              <div className="flex space-x-1 bg-white/10 backdrop-blur-md rounded-full p-1">
+              {/* Language Selector - Mobile Optimized */}
+              <div className="flex space-x-2 bg-white/10 backdrop-blur-md rounded-full p-2">
                 <button
                   onClick={() => changeLanguage('de')}
-                  className={`px-3 py-2 rounded-full text-xs font-medium transition-all duration-300 flex items-center space-x-1 ${
+                  className={`px-4 py-2 rounded-full text-xs font-medium transition-all duration-300 flex items-center space-x-2 min-w-[60px] justify-center ${
                     i18n.language === 'de' 
                       ? 'bg-white text-gray-900 shadow-lg' 
                       : 'text-white/70 hover:text-white hover:bg-white/10'
                   }`}
                 >
-                  <span>🇩🇪</span>
-                  <span>DE</span>
+                  <span className="text-sm">🇩🇪</span>
+                  <span className="hidden sm:inline">DE</span>
                 </button>
                 <button
                   onClick={() => changeLanguage('en')}
-                  className={`px-3 py-2 rounded-full text-xs font-medium transition-all duration-300 flex items-center space-x-1 ${
+                  className={`px-4 py-2 rounded-full text-xs font-medium transition-all duration-300 flex items-center space-x-2 min-w-[60px] justify-center ${
                     i18n.language === 'en' 
                       ? 'bg-white text-gray-900 shadow-lg' 
                       : 'text-white/70 hover:text-white hover:bg-white/10'
                   }`}
                 >
-                  <span>🇺🇸</span>
-                  <span>EN</span>
+                  <span className="text-sm">🇺🇸</span>
+                  <span className="hidden sm:inline">EN</span>
                 </button>
                 <button
                   onClick={() => changeLanguage('tr')}
-                  className={`px-3 py-2 rounded-full text-xs font-medium transition-all duration-300 flex items-center space-x-1 ${
+                  className={`px-4 py-2 rounded-full text-xs font-medium transition-all duration-300 flex items-center space-x-2 min-w-[60px] justify-center ${
                     i18n.language === 'tr' 
                       ? 'bg-white text-gray-900 shadow-lg' 
                       : 'text-white/70 hover:text-white hover:bg-white/10'
                   }`}
                 >
-                  <span>🇹🇷</span>
-                  <span>TR</span>
+                  <span className="text-sm">🇹🇷</span>
+                  <span className="hidden sm:inline">TR</span>
                 </button>
                 <button
                   onClick={() => changeLanguage('fr')}
-                  className={`px-3 py-2 rounded-full text-xs font-medium transition-all duration-300 flex items-center space-x-1 ${
+                  className={`px-4 py-2 rounded-full text-xs font-medium transition-all duration-300 flex items-center space-x-2 min-w-[60px] justify-center ${
                     i18n.language === 'fr' 
                       ? 'bg-white text-gray-900 shadow-lg' 
                       : 'text-white/70 hover:text-white hover:bg-white/10'
                   }`}
                 >
-                  <span>🇫🇷</span>
-                  <span>FR</span>
+                  <span className="text-sm">🇫🇷</span>
+                  <span className="hidden sm:inline">FR</span>
                 </button>
               </div>
               
