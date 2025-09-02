@@ -2986,7 +2986,9 @@ function App() {
                           
                           <div className="flex-1">
                             <div className="font-bold text-sm text-gray-800">
-                              Kunde {buyer.customerNumber}
+                              Kunde #{buyer.customerNumber.length > 8 ? 
+                                buyer.customerNumber.slice(-6) : 
+                                buyer.customerNumber}
                             </div>
                             <div className="text-xs text-gray-600">
                               <span>{buyer.totalItems} Artikel</span>
