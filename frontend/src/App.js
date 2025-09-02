@@ -1802,7 +1802,7 @@ function App() {
                                 Neu bei OUTLET34?
                               </div>
                               <div className="text-xs text-white/70">
-                                Jetzt registrieren
+                                Jetzt kostenlos registrieren
                               </div>
                             </div>
                           </a>
