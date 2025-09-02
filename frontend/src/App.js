@@ -398,6 +398,49 @@ function App() {
     return upcomingEvents[0];
   };
 
+  // Hilfsfunktion für korrekte deutsche Zeitanzeige
+  const formatGermanDateTime = (timestamp) => {
+    if (!timestamp) return 'N/A';
+    
+    // Erstelle Date-Objekt und stelle sicher, dass es korrekt interpretiert wird
+    const date = new Date(timestamp);
+    
+    // Deutsche Zeitzone (Europe/Berlin) berücksichtigt automatisch Winter-/Sommerzeit
+    return date.toLocaleString('de-DE', {
+      timeZone: 'Europe/Berlin',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+  };
+
+  const formatGermanTime = (timestamp) => {
+    if (!timestamp) return 'N/A';
+    
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString('de-DE', {
+      timeZone: 'Europe/Berlin',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+  };
+
+  const formatGermanDate = (timestamp) => {
+    if (!timestamp) return 'N/A';
+    
+    const date = new Date(timestamp);
+    return date.toLocaleDateString('de-DE', {
+      timeZone: 'Europe/Berlin',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  };
+
   // Berechne Top 3 Käufer für Gamification - basierend auf echten Bestelldaten
   const getTop3Buyers = () => {
     const buyerStats = {};
