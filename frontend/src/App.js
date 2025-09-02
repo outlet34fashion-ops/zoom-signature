@@ -409,38 +409,33 @@ function App() {
   const formatGermanDateTime = (timestamp) => {
     if (!timestamp) return 'N/A';
     
-    console.log('formatGermanDateTime called with:', timestamp, typeof timestamp);
-    
-    // Erstelle Date-Objekt und stelle sicher, dass es korrekt interpretiert wird
-    let date;
-    if (typeof timestamp === 'string') {
-      // Wenn der String ein ISO-String ist, stelle sicher dass er als UTC interpretiert wird
-      if (timestamp.includes('T') && (timestamp.includes('Z') || timestamp.includes('+'))) {
-        date = new Date(timestamp);
+    try {
+      // Handle ISO timestamp string (2025-09-02T12:13:25.446000)
+      let date;
+      if (typeof timestamp === 'string') {
+        // Parse ISO timestamp as UTC
+        date = new Date(timestamp + (timestamp.includes('Z') ? '' : 'Z'));
       } else {
-        // Wenn es kein ISO-String ist, behandle es als lokale Zeit und konvertiere zu UTC
-        date = new Date(timestamp + 'Z'); // Füge Z hinzu um als UTC zu behandeln
+        date = new Date(timestamp);
       }
-    } else {
-      date = new Date(timestamp);
+      
+      // Convert to German time (UTC+2) manually for precision
+      const utcTime = date.getTime();
+      const germanTime = new Date(utcTime + (2 * 60 * 60 * 1000)); // Add 2 hours in milliseconds
+      
+      // Format as German datetime
+      return germanTime.toLocaleString('de-DE', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+    } catch (error) {
+      console.error('formatGermanDateTime error:', error, 'with timestamp:', timestamp);
+      return 'Invalid Date';
     }
-    
-    console.log('Created date object:', date);
-    console.log('Date in UTC:', date.toISOString());
-    
-    // Deutsche Zeitzone (Europe/Berlin) berücksichtigt automatisch Winter-/Sommerzeit
-    const result = date.toLocaleString('de-DE', {
-      timeZone: 'Europe/Berlin',
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    });
-    
-    console.log('Formatted result:', result);
-    return result;
   };
 
   const formatGermanTime = (timestamp) => {
