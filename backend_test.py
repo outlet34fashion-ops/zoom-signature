@@ -3912,9 +3912,11 @@ class LiveShoppingAPITester:
         print(f"Success Rate: {(self.tests_passed/self.tests_run)*100:.1f}%")
         
         # Highlight priority test results
+        admin_dashboard_status = "✅ PASSED" if admin_dashboard_success else "❌ FAILED"
         multi_lang_status = "✅ PASSED" if multi_language_success else "❌ FAILED"
         german_format_status = "✅ PASSED" if german_format_success else "❌ FAILED"
         print(f"\n🎯 PRIORITY TEST RESULTS:")
+        print(f"   Admin Dashboard Blocks - {admin_dashboard_status}")
         print(f"   Multi-Language Functionality - {multi_lang_status}")
         print(f"   German Order Format Verification - {german_format_status}")
         
