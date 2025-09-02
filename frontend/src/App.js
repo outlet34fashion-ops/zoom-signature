@@ -1332,7 +1332,9 @@ function App() {
                   </div>
                 </div>
                 
-                {customerStatus === 'pending' ? (
+                {/* Main Cards Section */}
+                <div className="space-y-6">
+                  {customerStatus === 'pending' ? (
                   <div className="space-y-4">
                     <div className="bg-yellow-100 border border-yellow-300 rounded-lg p-4">
                       <h2 className="text-lg font-semibold text-yellow-800 mb-2">
