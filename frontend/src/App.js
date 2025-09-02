@@ -1255,51 +1255,51 @@ function App() {
           <div className="relative z-10 min-h-screen flex flex-col">
             {/* Top Header */}
             <div className="flex justify-between items-center p-6">
-              {/* Language Selector - Mobile Optimized */}
+              {/* Language Selector - Flags Only */}
               <div className="flex space-x-2 bg-white/10 backdrop-blur-md rounded-full p-2">
                 <button
                   onClick={() => changeLanguage('de')}
-                  className={`px-4 py-2 rounded-full text-xs font-medium transition-all duration-300 flex items-center space-x-2 min-w-[60px] justify-center ${
+                  className={`px-3 py-2 rounded-full text-sm font-medium transition-all duration-300 min-w-[44px] min-h-[44px] flex items-center justify-center ${
                     i18n.language === 'de' 
-                      ? 'bg-white text-gray-900 shadow-lg' 
-                      : 'text-white/70 hover:text-white hover:bg-white/10'
+                      ? 'bg-white text-gray-900 shadow-lg scale-110' 
+                      : 'text-white/70 hover:text-white hover:bg-white/10 hover:scale-105'
                   }`}
+                  title="Deutsch"
                 >
-                  <span className="text-sm">🇩🇪</span>
-                  <span className="hidden sm:inline">DE</span>
+                  🇩🇪
                 </button>
                 <button
                   onClick={() => changeLanguage('en')}
-                  className={`px-4 py-2 rounded-full text-xs font-medium transition-all duration-300 flex items-center space-x-2 min-w-[60px] justify-center ${
+                  className={`px-3 py-2 rounded-full text-sm font-medium transition-all duration-300 min-w-[44px] min-h-[44px] flex items-center justify-center ${
                     i18n.language === 'en' 
-                      ? 'bg-white text-gray-900 shadow-lg' 
-                      : 'text-white/70 hover:text-white hover:bg-white/10'
+                      ? 'bg-white text-gray-900 shadow-lg scale-110' 
+                      : 'text-white/70 hover:text-white hover:bg-white/10 hover:scale-105'
                   }`}
+                  title="English"
                 >
-                  <span className="text-sm">🇺🇸</span>
-                  <span className="hidden sm:inline">EN</span>
+                  🇺🇸
                 </button>
                 <button
                   onClick={() => changeLanguage('tr')}
-                  className={`px-4 py-2 rounded-full text-xs font-medium transition-all duration-300 flex items-center space-x-2 min-w-[60px] justify-center ${
+                  className={`px-3 py-2 rounded-full text-sm font-medium transition-all duration-300 min-w-[44px] min-h-[44px] flex items-center justify-center ${
                     i18n.language === 'tr' 
-                      ? 'bg-white text-gray-900 shadow-lg' 
-                      : 'text-white/70 hover:text-white hover:bg-white/10'
+                      ? 'bg-white text-gray-900 shadow-lg scale-110' 
+                      : 'text-white/70 hover:text-white hover:bg-white/10 hover:scale-105'
                   }`}
+                  title="Türkçe"
                 >
-                  <span className="text-sm">🇹🇷</span>
-                  <span className="hidden sm:inline">TR</span>
+                  🇹🇷
                 </button>
                 <button
                   onClick={() => changeLanguage('fr')}
-                  className={`px-4 py-2 rounded-full text-xs font-medium transition-all duration-300 flex items-center space-x-2 min-w-[60px] justify-center ${
+                  className={`px-3 py-2 rounded-full text-xs font-medium transition-all duration-300 min-w-[44px] min-h-[44px] flex items-center justify-center ${
                     i18n.language === 'fr' 
-                      ? 'bg-white text-gray-900 shadow-lg' 
-                      : 'text-white/70 hover:text-white hover:bg-white/10'
+                      ? 'bg-white text-gray-900 shadow-lg scale-110' 
+                      : 'text-white/70 hover:text-white hover:bg-white/10 hover:scale-105'
                   }`}
+                  title="Français"
                 >
-                  <span className="text-sm">🇫🇷</span>
-                  <span className="hidden sm:inline">FR</span>
+                  🇫🇷
                 </button>
               </div>
               
