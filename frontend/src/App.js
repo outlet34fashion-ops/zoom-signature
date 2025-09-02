@@ -3186,10 +3186,6 @@ function App() {
                                 </div>
                                 <div className="text-xs text-gray-500 ml-3 whitespace-nowrap">
                                   {formatGermanDateTime(order.timestamp)}
-                                  {/* Debug: Show raw timestamp */}
-                                  <div className="text-xs text-red-500">
-                                    Debug: {order.timestamp} | {typeof order.timestamp}
-                                  </div>
                                 </div>
                               </div>
                             </div>
