@@ -76,6 +76,12 @@ function App() {
   const [customerFilter, setCustomerFilter] = useState('all'); // 'all', 'pending', 'blocked'
   const [customerSearch, setCustomerSearch] = useState(''); // Search by customer number
   
+  // Admin Dashboard Collapsible Sections
+  const [showStatistics, setShowStatistics] = useState(true);
+  const [showCustomerManagement, setShowCustomerManagement] = useState(true);
+  const [showStreamingControls, setShowStreamingControls] = useState(false);
+  const [showTickerSettings, setShowTickerSettings] = useState(false);
+  
   // Manual Customer Creation States
   const [showCreateCustomer, setShowCreateCustomer] = useState(false);
   const [newCustomerData, setNewCustomerData] = useState({
