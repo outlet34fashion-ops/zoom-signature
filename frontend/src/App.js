@@ -1144,6 +1144,20 @@ function App() {
     }
   };
 
+  // Funktion zum Laden aller Bestellungen von allen Kunden
+  const loadAllOrders = async () => {
+    setLoadingOrders(true);
+    try {
+      const response = await axios.get(`${API}/admin/orders`);
+      setAllOrders(response.data);
+    } catch (error) {
+      console.error('Error loading all orders:', error);
+      setAllOrders([]);
+    } finally {
+      setLoadingOrders(false);
+    }
+  };
+
   // Berechne Live-Statistiken aus Chat-Nachrichten
   const calculateLiveStats = () => {
     const orderMessages = chatMessages.filter(msg => msg.message.includes('Bestellung'));
