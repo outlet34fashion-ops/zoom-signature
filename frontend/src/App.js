@@ -2688,6 +2688,9 @@ function App() {
             </CardContent>
           </Card>
         )}
+            </div>
+          </div>
+        )}
 
         {/* Profile Modal */}
         {showProfileModal && (
