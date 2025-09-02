@@ -2981,69 +2981,81 @@ function App() {
                     {/* Trennlinie */}
                     <div className="border-t border-gray-200"></div>
 
-                    {/* Top 3 Käufer - direkt darunter */}
+                    {/* Top 3 Käufer - auf/zuklappbar */}
                     <div className="space-y-3">
-                      <h3 className="font-bold text-center text-sm text-pink-600 flex items-center justify-center">
-                        🏆 TOP 3 KÄUFER 🏆
-                      </h3>
-                  
-                  <div className="space-y-2">
-                    {getTop3Buyers().map((buyer, index) => (
-                      <div key={buyer.customerNumber} className={`flex items-center p-2 rounded-lg ${
-                        index === 0 ? 'bg-gradient-to-r from-yellow-100 to-yellow-200 border-2 border-yellow-400' :
-                        index === 1 ? 'bg-gradient-to-r from-gray-100 to-gray-200 border-2 border-gray-400' :
-                        'bg-gradient-to-r from-orange-100 to-orange-200 border-2 border-orange-400'
-                      }`}>
-                        <div className="flex items-center space-x-2">
-                          {/* Podium Icons */}
-                          <div className="text-lg">
-                            {index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}
-                          </div>
-                          
-                          <div className="flex-1">
-                            <div className="font-bold text-sm text-gray-800">
-                              Kunde #{buyer.customerNumber.length > 8 ? 
-                                buyer.customerNumber.slice(-6) : 
-                                buyer.customerNumber}
-                            </div>
-                            <div className="text-xs text-gray-600">
-                              <span>{buyer.totalItems} Artikel</span>
-                            </div>
-                          </div>
-                          
-                          {/* Rang Badge */}
-                          <div className={`px-2 py-1 rounded-full text-xs font-bold ${
-                            index === 0 ? 'bg-yellow-500 text-white' :
-                            index === 1 ? 'bg-gray-500 text-white' :
-                            'bg-orange-500 text-white'
-                          }`}>
-                            #{index + 1}
-                          </div>
+                      <button
+                        onClick={() => setShowTopBuyers(!showTopBuyers)}
+                        className="w-full flex items-center justify-between p-2 bg-gradient-to-r from-pink-50 to-purple-50 hover:from-pink-100 hover:to-purple-100 rounded-lg border border-pink-200 transition-all duration-300"
+                      >
+                        <h3 className="font-bold text-sm text-pink-600 flex items-center">
+                          🏆 TOP 3 KÄUFER 🏆
+                        </h3>
+                        <div className="text-pink-400">
+                          {showTopBuyers ? '▼' : '▶'}
                         </div>
-                      </div>
-                    ))}
-                    
-                    {getTop3Buyers().length === 0 && (
-                      <div className="text-center py-4 text-gray-500">
-                        <div className="text-2xl mb-2">🚀</div>
-                        <div className="text-xs">
-                          Seien Sie der erste Top-Käufer!<br/>
-                          Bestellen Sie jetzt und sichern Sie sich Platz #1!
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  
-                      {/* Motivations-Text für aktuellen Kunden */}
-                      {currentCustomer && getTop3Buyers().length > 0 && (
-                        <div className="mt-3 p-2 bg-pink-50 rounded-lg border border-pink-200">
-                          <div className="text-xs text-center text-pink-700">
-                            {getTop3Buyers().some(buyer => buyer.customerNumber === currentCustomer.customer_number) ? (
-                              <>🎉 <strong>Sie sind in den Top 3!</strong> Halten Sie Ihre Position! 💪</>
-                            ) : (
-                              <>⚡ <strong>Jetzt bestellen</strong> und in die Top 3 aufsteigen! 🏆</>
-                            )}
-                          </div>
+                      </button>
+
+                      {showTopBuyers && (
+                        <div className="space-y-2">
+                          {getTop3Buyers().map((buyer, index) => (
+                            <div key={buyer.customerNumber} className={`p-3 rounded-xl border-2 shadow-sm ${
+                              index === 0 ? 'bg-gradient-to-r from-pink-100 to-pink-200 border-pink-400' :
+                              index === 1 ? 'bg-gradient-to-r from-purple-100 to-purple-200 border-purple-400' :
+                              'bg-gradient-to-r from-indigo-100 to-indigo-200 border-indigo-400'
+                            }`}>
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-3">
+                                  {/* Medal Icon */}
+                                  <div className="text-xl">
+                                    {index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}
+                                  </div>
+                                  
+                                  <div>
+                                    <div className="font-bold text-sm text-gray-800">
+                                      Kunde #{buyer.customerNumber.length > 8 ? 
+                                        buyer.customerNumber.slice(-6) : 
+                                        buyer.customerNumber}
+                                    </div>
+                                    <div className="text-xs text-gray-600">
+                                      {buyer.totalItems} Artikel
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                {/* Rank Badge */}
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm ${
+                                  index === 0 ? 'bg-pink-500' :
+                                  index === 1 ? 'bg-purple-500' :
+                                  'bg-indigo-500'
+                                }`}>
+                                  #{index + 1}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                          
+                          {getTop3Buyers().length === 0 && (
+                            <div className="text-center py-6 text-gray-500 bg-gray-50 rounded-xl">
+                              <div className="text-3xl mb-2">🚀</div>
+                              <div className="text-xs">
+                                Seien Sie der erste Top-Käufer!<br/>
+                                Bestellen Sie jetzt und sichern Sie sich Platz #1!
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Motivations-Text für aktuellen Kunden */}
+                          {currentCustomer && getTop3Buyers().length > 0 && (
+                            <div className="mt-3 p-3 bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl border border-pink-200">
+                              <div className="text-xs text-center text-pink-700">
+                                {getTop3Buyers().some(buyer => buyer.customerNumber === currentCustomer.customer_number) ? (
+                                  <>🎉 <strong>Sie sind in den Top 3!</strong> Halten Sie Ihre Position! 💪</>
+                                ) : (
+                                  <>⚡ <strong>Jetzt bestellen</strong> und in die Top 3 aufsteigen! 🏆</>
+                                )}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
