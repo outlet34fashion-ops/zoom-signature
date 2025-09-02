@@ -199,9 +199,12 @@ function App() {
       };
       
       ws.onmessage = (event) => {
+        console.log('WebSocket message received:', event.data);
         const data = JSON.parse(event.data);
+        console.log('Parsed WebSocket data:', data);
         
         if (data.type === 'chat_message') {
+          console.log('Processing chat message:', data.data);
           setChatMessages(prev => [data.data, ...prev]);
         } else if (data.type === 'viewer_count') {
           setViewerCount(data.count);
