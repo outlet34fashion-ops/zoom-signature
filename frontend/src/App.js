@@ -397,23 +397,17 @@ function App() {
     return upcomingEvents[0];
   };
 
-  // Berechne Top 3 Käufer für Gamification
+  // Berechne Top 3 Käufer für Gamification - basierend auf echten Bestelldaten
   const getTop3Buyers = () => {
-    const orderMessages = chatMessages.filter(msg => msg.message.includes('Bestellung'));
     const buyerStats = {};
 
-    orderMessages.forEach(msg => {
-      // Parse: "**Bestellung** [CustomerNumber] I [Quantity]x I [Price] I [Size]"
-      const customerMatch = msg.message.match(/\*\*Bestellung\*\*\s*(\d+)/);
-      const quantityMatch = msg.message.match(/(\d+)x/);
-      const priceMatch = msg.message.match(/([\d,]+)\s*€/);
+    allOrders.forEach(order => {
+      const customerNumber = order.customer_id;
+      const quantity = parseInt(order.quantity) || 1;
+      const price = parseFloat(order.price) || 0;
+      const revenue = price; // price ist bereits der Gesamtpreis für diese Bestellung
 
-      if (customerMatch && quantityMatch && priceMatch) {
-        const customerNumber = customerMatch[1];
-        const quantity = parseInt(quantityMatch[1]) || 1;
-        const price = parseFloat(priceMatch[1].replace(',', '.')) || 0;
-        const revenue = quantity * price;
-
+      if (customerNumber && !customerNumber.startsWith('N/A')) {
         if (!buyerStats[customerNumber]) {
           buyerStats[customerNumber] = {
             customerNumber,
