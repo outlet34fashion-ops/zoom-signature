@@ -3011,32 +3011,50 @@ function App() {
               <Card className="max-w-sm mx-auto">
                 <CardContent className="p-3">
                   <div className="space-y-4">
-                    {/* Deine letzte Bestellung */}
+                    {/* Deine letzte Bestellung - auf/zuklappbar */}
                     <div className="space-y-2">
-                      <h3 className="font-semibold text-gray-700 text-center text-sm">
-                        📦 Deine letzte Bestellung
-                      </h3>
-                      
-                      {loadingLastOrder ? (
-                        <div className="text-center py-2">
-                          <div className="text-xs text-gray-600">Lädt...</div>
+                      <button
+                        onClick={() => setShowLastOrder(!showLastOrder)}
+                        className="w-full flex items-center justify-between p-2 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-lg border border-blue-200 transition-all duration-300"
+                      >
+                        <h3 className="font-semibold text-blue-600 text-sm flex items-center">
+                          📦 Deine letzte Bestellung
+                        </h3>
+                        <div className="text-blue-400">
+                          {showLastOrder ? '▼' : '▶'}
                         </div>
-                      ) : customerLastOrder ? (
-                        <div className="bg-gray-50 rounded p-2 space-y-1">
-                          {/* Compact One-Line Format: quantity I price I size */}
-                          <div className="text-center font-medium text-sm text-gray-800">
-                            {customerLastOrder.quantity} I {(customerLastOrder.price / customerLastOrder.quantity).toFixed(2).replace('.', ',')} I {customerLastOrder.size}
-                          </div>
-                          <div className="text-center text-xs text-gray-500">
-                            {customerLastOrder.formatted_time}
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="text-center py-2">
-                          <div className="text-xs text-gray-500">Keine Bestellungen</div>
-                          {isAdminView && currentCustomer && (
-                            <div className="text-xs text-blue-500 mt-1">
-                              Debug: Kunde #{currentCustomer.customer_number}
+                      </button>
+
+                      {showLastOrder && (
+                        <div className="space-y-2">
+                          {loadingLastOrder ? (
+                            <div className="text-center py-2">
+                              <div className="text-xs text-gray-600">Lädt...</div>
+                            </div>
+                          ) : customerLastOrder ? (
+                            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-200">
+                              {/* Gleiche Format wie in Bestellungen-Liste für Konsistenz */}
+                              <div className="flex justify-between items-center">
+                                <div className="font-medium text-gray-800">
+                                  {currentCustomer?.customer_number || 'N/A'} | {customerLastOrder.size} | {customerLastOrder.quantity} | {(customerLastOrder.price / customerLastOrder.quantity).toFixed(2).replace('.', ',')} €
+                                </div>
+                                <div className="text-xs text-gray-500 ml-3 whitespace-nowrap">
+                                  {formatGermanDateTime(customerLastOrder.timestamp || customerLastOrder.formatted_time)}
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="text-center py-4 text-gray-500 bg-gray-50 rounded-xl">
+                              <div className="text-2xl mb-2">📦</div>
+                              <div className="text-xs">
+                                Noch keine Bestellungen<br/>
+                                Bestellen Sie jetzt Ihren ersten Artikel!
+                              </div>
+                              {isAdminView && currentCustomer && (
+                                <div className="text-xs text-blue-500 mt-2">
+                                  Debug: Kunde #{currentCustomer.customer_number}
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
