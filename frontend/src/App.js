@@ -46,7 +46,7 @@ function App() {
   const [showCustomerLogin, setShowCustomerLogin] = useState(false);
   const [customerLoginData, setCustomerLoginData] = useState({ customer_number: '' });
   const [customerLoginError, setCustomerLoginError] = useState('');
-  const [activeView, setActiveView] = useState('orders'); // 'chat' or 'orders' - Standard auf Bestellungen
+  const [activeView, setActiveView] = useState('chat'); // 'chat' or 'orders' - Standard auf Chat
   const [allOrders, setAllOrders] = useState([]); // Alle Bestellungen von allen Kunden
   const [loadingOrders, setLoadingOrders] = useState(false);
   const [showTopBuyers, setShowTopBuyers] = useState(true); // Top 3 Käufer auf/zuklappbar
