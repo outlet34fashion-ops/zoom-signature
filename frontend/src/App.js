@@ -4087,6 +4087,8 @@ function App() {
           />
         </div>
       )}
+      </>
+      )}
 
       {/* Simple Video Streaming Modal */}
       {showSimpleStream && (
