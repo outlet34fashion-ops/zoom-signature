@@ -1330,7 +1330,7 @@ function App() {
                     </h1>
                     <div className="flex items-center justify-center space-x-2">
                       <div className="h-px bg-gradient-to-r from-transparent via-pink-400 to-transparent flex-1"></div>
-                      <p className="text-purple-200 text-sm font-medium px-4">Live Shopping Experience</p>
+                      <p className="text-purple-200 text-sm font-medium px-4">Dein Modegroßhandel</p>
                       <div className="h-px bg-gradient-to-r from-transparent via-pink-400 to-transparent flex-1"></div>
                     </div>
                   </div>
