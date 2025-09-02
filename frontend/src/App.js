@@ -3711,7 +3711,6 @@ function App() {
           </Card>
         )}
       </div>
-      )}
 
       {/* Create Event Modal */}
       {showCreateEvent && (
