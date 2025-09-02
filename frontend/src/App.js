@@ -276,6 +276,7 @@ function App() {
     if (isAdminView) {
       loadAdminStats();
       loadCustomers();
+      loadAllOrders(); // Lade alle Bestellungen
     }
   }, [isAdminView]);
 
