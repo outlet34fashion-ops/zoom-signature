@@ -188,6 +188,14 @@ class TimezoneOrdersTest:
             # Step 5: Create immediate verification order
             print("\n✅ Step 5: Immediate Verification - Create new order right now")
             
+            # Get products for immediate order
+            products_response = requests.get(f"{self.api_url}/products", timeout=10)
+            if products_response.status_code != 200:
+                print("⚠️  Could not fetch products for immediate order")
+                products = [{"id": "1"}]  # Use default product ID
+            else:
+                products = products_response.json()
+            
             # Create another test order right now
             immediate_test_order = {
                 "customer_id": "10299",
