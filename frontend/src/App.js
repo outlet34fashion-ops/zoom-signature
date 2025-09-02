@@ -3081,23 +3081,58 @@ function App() {
                         </h3>
                       </div>
                       
-                      {/* Orders List */}
+                      {/* Orders List - Alle Bestellungen von allen Kunden */}
                       <div className="h-64 overflow-y-auto bg-gray-50 rounded p-3 space-y-2">
-                        {chatMessages
-                          .filter(msg => msg.message.includes('Bestellung'))
-                          .map((msg) => (
-                            <div key={msg.id} className="text-sm bg-white rounded p-2 border-l-4 border-pink-500">
-                              <div className="font-medium text-pink-600">
-                                {formatMessage(msg.message)}
+                        {loadingOrders ? (
+                          <div className="text-center text-gray-500 py-8">
+                            Bestellungen werden geladen...
+                          </div>
+                        ) : allOrders.length > 0 ? (
+                          allOrders.map((order) => (
+                            <div key={order.id} className="text-sm bg-white rounded p-3 border-l-4 border-pink-500 shadow-sm">
+                              <div className="flex justify-between items-start mb-2">
+                                <div className="font-medium text-pink-600">
+                                  Bestellung #{order.id}
+                                </div>
+                                <div className="text-xs text-gray-500">
+                                  {new Date(order.created_at).toLocaleString('de-DE')}
+                                </div>
                               </div>
-                              <div className="text-xs text-gray-500 mt-1">
-                                {new Date(msg.timestamp || Date.now()).toLocaleTimeString()}
+                              <div className="space-y-1">
+                                <div className="flex justify-between">
+                                  <span className="text-xs text-gray-600">Kunde:</span>
+                                  <span className="text-xs font-medium">#{order.customer_number || 'N/A'}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-xs text-gray-600">Artikel:</span>
+                                  <span className="text-xs">{order.product_name || 'Artikel'}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-xs text-gray-600">Größe:</span>
+                                  <span className="text-xs">{order.size || 'N/A'}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-xs text-gray-600">Menge:</span>
+                                  <span className="text-xs">{order.quantity || 1}</span>
+                                </div>
+                                <div className="flex justify-between font-medium">
+                                  <span className="text-xs text-gray-600">Gesamt:</span>
+                                  <span className="text-xs text-pink-600">{(order.total_price || order.price || 0).toFixed(2)} €</span>
+                                </div>
                               </div>
                             </div>
-                          ))}
-                        {chatMessages.filter(msg => msg.message.includes('Bestellung')).length === 0 && (
+                          ))
+                        ) : (
                           <div className="text-center text-gray-500 py-8">
-                            Noch keine Bestellungen
+                            Noch keine Bestellungen vorhanden
+                            <div className="text-xs mt-2">
+                              <button 
+                                onClick={loadAllOrders}
+                                className="text-pink-500 hover:text-pink-600 underline"
+                              >
+                                Neu laden
+                              </button>
+                            </div>
                           </div>
                         )}
                       </div>
