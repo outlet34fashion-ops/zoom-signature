@@ -1495,59 +1495,68 @@ function App() {
                         </div>
                       </div>
                     </div>
-                ) : showAdminLogin ? (
-                  <div className="space-y-4">
-                    <h2 className="text-xl font-semibold text-gray-800">🔐 Admin-Anmeldung</h2>
-                    
-                    {adminLoginError && (
-                      <div className="bg-red-100 border border-red-300 rounded-lg p-3">
-                        <p className="text-red-700 text-sm">{adminLoginError}</p>
-                      </div>
-                    )}
-                    
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Admin PIN
-                        </label>
-                        <Input
-                          type="password"
-                          placeholder="Admin PIN eingeben"
-                          value={adminPin}
-                          onChange={(e) => setAdminPin(e.target.value)}
-                          onKeyPress={(e) => {
-                            if (e.key === 'Enter') {
-                              e.preventDefault();
-                              adminLogin();
-                            }
-                          }}
-                          className="w-full text-center text-lg tracking-widest"
-                          maxLength="4"
-                        />
+                  ) : showAdminLogin ? (
+                    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl">
+                      <div className="text-center space-y-6">
+                        <div className="space-y-2">
+                          <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-600 rounded-full flex items-center justify-center mx-auto">
+                            <span className="text-2xl">🔐</span>
+                          </div>
+                          <h2 className="text-xl font-bold text-white">Admin-Zugang</h2>
+                          <p className="text-white/70 text-sm">
+                            Sicherer Bereich für Administratoren
+                          </p>
+                        </div>
+                        
+                        {adminLoginError && (
+                          <div className="bg-red-500/20 border border-red-500/30 rounded-xl p-3">
+                            <p className="text-red-200 text-sm">{adminLoginError}</p>
+                          </div>
+                        )}
+                        
+                        <div className="space-y-4">
+                          <div className="text-left">
+                            <label className="block text-white/80 text-sm font-medium mb-2">
+                              Admin PIN
+                            </label>
+                            <input
+                              type="password"
+                              placeholder="••••"
+                              value={adminPin}
+                              onChange={(e) => setAdminPin(e.target.value)}
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  adminLogin();
+                                }
+                              }}
+                              className="w-full bg-white/10 border border-white/30 text-white placeholder-white/50 py-3 px-4 rounded-xl text-center text-2xl tracking-widest focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300"
+                              maxLength="4"
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="flex space-x-3">
+                          <button 
+                            onClick={() => {
+                              setShowAdminLogin(false);
+                              setAdminLoginError('');
+                              setAdminPin('');
+                            }}
+                            className="flex-1 bg-white/10 hover:bg-white/20 border border-white/30 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300"
+                          >
+                            Zurück
+                          </button>
+                          <button 
+                            onClick={adminLogin}
+                            disabled={!adminPin}
+                            className="flex-1 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300 hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                          >
+                            Anmelden
+                          </button>
+                        </div>
                       </div>
                     </div>
-                    
-                    <div className="flex space-x-3">
-                      <Button 
-                        variant="outline"
-                        onClick={() => {
-                          setShowAdminLogin(false);
-                          setAdminLoginError('');
-                          setAdminPin('');
-                        }}
-                        className="flex-1"
-                      >
-                        Zurück
-                      </Button>
-                      <Button 
-                        onClick={adminLogin}
-                        disabled={!adminPin}
-                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
-                      >
-                        Anmelden
-                      </Button>
-                    </div>
-                  </div>
                   ) : showRegistration ? (
                     <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl">
                       <div className="text-center space-y-6">
