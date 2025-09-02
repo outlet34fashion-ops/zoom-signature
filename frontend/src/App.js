@@ -3101,11 +3101,11 @@ function App() {
                               <div className="space-y-1">
                                 <div className="flex justify-between">
                                   <span className="text-xs text-gray-600">Kunde:</span>
-                                  <span className="text-xs font-medium">#{order.customer_number || 'N/A'}</span>
+                                  <span className="text-xs font-medium">#{order.customer_id || 'N/A'}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                  <span className="text-xs text-gray-600">Artikel:</span>
-                                  <span className="text-xs">{order.product_name || 'Artikel'}</span>
+                                  <span className="text-xs text-gray-600">Produkt ID:</span>
+                                  <span className="text-xs">{order.product_id || 'N/A'}</span>
                                 </div>
                                 <div className="flex justify-between">
                                   <span className="text-xs text-gray-600">Größe:</span>
@@ -3117,7 +3117,7 @@ function App() {
                                 </div>
                                 <div className="flex justify-between font-medium">
                                   <span className="text-xs text-gray-600">Gesamt:</span>
-                                  <span className="text-xs text-pink-600">{(order.total_price || order.price || 0).toFixed(2)} €</span>
+                                  <span className="text-xs text-pink-600">{(order.price || 0).toFixed(2)} €</span>
                                 </div>
                               </div>
                             </div>
