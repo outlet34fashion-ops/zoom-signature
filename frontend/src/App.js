@@ -3161,35 +3161,36 @@ function App() {
 
           {/* Split View - Chat and Orders */}
           <div className="space-y-4">
-            <Card>
-              <CardContent className="p-0">
-                {/* Tab Header */}
-                <div className="grid grid-cols-2 bg-gray-100">
-                  <button
-                    onClick={() => setActiveView('orders')}
-                    className={`py-3 px-4 text-center font-medium transition-colors ${
-                      activeView === 'orders'
-                        ? 'bg-pink-500 text-white'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
-                  >
-                    📋 Bestellungen
-                  </button>
-                  <button
-                    onClick={() => setActiveView('chat')}
-                    className={`py-3 px-4 text-center font-medium transition-colors ${
-                      activeView === 'chat'
-                        ? 'bg-pink-500 text-white'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
-                  >
-                    💬 Chat
-                  </button>
-                </div>
+            {/* Mobile Tab Header - only show on small screens */}
+            <div className="lg:hidden">
+              <Card>
+                <CardContent className="p-0">
+                  <div className="grid grid-cols-2 bg-gray-100">
+                    <button
+                      onClick={() => setActiveView('orders')}
+                      className={`py-3 px-4 text-center font-medium transition-colors ${
+                        activeView === 'orders'
+                          ? 'bg-pink-500 text-white'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      📋 Bestellungen
+                    </button>
+                    <button
+                      onClick={() => setActiveView('chat')}
+                      className={`py-3 px-4 text-center font-medium transition-colors ${
+                        activeView === 'chat'
+                          ? 'bg-pink-500 text-white'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                    >
+                      💬 Chat
+                    </button>
+                  </div>
 
-                {/* Tab Content */}
-                <div className="p-4">
-                  {activeView === 'orders' ? (
+                  {/* Mobile Tab Content */}
+                  <div className="p-4">
+                    {activeView === 'orders' ? (
                     /* Orders View */
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
