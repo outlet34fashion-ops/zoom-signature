@@ -2026,6 +2026,24 @@ function App() {
                 {showCustomerManagement && (
                   <div className="p-6 border-t border-gray-200">
                     <div className="bg-gray-50 rounded-lg p-4">
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-semibold text-gray-800">
+                          👥 Kundenverwaltung ({customers.filter(c => {
+                            // Filter by status
+                            let matchesFilter = true;
+                            if (customerFilter === 'pending') matchesFilter = c.activation_status === 'pending';
+                            if (customerFilter === 'blocked') matchesFilter = c.activation_status === 'blocked';
+                            
+                            // Filter by search (customer number)
+                            let matchesSearch = true;
+                            if (customerSearch.trim()) {
+                              matchesSearch = c.customer_number.toLowerCase().includes(customerSearch.toLowerCase());
+                            }
+                            
+                            return matchesFilter && matchesSearch;
+                          }).length})
+                        </h3>
+                      </div>
                   
                   {/* Search Field */}
                   <div className="mb-4">
