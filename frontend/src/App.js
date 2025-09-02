@@ -4087,6 +4087,8 @@ function App() {
           />
         </div>
       )}
+      </>
+      )}
 
       {/* Simple Video Streaming Modal */}
       {showSimpleStream && (
@@ -4095,8 +4097,6 @@ function App() {
           currentUser={currentCustomer}
           onClose={handleSimpleStreamClose}
         />
-      )}
-      </>
       )}
     </div>
   );
