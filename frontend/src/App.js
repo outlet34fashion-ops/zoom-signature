@@ -1648,70 +1648,92 @@ function App() {
                       </Button>
                     </div>
                   </div>
-                ) : (
-                  <div className="space-y-4">
-                    {/* Logo und Titel bleiben oben */}
-                    <h2 className="text-xl font-semibold text-gray-800">OUTLET34 Live Shopping</h2>
-                    
-                    <div className="text-center space-y-1 pt-16">
-                      <p className="text-base font-medium text-gray-700 sm:text-sm">
-                        Neu bei OUTLET34?
-                      </p>
-                      <p className="text-base text-gray-600 sm:text-sm">
-                        Jetzt registrieren und Live Shopping erleben!
-                      </p>
-                      <a href="https://www.outlet34fashion.com/registrieren" className="block text-base text-pink-500 hover:underline sm:text-sm">
-                        https://www.outlet34fashion.com/registrieren
-                      </a>
-                    </div>
-                    
-                    {/* Buttons untereinander - neue Reihenfolge */}
-                    <div className="space-y-3 pt-4">
-                      {/* 1. Zeile: Registrieren (links) + Anmelden (rechts) */}
-                      <div className="flex space-x-3">
-                        <Button 
-                          variant="outline"
-                          onClick={() => setShowRegistration(true)}
-                          className="flex-1 min-h-12 text-sm font-medium"
-                        >
-                          📝 {t('auth.register')}
-                        </Button>
-                        <Button 
-                          onClick={() => setShowCustomerLogin(true)}
-                          className="flex-1 min-h-12 bg-pink-500 hover:bg-pink-600 text-sm font-medium"
-                        >
-                          🔑 {t('auth.login')}
-                        </Button>
+                  ) : (
+                    <div className="space-y-8">
+                      {/* Live Shopping Status */}
+                      <div className="text-center space-y-4">
+                        <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20">
+                          <div className="flex items-center justify-center space-x-2 mb-2">
+                            <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                            <span className="text-white font-semibold text-sm">LIVE SHOPPING AKTIV</span>
+                          </div>
+                          <p className="text-white/70 text-xs">
+                            Jetzt einloggen und exklusive Deals sichern!
+                          </p>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <p className="text-white/80 text-sm">
+                            Neu bei OUTLET34?
+                          </p>
+                          <p className="text-white/60 text-xs leading-relaxed">
+                            Registrieren Sie sich kostenlos und erleben Sie Live Shopping mit exklusiven Angeboten
+                          </p>
+                          <a 
+                            href="https://www.outlet34fashion.com/registrieren" 
+                            className="inline-block text-pink-400 hover:text-pink-300 text-xs underline transition-colors duration-300"
+                          >
+                            → outlet34fashion.com/registrieren
+                          </a>
+                        </div>
                       </div>
                       
-                      {/* 2. WhatsApp Service Contact */}
-                      <div className="bg-pink-50 border border-pink-200 rounded-lg p-3">
-                        <a 
-                          href="https://wa.me/4917621105848?text=Hallo%20OUTLET34%20Team,%20ich%20habe%20eine%20Frage%20zum%20Live%20Shopping..." 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="flex items-center justify-center space-x-3 bg-pink-500 hover:bg-pink-600 text-white font-medium py-4 px-4 rounded-lg transition-colors duration-200 w-full min-h-12 text-sm"
+                      {/* Action Buttons */}
+                      <div className="space-y-4">
+                        {/* Primary Actions */}
+                        <div className="flex space-x-3">
+                          <button 
+                            onClick={() => setShowRegistration(true)}
+                            className="flex-1 bg-white/10 hover:bg-white/20 border border-white/30 text-white py-4 px-4 rounded-xl font-medium transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2"
+                          >
+                            <span className="text-lg">📝</span>
+                            <span>{t('auth.register')}</span>
+                          </button>
+                          <button 
+                            onClick={() => setShowCustomerLogin(true)}
+                            className="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white py-4 px-4 rounded-xl font-medium transition-all duration-300 hover:scale-105 shadow-lg flex items-center justify-center space-x-2"
+                          >
+                            <span className="text-lg">🔑</span>
+                            <span>{t('auth.login')}</span>
+                          </button>
+                        </div>
+                        
+                        {/* WhatsApp Support */}
+                        <div className="bg-white/5 rounded-xl p-3">
+                          <a 
+                            href="https://wa.me/4917621105848?text=Hallo%20OUTLET34%20Team,%20ich%20habe%20eine%20Frage%20zum%20Live%20Shopping..." 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-center space-x-3 bg-green-500 hover:bg-green-600 text-white font-medium py-4 px-4 rounded-xl transition-all duration-300 hover:scale-105 w-full"
+                          >
+                            <img 
+                              src="/images/whatsapp-logo-dark.png" 
+                              alt="WhatsApp Logo" 
+                              className="w-6 h-6"
+                            />
+                            <span className="font-semibold">{t('navigation.service')}</span>
+                          </a>
+                        </div>
+                        
+                        {/* Admin Access */}
+                        <button 
+                          onClick={() => setShowAdminLogin(true)}
+                          className="w-full bg-white/5 hover:bg-white/10 border border-white/20 text-white/60 hover:text-white py-3 px-4 rounded-xl font-medium transition-all duration-300 text-sm flex items-center justify-center space-x-2"
                         >
-                          <img 
-                            src="/images/whatsapp-logo-dark.png" 
-                            alt="WhatsApp Logo" 
-                            className="w-6 h-6"
-                          />
-                          <span className="font-semibold">{t('navigation.service')}</span>
-                        </a>
+                          <span className="text-sm">🔐</span>
+                          <span>{t('auth.adminLogin')}</span>
+                        </button>
                       </div>
-                      
-                      {/* 3. Admin-Anmeldung Button (ohne Text) */}
-                      <Button 
-                        onClick={() => setShowAdminLogin(true)}
-                        variant="outline"
-                        className="w-full text-gray-600 hover:text-gray-800 min-h-12 text-sm font-medium"
-                      >
-                        🔐 {t('auth.adminLogin')}
-                      </Button>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            {/* Bottom Gradient */}
+            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-slate-900 to-transparent pointer-events-none"></div>
+          </div>
+        </div>
               </div>
             </CardContent>
           </Card>
