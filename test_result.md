@@ -472,6 +472,21 @@ test_plan:
         agent: "main"
         comment: "✅ COMPLETE MODERN DESIGN OVERHAUL SUCCESSFUL! Successfully replaced the complete customer startseite with a modern, mobile-optimized design featuring: 1) ✅ Dark gradient background (slate-900 to purple-900) with animated blur elements, 2) ✅ Glassmorphism effects with backdrop-blur and transparency, 3) ✅ Modern language selector as pills (DE/EN/TR/FR) with smooth transitions, 4) ✅ Live status indicator with pulsing animation, 5) ✅ Enhanced logo presentation with glow effects and hover animations, 6) ✅ Professional card layouts with rounded corners and gradients, 7) ✅ Modern button designs with gradient backgrounds and hover effects, 8) ✅ WhatsApp integration with green gradient button, 9) ✅ Mobile-first responsive design optimized for all screen sizes, 10) ✅ Consistent spacing and typography throughout. The design maintains all existing functionality (login, registration, admin access, language switching) while providing a significantly more modern and professional user experience. Customer authentication, WhatsApp support, and admin access are all fully integrated into the new design."
 
+  - task: "CRITICAL BUG: Timezone Bug Verification and Fix"
+    implemented: false
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "USER REPORTED CRITICAL BUG: All timestamps are showing 2 hours behind the correct time (11:42:34 instead of 13:42:34). User expects to see current German time (around 13:42) but is seeing 11:42 instead. This affects order timestamps, last order display, and all time-related functionality."
+      - working: false
+        agent: "testing"
+        comment: "🕐 CRITICAL TIMEZONE BUG CONFIRMED! Comprehensive testing reveals the exact issue: 1) ✅ Backend correctly stores UTC timestamps (11:50:16 UTC), 2) ✅ German time should be CEST 13:50:16 (UTC+2), 3) ❌ CONFIRMED: 2-hour timezone bug detected! Expected 13:xx, got 11:xx in formatted_time field, 4) 🐛 ROOT CAUSE IDENTIFIED: Backend formatted_time field in /api/customers/{customer_number}/last-order endpoint shows UTC time (11:50:16) instead of German local time (13:50:16), 5) ❌ The formatted_time generation in server.py line 920 uses timestamp.strftime('%d.%m.%Y %H:%M:%S') without timezone conversion, 6) ✅ DIAGNOSIS: Backend stores UTC correctly but formatted_time display not converting UTC to German timezone. REQUIRES FIX: Add timezone conversion to German time (UTC+2 CEST) in formatted_time generation."
+
 agent_communication:
   - agent: "main"
     message: "Customer management system implementation completed successfully! Backend: All APIs working (registration, status check, admin management). Frontend: Guest blocking with registration message, registration form, pending/active/blocked status handling, and comprehensive admin dashboard with customer management controls. System ready for production use."
