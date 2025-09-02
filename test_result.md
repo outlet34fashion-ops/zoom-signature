@@ -473,6 +473,18 @@ test_plan:
         agent: "main"
         comment: "✅ COMPLETE MODERN DESIGN OVERHAUL SUCCESSFUL! Successfully replaced the complete customer startseite with a modern, mobile-optimized design featuring: 1) ✅ Dark gradient background (slate-900 to purple-900) with animated blur elements, 2) ✅ Glassmorphism effects with backdrop-blur and transparency, 3) ✅ Modern language selector as pills (DE/EN/TR/FR) with smooth transitions, 4) ✅ Live status indicator with pulsing animation, 5) ✅ Enhanced logo presentation with glow effects and hover animations, 6) ✅ Professional card layouts with rounded corners and gradients, 7) ✅ Modern button designs with gradient backgrounds and hover effects, 8) ✅ WhatsApp integration with green gradient button, 9) ✅ Mobile-first responsive design optimized for all screen sizes, 10) ✅ Consistent spacing and typography throughout. The design maintains all existing functionality (login, registration, admin access, language switching) while providing a significantly more modern and professional user experience. Customer authentication, WhatsApp support, and admin access are all fully integrated into the new design."
 
+  - task: "Remove live status bar elements from customer view"
+    implemented: false
+    working: "NA"
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "IMPLEMENTING: Removing live status bar elements from customer view to reduce information overload. Target elements for removal: 1) Red LIVE badge (line 1954-1956), 2) Runtime display '01:43' (line 1957), 3) End time display '15:45:11' (line 1958), 4) Viewer count with Users icon (lines 1959-1962). Located in Live Status Bar section (lines 1948-1967). Admin view functionality will remain intact."
+
   - task: "CRITICAL BUG: Customer 10299 Last Order Sync Issue"
     implemented: true
     working: true
