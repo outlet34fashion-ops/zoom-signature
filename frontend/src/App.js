@@ -2526,6 +2526,9 @@ function App() {
                   ))}
                 </div>
               )}
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
