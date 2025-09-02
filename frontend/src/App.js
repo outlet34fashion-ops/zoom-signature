@@ -2968,38 +2968,38 @@ function App() {
               <Card className="max-w-sm mx-auto">
                 <CardContent className="p-3">
                 <div className="text-center space-y-3">
-                  {/* Größe und Händlerpreis in einer Zeile */}
+                  {/* Größe, Händlerpreis und Menge in einer Zeile */}
                   <div className="flex justify-between items-center">
                     <div className="text-left">
                       <div className="text-xs text-gray-600">{t('orders.size')}</div>
                       <div className="font-bold text-pink-600 text-lg">{selectedSize}</div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-center">
                       <div className="text-xs text-gray-600">Händlerpreis</div>
                       <div className="font-bold text-pink-600 text-lg">
                         {selectedPrice.toFixed(2)} €
                       </div>
                     </div>
-                  </div>
-                  <div className="flex items-center justify-center space-x-3">
-                    <span className="text-sm">{t('orders.quantity')}</span>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="h-7 w-7 p-0"
-                    >
-                      -
-                    </Button>
-                    <span className="font-medium text-sm w-8 text-center">{quantity}</span>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => setQuantity(quantity + 1)}
-                      className="h-7 w-7 p-0"
-                    >
-                      +
-                    </Button>
+                    <div className="text-right">
+                      <div className="text-xs text-gray-600">Menge</div>
+                      <div className="flex items-center justify-center space-x-2">
+                        <Button 
+                          onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                          variant="outline"
+                          className="h-7 w-7 p-0"
+                        >
+                          -
+                        </Button>
+                        <span className="font-medium text-sm w-8 text-center">{quantity}</span>
+                        <Button 
+                          onClick={() => setQuantity(quantity + 1)}
+                          variant="outline"
+                          className="h-7 w-7 p-0"
+                        >
+                          +
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                   <Button 
                     onClick={placeOrder}
