@@ -3290,7 +3290,7 @@ function App() {
                               
                               {/* Zeitstempel */}
                               <div className="text-xs text-gray-500 mt-1">
-                                {new Date(msg.timestamp || Date.now()).toLocaleTimeString()}
+                                {formatGermanTime(msg.timestamp || Date.now())}
                                 {isPinned(msg.id) && <span className="ml-1 text-yellow-600">📍</span>}
                               </div>
                             </div>
