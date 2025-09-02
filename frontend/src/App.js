@@ -2111,125 +2111,116 @@ function App() {
                         }).length === 0 ? (
                           <p className="text-gray-600 text-center py-4">
                             {customerSearch.trim() ? `Keine Kunden mit Nummer "${customerSearch}" gefunden` :
-                         customerFilter === 'pending' ? 'Keine wartenden Kunden' : 
-                         customerFilter === 'blocked' ? 'Keine gesperrten Kunden' : 
-                         'Noch keine Kunden registriert'}
-                      </p>
-                    ) : (
-                      customers.filter(customer => {
-                        // Filter by status
-                        let matchesFilter = true;
-                        if (customerFilter === 'pending') matchesFilter = customer.activation_status === 'pending';
-                        if (customerFilter === 'blocked') matchesFilter = customer.activation_status === 'blocked';
-                        
-                        // Filter by search (customer number)
-                        let matchesSearch = true;
-                        if (customerSearch.trim()) {
-                          matchesSearch = customer.customer_number.toLowerCase().includes(customerSearch.toLowerCase());
-                        }
-                        
-                        return matchesFilter && matchesSearch;
-                      }).map((customer) => (
-                        <div key={customer.id} className="bg-white/20 rounded-lg p-3">
-                          <div className="flex justify-between items-start">
-                            <div className="flex items-start space-x-3">
-                              {/* Profile Image */}
-                              <div className="flex-shrink-0">
-                                {customer.profile_image ? (
-                                  <img
-                                    src={customer.profile_image}
-                                    alt={customer.name}
-                                    className="w-16 h-16 rounded-full object-cover border-2 border-white/30"
-                                  />
-                                ) : (
-                                  <div className="w-16 h-16 rounded-full bg-white/30 flex items-center justify-center border-2 border-white/30">
-                                    <span className="text-white text-xl font-bold">
-                                      {customer.name.charAt(0).toUpperCase()}
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
-                              
-                              {/* Customer Info */}
-                              <div className="flex-1">
-                                {/* Customer Number FIRST - Most Important */}
-                                <div className="font-bold text-lg text-yellow-200">
-                                  #{customer.customer_number}
-                                </div>
-                                {/* Name Second - ONLY FOR ADMIN INTERNAL USE */}
-                                <div className="font-medium text-white">
-                                  {customer.name}
-                                </div>
-                                {/* Email and date smaller */}
-                                <div className="text-sm opacity-90">
-                                  📧 {customer.email}
-                                </div>
-                                <div className="text-xs opacity-75">
-                                  📅 Registriert: {new Date(customer.created_at).toLocaleDateString('de-DE')}
-                                </div>
-                              </div>
-                            </div>
+                             customerFilter === 'pending' ? 'Keine ausstehenden Kunden' :
+                             customerFilter === 'blocked' ? 'Keine gesperrten Kunden' :
+                             'Keine Kunden verfügbar'}
+                          </p>
+                        ) : (
+                          customers.filter(customer => {
+                            // Filter by status
+                            let matchesFilter = true;
+                            if (customerFilter === 'pending') matchesFilter = customer.activation_status === 'pending';
+                            if (customerFilter === 'blocked') matchesFilter = customer.activation_status === 'blocked';
                             
-                            <div className="flex flex-col items-end space-y-2">
-                              <Badge 
-                                className={
-                                  customer.activation_status === 'active' 
-                                    ? "bg-green-500 text-white" 
-                                    : customer.activation_status === 'pending'
-                                    ? "bg-yellow-500 text-white"
-                                    : "bg-red-500 text-white"
-                                }
-                              >
-                                {customer.activation_status === 'active' ? '✓ Aktiv' : 
-                                 customer.activation_status === 'pending' ? '⏳ Wartend' : 
-                                 '🚫 Gesperrt'}
-                              </Badge>
-                              
-                              <div className="flex space-x-1">
-                                {customer.activation_status === 'pending' && (
-                                  <Button 
-                                    onClick={() => activateCustomer(customer.id)}
-                                    className="bg-green-600 hover:bg-green-700 text-white"
-                                    size="sm"
-                                  >
-                                    ✓
-                                  </Button>
-                                )}
+                            // Filter by search (customer number)
+                            let matchesSearch = true;
+                            if (customerSearch.trim()) {
+                              matchesSearch = customer.customer_number.toLowerCase().includes(customerSearch.toLowerCase());
+                            }
+                            
+                            return matchesFilter && matchesSearch;
+                          }).map((customer) => (
+                            <div key={customer.id} className="bg-gray-100 rounded-lg p-3 border">
+                              <div className="flex justify-between items-start">
+                                <div className="flex items-start space-x-3">
+                                  {/* Profile Image */}
+                                  <div className="flex-shrink-0">
+                                    {customer.profile_image ? (
+                                      <img
+                                        src={customer.profile_image}
+                                        alt={customer.name}
+                                        className="w-16 h-16 rounded-full object-cover border-2 border-gray-300"
+                                      />
+                                    ) : (
+                                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center border-2 border-gray-300">
+                                        <span className="text-white text-lg font-bold">
+                                          {customer.name ? customer.name.charAt(0).toUpperCase() : '👤'}
+                                        </span>
+                                      </div>
+                                    )}
+                                  </div>
+                                  {/* Customer Info */}
+                                  <div className="flex-1 min-w-0">
+                                    {/* Customer Number First */}
+                                    <div className="text-lg font-bold text-gray-800">
+                                      #{customer.customer_number}
+                                    </div>
+                                    {/* Name Second */}
+                                    <div className="font-medium text-gray-700">
+                                      {customer.name}
+                                    </div>
+                                    {/* Email and date smaller */}
+                                    <div className="text-sm text-gray-600">
+                                      📧 {customer.email}
+                                    </div>
+                                    <div className="text-xs text-gray-500">
+                                      📅 Registriert: {new Date(customer.created_at).toLocaleDateString('de-DE')}
+                                    </div>
+                                  </div>
+                                </div>
                                 
-                                {customer.activation_status === 'active' && (
-                                  <Button 
-                                    onClick={() => blockCustomer(customer.id)}
-                                    className="bg-red-600 hover:bg-red-700 text-white"
-                                    size="sm"
+                                <div className="flex flex-col items-end space-y-2">
+                                  <Badge 
+                                    className={
+                                      customer.activation_status === 'active' 
+                                        ? "bg-green-500 text-white" 
+                                        : customer.activation_status === 'pending'
+                                        ? "bg-yellow-500 text-white"
+                                        : "bg-red-500 text-white"
+                                    }
                                   >
-                                    🚫
-                                  </Button>
-                                )}
-                                
-                                {customer.activation_status === 'blocked' && (
-                                  <Button 
-                                    onClick={() => activateCustomer(customer.id)}
-                                    className="bg-green-600 hover:bg-green-700 text-white"
-                                    size="sm"
-                                  >
-                                    ✓
-                                  </Button>
-                                )}
-                                
-                                <Button 
-                                  onClick={() => deleteCustomer(customer.id)}
-                                  className="bg-red-800 hover:bg-red-900 text-white"
-                                  size="sm"
-                                >
-                                  🗑️
-                                </Button>
+                                    {customer.activation_status === 'active' ? '✓ Aktiv' : 
+                                     customer.activation_status === 'pending' ? '⏳ Wartend' : 
+                                     '🚫 Gesperrt'}
+                                  </Badge>
+                                  
+                                  <div className="flex space-x-1">
+                                    {customer.activation_status === 'pending' && (
+                                      <Button 
+                                        onClick={() => activateCustomer(customer.id)}
+                                        className="bg-green-600 hover:bg-green-700 text-white"
+                                        size="sm"
+                                      >
+                                        ✓
+                                      </Button>
+                                    )}
+                                    
+                                    {customer.activation_status === 'active' && (
+                                      <Button 
+                                        onClick={() => blockCustomer(customer.id)}
+                                        className="bg-red-600 hover:bg-red-700 text-white"
+                                        size="sm"
+                                      >
+                                        🚫
+                                      </Button>
+                                    )}
+                                    
+                                    {customer.activation_status === 'blocked' && (
+                                      <Button 
+                                        onClick={() => activateCustomer(customer.id)}
+                                        className="bg-green-600 hover:bg-green-700 text-white"
+                                        size="sm"
+                                      >
+                                        ✓
+                                      </Button>
+                                    )}
+                                  </div>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
+                          ))
+                        )}
+                      </div>
                 </div>
               </CardContent>
             </Card>
