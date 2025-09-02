@@ -3039,7 +3039,7 @@ function App() {
                               <div className="text-xs text-gray-600">Lädt...</div>
                             </div>
                           ) : customerLastOrder ? (
-                            <div className="bg-white rounded-lg p-3 border-l-4 border-blue-500 shadow-sm hover:shadow-md transition-shadow">
+                            <div className="bg-white rounded-lg p-3 border-l-4 border-pink-500 shadow-sm hover:shadow-md transition-shadow">
                               {/* Exakt gleiche Formatierung wie Bestellungen-Liste */}
                               <div className="flex justify-between items-center">
                                 <div className="font-medium text-gray-800">
