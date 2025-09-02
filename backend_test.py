@@ -4121,7 +4121,7 @@ class LiveShoppingAPITester:
         print("\n🎯 PRIORITY 3: MULTI-LANGUAGE FUNCTIONALITY TESTING...")
         multi_language_success = self.test_multi_language_functionality()
 
-        # PRIORITY 3: GERMAN ORDER FORMAT VERIFICATION
+        # PRIORITY 4: GERMAN ORDER FORMAT VERIFICATION
         print("\n🎯 PRIORITY 3: GERMAN ORDER FORMAT VERIFICATION...")
         german_format_success = self.test_order_system_verification_german_format()
 
