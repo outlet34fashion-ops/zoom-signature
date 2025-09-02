@@ -3828,16 +3828,20 @@ class LiveShoppingAPITester:
         print(f"🔗 Testing against: {self.base_url}")
         print("=" * 60)
 
-        # PRIORITY 1: MULTI-LANGUAGE FUNCTIONALITY TESTING (Current Review Request)
-        print("\n🎯 PRIORITY 1: MULTI-LANGUAGE FUNCTIONALITY TESTING...")
+        # PRIORITY 1: ADMIN DASHBOARD BLOCKS VERIFICATION (Current Review Request)
+        print("\n🎯 PRIORITY 1: ADMIN DASHBOARD BLOCKS VERIFICATION...")
+        admin_dashboard_success = self.test_admin_dashboard_blocks()
+
+        # PRIORITY 2: MULTI-LANGUAGE FUNCTIONALITY TESTING
+        print("\n🎯 PRIORITY 2: MULTI-LANGUAGE FUNCTIONALITY TESTING...")
         multi_language_success = self.test_multi_language_functionality()
 
-        # PRIORITY 2: GERMAN ORDER FORMAT VERIFICATION
-        print("\n🎯 PRIORITY 2: GERMAN ORDER FORMAT VERIFICATION...")
+        # PRIORITY 3: GERMAN ORDER FORMAT VERIFICATION
+        print("\n🎯 PRIORITY 3: GERMAN ORDER FORMAT VERIFICATION...")
         german_format_success = self.test_order_system_verification_german_format()
 
-        # PRIORITY 3: CRITICAL AUTHENTICATION ISSUE TEST
-        print("\n🚨 PRIORITY 3: CRITICAL AUTHENTICATION ISSUE TEST...")
+        # PRIORITY 4: CRITICAL AUTHENTICATION ISSUE TEST
+        print("\n🚨 PRIORITY 4: CRITICAL AUTHENTICATION ISSUE TEST...")
         critical_auth_success = self.test_critical_authentication_issue()
 
         # CRITICAL BUG TEST - User reported issue
