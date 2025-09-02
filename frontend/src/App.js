@@ -193,7 +193,8 @@ function App() {
   useEffect(() => {
     // Initialize WebSocket connection
     const connectWebSocket = () => {
-      const ws = new WebSocket(`${WS_URL}/ws`);
+      console.log('Connecting to Chat WebSocket:', CHAT_WS_URL);
+      const ws = new WebSocket(CHAT_WS_URL);
       
       ws.onopen = () => {
         console.log('WebSocket connected');
