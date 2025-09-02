@@ -1335,36 +1335,47 @@ function App() {
                 {/* Main Cards Section */}
                 <div className="space-y-6">
                   {customerStatus === 'pending' ? (
-                  <div className="space-y-4">
-                    <div className="bg-yellow-100 border border-yellow-300 rounded-lg p-4">
-                      <h2 className="text-lg font-semibold text-yellow-800 mb-2">
-                        Anmeldung eingegangen ✓
-                      </h2>
-                      <p className="text-yellow-700">
-                        Ihre Registrierung wird derzeit geprüft. Sie werden aktiviert, sobald die Prüfung abgeschlossen ist.
-                      </p>
-                    </div>
-                    
-                    {currentCustomer && (
-                      <div className="text-left bg-gray-50 rounded-lg p-4">
-                        <p><strong>Kundennummer:</strong> {currentCustomer.customer_number || 'N/A'}</p>
-                        <p><strong>Name:</strong> {currentCustomer.name || 'N/A'}</p>
-                        <p><strong>E-Mail:</strong> {currentCustomer.email || 'N/A'}</p>
+                    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl">
+                      <div className="text-center space-y-4">
+                        <div className="w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center mx-auto">
+                          <span className="text-2xl">⏳</span>
+                        </div>
+                        <h2 className="text-xl font-bold text-white">
+                          Anmeldung eingegangen ✓
+                        </h2>
+                        <p className="text-white/70 text-sm leading-relaxed">
+                          Ihre Registrierung wird derzeit geprüft. Sie werden aktiviert, sobald die Prüfung abgeschlossen ist.
+                        </p>
+                        
+                        {currentCustomer && (
+                          <div className="bg-white/5 rounded-xl p-4 text-left space-y-2">
+                            <div className="flex justify-between">
+                              <span className="text-white/60 text-sm">Kundennummer:</span>
+                              <span className="text-white font-medium">{currentCustomer.customer_number || 'N/A'}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-white/60 text-sm">Name:</span>
+                              <span className="text-white font-medium">{currentCustomer.name || 'N/A'}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-white/60 text-sm">E-Mail:</span>
+                              <span className="text-white font-medium text-xs">{currentCustomer.email || 'N/A'}</span>
+                            </div>
+                          </div>
+                        )}
+                        
+                        <button 
+                          onClick={() => {
+                            localStorage.removeItem('customerNumber');
+                            setCurrentCustomer(null);
+                            setCustomerStatus(null);
+                          }}
+                          className="w-full bg-white/10 hover:bg-white/20 border border-white/30 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300 hover:scale-105"
+                        >
+                          Andere Kundennummer verwenden
+                        </button>
                       </div>
-                    )}
-                    
-                    <Button 
-                      variant="outline" 
-                      onClick={() => {
-                        localStorage.removeItem('customerNumber');
-                        setCurrentCustomer(null);
-                        setCustomerStatus(null);
-                      }}
-                      className="w-full"
-                    >
-                      Andere Kundennummer verwenden
-                    </Button>
-                  </div>
+                    </div>
                 ) : customerStatus === 'blocked' ? (
                   <div className="space-y-4">
                     <div className="bg-red-100 border border-red-300 rounded-lg p-4">
