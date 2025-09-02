@@ -4086,7 +4086,6 @@ function App() {
             backendUrl={BACKEND_URL}
           />
         </div>
-      </>
       )}
 
       {/* Simple Video Streaming Modal */}
@@ -4096,6 +4095,8 @@ function App() {
           currentUser={currentCustomer}
           onClose={handleSimpleStreamClose}
         />
+      )}
+      </>
       )}
     </div>
   );
