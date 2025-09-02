@@ -917,7 +917,7 @@ async def get_customer_last_order(customer_number: str):
                 "quantity": last_order["quantity"],
                 "price": last_order["price"],
                 "timestamp": last_order["timestamp"],
-                "formatted_time": last_order["timestamp"].strftime("%d.%m.%Y %H:%M:%S")
+                "formatted_time": last_order["timestamp"].replace(tzinfo=timezone.utc).astimezone(timezone(timedelta(hours=2))).strftime("%d.%m.%Y %H:%M:%S")
             }
         }
         
