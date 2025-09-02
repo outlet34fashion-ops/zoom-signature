@@ -3164,14 +3164,7 @@ function App() {
                                   {order.customer_id || 'N/A'} | {order.size || 'N/A'} | {order.quantity || 1} | {((order.price || 0) / (order.quantity || 1)).toFixed(2).replace('.', ',')} €
                                 </div>
                                 <div className="text-xs text-gray-500 ml-3 whitespace-nowrap">
-                                  {new Date(order.timestamp).toLocaleString('de-DE', { 
-                                    day: '2-digit',
-                                    month: '2-digit', 
-                                    year: 'numeric',
-                                    hour: '2-digit', 
-                                    minute: '2-digit',
-                                    second: '2-digit'
-                                  })}
+                                  {formatGermanDateTime(order.timestamp)}
                                 </div>
                               </div>
                             </div>
