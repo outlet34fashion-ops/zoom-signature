@@ -3096,10 +3096,10 @@ function App() {
                             .map((order) => (
                             <div key={order.id} className="text-sm bg-white rounded-lg p-3 border-l-4 border-pink-500 shadow-sm hover:shadow-md transition-shadow">
                               <div className="flex justify-between items-center">
-                                <div className="font-medium text-gray-800 font-mono">
+                                <div className="font-medium text-gray-800">
                                   {order.customer_id || 'N/A'} | {order.size || 'N/A'} | {order.quantity || 1} | {((order.price || 0) / (order.quantity || 1)).toFixed(2).replace('.', ',')} €
                                 </div>
-                                <div className="text-xs text-gray-500 ml-3 font-mono whitespace-nowrap">
+                                <div className="text-xs text-gray-500 ml-3 whitespace-nowrap">
                                   {new Date(order.timestamp).toLocaleString('de-DE', { 
                                     day: '2-digit',
                                     month: '2-digit', 
