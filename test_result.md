@@ -288,7 +288,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Chat functionality comprehensive testing completed successfully"
+    - "CRITICAL: Frontend Chat Timezone Bug and WebSocket Real-time Issues"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
