@@ -1187,7 +1187,9 @@ function App() {
 
       // Reload customer's last order to update the display
       console.log('Reloading last order for customer:', actualCustomerId);
-      await loadCustomerLastOrder(actualCustomerId);
+      if (actualCustomerId) {
+        await loadCustomerLastOrder(actualCustomerId);
+      }
 
       // Reload all orders to update the orders list immediately
       await loadAllOrders();
