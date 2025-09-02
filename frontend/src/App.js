@@ -1856,24 +1856,7 @@ function App() {
           </div>
         </div>
 
-        {/* Device Selector - Only for Admin */}
-        {isAdminView && (
-          <div className="bg-gray-200 text-gray-800">
-            <div className="container mx-auto px-4">
-              <div className="flex">
-                <Button variant="ghost" className="px-8 py-3 text-gray-600">
-                  {t.mobile}
-                </Button>
-                <Button variant="ghost" className="px-8 py-3 bg-pink-500 text-white">
-                  {t.tablet}
-                </Button>
-                <Button variant="ghost" className="px-8 py-3 text-gray-600">
-                  {t.desktop}
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
+
 
         {/* Live Status Bar - Only show for customers, not admins */}
         {!isAdminView && (
