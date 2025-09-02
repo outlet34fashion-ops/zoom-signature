@@ -1186,18 +1186,11 @@ function App() {
       console.log('Order placed successfully:', orderResponse.data);
 
       // Reload customer's last order to update the display
-      if (actualCustomerId && actualCustomerId !== '10299') {
-        console.log('Reloading last order for customer:', actualCustomerId);
-        await loadCustomerLastOrder(actualCustomerId);
-      }
+      console.log('Reloading last order for customer:', actualCustomerId);
+      await loadCustomerLastOrder(actualCustomerId);
 
       // Reload all orders to update the orders list immediately
       await loadAllOrders();
-      
-      // Reload last order for consistency
-      if (actualCustomerId && actualCustomerId !== '10299') {
-        await loadCustomerLastOrder(actualCustomerId);
-      }
 
     } catch (error) {
       console.error('Error placing order:', error);
