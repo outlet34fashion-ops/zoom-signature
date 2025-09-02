@@ -1806,9 +1806,7 @@ function App() {
                               </div>
                             </div>
                           </a>
-                          <p className="text-white/60 text-xs text-center leading-relaxed">
-                            Registrieren Sie sich kostenlos und erleben Sie Live Shopping mit exklusiven Angeboten
-                          </p>
+
                         </div>
                       </div>
                       
