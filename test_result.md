@@ -524,6 +524,21 @@ test_plan:
         agent: "testing"
         comment: "🎉 CHAT MESSAGE ORDER REVERSAL TESTING COMPLETED SUCCESSFULLY! Comprehensive testing shows PERFECT IMPLEMENTATION (100% success): 1) ✅ CUSTOMER 10299 LOGIN: Successfully logged in and accessed chat interface with 49 messages, 2) ✅ REVERSE CHRONOLOGICAL ORDER VERIFIED: Messages correctly displayed with newest at TOP - timestamps show perfect descending order (15:12:19 → 15:12:18 → 15:09:20 → 15:09:19 → 15:09:18), 3) ✅ CODE IMPLEMENTATION CONFIRMED: Found .reverse() method applied to chatMessages rendering in App.js line 3268 (.slice().reverse()), 4) ✅ SCROLL BEHAVIOR VERIFIED: useEffect on lines 272-276 correctly scrolls to top (scrollTop = 0) when new messages arrive, supporting reverse order display, 5) ✅ TIMESTAMP VERIFICATION: All message timestamps display in descending order from newest (top) to oldest (bottom), 6) ✅ REAL-TIME UPDATES: New login messages (15:12:19, 15:12:18) appear at the very top, confirming newest-first ordering. CONCLUSION: The chat message order reversal functionality is working PERFECTLY! All requirements met: newest messages appear at top, reverse chronological order implemented correctly, scroll behavior updated to scroll to top for new messages. The .reverse() implementation is functioning exactly as specified."
 
+  - task: "CRITICAL DEBUG: WebSocket chat real-time functionality after URL configuration fix"
+    implemented: true
+    working: false
+    file: "/app/frontend/src/App.js"
+    stuck_count: 1
+    priority: "critical"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "user"
+        comment: "USER REPORTED CRITICAL BUG: 'chat wird nicht aktualisiert' (chat not updating). Main agent identified root cause as WebSocket URL misconfiguration and fixed REACT_APP_BACKEND_URL from https://liveshop-hub.preview.emergentagent.com to http://localhost:8001. Need to verify WebSocket real-time chat updates are now working after URL configuration fix."
+      - working: false
+        agent: "testing"
+        comment: "🚨 CRITICAL WEBSOCKET ISSUE IDENTIFIED - PARTIAL URL FIX SUCCESS: Comprehensive testing reveals the URL configuration fix is PARTIALLY working but not complete. ✅ POSITIVE FINDINGS: 1) Customer 10299 authentication working correctly, 2) Chat interface accessible and functional with message input, send button, and emoji buttons, 3) WebSocket DOES connect successfully to ws://localhost:8001/ws (shows 'WebSocket connected' in console), 4) Real-time connectivity established, 5) Message order reversal (.reverse()) working correctly with newest messages at top, 6) Emoji functionality working. ❌ CRITICAL CONFIGURATION ISSUE: Application is STILL attempting to connect to ws://localhost:443/ws (wrong URL) in addition to the correct ws://localhost:8001/ws. Console shows repeated 'WebSocket connection to ws://localhost:443/ws failed' errors. 🔍 ROOT CAUSE ANALYSIS: Frontend code has mixed WebSocket URL configuration - some parts connect to correct URL (localhost:8001) while other parts still reference wrong URL (localhost:443). This dual connection attempt explains the user-reported 'chat wird nicht aktualisiert' issue. 🔧 TECHNICAL EVIDENCE: Console logs show both 'WebSocket connected' (success to correct URL) AND 'WebSocket connection to ws://localhost:443/ws failed' (failed attempts to wrong URL). The WS_URL construction in App.js line 21 may not be consistently applied throughout the application. 🚨 URGENT RECOMMENDATION: Main agent must search frontend code for ANY hardcoded references to ws://localhost:443/ws or port 443 and ensure ALL WebSocket connections use REACT_APP_BACKEND_URL consistently. The URL fix is working but incomplete - need to eliminate ALL references to the old preview domain URL."
+
   - task: "CRITICAL BUG: Timezone Bug Verification and Fix"
     implemented: true
     working: true
