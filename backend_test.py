@@ -3822,6 +3822,287 @@ class LiveShoppingAPITester:
         
         return successful_blocks == total_blocks
 
+    def test_admin_orders_endpoint(self):
+        """Test admin orders functionality as per review request"""
+        print("\n📋 Testing Admin Orders Endpoint Verification...")
+        
+        # Generate test data
+        timestamp = int(time.time())
+        
+        # Create test customers and orders for comprehensive testing
+        test_customers = [
+            {
+                "customer_number": f"ADMIN{timestamp}001",
+                "email": f"admin.orders1.{timestamp}@example.com",
+                "name": "Admin Orders Customer 1"
+            },
+            {
+                "customer_number": f"ADMIN{timestamp}002",
+                "email": f"admin.orders2.{timestamp}@example.com", 
+                "name": "Admin Orders Customer 2"
+            }
+        ]
+        
+        created_customers = []
+        created_orders = []
+        
+        try:
+            # Setup: Create customers and orders for testing
+            print("  📝 Setup: Creating test customers and orders...")
+            
+            # Get products first
+            products_response = requests.get(f"{self.api_url}/products", timeout=10)
+            if products_response.status_code != 200:
+                self.log_test("Admin Orders Setup - Get Products", False, "Could not fetch products")
+                return False
+            
+            products = products_response.json()
+            if not products:
+                self.log_test("Admin Orders Setup - Products Available", False, "No products available")
+                return False
+            
+            # Create and activate customers, then place orders
+            for i, customer_data in enumerate(test_customers):
+                # Create customer via admin endpoint (automatically active)
+                customer_response = requests.post(
+                    f"{self.api_url}/admin/customers/create",
+                    json=customer_data,
+                    headers={'Content-Type': 'application/json'},
+                    timeout=10
+                )
+                
+                if customer_response.status_code == 200:
+                    customer = customer_response.json()
+                    created_customers.append(customer)
+                    
+                    # Place multiple orders for this customer
+                    for j in range(2):  # 2 orders per customer
+                        order_data = {
+                            "customer_id": customer['customer_number'],
+                            "product_id": products[j % len(products)]['id'],
+                            "size": "OneSize",
+                            "quantity": j + 1,
+                            "price": 15.90 + (j * 5.0)  # Different prices
+                        }
+                        
+                        order_response = requests.post(
+                            f"{self.api_url}/orders",
+                            json=order_data,
+                            headers={'Content-Type': 'application/json'},
+                            timeout=10
+                        )
+                        
+                        if order_response.status_code == 200:
+                            order = order_response.json()
+                            created_orders.append(order)
+            
+            self.log_test("Admin Orders Setup", True, f"Created {len(created_customers)} customers and {len(created_orders)} orders")
+            
+            # Test 1: Check if dedicated GET /api/admin/orders endpoint exists
+            print("  🔍 Test 1: Check for dedicated admin orders endpoint...")
+            admin_orders_response = requests.get(f"{self.api_url}/admin/orders", timeout=10)
+            
+            admin_endpoint_exists = admin_orders_response.status_code == 200
+            details = f"GET /api/admin/orders Status: {admin_orders_response.status_code}"
+            
+            if admin_endpoint_exists:
+                admin_orders_data = admin_orders_response.json()
+                is_list = isinstance(admin_orders_data, list)
+                has_orders = len(admin_orders_data) >= len(created_orders)
+                details += f", Is list: {is_list}, Orders count: {len(admin_orders_data)}"
+                
+                if is_list and has_orders:
+                    # Test order data structure
+                    if admin_orders_data:
+                        first_order = admin_orders_data[0]
+                        required_fields = ['id', 'customer_id', 'product_id', 'size', 'quantity', 'price', 'timestamp']
+                        has_all_fields = all(field in first_order for field in required_fields)
+                        details += f", Order structure valid: {has_all_fields}"
+                        admin_endpoint_exists = has_all_fields
+                
+                self.log_test("Admin Orders Endpoint - Dedicated Endpoint", admin_endpoint_exists, details)
+            else:
+                self.log_test("Admin Orders Endpoint - Dedicated Endpoint", False, f"Dedicated /api/admin/orders endpoint not found (Status: {admin_orders_response.status_code})")
+            
+            # Test 2: Test existing GET /api/orders endpoint (fallback for admin use)
+            print("  📋 Test 2: Test existing orders endpoint for admin use...")
+            orders_response = requests.get(f"{self.api_url}/orders", timeout=10)
+            
+            orders_success = orders_response.status_code == 200
+            orders_details = f"GET /api/orders Status: {orders_response.status_code}"
+            
+            if orders_success:
+                orders_data = orders_response.json()
+                is_list = isinstance(orders_data, list)
+                has_orders = len(orders_data) >= len(created_orders)
+                orders_success = is_list and has_orders
+                orders_details += f", Is list: {is_list}, Orders count: {len(orders_data)}"
+                
+                if orders_success and orders_data:
+                    # Verify order data structure contains required fields
+                    first_order = orders_data[0]
+                    required_fields = ['id', 'customer_id', 'product_id', 'size', 'quantity', 'price', 'timestamp']
+                    has_all_fields = all(field in first_order for field in required_fields)
+                    orders_success = has_all_fields
+                    orders_details += f", Order structure valid: {has_all_fields}"
+                    
+                    if has_all_fields:
+                        # Store orders data for further testing
+                        all_orders = orders_data
+            
+            self.log_test("Admin Orders Endpoint - Existing Orders Endpoint", orders_success, orders_details)
+            
+            # Test 3: Verify order data structure and completeness
+            print("  🔍 Test 3: Verify order data structure and completeness...")
+            if orders_success and 'all_orders' in locals():
+                structure_success = True
+                structure_details = ""
+                
+                # Check each required field in detail
+                sample_order = all_orders[0] if all_orders else None
+                if sample_order:
+                    # Test required fields presence
+                    required_fields = {
+                        'id': 'Order ID',
+                        'customer_id': 'Customer Number', 
+                        'product_id': 'Product ID',
+                        'size': 'Size',
+                        'quantity': 'Quantity',
+                        'price': 'Price',
+                        'timestamp': 'Created At'
+                    }
+                    
+                    missing_fields = []
+                    for field, description in required_fields.items():
+                        if field not in sample_order:
+                            missing_fields.append(f"{description} ({field})")
+                    
+                    if missing_fields:
+                        structure_success = False
+                        structure_details = f"Missing required fields: {', '.join(missing_fields)}"
+                    else:
+                        # Verify data types and formats
+                        validations = []
+                        
+                        # ID should be string
+                        if isinstance(sample_order.get('id'), str):
+                            validations.append("✅ ID format valid")
+                        else:
+                            validations.append("❌ ID format invalid")
+                            structure_success = False
+                        
+                        # Customer ID should be string
+                        if isinstance(sample_order.get('customer_id'), str):
+                            validations.append("✅ Customer ID format valid")
+                        else:
+                            validations.append("❌ Customer ID format invalid")
+                            structure_success = False
+                        
+                        # Price should be number
+                        if isinstance(sample_order.get('price'), (int, float)):
+                            validations.append("✅ Price format valid")
+                        else:
+                            validations.append("❌ Price format invalid")
+                            structure_success = False
+                        
+                        # Quantity should be number
+                        if isinstance(sample_order.get('quantity'), int):
+                            validations.append("✅ Quantity format valid")
+                        else:
+                            validations.append("❌ Quantity format invalid")
+                            structure_success = False
+                        
+                        structure_details = f"Field validations: {', '.join(validations)}"
+                else:
+                    structure_success = False
+                    structure_details = "No orders available for structure testing"
+                
+                self.log_test("Admin Orders - Data Structure Validation", structure_success, structure_details)
+            else:
+                self.log_test("Admin Orders - Data Structure Validation", False, "Could not retrieve orders for structure testing")
+            
+            # Test 4: Verify customer integration (orders linked to customer numbers)
+            print("  🔗 Test 4: Verify customer integration...")
+            if orders_success and 'all_orders' in locals() and created_customers:
+                integration_success = True
+                integration_details = ""
+                
+                # Check if our test orders are present with correct customer numbers
+                test_customer_numbers = [c['customer_number'] for c in created_customers]
+                found_orders = [o for o in all_orders if o.get('customer_id') in test_customer_numbers]
+                
+                if len(found_orders) >= len(created_orders):
+                    integration_details = f"✅ Found {len(found_orders)} orders from test customers"
+                    
+                    # Verify customer information is properly linked
+                    customer_order_mapping = {}
+                    for order in found_orders:
+                        customer_id = order.get('customer_id')
+                        if customer_id not in customer_order_mapping:
+                            customer_order_mapping[customer_id] = []
+                        customer_order_mapping[customer_id].append(order)
+                    
+                    integration_details += f", Orders from {len(customer_order_mapping)} different customers"
+                    
+                    # Verify orders from multiple customers are aggregated
+                    if len(customer_order_mapping) >= 2:
+                        integration_details += ", ✅ Multiple customer orders aggregated correctly"
+                    else:
+                        integration_success = False
+                        integration_details += ", ❌ Orders from multiple customers not found"
+                else:
+                    integration_success = False
+                    integration_details = f"❌ Expected {len(created_orders)} orders, found {len(found_orders)}"
+                
+                self.log_test("Admin Orders - Customer Integration", integration_success, integration_details)
+            else:
+                self.log_test("Admin Orders - Customer Integration", False, "Could not test customer integration - missing data")
+            
+            # Test 5: Performance check (response time and data handling)
+            print("  ⚡ Test 5: Performance check...")
+            start_time = time.time()
+            
+            # Test response time for loading all orders
+            perf_response = requests.get(f"{self.api_url}/orders", timeout=10)
+            response_time = time.time() - start_time
+            
+            perf_success = perf_response.status_code == 200 and response_time < 5.0  # Should respond within 5 seconds
+            perf_details = f"Response time: {response_time:.2f}s (should be < 5.0s)"
+            
+            if perf_success:
+                perf_data = perf_response.json()
+                data_size = len(str(perf_data))
+                perf_details += f", Data size: {data_size} bytes, Orders count: {len(perf_data)}"
+                
+                # Check if pagination might be needed for large datasets
+                if len(perf_data) > 100:
+                    perf_details += " - Consider implementing pagination for large datasets"
+            
+            self.log_test("Admin Orders - Performance Check", perf_success, perf_details)
+            
+            # Summary and Recommendations
+            print("  📊 Summary and Recommendations...")
+            
+            if not admin_endpoint_exists:
+                recommendation = "RECOMMENDATION: Implement dedicated GET /api/admin/orders endpoint for better admin functionality separation"
+                self.log_test("Admin Orders - Implementation Recommendation", False, recommendation)
+                
+                print(f"  💡 {recommendation}")
+                print("  📋 Suggested implementation:")
+                print("     @api_router.get('/admin/orders')")
+                print("     async def get_admin_orders():")
+                print("         # Return all orders with customer information")
+                print("         # Include pagination for large datasets")
+                print("         # Add filtering and sorting options")
+            else:
+                self.log_test("Admin Orders - Implementation Status", True, "Dedicated admin orders endpoint exists and working")
+            
+            return True
+            
+        except Exception as e:
+            self.log_test("Admin Orders Endpoint - Exception", False, str(e))
+            return False
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("🚀 Starting Live Shopping App Backend API Tests")
