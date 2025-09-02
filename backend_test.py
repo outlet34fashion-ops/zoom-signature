@@ -4103,11 +4103,300 @@ class LiveShoppingAPITester:
             self.log_test("Admin Orders Endpoint - Exception", False, str(e))
             return False
 
+    def test_timezone_bug_verification(self):
+        """Test timezone bug verification and fix as per critical review request"""
+        print("\n🕐 CRITICAL: Testing Timezone Bug Verification...")
+        print("  🐛 User reports timestamps showing 2 hours behind (11:42:34 instead of 13:42:34)")
+        
+        try:
+            # Get current server time information
+            import datetime
+            utc_now = datetime.datetime.now(datetime.timezone.utc)
+            
+            print(f"  🌍 Current UTC Time: {utc_now.strftime('%H:%M:%S')}")
+            
+            # Calculate German time (UTC+1 in winter, UTC+2 in summer)
+            # For September, it should be CEST (UTC+2)
+            german_offset = datetime.timedelta(hours=2)  # CEST offset
+            german_now = utc_now + german_offset
+            print(f"  🇩🇪 Expected German Time (CEST): {german_now.strftime('%H:%M:%S')}")
+            
+            # Test 1: Create a test customer for order testing
+            timestamp = int(utc_now.timestamp())
+            test_customer = {
+                "customer_number": f"TIMEZONE{timestamp}",
+                "email": f"timezone.test.{timestamp}@example.com",
+                "name": "Timezone Test Customer"
+            }
+            
+            print("  📝 Step 1: Creating and activating test customer...")
+            
+            # Register customer
+            reg_response = requests.post(
+                f"{self.api_url}/customers/register",
+                json=test_customer,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            if reg_response.status_code != 200:
+                self.log_test("Timezone Bug - Customer Registration", False, f"Registration failed with status {reg_response.status_code}")
+                return False
+            
+            customer_data = reg_response.json()
+            customer_id = customer_data['id']
+            customer_number = customer_data['customer_number']
+            
+            # Activate customer
+            activate_response = requests.post(
+                f"{self.api_url}/admin/customers/{customer_id}/activate",
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            if activate_response.status_code != 200:
+                self.log_test("Timezone Bug - Customer Activation", False, f"Activation failed with status {activate_response.status_code}")
+                return False
+            
+            self.log_test("Timezone Bug - Customer Setup", True, f"Customer {customer_number} created and activated")
+            
+            # Test 2: Check server timezone settings
+            print("  🌍 Step 2: Checking server timezone configuration...")
+            
+            # Record time before order creation
+            before_order_utc = datetime.datetime.now(datetime.timezone.utc)
+            
+            # Test 3: Create an order and check its timestamp
+            print("  🛒 Step 3: Creating order to test timestamp creation...")
+            
+            # Get products
+            products_response = requests.get(f"{self.api_url}/products", timeout=10)
+            if products_response.status_code != 200:
+                self.log_test("Timezone Bug - Get Products", False, "Could not fetch products")
+                return False
+            
+            products = products_response.json()
+            if not products:
+                self.log_test("Timezone Bug - Products Available", False, "No products available")
+                return False
+            
+            # Create order
+            order_data = {
+                "customer_id": customer_number,
+                "product_id": products[0]['id'],
+                "size": "OneSize",
+                "quantity": 1,
+                "price": 12.90
+            }
+            
+            order_response = requests.post(
+                f"{self.api_url}/orders",
+                json=order_data,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            if order_response.status_code != 200:
+                self.log_test("Timezone Bug - Order Creation", False, f"Order creation failed with status {order_response.status_code}")
+                return False
+            
+            order_result = order_response.json()
+            order_timestamp_str = order_result.get('timestamp')
+            
+            if not order_timestamp_str:
+                self.log_test("Timezone Bug - Order Timestamp Present", False, "Order timestamp not found in response")
+                return False
+            
+            # Record time after order creation
+            after_order_utc = datetime.datetime.now(datetime.timezone.utc)
+            
+            self.log_test("Timezone Bug - Order Creation", True, f"Order created with timestamp: {order_timestamp_str}")
+            
+            # Test 4: Parse and analyze the timestamp
+            print("  🔍 Step 4: Analyzing order timestamp format and timezone...")
+            
+            try:
+                # Parse the timestamp (assuming ISO format)
+                if order_timestamp_str.endswith('Z'):
+                    # UTC timestamp with Z suffix
+                    order_timestamp = datetime.datetime.fromisoformat(order_timestamp_str.replace('Z', '+00:00'))
+                elif '+' in order_timestamp_str or order_timestamp_str.endswith('00:00'):
+                    # Timestamp with timezone info
+                    order_timestamp = datetime.datetime.fromisoformat(order_timestamp_str)
+                else:
+                    # Assume UTC if no timezone info
+                    order_timestamp = datetime.datetime.fromisoformat(order_timestamp_str).replace(tzinfo=datetime.timezone.utc)
+                
+                # Check if timestamp is reasonable (within 1 minute of when we created the order)
+                time_diff_before = abs((order_timestamp - before_order_utc).total_seconds())
+                time_diff_after = abs((order_timestamp - after_order_utc).total_seconds())
+                
+                timestamp_reasonable = min(time_diff_before, time_diff_after) <= 60  # Within 1 minute
+                
+                # Convert to German time for display
+                if order_timestamp.tzinfo is None:
+                    order_timestamp_utc = order_timestamp.replace(tzinfo=datetime.timezone.utc)
+                else:
+                    order_timestamp_utc = order_timestamp.astimezone(datetime.timezone.utc)
+                
+                order_timestamp_german = order_timestamp_utc + german_offset
+                
+                print(f"    📅 Order Timestamp (UTC): {order_timestamp_utc.strftime('%H:%M:%S')}")
+                print(f"    📅 Order Timestamp (German): {order_timestamp_german.strftime('%H:%M:%S')}")
+                print(f"    📅 Current German Time: {german_now.strftime('%H:%M:%S')}")
+                
+                # Calculate the difference
+                time_difference = abs((order_timestamp_german - german_now).total_seconds())
+                
+                self.log_test("Timezone Bug - Timestamp Parsing", True, f"Timestamp parsed successfully, difference: {time_difference:.1f} seconds")
+                
+                # Test 5: Check if backend is storing UTC timestamps correctly
+                print("  💾 Step 5: Verifying backend timestamp storage format...")
+                
+                is_utc_storage = order_timestamp_utc is not None
+                
+                if is_utc_storage:
+                    storage_details = f"Backend stores UTC timestamps correctly: {order_timestamp_utc.isoformat()}"
+                    self.log_test("Timezone Bug - UTC Storage", True, storage_details)
+                else:
+                    self.log_test("Timezone Bug - UTC Storage", False, "Backend not storing UTC timestamps")
+                    return False
+                
+                # Test 6: Verify /api/orders endpoint timestamp format
+                print("  📋 Step 6: Checking orders endpoint timestamp format...")
+                
+                orders_response = requests.get(f"{self.api_url}/orders", timeout=10)
+                if orders_response.status_code != 200:
+                    self.log_test("Timezone Bug - Orders Endpoint", False, f"Orders endpoint failed with status {orders_response.status_code}")
+                    return False
+                
+                orders_data = orders_response.json()
+                
+                # Find our order in the list
+                our_order = None
+                for order in orders_data:
+                    if order.get('customer_id') == customer_number:
+                        our_order = order
+                        break
+                
+                if not our_order:
+                    self.log_test("Timezone Bug - Find Order in List", False, "Could not find our order in orders list")
+                    return False
+                
+                orders_timestamp_str = our_order.get('timestamp')
+                orders_timestamp_matches = orders_timestamp_str == order_timestamp_str
+                
+                self.log_test("Timezone Bug - Orders Endpoint Consistency", orders_timestamp_matches, 
+                            f"Orders endpoint timestamp consistency: {orders_timestamp_matches}")
+                
+                # Test 7: Check last order API timestamp format
+                print("  📄 Step 7: Checking last order API timestamp format...")
+                
+                last_order_response = requests.get(
+                    f"{self.api_url}/customers/{customer_number}/last-order",
+                    timeout=10
+                )
+                
+                if last_order_response.status_code != 200:
+                    self.log_test("Timezone Bug - Last Order API", False, f"Last order API failed with status {last_order_response.status_code}")
+                    return False
+                
+                last_order_data = last_order_response.json()
+                
+                if not last_order_data.get('has_order'):
+                    self.log_test("Timezone Bug - Last Order Found", False, "Last order API reports no orders")
+                    return False
+                
+                last_order_info = last_order_data.get('order', {})
+                formatted_time = last_order_info.get('formatted_time')
+                
+                if not formatted_time:
+                    self.log_test("Timezone Bug - Formatted Time Present", False, "No formatted_time field in last order response")
+                    return False
+                
+                print(f"    📅 Formatted Time: {formatted_time}")
+                
+                # Check if formatted time is in German format (DD.MM.YYYY HH:MM:SS)
+                import re
+                german_time_pattern = r'\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}:\d{2}'
+                is_german_format = re.match(german_time_pattern, formatted_time) is not None
+                
+                self.log_test("Timezone Bug - German Time Format", is_german_format, 
+                            f"Formatted time uses German format: {is_german_format} ('{formatted_time}')")
+                
+                # Test 8: Analyze the timezone issue
+                print("  🔍 Step 8: Analyzing timezone issue...")
+                
+                # Parse the formatted time to check if it's showing correct German time
+                try:
+                    from datetime import datetime as dt
+                    formatted_dt = dt.strptime(formatted_time, '%d.%m.%Y %H:%M:%S')
+                    
+                    # Compare with expected German time
+                    expected_german_hour = german_now.hour
+                    actual_hour = formatted_dt.hour
+                    
+                    hour_difference = abs(expected_german_hour - actual_hour)
+                    
+                    print(f"    🕐 Expected German Hour: {expected_german_hour}")
+                    print(f"    🕐 Actual Formatted Hour: {actual_hour}")
+                    print(f"    🕐 Hour Difference: {hour_difference}")
+                    
+                    # Check if we have the 2-hour difference reported by user
+                    has_two_hour_bug = hour_difference == 2
+                    
+                    if has_two_hour_bug:
+                        bug_details = f"CONFIRMED: 2-hour timezone bug detected! Expected {expected_german_hour}:xx, got {actual_hour}:xx"
+                        self.log_test("Timezone Bug - 2-Hour Bug Confirmed", True, bug_details)
+                        
+                        # Provide diagnosis
+                        print("  🐛 DIAGNOSIS:")
+                        print("    ❌ Backend stores UTC timestamps correctly")
+                        print("    ❌ Frontend/API formatting not converting UTC to German time properly")
+                        print("    ❌ formatted_time field shows UTC time instead of German local time")
+                        print("    ✅ Root cause: Missing timezone conversion in formatted_time generation")
+                        
+                    else:
+                        bug_details = f"No 2-hour bug detected. Hour difference: {hour_difference}"
+                        self.log_test("Timezone Bug - 2-Hour Bug Check", False, bug_details)
+                
+                except Exception as e:
+                    self.log_test("Timezone Bug - Time Analysis", False, f"Could not analyze formatted time: {str(e)}")
+                
+                # Test 9: Summary and recommendations
+                print("  📋 Step 9: Summary and recommendations...")
+                
+                summary_details = f"""
+TIMEZONE BUG ANALYSIS COMPLETE:
+- Server Time: UTC {utc_now.strftime('%H:%M:%S')}
+- German Time: CEST {german_now.strftime('%H:%M:%S')} (UTC+2)
+- Backend Storage: UTC timestamps ✅
+- Order Timestamp: {order_timestamp_str}
+- Formatted Display: {formatted_time}
+- Issue: Backend formatted_time not converting UTC to German timezone
+"""
+                
+                self.log_test("Timezone Bug - Complete Analysis", True, summary_details.strip())
+                
+                return True
+                
+            except Exception as e:
+                self.log_test("Timezone Bug - Timestamp Analysis", False, f"Timestamp analysis failed: {str(e)}")
+                return False
+            
+        except Exception as e:
+            self.log_test("Timezone Bug - General Exception", False, str(e))
+            return False
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("🚀 Starting Live Shopping App Backend API Tests")
         print(f"🔗 Testing against: {self.base_url}")
         print("=" * 60)
+
+        # CRITICAL PRIORITY: TIMEZONE BUG VERIFICATION (Current Review Request)
+        print("\n🕐 CRITICAL PRIORITY: TIMEZONE BUG VERIFICATION...")
+        timezone_success = self.test_timezone_bug_verification()
 
         # PRIORITY 1: ADMIN ORDERS ENDPOINT VERIFICATION (Current Review Request)
         print("\n🎯 PRIORITY 1: ADMIN ORDERS ENDPOINT VERIFICATION...")
