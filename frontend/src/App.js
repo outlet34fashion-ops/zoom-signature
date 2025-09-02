@@ -1401,96 +1401,100 @@ function App() {
                         </button>
                       </div>
                     </div>
-                ) : showCustomerLogin ? (
-                  <div className="space-y-4">
-                    <h2 className="text-xl font-semibold text-gray-800">🔑 Kunden-Anmeldung</h2>
-                    <p className="text-sm text-gray-600">
-                      Melden Sie sich mit Ihrer Kundennummer an.
-                    </p>
-                    
-                    {customerLoginError && (
-                      <div className="bg-red-100 border border-red-300 rounded-lg p-3">
-                        <p className="text-red-700 text-sm">{customerLoginError}</p>
-                      </div>
-                    )}
-                    
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Kundennummer
-                        </label>
-                        <Input
-                          type="text"
-                          placeholder="Ihre Kundennummer"
-                          value={customerLoginData.customer_number}
-                          onChange={(e) => setCustomerLoginData(prev => ({
-                            ...prev,
-                            customer_number: e.target.value
-                          }))}
-                          onKeyPress={(e) => {
-                            if (e.key === 'Enter') {
-                              e.preventDefault();
-                              customerLogin();
-                            }
-                          }}
-                          className="w-full"
-                        />
+                  ) : showCustomerLogin ? (
+                    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl">
+                      <div className="text-center space-y-6">
+                        <div className="space-y-2">
+                          <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto">
+                            <span className="text-2xl">🔑</span>
+                          </div>
+                          <h2 className="text-xl font-bold text-white">Kundenanmeldung</h2>
+                          <p className="text-white/70 text-sm">
+                            Melden Sie sich mit Ihrer Kundennummer an
+                          </p>
+                        </div>
+                        
+                        {customerLoginError && (
+                          <div className="bg-red-500/20 border border-red-500/30 rounded-xl p-3">
+                            <p className="text-red-200 text-sm">{customerLoginError}</p>
+                          </div>
+                        )}
+                        
+                        <div className="space-y-4">
+                          <div className="text-left">
+                            <label className="block text-white/80 text-sm font-medium mb-2">
+                              Kundennummer
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="Ihre Kundennummer"
+                              value={customerLoginData.customer_number}
+                              onChange={(e) => setCustomerLoginData(prev => ({
+                                ...prev,
+                                customer_number: e.target.value
+                              }))}
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  customerLogin();
+                                }
+                              }}
+                              className="w-full bg-white/10 border border-white/30 text-white placeholder-white/50 py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-300"
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="flex space-x-3">
+                          <button 
+                            onClick={() => {
+                              setShowCustomerLogin(false);
+                              setCustomerLoginError('');
+                            }}
+                            className="flex-1 bg-white/10 hover:bg-white/20 border border-white/30 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300"
+                          >
+                            Zurück
+                          </button>
+                          <button 
+                            onClick={customerLogin}
+                            className="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300 hover:scale-105 shadow-lg"
+                          >
+                            Anmelden
+                          </button>
+                        </div>
+                        
+                        <div className="space-y-4 pt-4 border-t border-white/20">
+                          <p className="text-white/60 text-xs">
+                            Noch nicht registriert?
+                          </p>
+                          <button 
+                            onClick={() => {
+                              setShowCustomerLogin(false);
+                              setShowRegistration(true);
+                            }}
+                            className="w-full bg-white/5 hover:bg-white/10 border border-white/30 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300"
+                          >
+                            Jetzt registrieren
+                          </button>
+                          
+                          {/* WhatsApp Service Contact */}
+                          <div className="bg-white/5 rounded-xl p-3">
+                            <a 
+                              href="https://wa.me/4917621105848?text=Hallo%20OUTLET34%20Team,%20ich%20habe%20Probleme%20bei%20der%20Anmeldung..." 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="flex items-center justify-center space-x-3 bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-4 rounded-xl transition-all duration-300 hover:scale-105 w-full"
+                            >
+                              <img 
+                                src="/images/whatsapp-logo-dark.png" 
+                                alt="WhatsApp Logo" 
+                                className="w-5 h-5"
+                              />
+                              <span className="font-semibold">{t('navigation.service')}</span>
+                            </a>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    
-                    <div className="flex space-x-3">
-                      <Button 
-                        variant="outline"
-                        onClick={() => {
-                          setShowCustomerLogin(false);
-                          setCustomerLoginError('');
-                        }}
-                        className="flex-1"
-                      >
-                        Zurück
-                      </Button>
-                      <Button 
-                        onClick={customerLogin}
-                        className="flex-1 bg-pink-500 hover:bg-pink-600"
-                      >
-                        Anmelden
-                      </Button>
-                    </div>
-                    
-                    <div className="pt-4 border-t">
-                      <p className="text-xs text-gray-500 text-center">
-                        Noch nicht registriert?
-                      </p>
-                      <Button 
-                        variant="outline"
-                        onClick={() => {
-                          setShowCustomerLogin(false);
-                          setShowRegistration(true);
-                        }}
-                        className="w-full mt-2 text-gray-600 hover:text-gray-800"
-                        size="sm"
-                      >
-                        Jetzt registrieren
-                      </Button>
-                      
-                      {/* WhatsApp Service Contact */}
-                      <div className="mt-4 bg-pink-50 border border-pink-200 rounded-lg p-3">
-                        <a 
-                          href="https://wa.me/4917621105848?text=Hallo%20OUTLET34%20Team,%20ich%20habe%20Probleme%20bei%20der%20Anmeldung..." 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="flex items-center justify-center space-x-2 bg-pink-500 hover:bg-pink-600 text-white font-medium py-2 px-3 rounded-lg transition-colors duration-200 text-sm w-full"
-                        >
-                          <img 
-                            src="/images/whatsapp-logo-dark.png" 
-                            alt="WhatsApp Logo" 
-                            className="w-5 h-5"
-                          />
-                          <span className="font-semibold">{t('navigation.service')}</span>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
                 ) : showAdminLogin ? (
                   <div className="space-y-4">
                     <h2 className="text-xl font-semibold text-gray-800">🔐 Admin-Anmeldung</h2>
