@@ -1186,6 +1186,11 @@ function App() {
 
       // Reload all orders to update the orders list immediately
       await loadAllOrders();
+      
+      // Reload last order for consistency
+      if (actualCustomerId && actualCustomerId !== '10299') {
+        await loadCustomerLastOrder(actualCustomerId);
+      }
 
     } catch (error) {
       console.error('Error placing order:', error);
