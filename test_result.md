@@ -287,8 +287,7 @@ metadata:
         comment: "✅ CRITICAL SUCCESS: NEW AUTHENTICATION FIX VERIFIED! Comprehensive testing completed successfully: 1) Landing page shows new authentication UI with '🔑 Anmelden' and '📝 Registrieren' buttons, 2) Customer login interface correctly only asks for customer number (not email/name), 3) Customer registration works (TEST3025 registered successfully), 4) Admin activation works (TEST3025 activated via admin panel with PIN 1924), 5) CRITICAL: Customer login now works perfectly - TEST3025 successfully logs in and accesses main app interface, 6) Customer number displays correctly as 'TEST3025' in header and profile (not '10299' fallback). The authentication blocking issue has been completely resolved. Customer can now access order and chat functionality."
 
 test_plan:
-  current_focus:
-    - "Remove live status bar elements from customer view"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
