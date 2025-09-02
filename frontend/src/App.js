@@ -1894,12 +1894,15 @@ function App() {
         
         {/* Admin Dashboard - Organized in Collapsible Blocks */}
         {isAdminAuthenticated && isAdminView && (
-          <div className="space-y-4">
+          <div className="space-y-6">
             {/* Main Dashboard Header */}
             <div className="text-center mb-6">
               <h1 className="text-3xl font-bold text-gray-800 mb-2">📊 {t.adminDashboard}</h1>
               <p className="text-gray-600">Verwaltung und Übersicht für Administratoren</p>
             </div>
+
+            {/* Admin Blocks Grid Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
             {/* Block 1: Live-Statistiken */}
             <Card className="border-l-4 border-l-green-500 shadow-lg">
