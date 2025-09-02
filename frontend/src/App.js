@@ -3041,9 +3041,9 @@ function App() {
                           ) : customerLastOrder ? (
                             <div className="bg-white rounded-lg p-2 border-l-4 border-pink-500 shadow-sm hover:shadow-md transition-shadow">
                               {/* Exakt gleiche Formatierung wie Bestellungen-Liste */}
-                              <div className="flex justify-between items-center">
-                                <div className="font-medium text-gray-800 flex-1">
-                                  {currentCustomer?.customer_number || 'N/A'} | {customerLastOrder.size} | {customerLastOrder.quantity} | {(customerLastOrder.price / customerLastOrder.quantity).toFixed(2).replace('.', ',')} €
+                              <div className="flex justify-between items-center overflow-hidden">
+                                <div className="font-medium text-gray-800 flex-1 min-w-0 whitespace-nowrap overflow-hidden text-ellipsis">
+                                  {currentCustomer?.customer_number || 'N/A'} | {customerLastOrder.size} | {customerLastOrder.quantity} | {(customerLastOrder.price / customerLastOrder.quantity).toFixed(2).replace('.', ',')}€
                                 </div>
                                 <div className="text-xs text-gray-500 ml-2 whitespace-nowrap flex-shrink-0">
                                   {formatGermanDateTime(customerLastOrder.timestamp || customerLastOrder.formatted_time)}
