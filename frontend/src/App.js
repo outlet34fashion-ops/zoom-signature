@@ -3089,36 +3089,9 @@ function App() {
                           </div>
                         ) : allOrders.length > 0 ? (
                           allOrders.map((order) => (
-                            <div key={order.id} className="text-sm bg-white rounded p-3 border-l-4 border-pink-500 shadow-sm">
-                              <div className="flex justify-between items-start mb-2">
-                                <div className="font-medium text-pink-600">
-                                  Bestellung #{order.id}
-                                </div>
-                                <div className="text-xs text-gray-500">
-                                  {new Date(order.timestamp).toLocaleString('de-DE')}
-                                </div>
-                              </div>
-                              <div className="space-y-1">
-                                <div className="flex justify-between">
-                                  <span className="text-xs text-gray-600">Kunde:</span>
-                                  <span className="text-xs font-medium">#{order.customer_id || 'N/A'}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-xs text-gray-600">Produkt ID:</span>
-                                  <span className="text-xs">{order.product_id || 'N/A'}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-xs text-gray-600">Größe:</span>
-                                  <span className="text-xs">{order.size || 'N/A'}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                  <span className="text-xs text-gray-600">Menge:</span>
-                                  <span className="text-xs">{order.quantity || 1}</span>
-                                </div>
-                                <div className="flex justify-between font-medium">
-                                  <span className="text-xs text-gray-600">Gesamt:</span>
-                                  <span className="text-xs text-pink-600">{(order.price || 0).toFixed(2)} €</span>
-                                </div>
+                            <div key={order.id} className="text-sm bg-white rounded p-2 border-l-4 border-pink-500 shadow-sm">
+                              <div className="font-medium text-gray-800">
+                                {order.customer_id || 'N/A'} | {order.size || 'N/A'} | {order.quantity || 1} | {(order.price || 0).toFixed(2).replace('.', ',')} €
                               </div>
                             </div>
                           ))
