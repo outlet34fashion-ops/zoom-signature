@@ -409,11 +409,27 @@ function App() {
   const formatGermanDateTime = (timestamp) => {
     if (!timestamp) return 'N/A';
     
+    console.log('formatGermanDateTime called with:', timestamp, typeof timestamp);
+    
     // Erstelle Date-Objekt und stelle sicher, dass es korrekt interpretiert wird
-    const date = new Date(timestamp);
+    let date;
+    if (typeof timestamp === 'string') {
+      // Wenn der String ein ISO-String ist, stelle sicher dass er als UTC interpretiert wird
+      if (timestamp.includes('T') && (timestamp.includes('Z') || timestamp.includes('+'))) {
+        date = new Date(timestamp);
+      } else {
+        // Wenn es kein ISO-String ist, behandle es als lokale Zeit und konvertiere zu UTC
+        date = new Date(timestamp + 'Z'); // Füge Z hinzu um als UTC zu behandeln
+      }
+    } else {
+      date = new Date(timestamp);
+    }
+    
+    console.log('Created date object:', date);
+    console.log('Date in UTC:', date.toISOString());
     
     // Deutsche Zeitzone (Europe/Berlin) berücksichtigt automatisch Winter-/Sommerzeit
-    return date.toLocaleString('de-DE', {
+    const result = date.toLocaleString('de-DE', {
       timeZone: 'Europe/Berlin',
       day: '2-digit',
       month: '2-digit',
@@ -422,6 +438,9 @@ function App() {
       minute: '2-digit',
       second: '2-digit'
     });
+    
+    console.log('Formatted result:', result);
+    return result;
   };
 
   const formatGermanTime = (timestamp) => {
