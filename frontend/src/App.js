@@ -3331,8 +3331,9 @@ function App() {
                       {/* Chat Input */}
                       <div className="space-y-3">
                         <div className="flex space-x-2">
-                          <Input
-                            placeholder={t.chatPlaceholder}
+                          <input
+                            type="text"
+                            placeholder="Nachricht eingeben..."
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
                             onKeyPress={(e) => {
@@ -3341,7 +3342,7 @@ function App() {
                                 sendMessage();
                               }
                             }}
-                            className="flex-1"
+                            className="flex-1 h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-base shadow-sm placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
                           />
                           <Button 
                             onClick={sendMessage}
