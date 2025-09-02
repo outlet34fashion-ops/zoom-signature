@@ -2534,6 +2534,175 @@ function App() {
           </Card>
         )}
 
+        {/* Block 6: Live Stream Management mit Live Ticker */}
+        {isAdminAuthenticated && isAdminView && (
+          <Card className="border-l-4 border-l-orange-500 shadow-lg mb-6">
+            <CardContent className="p-0">
+              <button
+                onClick={() => setShowLiveStreamManagement(!showLiveStreamManagement)}
+                className="w-full p-6 text-left bg-gradient-to-r from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-150 transition-all duration-300 flex justify-between items-center"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-lg">📺</span>
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-800">Live Stream Management</h2>
+                    <p className="text-gray-600 text-sm">Live Ticker und Stream-Überwachung</p>
+                  </div>
+                </div>
+                <div className="text-gray-400">
+                  {showLiveStreamManagement ? '▼' : '▶'}
+                </div>
+              </button>
+              
+              {showLiveStreamManagement && (
+                <div className="p-6 border-t border-gray-200">
+                  <div className="bg-gray-50 rounded-lg p-4 space-y-6">
+                    
+                    {/* Live Stream Status */}
+                    <div className="bg-white rounded-lg p-4 border-l-4 border-l-orange-500">
+                      <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        🔴 Live Stream Status
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-green-600">AKTIV</div>
+                          <div className="text-sm text-gray-600">Stream Status</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-blue-600">0</div>
+                          <div className="text-sm text-gray-600">Aktive Zuschauer</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-purple-600">00:00:00</div>
+                          <div className="text-sm text-gray-600">Stream Dauer</div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex space-x-3 mt-4">
+                        <Button 
+                          onClick={startSimpleStream}
+                          className="bg-red-600 hover:bg-red-700 text-white flex-1"
+                        >
+                          🔴 Stream starten
+                        </Button>
+                        <Button 
+                          onClick={() => alert('Stream beenden')}
+                          className="bg-gray-600 hover:bg-gray-700 text-white flex-1"
+                        >
+                          ⏹️ Stream beenden
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Live Ticker Management */}
+                    <div className="bg-white rounded-lg p-4 border-l-4 border-l-orange-500">
+                      <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        📰 Live Ticker Management
+                      </h3>
+                      
+                      {/* Current Ticker Display */}
+                      <div className="bg-gray-100 rounded-lg p-3 mb-4">
+                        <div className="text-sm text-gray-600 mb-1">Aktueller Ticker:</div>
+                        <div className="font-medium text-gray-800">
+                          {tickerSettings.text || 'Kein Ticker Text gesetzt'}
+                        </div>
+                        <div className="text-xs text-gray-500 mt-1">
+                          Status: {tickerSettings.enabled ? 
+                            <span className="text-green-600 font-medium">🟢 Aktiv</span> : 
+                            <span className="text-red-600 font-medium">🔴 Inaktiv</span>
+                          }
+                        </div>
+                      </div>
+                      
+                      {/* Ticker Controls */}
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Ticker Text bearbeiten:
+                          </label>
+                          <Input
+                            value={newTickerText}
+                            onChange={(e) => setNewTickerText(e.target.value)}
+                            className="w-full"
+                            placeholder="Neuen Ticker Text eingeben..."
+                          />
+                        </div>
+                        
+                        <div className="flex space-x-2">
+                          <Button 
+                            onClick={updateTicker}
+                            className="bg-blue-600 hover:bg-blue-700 text-white flex-1"
+                          >
+                            💾 Ticker aktualisieren
+                          </Button>
+                          <Button 
+                            onClick={toggleTicker}
+                            className={tickerSettings.enabled ? 
+                              "bg-red-600 hover:bg-red-700 text-white flex-1" : 
+                              "bg-green-600 hover:bg-green-700 text-white flex-1"
+                            }
+                          >
+                            {tickerSettings.enabled ? "⏸️ Ticker stoppen" : "▶️ Ticker starten"}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Quick Actions */}
+                    <div className="bg-white rounded-lg p-4 border-l-4 border-l-orange-500">
+                      <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        ⚡ Quick Actions
+                      </h3>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <Button 
+                          onClick={() => {
+                            setNewTickerText('🔥 LIVE SHOPPING JETZT! Exklusive Angebote nur heute!');
+                            updateTicker();
+                          }}
+                          className="bg-pink-600 hover:bg-pink-700 text-white"
+                        >
+                          🔥 Standard Live Ticker
+                        </Button>
+                        <Button 
+                          onClick={() => {
+                            setNewTickerText('🎉 OUTLET34 - Ihr Modegroßhandel! Jetzt live dabei sein!');
+                            updateTicker();
+                          }}
+                          className="bg-purple-600 hover:bg-purple-700 text-white"
+                        >
+                          🎉 Willkommens Ticker
+                        </Button>
+                        <Button 
+                          onClick={() => {
+                            setNewTickerText('⏰ Nur noch wenige Minuten! Sichere dir die besten Deals!');
+                            updateTicker();
+                          }}
+                          className="bg-yellow-600 hover:bg-yellow-700 text-white"
+                        >
+                          ⏰ Countdown Ticker
+                        </Button>
+                        <Button 
+                          onClick={() => {
+                            setNewTickerText('');
+                            updateTicker();
+                          }}
+                          className="bg-gray-600 hover:bg-gray-700 text-white"
+                        >
+                          🗑️ Ticker löschen
+                        </Button>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         {/* Profile Modal */}
         {showProfileModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
