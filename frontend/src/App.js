@@ -3090,8 +3090,16 @@ function App() {
                         ) : allOrders.length > 0 ? (
                           allOrders.map((order) => (
                             <div key={order.id} className="text-sm bg-white rounded p-2 border-l-4 border-pink-500 shadow-sm">
-                              <div className="font-medium text-gray-800">
-                                {order.customer_id || 'N/A'} | {order.size || 'N/A'} | {order.quantity || 1} | {(order.price || 0).toFixed(2).replace('.', ',')} €
+                              <div className="flex justify-between items-center">
+                                <div className="font-medium text-gray-800">
+                                  {order.customer_id || 'N/A'} | {order.size || 'N/A'} | {order.quantity || 1} | {(order.price || 0).toFixed(2).replace('.', ',')} €
+                                </div>
+                                <div className="text-xs text-gray-500 ml-2">
+                                  {new Date(order.timestamp).toLocaleTimeString('de-DE', { 
+                                    hour: '2-digit', 
+                                    minute: '2-digit' 
+                                  })}
+                                </div>
                               </div>
                             </div>
                           ))
