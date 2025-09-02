@@ -1149,7 +1149,7 @@ function App() {
   const loadAllOrders = async () => {
     setLoadingOrders(true);
     try {
-      const response = await axios.get(`${API}/admin/orders`);
+      const response = await axios.get(`${API}/orders`);
       setAllOrders(response.data);
     } catch (error) {
       console.error('Error loading all orders:', error);
