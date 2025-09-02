@@ -2870,7 +2870,7 @@ function App() {
                   <div className="flex justify-between items-center">
                     <div className="text-left">
                       <div className="text-xs text-gray-600">{t('orders.size')}</div>
-                      <div className="font-medium text-sm">{selectedSize}</div>
+                      <div className="font-bold text-pink-600 text-lg">{selectedSize}</div>
                     </div>
                     <div className="text-right">
                       <div className="text-xs text-gray-600">Händlerpreis</div>
