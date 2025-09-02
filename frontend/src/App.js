@@ -270,7 +270,8 @@ function App() {
 
   useEffect(() => {
     if (chatRef.current) {
-      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+      // With reverse order, new messages appear at top, so scroll to top
+      chatRef.current.scrollTop = 0;
     }
   }, [chatMessages]);
 
