@@ -202,7 +202,7 @@ function App() {
         const data = JSON.parse(event.data);
         
         if (data.type === 'chat_message') {
-          setChatMessages(prev => [...prev, data.data]);
+          setChatMessages(prev => [data.data, ...prev]);
         } else if (data.type === 'viewer_count') {
           setViewerCount(data.count);
         } else if (data.type === 'order_notification') {
@@ -214,7 +214,7 @@ function App() {
             timestamp: new Date(),
             emoji: ''
           };
-          setChatMessages(prev => [...prev, orderMsg]);
+          setChatMessages(prev => [orderMsg, ...prev]);
         } else if (data.type === 'order_counter_update') {
           setAdminStats(prev => ({
             ...prev,
