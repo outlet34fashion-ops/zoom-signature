@@ -3095,9 +3095,13 @@ function App() {
                                   {order.customer_id || 'N/A'} | {order.size || 'N/A'} | {order.quantity || 1} | {(order.price || 0).toFixed(2).replace('.', ',')} €
                                 </div>
                                 <div className="text-xs text-gray-500 ml-2">
-                                  {new Date(order.timestamp).toLocaleTimeString('de-DE', { 
+                                  {new Date(order.timestamp).toLocaleString('de-DE', { 
+                                    day: '2-digit',
+                                    month: '2-digit', 
+                                    year: 'numeric',
                                     hour: '2-digit', 
-                                    minute: '2-digit' 
+                                    minute: '2-digit',
+                                    second: '2-digit'
                                   })}
                                 </div>
                               </div>
