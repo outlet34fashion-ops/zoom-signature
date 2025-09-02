@@ -4109,8 +4109,12 @@ class LiveShoppingAPITester:
         print(f"🔗 Testing against: {self.base_url}")
         print("=" * 60)
 
-        # PRIORITY 1: ADMIN DASHBOARD BLOCKS VERIFICATION (Current Review Request)
-        print("\n🎯 PRIORITY 1: ADMIN DASHBOARD BLOCKS VERIFICATION...")
+        # PRIORITY 1: ADMIN ORDERS ENDPOINT VERIFICATION (Current Review Request)
+        print("\n🎯 PRIORITY 1: ADMIN ORDERS ENDPOINT VERIFICATION...")
+        admin_orders_success = self.test_admin_orders_endpoint()
+
+        # PRIORITY 2: ADMIN DASHBOARD BLOCKS VERIFICATION
+        print("\n🎯 PRIORITY 2: ADMIN DASHBOARD BLOCKS VERIFICATION...")
         admin_dashboard_success = self.test_admin_dashboard_blocks()
 
         # PRIORITY 2: MULTI-LANGUAGE FUNCTIONALITY TESTING
