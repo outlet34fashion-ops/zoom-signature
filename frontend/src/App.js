@@ -2212,7 +2212,7 @@ function App() {
                                       📧 {customer.email}
                                     </div>
                                     <div className="text-xs text-gray-500">
-                                      📅 Registriert: {new Date(customer.created_at).toLocaleDateString('de-DE')}
+                                      📅 Registriert: {formatGermanDate(customer.created_at)}
                                     </div>
                                   </div>
                                 </div>
