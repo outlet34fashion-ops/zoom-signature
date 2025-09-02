@@ -1124,6 +1124,9 @@ function App() {
         await loadCustomerLastOrder(actualCustomerId);
       }
 
+      // Reload all orders to update the orders list immediately
+      await loadAllOrders();
+
     } catch (error) {
       console.error('Error placing order:', error);
       alert('Fehler beim Bestellen. Bitte versuchen Sie es erneut.');
