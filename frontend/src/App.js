@@ -3263,6 +3263,8 @@ function App() {
                       >
                         {chatMessages
                           .filter(msg => !msg.message.includes('Bestellung'))
+                          .slice()
+                          .reverse()
                           .map((msg) => (
                             <div key={msg.id} className={`text-sm ${isPinned(msg.id) ? 'opacity-60' : ''}`}>
                               <div className="flex items-start justify-between">
