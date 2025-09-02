@@ -3037,8 +3037,8 @@ function App() {
                               <div className="text-xs text-gray-600">Lädt...</div>
                             </div>
                           ) : customerLastOrder ? (
-                            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-200">
-                              {/* Gleiche Format wie in Bestellungen-Liste für Konsistenz */}
+                            <div className="bg-white rounded-lg p-3 border-l-4 border-blue-500 shadow-sm hover:shadow-md transition-shadow">
+                              {/* Exakt gleiche Formatierung wie Bestellungen-Liste */}
                               <div className="flex justify-between items-center">
                                 <div className="font-medium text-gray-800">
                                   {currentCustomer?.customer_number || 'N/A'} | {customerLastOrder.size} | {customerLastOrder.quantity} | {(customerLastOrder.price / customerLastOrder.quantity).toFixed(2).replace('.', ',')} €
