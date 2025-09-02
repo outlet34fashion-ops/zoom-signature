@@ -1870,6 +1870,7 @@ function App() {
 
       {/* Main App - Only shown when authenticated */}
       {(isAuthenticated || isAdminView) && (
+      <>
       {/* Header */}
       <header className="bg-pink-500 text-white">
         <div className="container mx-auto px-4 py-2">
