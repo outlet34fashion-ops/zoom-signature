@@ -2478,14 +2478,16 @@ function App() {
                 <div className="text-center py-4">
                   <p className="text-gray-600">Events werden geladen...</p>
                 </div>
+              ) : events.length === 0 ? (
+                <div className="text-center py-4">
+                  <p className="text-gray-500">Noch keine Events geplant</p>
+                </div>
               ) : (
                 <div className="space-y-3">
-                  {events.length === 0 ? (
-                    <p className="text-gray-600 text-center py-4">Noch keine Events geplant.</p>
-                  ) : (
-                    events.map((event) => (
-                      <div key={event.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                        <div className="flex-1">
+                  {events.map((event) => (
+                    <div key={event.id} className="bg-white rounded-lg p-4 border-l-4 border-l-pink-500 border shadow-sm">
+                      <div className="flex justify-between items-start">
+                        <div>
                           <div className="flex items-center space-x-4">
                             <div className="text-sm text-gray-500">
                               {formatEventDate(event.date)}
@@ -2520,8 +2522,8 @@ function App() {
                           </Button>
                         </div>
                       </div>
-                    ))
-                  )}
+                    </div>
+                  ))}
                 </div>
               )}
             </CardContent>
