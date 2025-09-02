@@ -2314,6 +2314,104 @@ function App() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Block 3: Live-Streaming Controls */}
+            <Card className="border-l-4 border-l-red-500 shadow-lg">
+              <CardContent className="p-0">
+                <button
+                  onClick={() => setShowStreamingControls(!showStreamingControls)}
+                  className="w-full p-6 text-left bg-gradient-to-r from-red-50 to-red-100 hover:from-red-100 hover:to-red-150 transition-all duration-300 flex justify-between items-center"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-lg">🎥</span>
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-bold text-gray-800">Live-Streaming</h2>
+                      <p className="text-gray-600 text-sm">HD-Video-Streaming starten und verwalten</p>
+                    </div>
+                  </div>
+                  <div className="text-gray-400">
+                    {showStreamingControls ? '▼' : '▶'}
+                  </div>
+                </button>
+                
+                {showStreamingControls && (
+                  <div className="p-6 border-t border-gray-200">
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <h3 className="text-lg font-semibold mb-3 text-gray-800">🎥 HD-Video-Streaming</h3>
+                      <div className="text-center space-y-3">
+                        <Button 
+                          onClick={startSimpleStream}
+                          className="bg-red-600 hover:bg-red-700 text-white w-full py-3 text-lg"
+                        >
+                          📺 HD Live-Stream starten
+                        </Button>
+                        <div className="text-sm text-gray-600">
+                          Einfach • Stabil • Sofort funktionsfähig
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Block 4: Ticker-Einstellungen */}
+            <Card className="border-l-4 border-l-purple-500 shadow-lg">
+              <CardContent className="p-0">
+                <button
+                  onClick={() => setShowTickerSettings(!showTickerSettings)}
+                  className="w-full p-6 text-left bg-gradient-to-r from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-150 transition-all duration-300 flex justify-between items-center"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-lg">⚙️</span>
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-bold text-gray-800">Ticker-Einstellungen</h2>
+                      <p className="text-gray-600 text-sm">Laufband-Text konfigurieren und verwalten</p>
+                    </div>
+                  </div>
+                  <div className="text-gray-400">
+                    {showTickerSettings ? '▼' : '▶'}
+                  </div>
+                </button>
+                
+                {showTickerSettings && (
+                  <div className="p-6 border-t border-gray-200">
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <h3 className="text-lg font-semibold mb-3 text-gray-800">⚙️ {t.tickerSettings}</h3>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">{t.tickerText}</label>
+                          <Input
+                            value={newTickerText}
+                            onChange={(e) => setNewTickerText(e.target.value)}
+                            className="w-full"
+                            placeholder="Ticker Text eingeben..."
+                          />
+                        </div>
+                        <div className="flex space-x-3">
+                          <Button 
+                            onClick={updateTicker}
+                            className="bg-green-500 hover:bg-green-600 text-white flex-1"
+                          >
+                            📝 {t.updateTicker}
+                          </Button>
+                          <Button 
+                            onClick={toggleTicker}
+                            className={tickerSettings.enabled ? "bg-orange-500 hover:bg-orange-600 text-white flex-1" : "bg-gray-500 hover:bg-gray-600 text-white flex-1"}
+                          >
+                            {tickerSettings.enabled ? "⏸️ Ticker Stop" : "▶️ Ticker Start"}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
         )}
 
