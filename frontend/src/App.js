@@ -3209,7 +3209,7 @@ function App() {
                                       {formatMessage(msg.message)}
                                     </div>
                                     <div className="text-xs text-yellow-600 mt-1">
-                                      📍 Gepinnt • {new Date(msg.timestamp || Date.now()).toLocaleTimeString()}
+                                      📍 Gepinnt • {formatGermanTime(msg.timestamp || Date.now())}
                                     </div>
                                   </div>
                                   {isAdminView && (
