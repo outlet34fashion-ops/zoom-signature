@@ -1548,106 +1548,110 @@ function App() {
                       </Button>
                     </div>
                   </div>
-                ) : showRegistration ? (
-                  <div className="space-y-4">
-                    <h2 className="text-xl font-semibold text-gray-800">📝 Registrierung</h2>
-                    <p className="text-sm text-gray-600">
-                      Geben Sie Ihre Kundendaten ein für die Registrierung.
-                    </p>
-                    
-                    {registrationError && (
-                      <div className="bg-red-100 border border-red-300 rounded-lg p-3">
-                        <p className="text-red-700 text-sm">{registrationError}</p>
-                      </div>
-                    )}
-                    
-                    <div className="space-y-3">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Kundennummer
-                        </label>
-                        <Input
-                          type="text"
-                          placeholder="Ihre Kundennummer"
-                          value={registrationData.customer_number}
-                          onChange={(e) => setRegistrationData(prev => ({
-                            ...prev,
-                            customer_number: e.target.value
-                          }))}
-                          className="w-full"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          E-Mail
-                        </label>
-                        <Input
-                          type="email"
-                          placeholder="ihre@email.de"
-                          value={registrationData.email}
-                          onChange={(e) => setRegistrationData(prev => ({
-                            ...prev,
-                            email: e.target.value
-                          }))}
-                          className="w-full"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Name
-                        </label>
-                        <Input
-                          type="text"
-                          placeholder="Ihr vollständiger Name"
-                          value={registrationData.name}
-                          onChange={(e) => setRegistrationData(prev => ({
-                            ...prev,
-                            name: e.target.value
-                          }))}
-                          className="w-full"
-                        />
+                  ) : showRegistration ? (
+                    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl">
+                      <div className="text-center space-y-6">
+                        <div className="space-y-2">
+                          <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-blue-600 rounded-full flex items-center justify-center mx-auto">
+                            <span className="text-2xl">📝</span>
+                          </div>
+                          <h2 className="text-xl font-bold text-white">Registrierung</h2>
+                          <p className="text-white/70 text-sm">
+                            Erstellen Sie Ihr kostenloses Kundenkonto
+                          </p>
+                        </div>
+                        
+                        {registrationError && (
+                          <div className="bg-red-500/20 border border-red-500/30 rounded-xl p-3">
+                            <p className="text-red-200 text-sm">{registrationError}</p>
+                          </div>
+                        )}
+                        
+                        <div className="space-y-4 text-left">
+                          <div>
+                            <label className="block text-white/80 text-sm font-medium mb-2">
+                              Kundennummer
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="Ihre Kundennummer"
+                              value={registrationData.customer_number}
+                              onChange={(e) => setRegistrationData(prev => ({
+                                ...prev,
+                                customer_number: e.target.value
+                              }))}
+                              className="w-full bg-white/10 border border-white/30 text-white placeholder-white/50 py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label className="block text-white/80 text-sm font-medium mb-2">
+                              E-Mail
+                            </label>
+                            <input
+                              type="email"
+                              placeholder="ihre@email.de"
+                              value={registrationData.email}
+                              onChange={(e) => setRegistrationData(prev => ({
+                                ...prev,
+                                email: e.target.value
+                              }))}
+                              className="w-full bg-white/10 border border-white/30 text-white placeholder-white/50 py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label className="block text-white/80 text-sm font-medium mb-2">
+                              Name
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="Ihr vollständiger Name"
+                              value={registrationData.name}
+                              onChange={(e) => setRegistrationData(prev => ({
+                                ...prev,
+                                name: e.target.value
+                              }))}
+                              className="w-full bg-white/10 border border-white/30 text-white placeholder-white/50 py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300"
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="flex space-x-3">
+                          <button 
+                            onClick={() => {
+                              setShowRegistration(false);
+                              setRegistrationError('');
+                            }}
+                            className="flex-1 bg-white/10 hover:bg-white/20 border border-white/30 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300"
+                          >
+                            Zurück
+                          </button>
+                          <button 
+                            onClick={registerCustomer}
+                            disabled={!registrationData.customer_number || !registrationData.email || !registrationData.name}
+                            className="flex-1 bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300 hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                          >
+                            Registrieren
+                          </button>
+                        </div>
+                        
+                        <div className="pt-4 border-t border-white/20">
+                          <p className="text-white/60 text-xs mb-3">
+                            Bereits registriert?
+                          </p>
+                          <button 
+                            onClick={() => {
+                              setShowRegistration(false);
+                              setShowCustomerLogin(true);
+                            }}
+                            className="w-full bg-white/5 hover:bg-white/10 border border-white/30 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300"
+                          >
+                            Jetzt anmelden
+                          </button>
+                        </div>
                       </div>
                     </div>
-                    
-                    <div className="flex space-x-3">
-                      <Button 
-                        variant="outline"
-                        onClick={() => {
-                          setShowRegistration(false);
-                          setRegistrationError('');
-                        }}
-                        className="flex-1"
-                      >
-                        Zurück
-                      </Button>
-                      <Button 
-                        onClick={registerCustomer}
-                        disabled={!registrationData.customer_number || !registrationData.email || !registrationData.name}
-                        className="flex-1 bg-pink-500 hover:bg-pink-600"
-                      >
-                        Registrieren
-                      </Button>
-                    </div>
-                    
-                    <div className="pt-4 border-t">
-                      <p className="text-xs text-gray-500 text-center">
-                        Bereits registriert?
-                      </p>
-                      <Button 
-                        variant="outline"
-                        onClick={() => {
-                          setShowRegistration(false);
-                          setShowCustomerLogin(true);
-                        }}
-                        className="w-full mt-2 text-gray-600 hover:text-gray-800"
-                        size="sm"
-                      >
-                        Jetzt anmelden
-                      </Button>
-                    </div>
-                  </div>
                   ) : (
                     <div className="space-y-8">
                       {/* Live Shopping Status */}
