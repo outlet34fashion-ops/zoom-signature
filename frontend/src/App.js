@@ -3904,7 +3904,6 @@ function App() {
           currentUser={currentCustomer}
           onClose={handleSimpleStreamClose}
         />
-      )}
       </>
       )}
     </div>
