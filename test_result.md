@@ -431,6 +431,18 @@ test_plan:
         agent: "testing"
         comment: "🎥 WEBRTC STREAMING BACKEND COMPREHENSIVE TESTING COMPLETED - PERFECT SUCCESS! All 12 WebRTC streaming tests passed (100% success rate). ✅ CORE WEBRTC STREAMING APIs VERIFIED: 1) POST /api/stream/start - Successfully creates streaming sessions with unique IDs, proper titles, viewer limits, and signaling endpoints, 2) GET /api/stream/{stream_id}/join - Correctly allows viewers to join active streams with proper response structure and viewer signaling endpoints, 3) DELETE /api/stream/{stream_id} - Properly ends streaming sessions with cleanup and success messages, 4) GET /api/streams/active - Returns accurate list of active streams with all required fields and real-time viewer counts, 5) GET /api/webrtc/config - Provides complete STUN/TURN server configuration with Google STUN servers and Open Relay TURN service, plus optimized media constraints for iPhone camera support. ✅ ADVANCED FUNCTIONALITY VERIFIED: 6) Stream session management with unique IDs and database persistence, 7) Viewer count tracking and real-time updates, 8) Viewer limit enforcement (tested with max 50 viewers), 9) WebSocket signaling endpoints for both streamers (/ws/stream/{id}/signaling) and viewers (/ws/stream/{id}/viewer), 10) Proper error handling for invalid operations (404 for non-existent streams), 11) Stream cleanup after ending (streams removed from active list), 12) Database storage and retrieval of session metadata. ✅ TECHNICAL REQUIREMENTS MET: iPhone camera support via getUserMedia constraints (facingMode: 'user'), Free solution using Google STUN servers and Open Relay TURN service, Maximum 50 viewer limit properly configured and enforced, Admin streaming capability with proper authentication checks, Customer viewing capability with join stream functionality, Database integration for session persistence and tracking. All WebRTC streaming backend infrastructure is working correctly and ready for frontend integration."
 
+  - task: "Admin Orders Endpoint Verification"
+    implemented: false
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "📋 ADMIN ORDERS ENDPOINT VERIFICATION COMPLETED! Comprehensive testing reveals MIXED RESULTS (6/7 tests passed - 85.7% success rate): ✅ EXISTING FUNCTIONALITY WORKING: GET /api/orders endpoint successfully returns all orders from all customers with proper data structure (id, customer_id, product_id, size, quantity, price, timestamp), Order data structure validation passed with correct field types and formats, Customer integration verified - orders properly linked to customer numbers and aggregated from multiple customers, Performance check passed with 0.06s response time for 100 orders, ❌ MISSING DEDICATED ENDPOINT: GET /api/admin/orders endpoint NOT FOUND (404 status), Current implementation uses generic GET /api/orders which lacks admin-specific features. ✅ COMPREHENSIVE TESTING SETUP: Created 2 test customers and 4 test orders successfully, Verified orders contain all required fields for frontend display, Confirmed orders from multiple customers are properly aggregated, Performance testing shows good response times and data handling. 🔧 RECOMMENDATION: Implement dedicated GET /api/admin/orders endpoint with admin-specific features like pagination, filtering, sorting, and enhanced customer information display. Current GET /api/orders works as fallback but lacks admin dashboard optimization."
+
   - task: "Admin Dashboard Blocks Verification"
     implemented: true
     working: true
