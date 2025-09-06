@@ -3471,65 +3471,59 @@ function App() {
                               cleanMessage = cleanMessage.replace(/^Chat \d+ I\s*/, '');
                             }
                             
-                            // Simple time formatting
-                            const timeStr = msg.timestamp ? formatGermanTime(msg.timestamp) : 'NO_TIME';
-                            
                             return (
-                            <div key={msg.id} className={`text-sm ${isPinned(msg.id) ? 'opacity-60' : ''} flex justify-between items-start py-1`}>
-                              <div className="flex-1">
-                                {msg.username === 'System' ? (
-                                  <span className="text-gray-600 font-medium">
-                                    {formatMessage(msg.message)}
-                                  </span>
-                                ) : msg.username === 'Admin' ? (
-                                  <div>
-                                    <span className="font-bold text-red-600">
-                                      👑 Admin {msg.emoji && <span className="ml-1">{msg.emoji}</span>}
+                            <div key={msg.id} className={`text-sm ${isPinned(msg.id) ? 'opacity-60' : ''} py-1`}>
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                  {msg.username === 'System' ? (
+                                    <span className="text-gray-600 font-medium">
+                                      {formatMessage(msg.message)}
                                     </span>
-                                    {msg.message && (
-                                      <span className="ml-2 text-gray-600">{msg.message}</span>
+                                  ) : msg.username === 'Admin' ? (
+                                    <div>
+                                      <span className="font-bold text-red-600">
+                                        👑 Admin {msg.emoji && <span className="ml-1">{msg.emoji}</span>}
+                                      </span>
+                                      {msg.message && (
+                                        <span className="ml-2 text-gray-600">{msg.message}</span>
+                                      )}
+                                    </div>
+                                  ) : (
+                                    <div>
+                                      <span className="font-medium text-blue-600">
+                                        #{extractCustomerNumber(msg.username)} {msg.emoji && <span className="ml-1">{msg.emoji}</span>}
+                                      </span>
+                                      {cleanMessage && (
+                                        <span className="ml-2 text-gray-600">{cleanMessage}</span>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                                
+                                {/* Pin-Button für Admins */}
+                                {isAdminView && (
+                                  <div className="ml-2">
+                                    {!isPinned(msg.id) ? (
+                                      <button
+                                        onClick={() => pinMessage(msg.id)}
+                                        className="text-gray-400 hover:text-yellow-600 text-xs px-1"
+                                        title="Nachricht pinnen"
+                                      >
+                                        📌
+                                      </button>
+                                    ) : (
+                                      <button
+                                        onClick={() => unpinMessage(msg.id)}
+                                        className="text-yellow-600 hover:text-red-600 text-xs px-1"
+                                        title="Nachricht entpinnen"
+                                      >
+                                        📌❌
+                                      </button>
                                     )}
-                                  </div>
-                                ) : (
-                                  <div>
-                                    <span className="font-medium text-blue-600">
-                                      #{extractCustomerNumber(msg.username)} {msg.emoji && <span className="ml-1">{msg.emoji}</span>}
-                                    </span>
-                                    {cleanMessage && (
-                                      <span className="ml-2 text-gray-600">{cleanMessage}</span>
-                                    )}
+                                    {isPinned(msg.id) && <span className="text-yellow-600 text-xs ml-1">📍</span>}
                                   </div>
                                 )}
                               </div>
-                              
-                              {/* Zeitstempel - SICHTBAR gemacht */}
-                              <div className="ml-2 text-xs text-gray-600 font-mono bg-yellow-100 px-1 rounded">
-                                {timeStr}
-                              </div>
-                              
-                              {/* Pin-Button für Admins */}
-                              {isAdminView && (
-                                <div className="ml-1">
-                                  {!isPinned(msg.id) ? (
-                                    <button
-                                      onClick={() => pinMessage(msg.id)}
-                                      className="text-gray-400 hover:text-yellow-600 text-xs px-1"
-                                      title="Nachricht pinnen"
-                                    >
-                                      📌
-                                    </button>
-                                  ) : (
-                                    <button
-                                      onClick={() => unpinMessage(msg.id)}
-                                      className="text-yellow-600 hover:text-red-600 text-xs px-1"
-                                      title="Nachricht entpinnen"
-                                    >
-                                      📌❌
-                                    </button>
-                                  )}
-                                  {isPinned(msg.id) && <span className="text-yellow-600 text-xs">📍</span>}
-                                </div>
-                              )}
                             </div>
                             );
                           })}
