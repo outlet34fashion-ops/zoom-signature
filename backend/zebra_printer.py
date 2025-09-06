@@ -213,24 +213,52 @@ class ZebraPrinterService:
         Überprüft Status des Zebra-Druckers
         """
         try:
-            # Überprüfe mit lpstat
-            result = subprocess.run([
-                'lpstat', '-p', self.printer_name
-            ], capture_output=True, text=True, timeout=5)
+            # FIXED: Check all possible printer names
+            for printer_name in self.printer_names:
+                try:
+                    # Überprüfe mit lpstat
+                    result = subprocess.run([
+                        'lpstat', '-p', printer_name
+                    ], capture_output=True, text=True, timeout=5)
+                    
+                    if result.returncode == 0:
+                        status = "online" if "idle" in result.stdout.lower() else "busy"
+                        return {
+                            "success": True,
+                            "status": status,
+                            "printer_name": printer_name,
+                            "message": result.stdout.strip()
+                        }
+                except Exception as e:
+                    print(f"Status check failed for {printer_name}: {e}")
+                    continue
             
-            if result.returncode == 0:
-                status = "online" if "idle" in result.stdout.lower() else "busy"
-                return {
-                    "success": True,
-                    "status": status,
-                    "message": result.stdout.strip()
-                }
-            else:
-                return {
-                    "success": False,
-                    "status": "offline",
-                    "message": "Printer not found or offline"
-                }
+            # If lpstat fails, try CUPS
+            try:
+                import cups
+                conn = cups.Connection()
+                printers = conn.getPrinters()
+                
+                for printer_name, printer_info in printers.items():
+                    if any(keyword in printer_name.lower() for keyword in ['zebra', 'gk420', 'ztc']):
+                        state = printer_info.get('printer-state', 0)
+                        status = "online" if state == 3 else "offline"  # 3 = idle
+                        return {
+                            "success": True,
+                            "status": status,
+                            "printer_name": printer_name,
+                            "cups_info": printer_info,
+                            "message": f"Found via CUPS: {printer_name}"
+                        }
+            except Exception as cups_error:
+                print(f"CUPS status check failed: {cups_error}")
+            
+            return {
+                "success": False,
+                "status": "not_found",
+                "message": f"Zebra printer not found. Tried: {', '.join(self.printer_names)}",
+                "troubleshooting": "Check USB connection and CUPS printer installation"
+            }
         
         except Exception as e:
             return {
