@@ -4099,12 +4099,69 @@ function App() {
                 </Button>
               </div>
 
-              <StreamingInterface
-                isStreamer={streamingMode === 'streamer'}
-                streamId={currentStreamId}
-                onStreamEnd={handleStreamEnd}
-                backendUrl={BACKEND_URL}
-              />
+              {/* CRITICAL: LiveKit Streaming Interface - WORKS */}
+              {streamingActive && livekitToken && livekitUrl ? (
+                <div className="space-y-4">
+                  {/* Connection Status */}
+                  <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <div className={`w-3 h-3 rounded-full ${isLiveKitConnected ? 'bg-green-500' : 'bg-yellow-500'} animate-pulse`} />
+                      <span className="text-sm font-medium">
+                        {isLiveKitConnected ? '🟢 Live Connected' : '🟡 Connecting...'}
+                      </span>
+                    </div>
+                    {isAdminAuthenticated && (
+                      <Button 
+                        onClick={stopLiveKitStreaming}
+                        variant="destructive"
+                        size="sm"
+                      >
+                        ⏹️ Stream beenden
+                      </Button>
+                    )}
+                  </div>
+
+                  {/* LiveKit Error Display */}
+                  {livekitError && (
+                    <Alert className="border-red-200 bg-red-50">
+                      <AlertDescription className="text-red-800">
+                        ❌ Streaming Error: {livekitError}
+                      </AlertDescription>
+                    </Alert>
+                  )}
+
+                  {/* LiveKit Streaming Component */}
+                  <LiveKitStreamingInterface
+                    token={livekitToken}
+                    serverUrl={livekitUrl}
+                    roomName={currentRoomName}
+                    isPublisher={isAdminAuthenticated}
+                    onConnected={handleLiveKitConnected}
+                    onDisconnected={handleLiveKitDisconnected}
+                    onError={handleLiveKitError}
+                  />
+                </div>
+              ) : (
+                /* Start Streaming Button */
+                <div className="text-center py-8">
+                  <div className="space-y-4">
+                    <div className="text-gray-500 mb-4">
+                      {isAdminAuthenticated ? 
+                        '🎥 Live-Stream starten für Kunden' : 
+                        '📺 Warten auf Live-Stream...'}
+                    </div>
+                    {isAdminAuthenticated && (
+                      <Button 
+                        onClick={initializeLiveKitStreaming}
+                        className="bg-red-600 hover:bg-red-700 text-white"
+                        size="lg"
+                      >
+                        🔴 LIVE gehen
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
