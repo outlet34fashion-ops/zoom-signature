@@ -1355,6 +1355,56 @@ async def test_print():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Test print failed: {str(e)}")
 
+@api_router.get("/zebra/download/{customer_number}")
+async def download_zpl_label(customer_number: str, price: str = "0.00"):
+    """
+    Generiert und downloadet ZPL-Datei für manuellen Druck
+    """
+    try:
+        from datetime import datetime
+        from fastapi.responses import Response
+        
+        zpl_code = zebra_printer.generate_zpl_label(customer_number, price, datetime.now())
+        
+        # Return ZPL file as download
+        return Response(
+            content=zpl_code,
+            media_type="application/octet-stream",
+            headers={
+                "Content-Disposition": f"attachment; filename=label_{customer_number}_{int(datetime.now().timestamp())}.zpl"
+            }
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Download failed: {str(e)}")
+
+@api_router.post("/zebra/print-order/{order_id}")
+async def reprint_order_label(order_id: str):
+    """
+    Druckt Etikett für bestehende Bestellung erneut
+    """
+    try:
+        # Hole Bestellung aus DB
+        order = await db.orders.find_one({"id": order_id})
+        if not order:
+            raise HTTPException(status_code=404, detail="Order not found")
+        
+        # Extract customer number
+        customer_number = order.get('customer_id', '000')[-4:]
+        
+        label_data = {
+            "id": order_id,
+            "customer_number": customer_number,
+            "price": f"€{order.get('price', 0):.2f}".replace(".", ","),
+            "quantity": order.get('quantity', 1),
+            "size": order.get('size', ''),
+        }
+        
+        result = zebra_printer.print_order_label(label_data)
+        return {"success": result["success"], "result": result}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Reprint failed: {str(e)}")
+
 @api_router.post("/livekit/room/{room_name}/participant/{participant_identity}/remove")
 async def remove_participant_from_room(
     room_name: str, 
