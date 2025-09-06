@@ -281,6 +281,13 @@ function App() {
     }
   }, [chatMessages]);
 
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [chatMessages]);
+
   useEffect(() => {
     if (isAdminView) {
       loadAdminStats();
