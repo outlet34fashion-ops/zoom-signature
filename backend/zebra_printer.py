@@ -10,6 +10,11 @@ import time
 from datetime import datetime
 from typing import Dict, Optional
 import logging
+# CRITICAL: Add PDF generation for label preview
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.units import mm
+from io import BytesIO
 
 logger = logging.getLogger(__name__)
 
