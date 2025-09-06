@@ -141,8 +141,9 @@ class ZebraPrinterService:
             print(f"🖨️  CRITICAL: Starting automatic print to Zebra GK420d...")
             print(f"ZPL Code length: {len(zpl_code)} characters")
             
-            # FIXED: Use exact printer name and multiple methods
-            printer_name = "Zebra_Technologies_ZTC_GK420d"
+            # FIXED: Use exact printer name based on user's CUPS details
+            # Try primary name first (most likely to work)
+            printer_name = "ZTC_GK420d"  # Updated based on user's connection
             
             # Method 1: Enhanced lpr with better macOS compatibility
             try:
