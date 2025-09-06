@@ -1257,16 +1257,70 @@ async def end_livekit_room(room_name: str, current_user_id: str = "admin"):
 
 @api_router.get("/livekit/config")
 async def get_livekit_config():
+    """Get LiveKit configuration for frontend"""
+    try:
+        config = livekit_service.get_config()
+        return {"success": True, "config": config}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get config: {str(e)}")
+
+# CRITICAL: Zebra Printer API Endpoints for Label Printing
+@api_router.post("/zebra/print-label")
+async def print_label(order_data: dict):
     """
-    Get LiveKit client configuration with optimized settings
+    Druckt Etikett für Bestellung über Zebra GK420d Drucker
     """
     try:
-        config = await livekit_service.get_livekit_config()
-        return config
-        
+        result = zebra_printer.print_order_label(order_data)
+        return {"success": result["success"], "result": result}
     except Exception as e:
-        logging.error(f"Error getting LiveKit config: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Failed to get config: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Label printing failed: {str(e)}")
+
+@api_router.get("/zebra/preview/{customer_number}")
+async def get_label_preview(customer_number: str, price: str = "0.00"):
+    """
+    Generiert Etikett-Vorschau als ZPL-Code für Admin-Ansicht
+    """
+    try:
+        from datetime import datetime
+        zpl_code = zebra_printer.generate_zpl_label(customer_number, price, datetime.now())
+        
+        return {
+            "success": True,
+            "zpl_code": zpl_code,
+            "customer_number": customer_number,
+            "price": price,
+            "timestamp": datetime.now().isoformat()
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Preview generation failed: {str(e)}")
+
+@api_router.get("/zebra/status")
+async def get_printer_status():
+    """
+    Überprüft Status des Zebra-Druckers
+    """
+    try:
+        status = zebra_printer.get_printer_status()
+        return {"success": True, "printer_status": status}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Status check failed: {str(e)}")
+
+@api_router.post("/zebra/test-print")
+async def test_print():
+    """
+    Druckt Test-Etikett zum Testen der Zebra-Drucker-Verbindung
+    """
+    try:
+        test_data = {
+            "customer_number": "TEST123",
+            "price": "€19,99",
+            "id": "test-label"
+        }
+        result = zebra_printer.print_order_label(test_data)
+        return {"success": result["success"], "result": result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Test print failed: {str(e)}")
 
 @api_router.post("/livekit/room/{room_name}/participant/{participant_identity}/remove")
 async def remove_participant_from_room(
