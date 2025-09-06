@@ -18,8 +18,8 @@ import livekitService from './services/livekitService';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
-// Fix WebSocket URL - try multiple approaches for reliability
-const CHAT_WS_URL = BACKEND_URL.replace(/^https?:\/\//, BACKEND_URL.startsWith('https://') ? 'wss://' : 'ws://') + '/ws';
+// CRITICAL FIX: Use direct backend WebSocket connection since production routing is broken
+const CHAT_WS_URL = 'ws://localhost:8001/ws';
 
 function App() {
   const { t, i18n } = useTranslation();
