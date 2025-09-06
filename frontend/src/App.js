@@ -235,7 +235,7 @@ function App() {
                   ...data.data,
                   timestamp: data.data.timestamp || new Date().toISOString()
                 };
-                return [newMessage, ...prev]; // Add new messages at the top
+                return [...prev, newMessage]; // Add new messages at the END (bottom)
               } else {
                 console.log('Message already exists, skipping duplicate:', data.data.id);
                 return prev;
