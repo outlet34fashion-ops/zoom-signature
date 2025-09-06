@@ -1352,6 +1352,27 @@ function App() {
         message: formattedMessage,
         emoji: emoji
       });
+      
+      console.log('Emoji sent successfully:', emoji);
+      
+      // FORCE IMMEDIATE POLLING after sending emoji for real-time display
+      setTimeout(() => {
+        console.log('🚀 FORCE POLLING after emoji send');
+        // Trigger immediate poll for real-time reactions
+        const pollForNewMessages = async () => {
+          try {
+            const response = await axios.get(`${API}/chat`);
+            const serverMessages = response.data;
+            console.log('🚀 EMOJI FORCE POLL: Got', serverMessages.length, 'messages');
+            setChatMessages(serverMessages);
+            setPollingStatus(`Emoji updated: ${serverMessages.length} messages`);
+          } catch (error) {
+            console.error('❌ Emoji force polling error:', error);
+          }
+        };
+        pollForNewMessages();
+      }, 100); // Poll after 100ms
+      
     } catch (error) {
       console.error('Error sending emoji:', error);
     }
