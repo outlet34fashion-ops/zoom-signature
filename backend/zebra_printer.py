@@ -135,201 +135,245 @@ class ZebraPrinterService:
     
     def print_label_usb(self, zpl_code: str) -> Dict[str, any]:
         """
-        AUTOMATISCHES DRUCKEN: Container → Host-Service → USB-Drucker
+        EINFACHE AUTOMATISCHE LÖSUNG: Erstellt Shell-Script das automatisch ausgeführt wird
         """
         try:
-            print(f"🖨️  AUTOMATIC PRINTING: Starting label print...")
+            print(f"🖨️  AUTOMATISCHES DRUCKEN: Erstelle ausführbares Script...")
             print(f"ZPL Code length: {len(zpl_code)} characters")
             
-            # METHOD 1: Host-Side Printing Service (BESTE LÖSUNG)
+            # METHODE 1: Erstelle ausführbares macOS Shell-Script
             try:
-                print(f"🖥️  Method 1: Host-Side Printing Service...")
+                timestamp = int(time.time())
+                script_name = f"auto_print_{timestamp}.sh"
+                script_path = f"/tmp/{script_name}"
                 
-                import requests
+                # Hole gespeicherte Bestelldaten
+                customer_number = getattr(self, '_last_customer_number', 'Unknown')
+                price = getattr(self, '_last_price', '0.00')
+                order_id = getattr(self, '_last_order_id', f"auto_{timestamp}")
                 
-                # Verschiedene Host-URLs versuchen
-                host_urls = [
-                    "http://host.docker.internal:9876",  # Docker Desktop
-                    "http://localhost:9876",             # Direct access
-                    "http://127.0.0.1:9876",            # Localhost
-                    "http://10.0.0.1:9876",             # Gateway
-                    "http://192.168.65.1:9876"          # Docker Desktop Gateway
-                ]
+                # Erstelle vollständiges Shell-Script
+                shell_script = f'''#!/bin/bash
+
+# AUTOMATISCHES ZEBRA-DRUCKER SCRIPT
+# Generiert für Bestellung: {order_id}
+# Kunde: {customer_number}, Preis: {price}
+# Erstellt: {datetime.now().strftime("%d.%m.%y %H:%M:%S")}
+
+echo "🖨️  AUTOMATISCHES ZEBRA-DRUCKEN STARTET..."
+echo "Bestellung: {order_id}"
+echo "Kunde: {customer_number}"
+echo "Preis: {price}"
+echo ""
+
+# ZPL-Datei erstellen
+ZPL_FILE="/tmp/zebra_auto_{timestamp}.zpl"
+cat > "$ZPL_FILE" << 'EOF'
+{zpl_code}
+EOF
+
+echo "✅ ZPL-Datei erstellt: $ZPL_FILE"
+
+# Verschiedene Druckbefehle versuchen
+PRINTER_NAMES=("ZTC GK420d" "Zebra Technologies ZTC GK420d" "ZTC_GK420d")
+
+for PRINTER in "${{PRINTER_NAMES[@]}}"; do
+    echo "🖨️  Versuche Drucker: $PRINTER"
+    
+    # Methode 1: lpr mit raw option
+    if lpr -P "$PRINTER" -o raw "$ZPL_FILE" 2>/dev/null; then
+        echo "✅ SUCCESS: Gedruckt über lpr -P '$PRINTER' -o raw"
+        rm -f "$ZPL_FILE"
+        echo "🎉 AUTOMATISCHES DRUCKEN ERFOLGREICH!"
+        exit 0
+    fi
+    
+    # Methode 2: lpr ohne raw option
+    if lpr -P "$PRINTER" "$ZPL_FILE" 2>/dev/null; then
+        echo "✅ SUCCESS: Gedruckt über lpr -P '$PRINTER'"
+        rm -f "$ZPL_FILE"
+        echo "🎉 AUTOMATISCHES DRUCKEN ERFOLGREICH!"
+        exit 0
+    fi
+    
+    # Methode 3: Pipe-Methode
+    if cat "$ZPL_FILE" | lpr -P "$PRINTER" -o raw 2>/dev/null; then
+        echo "✅ SUCCESS: Gedruckt über Pipe zu '$PRINTER'"
+        rm -f "$ZPL_FILE"
+        echo "🎉 AUTOMATISCHES DRUCKEN ERFOLGREICH!"
+        exit 0
+    fi
+    
+    echo "❌ Drucker '$PRINTER' nicht verfügbar"
+done
+
+echo ""
+echo "❌ AUTOMATISCHES DRUCKEN FEHLGESCHLAGEN"
+echo "Verfügbare Drucker:"
+lpstat -p 2>/dev/null || echo "Keine Drucker gefunden"
+echo ""
+echo "MANUELLER DRUCKBEFEHL:"
+echo "lpr -P 'ZTC GK420d' -o raw '$ZPL_FILE'"
+echo ""
+echo "ZPL-Datei gespeichert: $ZPL_FILE"
+'''
+
+                # Schreibe Script-Datei
+                with open(script_path, 'w') as f:
+                    f.write(shell_script)
                 
-                # Erstelle Druckauftrag-Daten
-                print_data = {
-                    "zpl_code": zpl_code,
-                    "customer_number": getattr(self, '_last_customer_number', 'Unknown'),
-                    "price": getattr(self, '_last_price', '0.00'),
-                    "order_id": getattr(self, '_last_order_id', f"auto_{int(time.time())}")
-                }
+                # Mache Script ausführbar
+                os.chmod(script_path, 0o755)
                 
-                for host_url in host_urls:
-                    try:
-                        print(f"  🔗 Trying host service: {host_url}")
-                        
-                        # Erstmal Gesundheitsprüfung
-                        health_response = requests.get(f"{host_url}/health", timeout=3)
-                        
-                        if health_response.status_code == 200:
-                            print(f"  ✅ Host service is running at {host_url}")
-                            
-                            # Druckauftrag senden
-                            print_response = requests.post(
-                                f"{host_url}/print",
-                                json=print_data,
-                                timeout=30,
-                                headers={'Content-Type': 'application/json'}
-                            )
-                            
-                            if print_response.status_code == 200:
-                                result = print_response.json()
-                                if result.get('success'):
-                                    print(f"✅ SUCCESS: Automatic printing via host service!")
-                                    return {
-                                        "success": True,
-                                        "method": "host_service_automatic",
-                                        "host_url": host_url,
-                                        "printer": result.get('printer', 'Unknown'),
-                                        "message": f"✅ AUTOMATIC PRINT SUCCESS: {result.get('message', 'Label printed')}"
-                                    }
-                            else:
-                                print(f"  ❌ Host service print failed: {print_response.status_code}")
-                                print(f"     Response: {print_response.text}")
-                        else:
-                            print(f"  ❌ Host service not healthy: {health_response.status_code}")
-                            
-                    except requests.exceptions.ConnectTimeout:
-                        print(f"  ⏰ Host service timeout: {host_url}")
-                    except requests.exceptions.ConnectionError:
-                        print(f"  🔌 Host service not reachable: {host_url}")
-                    except Exception as e:
-                        print(f"  ❌ Host service error: {e}")
-                        continue
+                print(f"✅ Ausführbares Script erstellt: {script_path}")
                 
-                print("  ❌ No host service found - service not running on host system")
+                # AUTOMATISCHE AUSFÜHRUNG: Führe Script sofort aus
+                result = subprocess.run(['bash', script_path], 
+                                      capture_output=True, text=True, timeout=30)
+                
+                if result.returncode == 0:
+                    print(f"🎉 AUTOMATISCHES DRUCKEN ERFOLGREICH!")
+                    print(f"Script-Ausgabe: {result.stdout}")
+                    
+                    return {
+                        "success": True,
+                        "method": "automatic_shell_script",
+                        "script_path": script_path,
+                        "script_output": result.stdout,
+                        "message": "✅ AUTOMATISCHES DRUCKEN ERFOLGREICH über Shell-Script!"
+                    }
+                else:
+                    print(f"⚠️  Script ausgeführt, aber Drucken fehlgeschlagen")
+                    print(f"Script-Ausgabe: {result.stdout}")
+                    print(f"Script-Fehler: {result.stderr}")
+                    
+                    return {
+                        "success": False,
+                        "method": "shell_script_executed",
+                        "script_path": script_path,
+                        "script_output": result.stdout,
+                        "script_error": result.stderr,
+                        "message": f"⚠️  Script erstellt und ausgeführt: {script_path}",
+                        "manual_command": f"bash {script_path}",
+                        "zpl_code": zpl_code
+                    }
                 
             except Exception as method1_error:
-                print(f"❌ Host service method failed: {method1_error}")
+                print(f"❌ Shell-Script Methode fehlgeschlagen: {method1_error}")
             
-            # METHOD 2: Container CUPS (Fallback)
+            # METHODE 2: Direkte lpr-Versuche (ohne Script)
             try:
-                print(f"🔍 Method 2: Container CUPS fallback...")
+                print(f"🔧 Methode 2: Direkte lpr-Befehle...")
                 
-                # Check for available printers in container
-                result = subprocess.run(['lpstat', '-p'], capture_output=True, text=True, timeout=10)
+                # Erstelle ZPL-Datei
+                zpl_file = f"/tmp/zebra_direct_{int(time.time())}.zpl"
+                with open(zpl_file, 'w') as f:
+                    f.write(zpl_code)
                 
-                if result.returncode == 0 and result.stdout.strip():
-                    print(f"Container CUPS printers: {result.stdout}")
-                    
-                    # Try to print to any available printer
-                    for printer_name in self.printer_names:
-                        try:
-                            print(f"  🖨️  Trying container printer: {printer_name}")
-                            print_result = subprocess.run(
-                                ['lpr', '-P', printer_name, '-o', 'raw'],
-                                input=zpl_code.encode(),
-                                timeout=15
-                            )
+                # Probiere verschiedene Drucker-Namen direkt
+                for printer_name in self.printer_names:
+                    try:
+                        print(f"  🖨️  Direkter Versuch: {printer_name}")
+                        
+                        # Direkte lpr-Befehle
+                        commands = [
+                            ['lpr', '-P', printer_name, '-o', 'raw', zpl_file],
+                            ['lpr', '-P', printer_name, zpl_file]
+                        ]
+                        
+                        for cmd in commands:
+                            result = subprocess.run(cmd, capture_output=True, text=True, timeout=15)
                             
-                            if print_result.returncode == 0:
-                                print(f"✅ SUCCESS: Container CUPS print successful!")
+                            if result.returncode == 0:
+                                os.remove(zpl_file)
+                                print(f"✅ DIREKTER ERFOLG: {' '.join(cmd)}")
                                 return {
                                     "success": True,
-                                    "method": "container_cups",
+                                    "method": "direct_lpr",
+                                    "command": ' '.join(cmd),
                                     "printer": printer_name,
-                                    "message": f"✅ Container CUPS print success to {printer_name}"
+                                    "message": f"✅ DIREKTES DRUCKEN ERFOLGREICH zu {printer_name}"
                                 }
-                        except Exception as e:
-                            print(f"  ❌ Container printer failed: {e}")
-                            continue
-                else:
-                    print("No printers found in container CUPS")
-                    
-            except Exception as method2_error:
-                print(f"❌ Container CUPS method failed: {method2_error}")
-            
-            # METHOD 3: Create instruction file for user
-            try:
-                print(f"📝 Method 3: Creating instruction file...")
+                    except Exception as e:
+                        print(f"  ❌ Direkter Versuch fehlgeschlagen: {e}")
+                        continue
                 
-                # Create comprehensive instruction file
-                timestamp = int(time.time())
-                instruction_file = f"/tmp/automatic_print_instructions_{timestamp}.txt"
+                # Wenn direkte Methoden fehlschlagen, erstelle Anweisungsdatei
+                instruction_file = f"/tmp/zebra_instructions_{int(time.time())}.txt"
                 
                 instructions = f"""
-🖨️  AUTOMATIC PRINTING SETUP REQUIRED
-=====================================
+🖨️  ZEBRA AUTOMATISCHES DRUCKEN - ANWEISUNGEN
+==============================================
 
-PROBLEM: Container cannot reach your Zebra printer directly.
+BESTELLUNG DETAILS:
+- Kunde: {getattr(self, '_last_customer_number', 'Unknown')}
+- Preis: {getattr(self, '_last_price', '0.00')}
+- Bestellung: {getattr(self, '_last_order_id', 'Unknown')}
+- Zeitstempel: {datetime.now().strftime('%d.%m.%y %H:%M:%S')}
 
-SOLUTION: Start the Host-Side Printing Service on your Mac
+ZPL-DATEI ERSTELLT: {zpl_file}
 
-STEPS TO ENABLE AUTOMATIC PRINTING:
-===================================
+DRUCKBEFEHLE (Terminal auf Mac ausführen):
+=========================================
 
-1. COPY the file 'host_print_service.py' to your Mac Desktop
+1. EINFACHSTER BEFEHL:
+   lpr -P "ZTC GK420d" -o raw "{zpl_file}"
 
-2. OPEN Terminal on your Mac and run:
-   cd ~/Desktop
-   pip3 install flask requests
-   python3 host_print_service.py
+2. ALTERNATIVE BEFEHLE:
+   lpr -P "Zebra Technologies ZTC GK420d" -o raw "{zpl_file}"
+   lpr -P "ZTC_GK420d" -o raw "{zpl_file}"
 
-3. The service will start on http://localhost:9876
+3. OHNE RAW-OPTION:
+   lpr -P "ZTC GK420d" "{zpl_file}"
 
-4. RESTART this container application
+4. PIPE-METHODE:
+   cat "{zpl_file}" | lpr -P "ZTC GK420d" -o raw
 
-5. Automatic printing will now work!
+DRUCKER PRÜFEN:
+===============
+lpstat -p
 
-CURRENT ORDER DETAILS:
-=====================
-Customer: {getattr(self, '_last_customer_number', 'Unknown')}
-Price: {getattr(self, '_last_price', '0.00')}
-Order ID: {getattr(self, '_last_order_id', 'Unknown')}
-Timestamp: {datetime.now().strftime('%d.%m.%y %H:%M:%S')}
+TROUBLESHOOTING:
+===============
+1. Drucker eingeschaltet?
+2. USB-Kabel verbunden?
+3. Drucker in Systemeinstellungen sichtbar?
+4. "Generische Druckerfunktionen verwenden" aktiviert?
 
-ZPL CODE TO PRINT:
-==================
-{zpl_code}
-
-MANUAL PRINT (macOS Terminal):
-=============================
-echo '{zpl_code}' | lpr -P "ZTC GK420d" -o raw
-echo '{zpl_code}' | lpr -P "Zebra Technologies ZTC GK420d" -o raw
-
-For help, check the host_print_service.py file.
+Bei Problemen: Öffnen Sie Terminal und führen Sie einen der Befehle oben aus.
 """
                 
                 with open(instruction_file, 'w') as f:
                     f.write(instructions)
                 
-                print(f"✅ Created instruction file: {instruction_file}")
+                print(f"📝 Anweisungsdatei erstellt: {instruction_file}")
                 
                 return {
                     "success": False,
-                    "method": "host_service_required",
+                    "method": "instruction_file_created",
+                    "zpl_file": zpl_file,
                     "instruction_file": instruction_file,
-                    "message": "⚠️  AUTOMATIC PRINTING REQUIRES HOST SERVICE - Check instruction file",
-                    "setup_required": True,
-                    "host_service_file": "/app/host_print_service.py",
-                    "setup_instructions": [
-                        "1. Copy host_print_service.py to your Mac",
-                        "2. Install: pip3 install flask requests", 
-                        "3. Run: python3 host_print_service.py",
-                        "4. Restart this application",
-                        "5. Automatic printing will work!"
+                    "message": f"📝 ZPL-Datei und Anweisungen erstellt. Automatisches Drucken fehlgeschlagen.",
+                    "manual_commands": [
+                        f'lpr -P "ZTC GK420d" -o raw "{zpl_file}"',
+                        f'lpr -P "Zebra Technologies ZTC GK420d" -o raw "{zpl_file}"'
                     ],
                     "zpl_code": zpl_code
                 }
                 
-            except Exception as method3_error:
-                print(f"❌ Instruction file creation failed: {method3_error}")
+            except Exception as method2_error:
+                print(f"❌ Direkte lpr-Methode fehlgeschlagen: {method2_error}")
             
-            # Final fallback
+            # FALLBACK: Einfache Datei-Erstellung
+            fallback_file = f"/tmp/zebra_fallback_{int(time.time())}.zpl"
+            with open(fallback_file, 'w') as f:
+                f.write(zpl_code)
+            
             return {
                 "success": False,
-                "method": "all_methods_failed",
-                "message": "❌ AUTOMATIC PRINTING FAILED - Host service required",
+                "method": "fallback_file",
+                "fallback_file": fallback_file,
+                "message": f"❌ Alle automatischen Methoden fehlgeschlagen. ZPL-Datei erstellt: {fallback_file}",
                 "zpl_code": zpl_code
             }
         
