@@ -135,23 +135,94 @@ class ZebraPrinterService:
     
     def print_label_usb(self, zpl_code: str) -> Dict[str, any]:
         """
-        Druckt Etikett über USB-Verbindung zum Zebra GK420d 
-        ENHANCED: Container-Host Bridge Support for macOS
+        AUTOMATISCHES DRUCKEN: Container → Host-Service → USB-Drucker
         """
         try:
-            print(f"🖨️  CRITICAL: Starting enhanced container print to Zebra GK420d...")
+            print(f"🖨️  AUTOMATIC PRINTING: Starting label print...")
             print(f"ZPL Code length: {len(zpl_code)} characters")
             
-            # METHOD 1: Container CUPS Detection (if host-mounted)
+            # METHOD 1: Host-Side Printing Service (BESTE LÖSUNG)
             try:
-                print(f"🔍 Method 1: Container CUPS printer detection...")
+                print(f"🖥️  Method 1: Host-Side Printing Service...")
                 
-                # Check for available printers
+                import requests
+                
+                # Verschiedene Host-URLs versuchen
+                host_urls = [
+                    "http://host.docker.internal:9876",  # Docker Desktop
+                    "http://localhost:9876",             # Direct access
+                    "http://127.0.0.1:9876",            # Localhost
+                    "http://10.0.0.1:9876",             # Gateway
+                    "http://192.168.65.1:9876"          # Docker Desktop Gateway
+                ]
+                
+                # Erstelle Druckauftrag-Daten
+                print_data = {
+                    "zpl_code": zpl_code,
+                    "customer_number": getattr(self, '_last_customer_number', 'Unknown'),
+                    "price": getattr(self, '_last_price', '0.00'),
+                    "order_id": getattr(self, '_last_order_id', f"auto_{int(time.time())}")
+                }
+                
+                for host_url in host_urls:
+                    try:
+                        print(f"  🔗 Trying host service: {host_url}")
+                        
+                        # Erstmal Gesundheitsprüfung
+                        health_response = requests.get(f"{host_url}/health", timeout=3)
+                        
+                        if health_response.status_code == 200:
+                            print(f"  ✅ Host service is running at {host_url}")
+                            
+                            # Druckauftrag senden
+                            print_response = requests.post(
+                                f"{host_url}/print",
+                                json=print_data,
+                                timeout=30,
+                                headers={'Content-Type': 'application/json'}
+                            )
+                            
+                            if print_response.status_code == 200:
+                                result = print_response.json()
+                                if result.get('success'):
+                                    print(f"✅ SUCCESS: Automatic printing via host service!")
+                                    return {
+                                        "success": True,
+                                        "method": "host_service_automatic",
+                                        "host_url": host_url,
+                                        "printer": result.get('printer', 'Unknown'),
+                                        "message": f"✅ AUTOMATIC PRINT SUCCESS: {result.get('message', 'Label printed')}"
+                                    }
+                            else:
+                                print(f"  ❌ Host service print failed: {print_response.status_code}")
+                                print(f"     Response: {print_response.text}")
+                        else:
+                            print(f"  ❌ Host service not healthy: {health_response.status_code}")
+                            
+                    except requests.exceptions.ConnectTimeout:
+                        print(f"  ⏰ Host service timeout: {host_url}")
+                    except requests.exceptions.ConnectionError:
+                        print(f"  🔌 Host service not reachable: {host_url}")
+                    except Exception as e:
+                        print(f"  ❌ Host service error: {e}")
+                        continue
+                
+                print("  ❌ No host service found - service not running on host system")
+                
+            except Exception as method1_error:
+                print(f"❌ Host service method failed: {method1_error}")
+            
+            # METHOD 2: Container CUPS (Fallback)
+            try:
+                print(f"🔍 Method 2: Container CUPS fallback...")
+                
+                # Check for available printers in container
                 result = subprocess.run(['lpstat', '-p'], capture_output=True, text=True, timeout=10)
-                print(f"CUPS printer list: {result.stdout}")
                 
                 if result.returncode == 0 and result.stdout.strip():
-                    # Found printers in container - try to print
+                    print(f"Container CUPS printers: {result.stdout}")
+                    
+                    # Try to print to any available printer
                     for printer_name in self.printer_names:
                         try:
                             print(f"  🖨️  Trying container printer: {printer_name}")
@@ -162,170 +233,103 @@ class ZebraPrinterService:
                             )
                             
                             if print_result.returncode == 0:
-                                print(f"✅ SUCCESS: Container print successful with {printer_name}")
+                                print(f"✅ SUCCESS: Container CUPS print successful!")
                                 return {
                                     "success": True,
                                     "method": "container_cups",
                                     "printer": printer_name,
-                                    "message": f"✅ Label printed via container CUPS to {printer_name}"
+                                    "message": f"✅ Container CUPS print success to {printer_name}"
                                 }
                         except Exception as e:
-                            print(f"  ❌ Container printer {printer_name} failed: {e}")
+                            print(f"  ❌ Container printer failed: {e}")
                             continue
                 else:
                     print("No printers found in container CUPS")
                     
-            except Exception as method1_error:
-                print(f"❌ Method 1 failed: {method1_error}")
+            except Exception as method2_error:
+                print(f"❌ Container CUPS method failed: {method2_error}")
             
-            # METHOD 2: Host System Detection + Manual File Creation
+            # METHOD 3: Create instruction file for user
             try:
-                print(f"🖥️  Method 2: Host system integration...")
+                print(f"📝 Method 3: Creating instruction file...")
                 
-                # Create multiple ZPL files for different approaches
+                # Create comprehensive instruction file
                 timestamp = int(time.time())
+                instruction_file = f"/tmp/automatic_print_instructions_{timestamp}.txt"
                 
-                files_created = []
+                instructions = f"""
+🖨️  AUTOMATIC PRINTING SETUP REQUIRED
+=====================================
+
+PROBLEM: Container cannot reach your Zebra printer directly.
+
+SOLUTION: Start the Host-Side Printing Service on your Mac
+
+STEPS TO ENABLE AUTOMATIC PRINTING:
+===================================
+
+1. COPY the file 'host_print_service.py' to your Mac Desktop
+
+2. OPEN Terminal on your Mac and run:
+   cd ~/Desktop
+   pip3 install flask requests
+   python3 host_print_service.py
+
+3. The service will start on http://localhost:9876
+
+4. RESTART this container application
+
+5. Automatic printing will now work!
+
+CURRENT ORDER DETAILS:
+=====================
+Customer: {getattr(self, '_last_customer_number', 'Unknown')}
+Price: {getattr(self, '_last_price', '0.00')}
+Order ID: {getattr(self, '_last_order_id', 'Unknown')}
+Timestamp: {datetime.now().strftime('%d.%m.%y %H:%M:%S')}
+
+ZPL CODE TO PRINT:
+==================
+{zpl_code}
+
+MANUAL PRINT (macOS Terminal):
+=============================
+echo '{zpl_code}' | lpr -P "ZTC GK420d" -o raw
+echo '{zpl_code}' | lpr -P "Zebra Technologies ZTC GK420d" -o raw
+
+For help, check the host_print_service.py file.
+"""
                 
-                # File 1: Standard ZPL file
-                zpl_file = f"/tmp/zebra_host_{timestamp}.zpl"
-                with open(zpl_file, 'w', newline='\r\n') as f:  # Windows-style line endings for better compatibility
-                    f.write(zpl_code)
-                files_created.append(zpl_file)
+                with open(instruction_file, 'w') as f:
+                    f.write(instructions)
                 
-                # File 2: Raw binary file
-                raw_file = f"/tmp/zebra_raw_{timestamp}.prn"
-                with open(raw_file, 'wb') as f:
-                    f.write(zpl_code.encode('utf-8'))
-                files_created.append(raw_file)
+                print(f"✅ Created instruction file: {instruction_file}")
                 
-                # File 3: macOS-optimized file
-                macos_file = f"/tmp/zebra_macos_{timestamp}.txt"
-                with open(macos_file, 'w', encoding='utf-8') as f:
-                    f.write(zpl_code)
-                files_created.append(macos_file)
-                
-                print(f"✅ Created {len(files_created)} files for host printing")
-                
-                # Try to detect if we can reach host USB through different methods
-                host_commands = [
-                    # macOS-style commands that might work if host is accessible
-                    f'echo "{zpl_code}" | lpr -P ZTC_GK420d -o raw',
-                    f'echo "{zpl_code}" | lpr -P "Zebra Technologies ZTC GK420d" -o raw',
-                    f'cat {zpl_file} | lpr -P ZTC_GK420d -o raw',
-                    f'lpr -P ZTC_GK420d -o raw {zpl_file}',
-                ]
-                
-                # Try direct host commands (might work in some container configurations)
-                for cmd in host_commands[:2]:  # Limit attempts
-                    try:
-                        print(f"  🖥️  Trying host command: {cmd[:50]}...")
-                        result = subprocess.run(['bash', '-c', cmd], 
-                                              capture_output=True, text=True, timeout=10)
-                        
-                        if result.returncode == 0:
-                            print(f"✅ SUCCESS: Host command worked!")
-                            return {
-                                "success": True,
-                                "method": "host_bridge",
-                                "command": cmd,
-                                "message": f"✅ Label sent to host printer successfully"
-                            }
-                        else:
-                            print(f"  Host command failed: {result.stderr}")
-                    except Exception as e:
-                        print(f"  Host command error: {e}")
-                        continue
-                
-                # If direct commands fail, provide comprehensive manual instructions
                 return {
                     "success": False,
-                    "method": "manual_host_files",
-                    "files_created": files_created,
-                    "message": "⚠️  Container cannot access host USB. Files created for manual printing.",
-                    "host_instructions": {
-                        "macos_commands": [
-                            f"# macOS Terminal Commands (run on your Mac):",
-                            f"lpr -P 'ZTC GK420d' -o raw {zpl_file}",
-                            f"lpr -P 'Zebra Technologies ZTC GK420d' -o raw {zpl_file}",
-                            f"cat {zpl_file} > /dev/usb/lp0  # Direct USB (if available)",
-                        ],
-                        "alternative_methods": [
-                            "1. Use Zebra Setup Utilities on your Mac",
-                            "2. Copy ZPL content to Zebra Design software", 
-                            "3. Use macOS System Preferences > Printers to print raw file",
-                            "4. Configure Docker/K8s USB passthrough (advanced)"
-                        ],
-                        "files_info": {
-                            "zpl_file": f"Standard ZPL format: {zpl_file}",
-                            "raw_file": f"Raw binary format: {raw_file}",
-                            "macos_file": f"macOS-optimized: {macos_file}"
-                        }
-                    },
+                    "method": "host_service_required",
+                    "instruction_file": instruction_file,
+                    "message": "⚠️  AUTOMATIC PRINTING REQUIRES HOST SERVICE - Check instruction file",
+                    "setup_required": True,
+                    "host_service_file": "/app/host_print_service.py",
+                    "setup_instructions": [
+                        "1. Copy host_print_service.py to your Mac",
+                        "2. Install: pip3 install flask requests", 
+                        "3. Run: python3 host_print_service.py",
+                        "4. Restart this application",
+                        "5. Automatic printing will work!"
+                    ],
                     "zpl_code": zpl_code
                 }
                 
-            except Exception as method2_error:
-                print(f"❌ Method 2 failed: {method2_error}")
-            
-            # METHOD 3: Network Printing Attempt (if Zebra has network capability)
-            try:
-                print(f"🌐 Method 3: Network printing attempt...")
-                
-                # Some Zebra printers support network printing on port 9100
-                # This is a fallback attempt
-                potential_ips = ['192.168.1.100', '192.168.0.100', '10.0.0.100']  # Common printer IPs
-                
-                for ip in potential_ips[:1]:  # Limit network attempts
-                    try:
-                        import socket
-                        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                        sock.settimeout(2)
-                        result = sock.connect_ex((ip, 9100))
-                        sock.close()
-                        
-                        if result == 0:
-                            print(f"Found potential network printer at {ip}:9100")
-                            # Try to send ZPL
-                            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                                s.settimeout(5)
-                                s.connect((ip, 9100))
-                                s.sendall(zpl_code.encode())
-                                
-                            return {
-                                "success": True,
-                                "method": "network_print",
-                                "ip": ip,
-                                "message": f"✅ Label sent to network printer at {ip}:9100"
-                            }
-                    except Exception as e:
-                        print(f"  Network attempt {ip} failed: {e}")
-                        continue
-                        
             except Exception as method3_error:
-                print(f"❌ Method 3 failed: {method3_error}")
+                print(f"❌ Instruction file creation failed: {method3_error}")
             
-            # If all methods fail, return comprehensive failure info
-            fallback_file = f"/tmp/zebra_fallback_{int(time.time())}.zpl"
-            with open(fallback_file, 'w') as f:
-                f.write(zpl_code)
-            
+            # Final fallback
             return {
                 "success": False,
                 "method": "all_methods_failed",
-                "fallback_file": fallback_file,
-                "message": "❌ All printing methods failed. Container cannot access host USB printer.",
-                "container_info": {
-                    "cups_status": "Running but no host printers accessible",
-                    "usb_access": "Container cannot access host USB devices",
-                    "solution": "Requires Docker/K8s USB device mounting or host-side printing service"
-                },
-                "manual_solutions": [
-                    f"1. SSH to container and copy {fallback_file} to host",
-                    f"2. Run: lpr -P 'ZTC GK420d' -o raw {fallback_file}",
-                    "3. Configure container USB passthrough",
-                    "4. Set up host-side printing service"
-                ],
+                "message": "❌ AUTOMATIC PRINTING FAILED - Host service required",
                 "zpl_code": zpl_code
             }
         
