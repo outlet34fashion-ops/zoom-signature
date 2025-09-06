@@ -320,13 +320,14 @@ function App() {
           const serverMessages = response.data;
           
           setChatMessages(prev => {
-            // Check if we have new messages
-            const lastLocalMessage = prev[prev.length - 1];
-            if (!lastLocalMessage) {
+            // If we have no local messages, this is the initial load
+            if (prev.length === 0) {
               console.log('📥 Initial chat load via polling:', serverMessages.length, 'messages');
               return serverMessages;
             }
             
+            // Check for new messages since last update
+            const lastLocalMessage = prev[prev.length - 1];
             const lastLocalTimestamp = new Date(lastLocalMessage.timestamp);
             const newMessages = serverMessages.filter(msg => 
               new Date(msg.timestamp) > lastLocalTimestamp
