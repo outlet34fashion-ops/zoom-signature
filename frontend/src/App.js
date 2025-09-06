@@ -18,8 +18,8 @@ import livekitService from './services/livekitService';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
-// Create explicit WebSocket URL for backend chat
-const CHAT_WS_URL = BACKEND_URL.replace(/^https?:\/\//, BACKEND_URL.startsWith('https://') ? 'wss://' : 'ws://') + '/ws';
+// Fix WebSocket URL to use proper backend endpoint
+const CHAT_WS_URL = 'wss://shopcast-live-3.preview.emergentagent.com/api/ws';
 
 function App() {
   const { t, i18n } = useTranslation();
