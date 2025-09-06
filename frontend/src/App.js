@@ -3334,6 +3334,49 @@ function App() {
                         <Button 
                           onClick={async () => {
                             try {
+                              // NEUE LÖSUNG: HTML-Druckvorschau (wie Microsoft Word)
+                              const htmlUrl = `${API}/zebra/html-preview/${labelPreviewCustomer}?price=${labelPreviewPrice}`;
+                              window.open(htmlUrl, '_blank');
+                              alert('✅ Druckfreundliche Vorschau geöffnet! Drucken Sie wie ein normales Dokument.');
+                            } catch (error) {
+                              alert('❌ HTML-Fehler: ' + error.message);
+                            }
+                          }}
+                          className="bg-green-600 hover:bg-green-700 text-white w-full font-bold"
+                          disabled={!labelPreviewCustomer}
+                        >
+                          🖨️ DIREKT DRUCKEN (wie Word)
+                        </Button>
+                        
+                        <Button 
+                          onClick={async () => {
+                            try:
+                              // CSV-Export für Word/Excel
+                              const csvUrl = `${API}/zebra/csv-export/${labelPreviewCustomer}?price=${labelPreviewPrice}`;
+                              const response = await axios.get(csvUrl, { responseType: 'blob' });
+                              
+                              const url = window.URL.createObjectURL(new Blob([response.data]));
+                              const link = document.createElement('a');
+                              link.href = url;
+                              link.setAttribute('download', `zebra_label_${labelPreviewCustomer}_${Date.now()}.csv`);
+                              document.body.appendChild(link);
+                              link.click();
+                              link.remove();
+                              
+                              alert('✅ CSV-Datei heruntergeladen! Öffnen Sie sie in Excel/Word für Seriendruck.');
+                            } catch (error) {
+                              alert('❌ CSV-Fehler: ' + error.message);
+                            }
+                          }}
+                          className="bg-purple-600 hover:bg-purple-700 text-white w-full"
+                          disabled={!labelPreviewCustomer}
+                        >
+                          📊 CSV für Word/Excel Export
+                        </Button>
+                        
+                        <Button 
+                          onClick={async () => {
+                            try {
                               // Bild-Vorschau öffnen
                               const imageUrl = `${API}/zebra/image-preview/${labelPreviewCustomer}?price=${labelPreviewPrice}`;
                               window.open(imageUrl, '_blank');
