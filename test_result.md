@@ -288,7 +288,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "LiveKit streaming backend testing completed successfully"
+    - "Zebra Etiketten-Drucker integration testing completed successfully"
   stuck_tasks: []
   test_all: false
   test_priority: "critical_first"
