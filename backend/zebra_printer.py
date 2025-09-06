@@ -67,7 +67,62 @@ class ZebraPrinterService:
 
 ^XZ
 """
-        return zpl_code.strip()
+    def generate_label_pdf(self, customer_number: str, price: str, timestamp: datetime) -> BytesIO:
+        """
+        Generiert PDF-Vorschau des Etiketts (40x25mm)
+        """
+        try:
+            # Create PDF in memory
+            buffer = BytesIO()
+            
+            # 40x25mm label size in points (1mm = 2.834 points)
+            label_width = 40 * 2.834  # ~113 points
+            label_height = 25 * 2.834  # ~71 points
+            
+            p = canvas.Canvas(buffer, pagesize=(label_width, label_height))
+            
+            # Set white background
+            p.setFillColorRGB(1, 1, 1)
+            p.rect(0, 0, label_width, label_height, fill=1)
+            
+            # Set black text color
+            p.setFillColorRGB(0, 0, 0)
+            
+            # Zeitstempel oben (klein)
+            formatted_time = timestamp.strftime("%d.%m.%y %H:%M:%S")
+            p.setFont("Helvetica", 6)
+            p.drawString(5, label_height - 10, formatted_time)
+            
+            # Kundennummer mitte (groß und fett)
+            customer_main = customer_number[-3:] if len(customer_number) >= 3 else customer_number
+            p.setFont("Helvetica-Bold", 20)
+            text_width = p.stringWidth(customer_main, "Helvetica-Bold", 20)
+            p.drawString((label_width - text_width) / 2, label_height / 2 - 5, customer_main)
+            
+            # Unten links: Prefix
+            customer_prefix = customer_number[:-3] if len(customer_number) > 3 else ""
+            if customer_prefix:
+                p.setFont("Helvetica", 8)
+                p.drawString(5, 5, customer_prefix)
+            
+            # Unten rechts: Preis
+            price_display = price.replace("€", "").replace(",", "").replace(".", "")
+            p.setFont("Helvetica", 8)
+            price_width = p.stringWidth(price_display, "Helvetica", 8)
+            p.drawString(label_width - price_width - 5, 5, price_display)
+            
+            # Add border for better visibility
+            p.setStrokeColorRGB(0, 0, 0)
+            p.setLineWidth(0.5)
+            p.rect(1, 1, label_width - 2, label_height - 2, fill=0)
+            
+            p.save()
+            buffer.seek(0)
+            return buffer
+            
+        except Exception as e:
+            logging.error(f"PDF generation failed: {e}")
+            raise
     
     def print_label_usb(self, zpl_code: str) -> Dict[str, any]:
         """
