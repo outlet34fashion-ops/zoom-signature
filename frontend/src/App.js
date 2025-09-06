@@ -26,6 +26,7 @@ function App() {
   const [isLive, setIsLive] = useState(true);
   const [viewerCount, setViewerCount] = useState(34);
   const [chatMessages, setChatMessages] = useState([]);
+  const chatEndRef = useRef(null);
   const [newMessage, setNewMessage] = useState('');
   const [username] = useState('Kunde');
   const [products, setProducts] = useState([]);
