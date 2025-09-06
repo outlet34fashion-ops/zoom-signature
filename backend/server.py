@@ -1599,36 +1599,87 @@ async def get_html_preview(customer_number: str, price: str = "0.00"):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"HTML preview failed: {str(e)}")
 
-@api_router.get("/zebra/csv-export/{customer_number}")
-async def export_label_csv(customer_number: str, price: str = "0.00"):
+@api_router.get("/zebra/download-latest-zpl")
+async def download_latest_zpl():
     """
-    CSV-Export für Microsoft Word/Excel Import
+    EINFACHE LÖSUNG: Lädt die neueste ZPL-Datei herunter
+    Nach jeder Bestellung können Sie diese Datei herunterladen und drucken
     """
     try:
-        from datetime import datetime
-        from fastapi.responses import Response
+        import glob
+        import os
+        from fastapi.responses import FileResponse
         
-        # Format data
-        formatted_time = datetime.now().strftime("%d.%m.%y %H:%M:%S")
-        customer_main = customer_number[-3:] if len(customer_number) >= 3 else customer_number
-        customer_prefix = customer_number[:-3] if len(customer_number) > 3 else ""
-        price_display = price.replace("€", "").replace(",", "").replace(".", "")
+        # Finde neueste ZPL-Datei
+        zpl_files = glob.glob("/tmp/zebra_auto_*.zpl")
         
-        # Create CSV content
-        csv_content = f"""Zeitstempel,Kundennummer_Haupt,Kundennummer_Prefix,Preis
-{formatted_time},{customer_main},{customer_prefix},{price_display}
-"""
+        if not zpl_files:
+            raise HTTPException(status_code=404, detail="Keine ZPL-Dateien gefunden")
         
-        return Response(
-            content=csv_content,
-            media_type="text/csv",
+        # Neueste Datei nach Erstellungszeit
+        latest_file = max(zpl_files, key=os.path.getctime)
+        
+        return FileResponse(
+            latest_file, 
+            media_type="text/plain",
+            filename=f"zebra_label_{int(time.time())}.zpl",
             headers={
-                "Content-Disposition": f"attachment; filename=zebra_label_{customer_number}_{int(time.time())}.csv"
+                "Content-Disposition": "attachment; filename=zebra_label.zpl"
             }
         )
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"CSV export failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Download failed: {str(e)}")
+
+@api_router.get("/zebra/latest-zpl-content")
+async def get_latest_zpl_content():
+    """
+    Zeigt den Inhalt der neuesten ZPL-Datei zur direkten Kopie
+    """
+    try:
+        import glob
+        import os
+        
+        # Finde neueste ZPL-Datei
+        zpl_files = glob.glob("/tmp/zebra_auto_*.zpl")
+        
+        if not zpl_files:
+            return {"success": False, "message": "Keine ZPL-Dateien gefunden"}
+        
+        # Neueste Datei nach Erstellungszeit
+        latest_file = max(zpl_files, key=os.path.getctime)
+        
+        with open(latest_file, 'r') as f:
+            zpl_content = f.read()
+            
+        # Erstelle auch Mac-Druckbefehle
+        mac_commands = [
+            f"# DIREKTE DRUCKBEFEHLE FÜR MAC TERMINAL:",
+            f"",
+            f"# 1. ZPL-Datei erstellen:",
+            f"cat > ~/Desktop/zebra_print.zpl << 'EOF'",
+            zpl_content,
+            f"EOF",
+            f"",
+            f"# 2. Drucken (verschiedene Druckernamen versuchen):",
+            f'lpr -P "ZTC GK420d" -o raw ~/Desktop/zebra_print.zpl',
+            f'lpr -P "Zebra Technologies ZTC GK420d" -o raw ~/Desktop/zebra_print.zpl',
+            f'lpr -P "ZTC_GK420d" -o raw ~/Desktop/zebra_print.zpl',
+            f"",
+            f"# 3. Verfügbare Drucker anzeigen:",
+            f"lpstat -p"
+        ]
+        
+        return {
+            "success": True,
+            "zpl_file": latest_file,
+            "zpl_content": zpl_content,
+            "mac_commands": mac_commands,
+            "message": "✅ Neueste ZPL-Datei gefunden - bereit zum Drucken"
+        }
+        
+    except Exception as e:
+        return {"success": False, "message": f"Fehler: {str(e)}"}
 
 @api_router.post("/livekit/room/{room_name}/participant/{participant_identity}/remove")
 async def remove_participant_from_room(
