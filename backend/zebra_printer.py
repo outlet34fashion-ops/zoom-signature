@@ -69,37 +69,41 @@ class ZebraPrinterService:
         Druckt Etikett über USB-Verbindung zum Zebra GK420d
         """
         try:
-            # Methode 1: Direkt über lp (Linux Printing System)
-            try:
-                # Schreibe ZPL in temporäre Datei
-                temp_file = "/tmp/zebra_label.zpl"
-                with open(temp_file, 'w') as f:
-                    f.write(zpl_code)
+            # FIXED: Try all possible printer names from system
+            for printer_name in self.printer_names:
+                try:
+                    # Methode 1: Direkt über lp (Linux Printing System)
+                    temp_file = f"/tmp/zebra_label_{int(time.time())}.zpl"
+                    with open(temp_file, 'w') as f:
+                        f.write(zpl_code)
+                    
+                    # Try printing with this printer name
+                    result = subprocess.run([
+                        'lp', '-d', printer_name, '-o', 'raw', temp_file
+                    ], capture_output=True, text=True, timeout=10)
+                    
+                    if result.returncode == 0:
+                        os.remove(temp_file)
+                        return {
+                            "success": True,
+                            "method": "lp_command",
+                            "printer_name": printer_name,
+                            "message": f"Label printed successfully via USB using {printer_name}"
+                        }
+                    else:
+                        print(f"lp failed for {printer_name}: {result.stderr}")
                 
-                # Drucke über lp command
-                result = subprocess.run([
-                    'lp', '-d', self.printer_name, '-o', 'raw', temp_file
-                ], capture_output=True, text=True, timeout=10)
-                
-                if result.returncode == 0:
-                    os.remove(temp_file)
-                    return {
-                        "success": True,
-                        "method": "lp_command",
-                        "message": "Label printed successfully via USB"
-                    }
-                else:
-                    logger.error(f"lp command failed: {result.stderr}")
+                except Exception as printer_error:
+                    print(f"Printer {printer_name} failed: {printer_error}")
+                    continue
             
-            except Exception as lp_error:
-                logger.warning(f"lp method failed: {lp_error}")
-            
-            # Methode 2: Direkt über USB Device
+            # Methode 2: Raw USB Device Access (for macOS/Linux)
             try:
-                # Finde USB-Zebra-Drucker
+                # Common USB device paths
                 usb_devices = [
                     "/dev/usb/lp0", "/dev/usb/lp1", "/dev/usb/lp2",
-                    "/dev/lp0", "/dev/lp1", "/dev/lp2"
+                    "/dev/lp0", "/dev/lp1", "/dev/lp2",
+                    "/dev/ttyUSB0", "/dev/ttyUSB1", "/dev/ttyUSB2"
                 ]
                 
                 for device in usb_devices:
@@ -116,38 +120,55 @@ class ZebraPrinterService:
                                 "message": f"Label printed successfully via {device}"
                             }
                         except Exception as device_error:
-                            logger.warning(f"Device {device} failed: {device_error}")
+                            print(f"Device {device} failed: {device_error}")
                             continue
             
             except Exception as usb_error:
-                logger.error(f"USB method failed: {usb_error}")
+                print(f"USB method failed: {usb_error}")
             
-            # Methode 3: CUPS Integration
+            # Methode 3: Python cups for macOS/Linux
             try:
-                # Verwende echo und lp für rohe ZPL-Daten
-                result = subprocess.run([
-                    'sh', '-c', f'echo "{zpl_code}" | lp -d {self.printer_name} -o raw'
-                ], capture_output=True, text=True, timeout=10)
+                import cups
+                conn = cups.Connection()
+                printers = conn.getPrinters()
                 
-                if result.returncode == 0:
+                # Find Zebra printer in CUPS
+                zebra_printer = None
+                for printer_name, printer_info in printers.items():
+                    if any(keyword in printer_name.lower() for keyword in ['zebra', 'gk420', 'ztc']):
+                        zebra_printer = printer_name
+                        break
+                
+                if zebra_printer:
+                    # Create temporary file and print via CUPS
+                    temp_file = f"/tmp/zebra_cups_{int(time.time())}.zpl"
+                    with open(temp_file, 'w') as f:
+                        f.write(zpl_code)
+                    
+                    job_id = conn.printFile(zebra_printer, temp_file, "Zebra Label", {"raw": ""})
+                    os.remove(temp_file)
+                    
                     return {
                         "success": True,
-                        "method": "cups_raw",
-                        "message": "Label printed successfully via CUPS"
+                        "method": "cups_python",
+                        "printer_name": zebra_printer,
+                        "job_id": job_id,
+                        "message": f"Label printed successfully via CUPS using {zebra_printer}"
                     }
             
             except Exception as cups_error:
-                logger.warning(f"CUPS method failed: {cups_error}")
+                print(f"CUPS Python method failed: {cups_error}")
             
-            # Wenn alle Methoden fehlschlagen
+            # Wenn alle Methoden fehlschlagen, gebe detaillierte Fehlerinfo
             return {
                 "success": False,
                 "message": "All printing methods failed. Check USB connection and printer setup.",
-                "zpl_code": zpl_code  # Für Debugging
+                "tried_printers": self.printer_names,
+                "zpl_code": zpl_code,
+                "troubleshooting": "1. Check USB connection, 2. Verify printer power, 3. Check CUPS printer installation"
             }
         
         except Exception as e:
-            logger.error(f"Print error: {e}")
             return {
                 "success": False,
                 "message": f"Printing failed: {str(e)}",
