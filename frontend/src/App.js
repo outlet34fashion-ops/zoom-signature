@@ -472,30 +472,48 @@ function App() {
     
     console.log('formatGermanTime input:', timestamp, typeof timestamp);
     
-    // Ensure we have a proper Date object
-    let date;
-    if (timestamp instanceof Date) {
-      date = timestamp;
-    } else if (typeof timestamp === 'string') {
-      // Handle ISO string format
-      date = new Date(timestamp);
-    } else if (typeof timestamp === 'number') {
-      date = new Date(timestamp);
-    } else {
-      console.error('Invalid timestamp format:', timestamp);
+    try {
+      // Ensure we have a proper Date object
+      let date;
+      if (timestamp instanceof Date) {
+        date = timestamp;
+      } else if (typeof timestamp === 'string') {
+        // Handle ISO string format with Z suffix (MongoDB/Backend format)
+        if (timestamp.includes('T') && timestamp.includes('Z')) {
+          date = new Date(timestamp);
+        } else if (timestamp.includes('T')) {
+          date = new Date(timestamp);
+        } else {
+          date = new Date(timestamp);
+        }
+      } else if (typeof timestamp === 'number') {
+        date = new Date(timestamp);
+      } else {
+        console.error('Invalid timestamp format:', timestamp);
+        return 'N/A';
+      }
+      
+      // Validate the date object
+      if (isNaN(date.getTime())) {
+        console.error('Invalid date created from timestamp:', timestamp);
+        return 'N/A';
+      }
+      
+      // Force German timezone conversion (UTC+2 or UTC+1 depending on DST)
+      const germanTime = date.toLocaleTimeString('de-DE', {
+        timeZone: 'Europe/Berlin',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+      
+      console.log('formatGermanTime output:', germanTime, 'from date:', date.toISOString());
+      return germanTime;
+      
+    } catch (error) {
+      console.error('formatGermanTime error:', error, 'with timestamp:', timestamp);
       return 'N/A';
     }
-    
-    // Force German timezone conversion
-    const germanTime = date.toLocaleTimeString('de-DE', {
-      timeZone: 'Europe/Berlin',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    });
-    
-    console.log('formatGermanTime output:', germanTime, 'from date:', date);
-    return germanTime;
   };
 
   const formatGermanDate = (timestamp) => {
