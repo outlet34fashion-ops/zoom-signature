@@ -1,0 +1,116 @@
+<analysis>
+The AI engineer's work spanned several complex bug fixes and feature implementations for a live shopping application. Initially, the focus was on resolving persistent chat issues, including real-time updates, message order, and timezone accuracy. This involved extensive debugging of WebSocket connections, correcting URL configurations, and refining message handling and display logic in . Multiple iterations were required due to deployment-related WebSocket routing problems, leading to a robust polling fallback mechanism. Timestamp display also proved challenging, requiring several UI adjustments.
+
+Following the chat fixes, the critical live streaming functionality, built with LiveKit, was addressed. The primary issue was an outdated WebRTC implementation and misconfigured backend environment variables. The AI successfully integrated official LiveKit React components, validated backend token generation, and ensured role-based streaming. A temporary demo on the landing page was added for debugging, then corrected to appear only in the authenticated customer view.
+
+Finally, the AI began implementing an automatic Zebra label printing feature for new orders, including ZPL generation and an admin preview. This task revealed complexities with printer detection in the containerized environment and macOS-specific printer settings, which remain an ongoing challenge. The AI extensively used debugging, code modification, and sub-agents (troubleshoot_agent) throughout.
+</analysis>
+
+<product_requirements>
+The Live Shopping App is a full-stack platform for live streaming, chat, and product ordering, with administrative capabilities. Key features and ongoing development include:
+
+1.  **Modern UI/UX**: Dark theme, glassmorphism, collapsible sections for customer view (compact product/order displays, full timestamps) and a refactored admin dashboard.
+2.  **Core Bug Fixes**: Initial 2-hour timezone bug.
+3.  **Chat Functionality**:
+    *   Real-time message updates.
+    *   Messages displayed chronologically (newest at bottom), with auto-scroll and input field clearing.
+    *   Sender customer number, message, and timestamp for each entry.
+    *   Support for specific emoji reactions (❤️, 🔥, 👍) in real-time.
+4.  **Registration Enhancements**: Add kostenlos to registration text and remove a descriptive paragraph.
+5.  **Live Streaming (LiveKit Integration)**:
+    *   Stable streaming for all participants with real-time video/audio.
+    *   Clear indication of an active stream.
+    *   Stream visible only in authenticated customer view when active, not on the landing page.
+6.  **Automatic Zebra Label Printing**:
+    *   Generate and print labels automatically on new order confirmation using Zebra GK420d (40x25 mm).
+    *   Label content: large, bold customer number; centered price; small timestamp (date + time).
+    *   Admin preview of labels (image or PDF).
+    *   Printing via USB connection.
+7.  **Desktop Split-Screen Layout (Orders & Chat)**: Display these sections side-by-side in desktop mode.
+8.  **Customer Creation/Login Fix**: Resolve issues with customer 10299 not found or new customers not being created/displayed in admin.
+</product_requirements>
+
+<key_technical_concepts>
+- **FastAPI**: Python backend for API and WebSockets.
+- **React**: Frontend framework.
+- **MongoDB**: Database for persistence.
+- **WebRTC/LiveKit**: Real-time video streaming.
+- **Tailwind CSS**: UI styling.
+- **WebSockets/HTTP Polling**: Real-time chat.
+- **CUPS/ReportLab**: Printer integration and PDF generation.
+</key_technical_concepts>
+
+<code_architecture>
+The application utilizes a React frontend and a FastAPI backend, with MongoDB for data storage.
+
+
+
+- :
+    - **Importance**: Main FastAPI application for API and WebSocket connections.
+    - **Changes Made**:
+        -  logic was updated for UTC to German time.
+        -  endpoint was validated.
+        - New API endpoints for Zebra printer (, , , , , , ) were added.
+        -  function was modified to automatically trigger label printing.
+        - PDF generation logic was integrated.
+- :
+    - **Importance**: Handles LiveKit token generation and room management logic.
+    - **Changes Made**: No direct explicit changes were made in the trajectory, but its functionality was validated.
+- :
+    - **Importance**: New file created to encapsulate Zebra printer communication and ZPL (Zebra Programming Language) label generation.
+    - **Changes Made**:
+        - Initial implementation for generating ZPL code based on customer number, price, and timestamp.
+        - Integration of  (attempted) and direct USB printing logic.
+        -  updated to .
+        - Added functions for PDF and image preview generation using .
+        - Included macOS-specific  commands for direct printing attempts.
+- :
+    - **Importance**: Central React component for UI, state, and routing.
+    - **Changes Made**:
+        - **Chat**: Extensive modifications for real-time updates, timezone correction ( repeatedly refined), message order ( then later changed to ), auto-scroll, input clearing. WebSocket connection logic was refined, then replaced with a polling mechanism (500ms frequency, force-polling after send) due to routing issues. Debugging UI for polling status was added and later removed. Timestamp display was repeatedly adjusted (size, position, format) and eventually removed per user request. Emoji reaction buttons were implemented and refined (removed colored circles, kept ❤️, 🔥, 👍).
+        - **Live Streaming**: Replaced  with . Added LiveKit state and functions (, , ). Replaced custom LiveKit components with official  (, , , ) for both admin and customer views. Auto-join logic for customers was implemented. The LiveKit demo was temporarily added to the landing page for debugging, then removed and confined to the authenticated customer view, and admin dashboard.
+        - **Zebra Printer**: UI for Zebra printer management (status, test print, ZPL download, PDF/image preview) added to the Admin Dashboard.
+- :
+    - **Importance**: Stores frontend environment variables.
+    - **Changes Made**:  and  were checked.  derived from  was used for WebSocket.  was confirmed.
+- :
+    - **Importance**: Stores backend environment variables.
+    - **Changes Made**:  and  were confirmed present but initially not loaded correctly.
+- :
+    - **Importance**: Lists frontend dependencies.
+    - **Changes Made**:  was confirmed installed.
+- :
+    - **Importance**: Lists backend dependencies.
+    - **Changes Made**:  (for printer),  (for PDF generation) were added.
+</code_architecture>
+
+<pending_tasks>
+- **Customer Creation/Login Issue**: Investigate and fix the customer creation/login problem (kunden sind nicht angelegt, customer 10299 not found/not created in admin).
+- **Implement Desktop Split-Screen Layout**: Implement a desktop view where Orders and Chat are displayed side-by-side.
+- **Zebra Printer Automatic Printing Fix**: Resolve the issue where automatic printing does not work despite correct setup and driver/settings. Implement requested image/PDF preview.
+</pending_tasks>
+
+<current_work>
+Immediately before this summary request, the AI engineer was deep in debugging and implementing the **automatic Zebra label printing functionality**. The core problem being addressed was that **automatic printing was still not working**, despite the backend successfully generating correct ZPL (Zebra Programming Language) code and the user confirming the printer () was connected via USB and general print settings were enabled.
+
+The user explicitly requested:
+1.  **Automatic printing**: Still not functional.
+2.  **Preview**: Either as an image or a small PDF in the admin area.
+
+The AI's actions to address this were:
+1.  **Installed **: A Python library for PDF generation, added to .
+2.  **Extended **:
+    *   Added logic for **PDF preview generation** (converting ZPL to PDF format).
+    *   Improved the existing **automatic printing function** to potentially handle macOS-specific nuances.
+3.  **Modified **:
+    *   Added **new API endpoints** ( and ) to expose the generated PDF and image previews to the frontend.
+4.  **Updated **:
+    *   Integrated **frontend functionality** within the Admin Dashboard to trigger and display these new PDF/image previews.
+
+The last message from the user (Chat Message 589) provided crucial debugging information: the full printer details, including the exact  string: . The AI identified that the problem lies in the **printer name mismatch** between the code's assumption and the actual CUPS printer name from the user's system, and this is the immediate focus.
+</current_work>
+
+<optional_next_step>
+Correct the printer name and USB connection data in  to match the user's provided CUPS details.
+</optional_next_step>
+

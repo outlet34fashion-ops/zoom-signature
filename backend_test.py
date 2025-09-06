@@ -708,7 +708,7 @@ class LiveShoppingAPITester:
         """Test if WebSocket endpoint is accessible from production URL"""
         try:
             # Test the production WebSocket URL as specified in review request
-            production_ws_url = "https://shopcast-live-3.preview.emergentagent.com/ws"
+            production_ws_url = "https://livestream-labels.preview.emergentagent.com/ws"
             
             # Test HTTP GET to WebSocket endpoint (should return specific status codes)
             response = requests.get(production_ws_url, timeout=10)
@@ -775,7 +775,7 @@ class LiveShoppingAPITester:
             
             # STEP 2: Test WebSocket endpoint accessibility from production URL
             print("  🔌 STEP 2: Testing WebSocket endpoint accessibility...")
-            production_ws_url = "https://shopcast-live-3.preview.emergentagent.com/ws"
+            production_ws_url = "https://livestream-labels.preview.emergentagent.com/ws"
             
             try:
                 ws_response = requests.get(production_ws_url, timeout=10)
