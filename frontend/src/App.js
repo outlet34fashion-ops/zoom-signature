@@ -4299,12 +4299,48 @@ function App() {
                   </LiveKitRoom>
                 </div>
               ) : (
-                /* Waiting for Stream Message */
+                /* Waiting for Stream Message - WITH TEST BUTTON */
                 <div className="w-full h-full flex items-center justify-center text-white">
                   <div className="text-center">
                     <div className="text-2xl mb-4">📺</div>
                     <div className="text-lg mb-2">Warten auf Live-Stream...</div>
-                    <div className="text-sm opacity-75">Der Stream beginnt in Kürze</div>
+                    <div className="text-sm opacity-75 mb-4">Der Stream beginnt in Kürze</div>
+                    
+                    {/* DEBUG: Manual Stream Join Button */}
+                    <Button 
+                      onClick={async () => {
+                        try {
+                          console.log('🔍 Manual stream join attempt...');
+                          
+                          // Create a test room for immediate streaming
+                          const roomName = `test-stream-${Date.now()}`;
+                          console.log('Creating test room:', roomName);
+                          
+                          await livekitService.createRoom(roomName, 100);
+                          
+                          // Generate viewer token for customer
+                          const customerNumber = getCustomerNumber();
+                          const tokenData = await livekitService.generateViewerToken(
+                            roomName,
+                            `customer-${customerNumber}`,
+                            { role: 'customer', customerNumber }
+                          );
+                          
+                          setCurrentRoomName(roomName);
+                          setLivekitToken(tokenData.token);
+                          setLivekitUrl(tokenData.livekitUrl);
+                          setStreamingActive(true);
+                          
+                          console.log('✅ Manual stream join successful');
+                        } catch (error) {
+                          console.error('❌ Manual stream join failed:', error);
+                          alert('Stream-Verbindung fehlgeschlagen: ' + error.message);
+                        }
+                      }}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+                    >
+                      🔗 Stream-Test beitreten
+                    </Button>
                   </div>
                 </div>
               )}
