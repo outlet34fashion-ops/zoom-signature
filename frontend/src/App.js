@@ -507,7 +507,7 @@ function App() {
   const formatGermanTime = (timestamp) => {
     if (!timestamp) return 'N/A';
     
-    console.log('formatGermanTime input:', timestamp, typeof timestamp);
+    console.log('🕐 formatGermanTime DEBUG - input:', timestamp, typeof timestamp);
     
     try {
       // Ensure we have a proper Date object
@@ -526,15 +526,22 @@ function App() {
       } else if (typeof timestamp === 'number') {
         date = new Date(timestamp);
       } else {
-        console.error('Invalid timestamp format:', timestamp);
+        console.error('❌ Invalid timestamp format:', timestamp);
         return 'N/A';
       }
       
       // Validate the date object
       if (isNaN(date.getTime())) {
-        console.error('Invalid date created from timestamp:', timestamp);
+        console.error('❌ Invalid date created from timestamp:', timestamp);
         return 'N/A';
       }
+      
+      // Get current browser timezone info for debugging
+      const now = new Date();
+      const browserOffset = now.getTimezoneOffset();
+      console.log('🌍 Browser timezone offset (minutes):', browserOffset);
+      console.log('🌍 Date UTC string:', date.toISOString());
+      console.log('🌍 Date local string:', date.toString());
       
       // Force German timezone conversion (UTC+2 for CEST, UTC+1 for CET)
       // Explicitly ensure we're showing the correct German local time
@@ -546,11 +553,23 @@ function App() {
         hourCycle: 'h23' // Use 24-hour format to avoid AM/PM confusion
       });
       
-      console.log('formatGermanTime output:', germanTime, 'from UTC date:', date.toISOString(), 'German timezone offset:', date.getTimezoneOffset());
+      // Additional debugging: manually calculate German time
+      const utcTime = date.getTime();
+      const germanOffset = 2 * 60 * 60 * 1000; // UTC+2 in milliseconds (CEST)
+      const germanDate = new Date(utcTime + germanOffset);
+      const manualGermanTime = germanDate.toTimeString().slice(0, 8);
+      
+      console.log('✅ formatGermanTime results:');
+      console.log('   📅 Input timestamp:', timestamp);
+      console.log('   🕐 UTC time:', date.toISOString());
+      console.log('   🇩🇪 German time (toLocaleTimeString):', germanTime);
+      console.log('   🇩🇪 German time (manual UTC+2):', manualGermanTime);
+      console.log('   ⚠️  Current real time check:', new Date().toLocaleTimeString('de-DE', { timeZone: 'Europe/Berlin', hourCycle: 'h23' }));
+      
       return germanTime;
       
     } catch (error) {
-      console.error('formatGermanTime error:', error, 'with timestamp:', timestamp);
+      console.error('❌ formatGermanTime error:', error, 'with timestamp:', timestamp);
       return 'N/A';
     }
   };
