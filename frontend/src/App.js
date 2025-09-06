@@ -3494,36 +3494,29 @@ function App() {
                               )}
                                 </div>
                                 
-                                <div className="flex items-center ml-2 space-x-1">
-                                  {/* Zeitstempel - Klein neben dem Chat */}
-                                  <span className="text-xs text-gray-400">
-                                    {formatGermanTime(msg.timestamp || Date.now())}
-                                  </span>
-                                  
-                                  {/* Pin-Button für Admins */}
-                                  {isAdminView && (
-                                    <>
-                                      {!isPinned(msg.id) ? (
-                                        <button
-                                          onClick={() => pinMessage(msg.id)}
-                                          className="text-gray-400 hover:text-yellow-600 text-xs px-1"
-                                          title="Nachricht pinnen"
-                                        >
-                                          📌
-                                        </button>
-                                      ) : (
-                                        <button
-                                          onClick={() => unpinMessage(msg.id)}
-                                          className="text-yellow-600 hover:text-red-600 text-xs px-1"
-                                          title="Nachricht entpinnen"
-                                        >
-                                          📌❌
-                                        </button>
-                                      )}
-                                      {isPinned(msg.id) && <span className="text-yellow-600 text-xs">📍</span>}
-                                    </>
-                                  )}
-                                </div>
+                                {/* Pin-Button für Admins */}
+                                {isAdminView && (
+                                  <div className="ml-2 flex space-x-1">
+                                    {!isPinned(msg.id) ? (
+                                      <button
+                                        onClick={() => pinMessage(msg.id)}
+                                        className="text-gray-400 hover:text-yellow-600 text-xs px-1"
+                                        title="Nachricht pinnen"
+                                      >
+                                        📌
+                                      </button>
+                                    ) : (
+                                      <button
+                                        onClick={() => unpinMessage(msg.id)}
+                                        className="text-yellow-600 hover:text-red-600 text-xs px-1"
+                                        title="Nachricht entpinnen"
+                                      >
+                                        📌❌
+                                      </button>
+                                    )}
+                                    {isPinned(msg.id) && <span className="text-yellow-600 text-xs">📍</span>}
+                                  </div>
+                                )}
                               </div>
                             </div>
                           ))}
