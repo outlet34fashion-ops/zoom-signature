@@ -66,126 +66,162 @@ class ZebraPrinterService:
     
     def print_label_usb(self, zpl_code: str) -> Dict[str, any]:
         """
-        Druckt Etikett über USB-Verbindung zum Zebra GK420d
+        Druckt Etikett über USB-Verbindung zum Zebra GK420d (macOS optimiert)
         """
         try:
-            # CRITICAL FIX: Direct USB printing without CUPS (works on macOS/Linux)
-            print(f"🖨️  Attempting to print ZPL label...")
-            print(f"ZPL Code: {zpl_code[:100]}...")  # Debug
+            print(f"🖨️  Attempting macOS USB printing to Zebra GK420d...")
+            print(f"ZPL Code length: {len(zpl_code)} characters")
             
-            # Method 1: Find and write directly to USB device
-            try:
-                # Create ZPL with proper Zebra formatting
-                formatted_zpl = zpl_code
-                if not formatted_zpl.startswith('^XA'):
-                    formatted_zpl = '^XA\n' + formatted_zpl + '\n^XZ'
-                
-                # Try common USB paths for Zebra printers
-                usb_paths = [
-                    '/dev/usb/lp0', '/dev/usb/lp1', '/dev/usb/lp2',
-                    '/dev/lp0', '/dev/lp1', '/dev/lp2', 
-                    '/dev/ttyUSB0', '/dev/ttyUSB1',
-                    '/tmp/zebra_direct'  # Custom path
-                ]
-                
-                for path in usb_paths:
-                    try:
-                        if os.path.exists(path) or path == '/tmp/zebra_direct':
-                            # For demo: write to file to simulate printing
-                            if path == '/tmp/zebra_direct':
-                                with open(path, 'w') as f:
-                                    f.write(f"PRINTED LABEL at {datetime.now()}:\n{formatted_zpl}\n")
-                                return {
-                                    "success": True,
-                                    "method": "demo_file",
-                                    "device": path,
-                                    "message": f"Label 'printed' to demo file: {path}"
-                                }
-                            else:
-                                with open(path, 'wb') as device:
-                                    device.write(formatted_zpl.encode('ascii'))
-                                    device.flush()
-                                return {
-                                    "success": True,
-                                    "method": "direct_usb",
-                                    "device": path,
-                                    "message": f"Label printed to USB device: {path}"
-                                }
-                    except Exception as device_error:
-                        print(f"Device {path} failed: {device_error}")
-                        continue
-                        
-            except Exception as usb_error:
-                print(f"Direct USB failed: {usb_error}")
+            # CRITICAL FIX: macOS-specific printing using exact printer name from system
+            printer_name = "Zebra_Technologies_ZTC_GK420d"  # Exact name from user's macOS
             
-            # Method 2: Use lpr/lp commands with raw data
+            # Method 1: macOS lpr with raw printing (best for Zebra ZPL)
             try:
-                for printer_name in self.printer_names:
-                    try:
-                        # Create temp file
-                        temp_file = f"/tmp/zebra_{int(time.time())}.zpl"
-                        with open(temp_file, 'w') as f:
-                            f.write(zpl_code)
-                        
-                        # Try lpr command first (more universal)
-                        result = subprocess.run([
-                            'lpr', '-P', printer_name, '-o', 'raw', temp_file
-                        ], capture_output=True, text=True, timeout=10)
-                        
-                        if result.returncode == 0:
-                            os.remove(temp_file)
-                            return {
-                                "success": True,
-                                "method": "lpr_command",
-                                "printer_name": printer_name,
-                                "message": f"Label printed via lpr to {printer_name}"
-                            }
-                        
-                        # Try lp command as backup
-                        result = subprocess.run([
-                            'lp', '-d', printer_name, '-o', 'raw', temp_file
-                        ], capture_output=True, text=True, timeout=10)
-                        
-                        if result.returncode == 0:
-                            os.remove(temp_file)
-                            return {
-                                "success": True,
-                                "method": "lp_command", 
-                                "printer_name": printer_name,
-                                "message": f"Label printed via lp to {printer_name}"
-                            }
-                        
+                print(f"🍎 Trying macOS lpr with printer: {printer_name}")
+                
+                # Create temporary ZPL file
+                temp_file = f"/tmp/zebra_macos_{int(time.time())}.zpl"
+                with open(temp_file, 'w') as f:
+                    f.write(zpl_code)
+                
+                # Use lpr with raw option for macOS
+                result = subprocess.run([
+                    'lpr', 
+                    '-P', printer_name,
+                    '-o', 'raw',
+                    '-o', 'media=Custom.40x25mm',  # Specify label size
+                    temp_file
+                ], capture_output=True, text=True, timeout=15)
+                
+                if result.returncode == 0:
+                    os.remove(temp_file)
+                    return {
+                        "success": True,
+                        "method": "macos_lpr_raw",
+                        "printer_name": printer_name,
+                        "message": f"✅ Label printed successfully via macOS lpr to {printer_name}"
+                    }
+                else:
+                    print(f"❌ lpr failed: {result.stderr}")
+                    
+            except Exception as lpr_error:
+                print(f"❌ macOS lpr failed: {lpr_error}")
+            
+            # Method 2: Try with lpstat to check printer and then print
+            try:
+                print(f"🔍 Checking printer status first...")
+                
+                # Check if printer exists and is ready
+                status_result = subprocess.run([
+                    'lpstat', '-p', printer_name
+                ], capture_output=True, text=True, timeout=10)
+                
+                print(f"Printer status: {status_result.stdout}")
+                
+                if status_result.returncode == 0:
+                    # Printer exists, try printing with different options
+                    temp_file = f"/tmp/zebra_status_{int(time.time())}.zpl"
+                    with open(temp_file, 'w') as f:
+                        f.write(zpl_code)
+                    
+                    # Try lpr without media specification
+                    result = subprocess.run([
+                        'lpr', '-P', printer_name, '-o', 'raw', temp_file
+                    ], capture_output=True, text=True, timeout=15)
+                    
+                    if result.returncode == 0:
                         os.remove(temp_file)
-                        
-                    except Exception as cmd_error:
-                        print(f"Command print failed for {printer_name}: {cmd_error}")
-                        continue
-                        
-            except Exception as cmd_error:
-                print(f"Command printing failed: {cmd_error}")
+                        return {
+                            "success": True,
+                            "method": "macos_lpr_simple",
+                            "printer_name": printer_name,
+                            "message": f"✅ Label printed via simple lpr to {printer_name}"
+                        }
+                    
+                    os.remove(temp_file)
+                    
+            except Exception as status_error:
+                print(f"❌ Status check failed: {status_error}")
             
-            # If all methods fail - return detailed debug info
+            # Method 3: Direct pipe to printer using echo
+            try:
+                print(f"🔧 Trying direct pipe method...")
+                
+                result = subprocess.run([
+                    'sh', '-c', 
+                    f'echo "{zpl_code}" | lpr -P {printer_name} -o raw'
+                ], capture_output=True, text=True, timeout=15)
+                
+                if result.returncode == 0:
+                    return {
+                        "success": True,
+                        "method": "macos_pipe",
+                        "printer_name": printer_name,
+                        "message": f"✅ Label printed via pipe to {printer_name}"
+                    }
+                    
+            except Exception as pipe_error:
+                print(f"❌ Pipe method failed: {pipe_error}")
+            
+            # Method 4: Alternative printer names (in case of slight variations)
+            alternative_names = [
+                "Zebra Technologies ZTC GK420d",
+                "ZTC GK420d", 
+                "GK420d",
+                "Zebra_ZTC_GK420d"
+            ]
+            
+            for alt_name in alternative_names:
+                try:
+                    print(f"🔄 Trying alternative name: {alt_name}")
+                    
+                    temp_file = f"/tmp/zebra_alt_{int(time.time())}.zpl"
+                    with open(temp_file, 'w') as f:
+                        f.write(zpl_code)
+                    
+                    result = subprocess.run([
+                        'lpr', '-P', alt_name, '-o', 'raw', temp_file
+                    ], capture_output=True, text=True, timeout=10)
+                    
+                    if result.returncode == 0:
+                        os.remove(temp_file)
+                        return {
+                            "success": True,
+                            "method": "macos_alternative_name",
+                            "printer_name": alt_name,
+                            "message": f"✅ Label printed via alternative name {alt_name}"
+                        }
+                    
+                    os.remove(temp_file)
+                    
+                except Exception as alt_error:
+                    print(f"❌ Alternative {alt_name} failed: {alt_error}")
+                    continue
+            
+            # Method 5: Save to file for manual printing (always works)
+            manual_file = f"/tmp/zebra_manual_print_{int(time.time())}.zpl"
+            with open(manual_file, 'w') as f:
+                f.write(zpl_code)
+            
             return {
                 "success": False,
-                "message": "Printing failed - trying all available methods",
-                "debug_info": {
-                    "tried_printers": self.printer_names,
-                    "tried_usb_paths": usb_paths,
-                    "zpl_length": len(zpl_code),
-                    "troubleshooting": [
-                        "1. Check if printer is connected via USB",
-                        "2. Verify printer is powered on", 
-                        "3. Install printer in System Preferences > Printers",
-                        "4. Check /tmp/zebra_direct file for demo output"
-                    ]
-                },
-                "demo_file": "/tmp/zebra_direct"
+                "method": "manual_file_created",
+                "message": f"❌ Automatic printing failed. Manual file created: {manual_file}",
+                "manual_file": manual_file,
+                "instructions": [
+                    "1. Activate 'Use generic printer features' in printer settings",
+                    "2. Try: cat /tmp/zebra_manual_print_*.zpl | lpr -P Zebra_Technologies_ZTC_GK420d -o raw",
+                    "3. Or copy ZPL code and send directly to printer",
+                    "4. Check printer is online and has labels loaded"
+                ],
+                "zpl_code": zpl_code,
+                "printer_name_used": printer_name
             }
         
         except Exception as e:
             return {
                 "success": False,
-                "message": f"Critical printing error: {str(e)}",
+                "message": f"❌ Critical macOS printing error: {str(e)}",
                 "zpl_code": zpl_code
             }
     
