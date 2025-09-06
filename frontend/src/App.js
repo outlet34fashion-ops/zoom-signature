@@ -3350,7 +3350,7 @@ function App() {
                         
                         <Button 
                           onClick={async () => {
-                            try:
+                            try {
                               // CSV-Export für Word/Excel
                               const csvUrl = `${API}/zebra/csv-export/${labelPreviewCustomer}?price=${labelPreviewPrice}`;
                               const response = await axios.get(csvUrl, { responseType: 'blob' });
