@@ -112,6 +112,14 @@ function App() {
   const [customerLastOrder, setCustomerLastOrder] = useState(null);
   const [loadingLastOrder, setLoadingLastOrder] = useState(false);
 
+  // LiveKit Streaming States - CRITICAL FOR STREAMING
+  const [livekitToken, setLivekitToken] = useState(null);
+  const [livekitUrl, setLivekitUrl] = useState(null);
+  const [currentRoomName, setCurrentRoomName] = useState(null);
+  const [isLiveKitConnected, setIsLiveKitConnected] = useState(false);
+  const [livekitError, setLivekitError] = useState(null);
+  const [streamingActive, setStreamingActive] = useState(false);
+
   // Live Shopping Calendar States
   const [events, setEvents] = useState([]);
   const [showCreateEvent, setShowCreateEvent] = useState(false);
