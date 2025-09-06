@@ -252,7 +252,7 @@ function App() {
               timestamp: new Date().toISOString(),
               emoji: ''
             };
-            setChatMessages(prev => [orderMsg, ...prev]);
+            setChatMessages(prev => [...prev, orderMsg]); // Add order messages at the END (bottom)
             console.log('Order notification added to chat');
           } else if (data.type === 'order_counter_update') {
             setAdminStats(prev => ({
