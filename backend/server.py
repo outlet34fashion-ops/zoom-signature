@@ -644,6 +644,39 @@ async def create_order(order: OrderCreate):
     }
     await manager.broadcast(json.dumps(counter_data, default=str))
     
+    # CRITICAL: Automatisches Etiketten-Drucken bei Bestellerstellung
+    try:
+        # Extrahiere Kundennummer aus customer_id
+        customer_number = order.customer_id[-4:] if len(order.customer_id) >= 4 else order.customer_id
+        
+        # Erstelle Etiketten-Daten im gewünschten Format (aus dem Bild)
+        label_data = {
+            "id": order_obj.id,
+            "customer_number": customer_number,
+            "price": f"€{order_obj.price:.2f}".replace(".", ","),  # Deutsche Formatierung
+            "quantity": order.quantity,
+            "size": order.size,
+            "product_name": product['name']
+        }
+        
+        # Drucke Etikett automatisch über Zebra GK420d
+        print_result = zebra_printer.print_order_label(label_data)
+        
+        if print_result["success"]:
+            logging.info(f"✅ Etikett erfolgreich gedruckt für Bestellung {order_obj.id}, Kunde {customer_number}")
+        else:
+            logging.warning(f"⚠️  Etikett-Druck fehlgeschlagen für Bestellung {order_obj.id}: {print_result.get('message', 'Unknown error')}")
+        
+        # Füge Print-Status zum Order-Objekt hinzu für Admin-Feedback
+        order_obj.label_printed = print_result["success"]
+        order_obj.label_print_message = print_result.get("message", "")
+        
+    except Exception as print_error:
+        logging.error(f"❌ Etiketten-Druck Fehler für Bestellung {order_obj.id}: {str(print_error)}")
+        # Bestellung bleibt gültig, auch wenn Druck fehlschlägt
+        order_obj.label_printed = False
+        order_obj.label_print_message = f"Druck-Fehler: {str(print_error)}"
+    
     return order_obj
 
 @api_router.get("/orders", response_model=List[Order])
