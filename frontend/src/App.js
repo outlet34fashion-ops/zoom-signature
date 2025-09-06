@@ -4187,14 +4187,32 @@ function App() {
               </div>
             </div>
 
-            {/* Embedded Live Stream Video */}
+            {/* Embedded Live Stream Video - REPLACED WITH LIVEKIT */}
             <div className="bg-black rounded-xl overflow-hidden mb-4" style={{ aspectRatio: '16/9' }}>
-              <SimpleVideoStreaming
-                isAdmin={false}
-                currentUser={currentCustomer}
-                onClose={() => {}}
-                embedded={true}
-              />
+              {/* CRITICAL: LiveKit Integration - Always Visible */}
+              {streamingActive && livekitToken && livekitUrl ? (
+                <div className="w-full h-full">
+                  {/* LiveKit Streaming Component */}
+                  <LiveKitStreamingInterface
+                    token={livekitToken}
+                    serverUrl={livekitUrl}
+                    roomName={currentRoomName}
+                    isPublisher={false} // Customers are always viewers
+                    onConnected={handleLiveKitConnected}
+                    onDisconnected={handleLiveKitDisconnected}
+                    onError={handleLiveKitError}
+                  />
+                </div>
+              ) : (
+                /* Waiting for Stream Message */
+                <div className="w-full h-full flex items-center justify-center text-white">
+                  <div className="text-center">
+                    <div className="text-2xl mb-4">📺</div>
+                    <div className="text-lg mb-2">Warten auf Live-Stream...</div>
+                    <div className="text-sm opacity-75">Der Stream beginnt in Kürze</div>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="flex items-center justify-between">
