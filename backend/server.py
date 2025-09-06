@@ -1377,6 +1377,99 @@ async def download_zpl_label(customer_number: str, price: str = "0.00"):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Download failed: {str(e)}")
 
+@api_router.get("/zebra/pdf-preview/{customer_number}")
+async def get_pdf_preview(customer_number: str, price: str = "0.00"):
+    """
+    CRITICAL: Generiert PDF-Vorschau des Etiketts für Admin-Ansicht
+    """
+    try:
+        from datetime import datetime
+        from fastapi.responses import StreamingResponse
+        
+        # Generate PDF preview
+        pdf_buffer = zebra_printer.generate_label_pdf(customer_number, price, datetime.now())
+        
+        # Return PDF as streaming response
+        return StreamingResponse(
+            pdf_buffer,
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f"inline; filename=label_preview_{customer_number}.pdf"
+            }
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"PDF preview failed: {str(e)}")
+
+@api_router.get("/zebra/image-preview/{customer_number}")
+async def get_image_preview(customer_number: str, price: str = "0.00"):
+    """
+    Generiert Bild-Vorschau des Etiketts als PNG
+    """
+    try:
+        from datetime import datetime
+        from fastapi.responses import Response
+        from PIL import Image, ImageDraw, ImageFont
+        import io
+        
+        # Generate image preview (40x25mm at 300 DPI = 472x295 pixels)
+        width, height = 472, 295
+        img = Image.new('RGB', (width, height), 'white')
+        draw = ImageDraw.Draw(img)
+        
+        # Add border
+        draw.rectangle([2, 2, width-2, height-2], outline='black', width=2)
+        
+        # Format timestamp
+        formatted_time = datetime.now().strftime("%d.%m.%y %H:%M:%S")
+        
+        try:
+            # Try to use a system font
+            font_small = ImageFont.truetype("/System/Library/Fonts/Arial.ttf", 18)
+            font_large = ImageFont.truetype("/System/Library/Fonts/Arial Bold.ttf", 60)
+            font_medium = ImageFont.truetype("/System/Library/Fonts/Arial.ttf", 24)
+        except:
+            # Fallback to default font
+            font_small = ImageFont.load_default()
+            font_large = ImageFont.load_default()
+            font_medium = ImageFont.load_default()
+        
+        # Draw timestamp (top)
+        draw.text((10, 10), formatted_time, fill='black', font=font_small)
+        
+        # Draw customer number (center, large)
+        customer_main = customer_number[-3:] if len(customer_number) >= 3 else customer_number
+        bbox = draw.textbbox((0, 0), customer_main, font=font_large)
+        text_width = bbox[2] - bbox[0]
+        text_x = (width - text_width) // 2
+        draw.text((text_x, height//2 - 30), customer_main, fill='black', font=font_large)
+        
+        # Draw prefix (bottom left)
+        customer_prefix = customer_number[:-3] if len(customer_number) > 3 else ""
+        if customer_prefix:
+            draw.text((10, height - 35), customer_prefix, fill='black', font=font_medium)
+        
+        # Draw price (bottom right)
+        price_display = price.replace("€", "").replace(",", "").replace(".", "")
+        bbox = draw.textbbox((0, 0), price_display, font=font_medium)
+        price_width = bbox[2] - bbox[0]
+        draw.text((width - price_width - 10, height - 35), price_display, fill='black', font=font_medium)
+        
+        # Convert to PNG
+        img_buffer = io.BytesIO()
+        img.save(img_buffer, format='PNG', dpi=(300, 300))
+        img_buffer.seek(0)
+        
+        return Response(
+            content=img_buffer.getvalue(),
+            media_type="image/png",
+            headers={
+                "Content-Disposition": f"inline; filename=label_preview_{customer_number}.png"
+            }
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Image preview failed: {str(e)}")
+
 @api_router.post("/zebra/print-order/{order_id}")
 async def reprint_order_label(order_id: str):
     """
