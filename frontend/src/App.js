@@ -3412,13 +3412,11 @@ function App() {
                         </h3>
                       </div>
 
-                      {/* DEBUG: Polling Status */}
+                      {/* DEBUG: Polling Status - Reduziert */}
                       <div className="bg-blue-50 border border-blue-200 rounded p-2 mb-2">
                         <div className="text-xs text-blue-600">
-                          <div>🔄 Polling Status: {pollingStatus}</div>
-                          {lastPollTime && <div>⏰ Last Poll: {lastPollTime}</div>}
-                          <div>📝 Local Messages: {chatMessages.length}</div>
-                          <div>🕐 Test Zeit: {formatGermanTime(new Date().toISOString())}</div>
+                          <div>🔄 Status: {pollingStatus}</div>
+                          <div>📝 Messages: {chatMessages.length}</div>
                         </div>
                       </div>
 
