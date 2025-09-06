@@ -3896,7 +3896,7 @@ function App() {
           />
         </div>
       )}
-      </>
+      </div>
       )}
 
       {/* Simple Video Streaming Modal */}
