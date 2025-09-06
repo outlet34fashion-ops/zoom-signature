@@ -20,6 +20,8 @@ load_dotenv(ROOT_DIR / '.env')
 
 # Import livekit_service after loading environment variables
 from livekit_service import livekit_service
+# CRITICAL: Import Zebra Printer Service for automatic label printing
+from zebra_printer import zebra_printer
 
 # MongoDB connection
 mongo_url = os.environ['MONGO_URL']
