@@ -345,8 +345,8 @@ function App() {
         }
       };
       
-      // Poll every 2 seconds
-      pollingInterval.current = setInterval(pollForNewMessages, 2000);
+      // Poll every 1 second for better real-time experience
+      pollingInterval.current = setInterval(pollForNewMessages, 1000);
       // Initial poll
       pollForNewMessages();
     };
