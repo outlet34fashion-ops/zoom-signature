@@ -3469,7 +3469,7 @@ function App() {
                                 <div className="flex-1">
                                   {msg.username === 'System' ? (
                                 <div className="text-gray-600 font-medium">
-                                  {formatMessage(msg.message)}
+                                  {formatMessage(msg.message)} <span className="text-xs text-gray-400 ml-2">{formatGermanTime(msg.timestamp)}</span>
                                 </div>
                               ) : msg.username === 'Admin' ? (
                                 <div>
@@ -3479,6 +3479,7 @@ function App() {
                                   {msg.message && (
                                     <span className="ml-2 text-gray-600">{msg.message}</span>
                                   )}
+                                  <span className="text-xs text-gray-400 ml-2">{formatGermanTime(msg.timestamp)}</span>
                                 </div>
                               ) : (
                                 <div>
@@ -3488,6 +3489,7 @@ function App() {
                                   {msg.message && (
                                     <span className="ml-2 text-gray-600">{msg.message}</span>
                                   )}
+                                  <span className="text-xs text-gray-400 ml-2">{formatGermanTime(msg.timestamp)}</span>
                                 </div>
                               )}
                                 </div>
