@@ -14,7 +14,13 @@ logger = logging.getLogger(__name__)
 
 class ZebraPrinterService:
     def __init__(self):
-        self.printer_name = "GK420d"  # Standard Zebra GK420d Name
+        # FIXED: Correct printer names for Zebra GK420d as shown in system
+        self.printer_names = [
+            "Zebra_Technologies_ZTC_GK420d",  # Exact name from user's system
+            "ZTC_GK420d", 
+            "GK420d",
+            "Zebra Technologies ZTC GK420d"  # With spaces
+        ]
         self.label_width = 320  # 40mm = 320 dots (8 dots/mm)
         self.label_height = 200  # 25mm = 200 dots (8 dots/mm)
     
