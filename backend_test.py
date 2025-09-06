@@ -5906,11 +5906,47 @@ TIMEZONE BUG ANALYSIS COMPLETE:
         
         return critical_success_count == len(critical_tests)
 
+    def run_enhanced_zebra_printer_tests(self):
+        """Run enhanced Zebra printer tests as specified in review request"""
+        print("🚨 ENHANCED ZEBRA PRINTER FUNCTIONALITY TESTING")
+        print("=" * 80)
+        print("REVIEW REQUEST FOCUS AREAS:")
+        print("1. Enhanced ZPL Generation - GET /api/zebra/preview/10299?price=19.99")
+        print("2. Enhanced Printer Status with CUPS - GET /api/zebra/status")
+        print("3. Enhanced Automatic Printing Logic - POST /api/orders with customer 10299")
+        print("4. Manual Print Methods - POST /api/zebra/test-print")
+        print("5. PDF Preview Enhanced - GET /api/zebra/pdf-preview/10299?price=19.99")
+        print("6. Image Preview - GET /api/zebra/image-preview/10299?price=19.99")
+        print("=" * 80)
+        
+        # Run the enhanced Zebra printer tests
+        zebra_success = self.test_zebra_printer_endpoints()
+        
+        # Run API root test to ensure basic connectivity
+        api_root_success = self.test_api_root()
+        
+        # Calculate overall success rate
+        critical_tests = [zebra_success, api_root_success]
+        critical_success_count = sum(1 for test in critical_tests if test)
+        
+        print("\n" + "=" * 80)
+        print("🎯 ENHANCED ZEBRA PRINTER TESTING SUMMARY")
+        print("=" * 80)
+        print(f"Critical Tests Passed: {critical_success_count}/{len(critical_tests)}")
+        print(f"Overall Success Rate: {(critical_success_count/len(critical_tests)*100):.1f}%")
+        
+        if critical_success_count == len(critical_tests):
+            print("✅ ALL ENHANCED ZEBRA PRINTER TESTS PASSED!")
+        else:
+            print("❌ SOME ZEBRA PRINTER TESTS FAILED - REQUIRES ATTENTION")
+        
+        return critical_success_count == len(critical_tests)
+
 def main():
     tester = LiveShoppingAPITester()
     
-    # Run critical LiveKit streaming tests as specified in review request
-    success = tester.run_critical_livekit_tests()
+    # Run enhanced Zebra printer tests as specified in review request
+    success = tester.run_enhanced_zebra_printer_tests()
     
     # Print final summary
     print("\n" + "=" * 80)
@@ -5921,8 +5957,8 @@ def main():
     print(f"Success Rate: {(tester.tests_passed/tester.tests_run*100):.1f}%")
     
     if success:
-        print("\n🎉 ALL CRITICAL LIVEKIT STREAMING TESTS PASSED!")
-        print("Backend LiveKit streaming functionality is working correctly.")
+        print("\n🎉 ALL ENHANCED ZEBRA PRINTER TESTS PASSED!")
+        print("Backend enhanced Zebra printer functionality is working correctly.")
     else:
         failed_count = tester.tests_run - tester.tests_passed
         print(f"\n⚠️  {failed_count} test(s) failed. Please check the details above.")
