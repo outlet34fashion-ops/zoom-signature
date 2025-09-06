@@ -3464,11 +3464,18 @@ function App() {
                         {chatMessages
                           .filter(msg => !msg.message.includes('Bestellung'))
                           .map((msg) => {
-                            // Simple time formatting for debugging
-                            const timeStr = msg.timestamp ? formatGermanTime(msg.timestamp) : 'N/A';
+                            // Clean up message format - remove redundant "Chat 10299 I" part
+                            let cleanMessage = msg.message;
+                            if (msg.username !== 'System' && msg.username !== 'Admin') {
+                              // Remove "Chat XXXX I " from the beginning of user messages
+                              cleanMessage = cleanMessage.replace(/^Chat \d+ I\s*/, '');
+                            }
+                            
+                            // Simple time formatting
+                            const timeStr = msg.timestamp ? formatGermanTime(msg.timestamp) : 'NO_TIME';
                             
                             return (
-                            <div key={msg.id} className={`text-sm ${isPinned(msg.id) ? 'opacity-60' : ''} flex justify-between items-start`}>
+                            <div key={msg.id} className={`text-sm ${isPinned(msg.id) ? 'opacity-60' : ''} flex justify-between items-start py-1`}>
                               <div className="flex-1">
                                 {msg.username === 'System' ? (
                                   <span className="text-gray-600 font-medium">
@@ -3488,14 +3495,15 @@ function App() {
                                     <span className="font-medium text-blue-600">
                                       #{extractCustomerNumber(msg.username)} {msg.emoji && <span className="ml-1">{msg.emoji}</span>}
                                     </span>
-                                    {msg.message && (
-                                      <span className="ml-2 text-gray-600">{msg.message}</span>
+                                    {cleanMessage && (
+                                      <span className="ml-2 text-gray-600">{cleanMessage}</span>
                                     )}
                                   </div>
                                 )}
                               </div>
                               
-                              <div className="ml-2 text-xs text-gray-500 whitespace-nowrap">
+                              {/* Zeitstempel - SICHTBAR gemacht */}
+                              <div className="ml-2 text-xs text-gray-600 font-mono bg-yellow-100 px-1 rounded">
                                 {timeStr}
                               </div>
                               
