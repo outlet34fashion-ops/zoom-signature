@@ -381,6 +381,10 @@ function App() {
       if (wsRef.current) {
         wsRef.current.close();
       }
+      // Cleanup polling interval
+      if (pollingInterval.current) {
+        clearInterval(pollingInterval.current);
+      }
     };
   }, []);
 
