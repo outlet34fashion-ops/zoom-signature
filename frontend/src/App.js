@@ -3412,13 +3412,7 @@ function App() {
                         </h3>
                       </div>
 
-                      {/* DEBUG: Polling Status - Reduziert */}
-                      <div className="bg-blue-50 border border-blue-200 rounded p-2 mb-2">
-                        <div className="text-xs text-blue-600">
-                          <div>🔄 Status: {pollingStatus}</div>
-                          <div>📝 Messages: {chatMessages.length}</div>
-                        </div>
-                      </div>
+                      {/* Debug-Panel entfernt */}
 
                       {/* Gepinnte Nachrichten */}
                       {pinnedMessages.length > 0 && (
