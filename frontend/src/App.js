@@ -208,13 +208,18 @@ function App() {
         
         if (data.type === 'chat_message') {
           console.log('Processing chat message:', data.data);
+          console.log('Current chat messages count:', chatMessages.length);
+          
           setChatMessages(prev => {
             // Check if message already exists to avoid duplicates
             const exists = prev.some(msg => msg.id === data.data.id);
             if (!exists) {
+              console.log('Adding new message to chat, total messages will be:', prev.length + 1);
               return [data.data, ...prev];
+            } else {
+              console.log('Message already exists, skipping duplicate:', data.data.id);
+              return prev;
             }
-            return prev;
           });
         } else if (data.type === 'viewer_count') {
           setViewerCount(data.count);
