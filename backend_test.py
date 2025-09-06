@@ -5442,6 +5442,7 @@ TIMEZONE BUG ANALYSIS COMPLETE:
 
         # Critical functionality check
         critical_tests = [
+            ("💬 CHAT REAL-TIME FUNCTIONALITY (German Review)", chat_realtime_success),
             ("🌍 MULTI-LANGUAGE FUNCTIONALITY", multi_language_success),
             ("🎯 GERMAN ORDER FORMAT VERIFICATION", german_format_success),
             ("🚨 CRITICAL AUTH ISSUE (Customer 10299)", critical_auth_success),
