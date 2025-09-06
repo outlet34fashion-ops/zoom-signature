@@ -318,13 +318,19 @@ function App() {
       
       const pollForNewMessages = async () => {
         try {
+          setPollingStatus('Polling...');
+          setLastPollTime(new Date().toLocaleTimeString());
+          
           const response = await axios.get(`${API}/chat`);
           const serverMessages = response.data;
+          
+          console.log('🔄 POLLING: Fetched', serverMessages.length, 'messages from server');
           
           setChatMessages(prev => {
             // If we have no local messages, this is the initial load
             if (prev.length === 0) {
               console.log('📥 Initial chat load via polling:', serverMessages.length, 'messages');
+              setPollingStatus(`Loaded ${serverMessages.length} messages`);
               return serverMessages;
             }
             
@@ -337,13 +343,17 @@ function App() {
             
             if (newMessages.length > 0) {
               console.log('📬 Polling found', newMessages.length, 'new messages');
+              setPollingStatus(`Found ${newMessages.length} new messages`);
               return [...prev, ...newMessages];
+            } else {
+              setPollingStatus(`No new messages (${prev.length} total)`);
             }
             
             return prev;
           });
         } catch (error) {
           console.error('❌ Polling error:', error);
+          setPollingStatus(`Error: ${error.message}`);
         }
       };
       
