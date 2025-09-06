@@ -6,6 +6,7 @@ Automatische Etiketten-Generierung und -Druck für 40x25mm Labels
 import os
 import socket
 import subprocess
+import time
 from datetime import datetime
 from typing import Dict, Optional
 import logging
