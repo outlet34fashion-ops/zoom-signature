@@ -5597,8 +5597,8 @@ TIMEZONE BUG ANALYSIS COMPLETE:
 def main():
     tester = LiveShoppingAPITester()
     
-    # Run critical WebSocket and chat tests as specified in review request
-    success = tester.run_critical_websocket_tests()
+    # Run critical LiveKit streaming tests as specified in review request
+    success = tester.run_critical_livekit_tests()
     
     # Print final summary
     print("\n" + "=" * 80)
@@ -5609,8 +5609,8 @@ def main():
     print(f"Success Rate: {(tester.tests_passed/tester.tests_run*100):.1f}%")
     
     if success:
-        print("\n🎉 ALL CRITICAL WEBSOCKET AND CHAT TESTS PASSED!")
-        print("Backend WebSocket and chat functionality is working correctly.")
+        print("\n🎉 ALL CRITICAL LIVEKIT STREAMING TESTS PASSED!")
+        print("Backend LiveKit streaming functionality is working correctly.")
     else:
         failed_count = tester.tests_run - tester.tests_passed
         print(f"\n⚠️  {failed_count} test(s) failed. Please check the details above.")
