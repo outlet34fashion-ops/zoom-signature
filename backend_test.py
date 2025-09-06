@@ -6485,12 +6485,12 @@ TIMEZONE BUG ANALYSIS COMPLETE:
 def main():
     tester = LiveShoppingAPITester()
     
-    # Run practical printing solutions tests as specified in review request
-    print("🚨 STARTING PRACTICAL PRINTING SOLUTIONS TESTING")
-    print("Focus: New Microsoft Word-like printing functionality")
+    # Run automatic printing system tests as specified in review request
+    print("🚨 STARTING AUTOMATIC PRINTING SYSTEM TESTING")
+    print("Focus: New automatic printing system with Host-Side Service integration")
     print("=" * 80)
     
-    success = tester.test_practical_printing_solutions()
+    success = tester.test_automatic_printing_system()
     
     # Print final summary
     print("\n" + "=" * 80)
@@ -6501,12 +6501,14 @@ def main():
     print(f"Success Rate: {(tester.tests_passed/tester.tests_run*100):.1f}%")
     
     if success:
-        print("\n🎉 ALL PRACTICAL PRINTING SOLUTIONS TESTS PASSED!")
-        print("✅ HTML preview works like Microsoft Word")
-        print("✅ CSV export ready for Word mail merge")
-        print("✅ All existing functionality intact")
-        print("✅ Automatic printing integration working")
-        print("Backend practical printing functionality is working correctly.")
+        print("\n🎉 ALL AUTOMATIC PRINTING SYSTEM TESTS PASSED!")
+        print("✅ Host Service Integration working")
+        print("✅ Order creation triggers automatic printing")
+        print("✅ Test print function working")
+        print("✅ Instruction file creation working")
+        print("✅ Host service file ready for deployment")
+        print("✅ ZPL code generation working correctly")
+        print("Backend automatic printing functionality is working correctly.")
     else:
         failed_count = tester.tests_run - tester.tests_passed
         print(f"\n⚠️  {failed_count} test(s) failed. Please check the details above.")
