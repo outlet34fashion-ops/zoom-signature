@@ -3930,6 +3930,118 @@ function App() {
           </Card>
         )}
       </div>
+      
+      {/* CRITICAL: INSTANT LIVEKIT DEMO - ALWAYS VISIBLE */}
+      <div className="mb-8 px-6">
+        <div className="bg-black rounded-xl overflow-hidden shadow-2xl" style={{ aspectRatio: '16/9' }}>
+          {streamingActive && livekitToken && livekitUrl ? (
+            <div className="w-full h-full">
+              <LiveKitRoom
+                serverUrl={livekitUrl}
+                token={livekitToken}
+                connect={true}
+                data-lk-theme="default"
+                style={{ height: '100%', width: '100%' }}
+                onConnected={() => {
+                  console.log('🎥 LiveKit connected successfully!');
+                  setIsLiveKitConnected(true);
+                }}
+                onDisconnected={(reason) => {
+                  console.log('🎥 LiveKit disconnected:', reason);
+                  setIsLiveKitConnected(false);
+                }}
+                onError={(error) => {
+                  console.error('🎥 LiveKit error:', error);
+                  setLivekitError(error.message);
+                }}
+              >
+                <VideoConference />
+                <RoomAudioRenderer />
+                <ControlBar />
+              </LiveKitRoom>
+            </div>
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-white bg-gradient-to-br from-gray-900 to-gray-800">
+              <div className="text-center space-y-6">
+                <div className="text-4xl mb-4">🎥</div>
+                <h2 className="text-2xl font-bold">LiveKit Streaming Demo</h2>
+                <p className="text-gray-300 text-sm">Testen Sie die Live-Streaming-Funktionalität</p>
+                
+                {/* INSTANT DEMO BUTTONS */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Button 
+                    onClick={async () => {
+                      try {
+                        console.log('🎥 DEMO: Customer joining...');
+                        
+                        const roomName = `customer-demo-${Date.now()}`;
+                        await livekitService.createRoom(roomName, 100);
+                        
+                        const tokenData = await livekitService.generateViewerToken(
+                          roomName,
+                          `demo-customer-${Date.now()}`,
+                          { role: 'customer' }
+                        );
+                        
+                        setCurrentRoomName(roomName);
+                        setLivekitToken(tokenData.token);
+                        setLivekitUrl(tokenData.livekitUrl);
+                        setStreamingActive(true);
+                        setLivekitError(null);
+                        
+                        console.log('✅ Customer demo started successfully');
+                      } catch (error) {
+                        console.error('❌ Customer demo failed:', error);
+                        alert('❌ Demo fehlgeschlagen: ' + error.message);
+                      }
+                    }}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium"
+                  >
+                    👤 Als Kunde Demo
+                  </Button>
+                  
+                  <Button 
+                    onClick={async () => {
+                      try {
+                        console.log('🎥 DEMO: Admin streaming...');
+                        
+                        const roomName = `admin-demo-${Date.now()}`;
+                        await livekitService.createRoom(roomName, 100);
+                        
+                        const tokenData = await livekitService.generatePublisherToken(
+                          roomName,
+                          `demo-admin-${Date.now()}`,
+                          { role: 'admin', streaming: true }
+                        );
+                        
+                        setCurrentRoomName(roomName);
+                        setLivekitToken(tokenData.token);
+                        setLivekitUrl(tokenData.livekitUrl);
+                        setStreamingActive(true);
+                        setLivekitError(null);
+                        
+                        console.log('✅ Admin demo started successfully');
+                      } catch (error) {
+                        console.error('❌ Admin demo failed:', error);
+                        alert('❌ Demo fehlgeschlagen: ' + error.message);
+                      }
+                    }}
+                    className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-medium"
+                  >
+                    🎥 Als Admin Demo
+                  </Button>
+                </div>
+                
+                {livekitError && (
+                  <div className="bg-red-500/20 border border-red-500/30 rounded-lg p-3 text-red-200 text-sm">
+                    ❌ Error: {livekitError}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Create Event Modal */}
       {showCreateEvent && (
