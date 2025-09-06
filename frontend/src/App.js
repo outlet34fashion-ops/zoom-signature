@@ -1526,6 +1526,88 @@ function App() {
     }
   };
 
+  // CRITICAL: LiveKit Streaming Functions
+  const initializeLiveKitStreaming = async () => {
+    try {
+      console.log('🚀 Initializing LiveKit streaming...');
+      setLivekitError(null);
+      
+      // Generate room name
+      const roomName = `live-shopping-${Date.now()}`;
+      setCurrentRoomName(roomName);
+      
+      // Create room first
+      await livekitService.createRoom(roomName, 100);
+      console.log('✅ LiveKit room created:', roomName);
+      
+      // Generate token based on user type
+      let tokenData;
+      if (isAdminAuthenticated) {
+        // Admin = Publisher (can stream)
+        tokenData = await livekitService.generatePublisherToken(
+          roomName,
+          `admin-${Date.now()}`,
+          { role: 'admin', streaming: true }
+        );
+        console.log('✅ Admin publisher token generated');
+      } else {
+        // Customer = Viewer (watch only)
+        const customerNumber = getCustomerNumber();
+        tokenData = await livekitService.generateViewerToken(
+          roomName,
+          `customer-${customerNumber}`,
+          { role: 'customer', customerNumber }
+        );
+        console.log('✅ Customer viewer token generated');
+      }
+      
+      setLivekitToken(tokenData.token);
+      setLivekitUrl(tokenData.livekitUrl);
+      setStreamingActive(true);
+      
+      console.log('🎥 LiveKit streaming initialized successfully');
+      
+    } catch (error) {
+      console.error('❌ Failed to initialize LiveKit streaming:', error);
+      setLivekitError(error.message);
+    }
+  };
+
+  const stopLiveKitStreaming = async () => {
+    try {
+      if (currentRoomName && isAdminAuthenticated) {
+        await livekitService.endRoom(currentRoomName);
+        console.log('✅ LiveKit room ended');
+      }
+      
+      setLivekitToken(null);
+      setLivekitUrl(null);
+      setCurrentRoomName(null);
+      setIsLiveKitConnected(false);
+      setStreamingActive(false);
+      setLivekitError(null);
+      
+    } catch (error) {
+      console.error('❌ Error stopping LiveKit streaming:', error);
+    }
+  };
+
+  const handleLiveKitConnected = () => {
+    console.log('📡 LiveKit connected successfully');
+    setIsLiveKitConnected(true);
+    setLivekitError(null);
+  };
+
+  const handleLiveKitDisconnected = (reason) => {
+    console.log('📡 LiveKit disconnected:', reason);
+    setIsLiveKitConnected(false);
+  };
+
+  const handleLiveKitError = (error) => {
+    console.error('📡 LiveKit error:', error);
+    setLivekitError(error);
+  };
+
   // LiveKit Streaming Functions (New Implementation)
   const startSimpleStream = () => {
     if (!isAdminAuthenticated) {
