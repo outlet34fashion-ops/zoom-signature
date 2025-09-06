@@ -5556,6 +5556,44 @@ TIMEZONE BUG ANALYSIS COMPLETE:
 
         return self.tests_passed == self.tests_run
 
+    def run_critical_websocket_tests(self):
+        """Run critical WebSocket and chat tests as specified in review request"""
+        print("🚨 CRITICAL BACKEND WEBSOCKET AND CHAT TESTING")
+        print("=" * 80)
+        print("REVIEW REQUEST FOCUS AREAS:")
+        print("1. WebSocket Endpoint Testing - Production URL accessibility")
+        print("2. Real-time Message Broadcasting - Multiple consecutive messages")
+        print("3. Message Storage and Retrieval - GET /api/chat verification")
+        print("4. Customer Authentication Integration - Customer 10299 testing")
+        print("5. Timezone Verification - German timezone conversion format")
+        print("=" * 80)
+        
+        # Run the critical WebSocket and chat functionality test
+        websocket_success = self.test_critical_websocket_chat_functionality()
+        
+        # Run WebSocket availability test
+        websocket_availability = self.test_websocket_availability()
+        
+        # Run basic chat endpoints test
+        chat_endpoints = self.test_chat_endpoints()
+        
+        # Calculate overall success rate
+        critical_tests = [websocket_success, websocket_availability, chat_endpoints]
+        critical_success_count = sum(1 for test in critical_tests if test)
+        
+        print("\n" + "=" * 80)
+        print("🎯 CRITICAL WEBSOCKET AND CHAT TESTING SUMMARY")
+        print("=" * 80)
+        print(f"Critical Tests Passed: {critical_success_count}/{len(critical_tests)}")
+        print(f"Overall Success Rate: {(critical_success_count/len(critical_tests)*100):.1f}%")
+        
+        if critical_success_count == len(critical_tests):
+            print("✅ ALL CRITICAL WEBSOCKET AND CHAT TESTS PASSED!")
+        else:
+            print("❌ SOME CRITICAL TESTS FAILED - REQUIRES ATTENTION")
+        
+        return critical_success_count == len(critical_tests)
+
 def main():
     tester = LiveShoppingAPITester()
     
