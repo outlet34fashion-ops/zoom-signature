@@ -404,42 +404,49 @@ function App() {
     };
   }, []);
 
-  // Auto-initialize LiveKit streaming for customers
+  // Auto-initialize LiveKit streaming for customers - check for active admin streams
   useEffect(() => {
     const checkForActiveStreams = async () => {
       if (!isAdminAuthenticated && isAuthenticated && !streamingActive) {
         try {
+          console.log('🔍 Checking for active admin streams...');
+          
           // Check if there are active rooms
-          const activeRooms = await livekitService.getActiveRooms();
-          if (activeRooms.length > 0) {
-            const room = activeRooms[0]; // Join first active room
-            console.log('🎥 Found active stream, auto-joining:', room.roomName);
+          const response = await fetch(`${API}/livekit/rooms`);
+          const data = await response.json();
+          
+          if (data.rooms && data.rooms.length > 0) {
+            const activeRoom = data.rooms[0]; // Join first active room
+            console.log('🎥 Found active admin stream, auto-joining:', activeRoom.name);
             
             // Generate viewer token for customer
             const customerNumber = getCustomerNumber();
             const tokenData = await livekitService.generateViewerToken(
-              room.roomName,
+              activeRoom.name,
               `customer-${customerNumber}`,
               { role: 'customer', customerNumber }
             );
             
-            setCurrentRoomName(room.roomName);
+            setCurrentRoomName(activeRoom.name);
             setLivekitToken(tokenData.token);
             setLivekitUrl(tokenData.livekitUrl);
             setStreamingActive(true);
+            setLivekitError(null);
             
-            console.log('✅ Auto-joined customer to active stream');
+            console.log('✅ Customer auto-joined active admin stream');
+          } else {
+            console.log('ℹ️  No active admin streams available');
           }
         } catch (error) {
-          console.log('ℹ️  No active streams available for customers');
+          console.log('ℹ️  Error checking for active streams:', error.message);
         }
       }
     };
 
-    // Check for active streams every 10 seconds for customers
+    // Check for active streams every 5 seconds for customers
     if (!isAdminAuthenticated && isAuthenticated) {
       checkForActiveStreams();
-      const interval = setInterval(checkForActiveStreams, 10000);
+      const interval = setInterval(checkForActiveStreams, 5000);
       return () => clearInterval(interval);
     }
   }, [isAuthenticated, isAdminAuthenticated, streamingActive]);
