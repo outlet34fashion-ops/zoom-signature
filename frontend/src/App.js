@@ -3214,6 +3214,133 @@ function App() {
           </div>
         )}
 
+        {/* CRITICAL: Zebra Etiketten-Drucker Management (Admin) */}
+        {isAdminAuthenticated && isAdminView && (
+          <Card className="border-l-4 border-l-purple-500 shadow-lg mb-6">
+            <CardContent className="p-0">
+              <button
+                onClick={() => setShowZebraControls(!showZebraControls)}
+                className="w-full p-6 text-left bg-gradient-to-r from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-150 transition-all duration-300 flex justify-between items-center"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-lg">🏷️</span>
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-800">Zebra Etiketten-Drucker</h2>
+                    <p className="text-gray-600 text-sm">GK420d • 40x25mm Labels • Automatischer Druck</p>
+                  </div>
+                </div>
+                <div className="text-gray-400">
+                  {showZebraControls ? '▼' : '▶'}
+                </div>
+              </button>
+              
+              {showZebraControls && (
+                <div className="p-6 border-t border-gray-200">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    
+                    {/* Drucker-Status */}
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <h3 className="text-lg font-semibold mb-3 text-gray-800">🖨️ Drucker-Status</h3>
+                      <div className="space-y-3">
+                        <Button 
+                          onClick={async () => {
+                            try {
+                              const response = await axios.get(`${API}/zebra/status`);
+                              const status = response.data.printer_status;
+                              alert(`Drucker Status: ${status.status}\n${status.message}`);
+                            } catch (error) {
+                              alert('Fehler beim Abrufen des Drucker-Status: ' + error.message);
+                            }
+                          }}
+                          className="bg-blue-600 hover:bg-blue-700 text-white w-full"
+                        >
+                          📊 Status prüfen
+                        </Button>
+                        
+                        <Button 
+                          onClick={async () => {
+                            try {
+                              const response = await axios.post(`${API}/zebra/test-print`);
+                              if (response.data.success) {
+                                alert('✅ Test-Etikett erfolgreich gedruckt!');
+                              } else {
+                                alert('❌ Test-Druck fehlgeschlagen: ' + response.data.result.message);
+                              }
+                            } catch (error) {
+                              alert('❌ Test-Druck Fehler: ' + error.message);
+                            }
+                          }}
+                          className="bg-green-600 hover:bg-green-700 text-white w-full"
+                        >
+                          🧪 Test-Etikett drucken
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    {/* Etikett-Vorschau */}
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <h3 className="text-lg font-semibold mb-3 text-gray-800">👁️ Etikett-Vorschau</h3>
+                      <div className="space-y-3">
+                        <input 
+                          type="text"
+                          placeholder="Kundennummer (z.B. 10299)"
+                          value={labelPreviewCustomer}
+                          onChange={(e) => setLabelPreviewCustomer(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                        <input 
+                          type="text"
+                          placeholder="Preis (z.B. €19,99)"
+                          value={labelPreviewPrice}
+                          onChange={(e) => setLabelPreviewPrice(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                        
+                        <Button 
+                          onClick={async () => {
+                            try {
+                              const response = await axios.get(`${API}/zebra/preview/${labelPreviewCustomer}?price=${labelPreviewPrice}`);
+                              setLabelPreview(response.data.zpl_code);
+                              alert('✅ Etikett-Vorschau generiert!');
+                            } catch (error) {
+                              alert('❌ Vorschau-Fehler: ' + error.message);
+                            }
+                          }}
+                          className="bg-purple-600 hover:bg-purple-700 text-white w-full"
+                          disabled={!labelPreviewCustomer}
+                        >
+                          🔍 Vorschau generieren
+                        </Button>
+                      </div>
+                      
+                      {/* ZPL-Code Anzeige */}
+                      {labelPreview && (
+                        <div className="mt-4 p-3 bg-black text-green-400 rounded-lg font-mono text-xs">
+                          <div className="mb-2 font-bold text-white">ZPL-Code für Zebra GK420d:</div>
+                          <pre className="whitespace-pre-wrap break-all">{labelPreview}</pre>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Automatischer Druck Info */}
+                  <div className="mt-6 bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-green-600 text-lg">⚡</span>
+                      <div>
+                        <h4 className="font-semibold text-green-800">Automatischer Druck aktiviert</h4>
+                        <p className="text-green-700 text-sm">Etiketten werden automatisch gedruckt, sobald eine Bestellung eingeht.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         {/* Profile Modal */}
         {showProfileModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
