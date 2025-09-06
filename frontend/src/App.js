@@ -573,61 +573,48 @@ function App() {
     console.log('🕐 formatGermanTime DEBUG - input:', timestamp, typeof timestamp);
     
     try {
-      // Ensure we have a proper Date object
-      let date;
+      // Ensure we have a proper Date object from UTC timestamp
+      let utcDate;
       if (timestamp instanceof Date) {
-        date = timestamp;
+        utcDate = timestamp;
       } else if (typeof timestamp === 'string') {
-        // Handle ISO string format with Z suffix (MongoDB/Backend format)
-        if (timestamp.includes('T') && timestamp.includes('Z')) {
-          date = new Date(timestamp);
-        } else if (timestamp.includes('T')) {
-          date = new Date(timestamp);
+        // Backend sends UTC timestamps like "2025-09-06T09:50:39.000000"
+        // Force UTC interpretation
+        if (timestamp.includes('T')) {
+          // Add Z suffix if missing to ensure UTC parsing
+          const utcTimestamp = timestamp.endsWith('Z') ? timestamp : timestamp + 'Z';
+          utcDate = new Date(utcTimestamp);
         } else {
-          date = new Date(timestamp);
+          utcDate = new Date(timestamp);
         }
       } else if (typeof timestamp === 'number') {
-        date = new Date(timestamp);
+        utcDate = new Date(timestamp);
       } else {
         console.error('❌ Invalid timestamp format:', timestamp);
         return 'N/A';
       }
       
       // Validate the date object
-      if (isNaN(date.getTime())) {
+      if (isNaN(utcDate.getTime())) {
         console.error('❌ Invalid date created from timestamp:', timestamp);
         return 'N/A';
       }
       
-      // Get current browser timezone info for debugging
-      const now = new Date();
-      const browserOffset = now.getTimezoneOffset();
-      console.log('🌍 Browser timezone offset (minutes):', browserOffset);
-      console.log('🌍 Date UTC string:', date.toISOString());
-      console.log('🌍 Date local string:', date.toString());
-      
-      // Force German timezone conversion (UTC+2 for CEST, UTC+1 for CET)
-      // Explicitly ensure we're showing the correct German local time
-      const germanTime = date.toLocaleTimeString('de-DE', {
+      // CRITICAL FIX: Force German timezone conversion (UTC+2 for CEST)
+      // Use toLocaleString with explicit timezone to ensure correct conversion
+      const germanTime = utcDate.toLocaleString('de-DE', {
         timeZone: 'Europe/Berlin',
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
-        hourCycle: 'h23' // Use 24-hour format to avoid AM/PM confusion
-      });
+        hourCycle: 'h23' // 24-hour format
+      }).split(', ')[1]; // Get only the time part, not the date
       
-      // Additional debugging: manually calculate German time
-      const utcTime = date.getTime();
-      const germanOffset = 2 * 60 * 60 * 1000; // UTC+2 in milliseconds (CEST)
-      const germanDate = new Date(utcTime + germanOffset);
-      const manualGermanTime = germanDate.toTimeString().slice(0, 8);
-      
-      console.log('✅ formatGermanTime results:');
+      console.log('✅ TIMEZONE CONVERSION:');
       console.log('   📅 Input timestamp:', timestamp);
-      console.log('   🕐 UTC time:', date.toISOString());
-      console.log('   🇩🇪 German time (toLocaleTimeString):', germanTime);
-      console.log('   🇩🇪 German time (manual UTC+2):', manualGermanTime);
-      console.log('   ⚠️  Current real time check:', new Date().toLocaleTimeString('de-DE', { timeZone: 'Europe/Berlin', hourCycle: 'h23' }));
+      console.log('   🕐 UTC time:', utcDate.toISOString());
+      console.log('   🇩🇪 German time (Europe/Berlin):', germanTime);
+      console.log('   ⚠️  Current browser time:', new Date().toLocaleString('de-DE', { timeZone: 'Europe/Berlin', hourCycle: 'h23' }));
       
       return germanTime;
       
