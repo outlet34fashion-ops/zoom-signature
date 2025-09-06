@@ -20,14 +20,20 @@ logger = logging.getLogger(__name__)
 
 class ZebraPrinterService:
     def __init__(self):
-        # FIXED: Correct printer names for Zebra GK420d as shown in system
+        # FIXED: Use actual macOS CUPS printer names from user's system
         self.printer_names = [
-            "Zebra_Technologies_ZTC_GK420d",  # Exact name from user's system
-            "ZTC_GK420d", 
+            # Primary name based on user's connection data
+            "ZTC_GK420d",  # Most likely CUPS name
+            "Zebra_Technologies_ZTC_GK420d", 
+            "Zebra Technologies ZTC GK420d",  # With spaces
+            # Alternative names that macOS might use
             "GK420d",
-            "Zebra Technologies ZTC GK420d"  # With spaces
+            "Zebra_ZTC_GK420d",
+            "ZTC GK420d"
         ]
-        self.label_width = 320  # 40mm = 320 dots (8 dots/mm)
+        # USB connection details from user's system
+        self.usb_connection = "usb://Zebra%20Technologies/ZTC%20GK420d?serial=28J212801033"
+        self.label_width = 320  # 40mm = 320 dots (8 dots/mm) 
         self.label_height = 200  # 25mm = 200 dots (8 dots/mm)
     
     def generate_zpl_label(self, customer_number: str, price: str, timestamp: datetime) -> str:
