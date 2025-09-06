@@ -1160,22 +1160,30 @@ function App() {
   const sendMessage = async () => {
     if (!newMessage.trim()) return;
 
+    const messageToSend = newMessage.trim();
+    setNewMessage(''); // Clear input immediately for better UX
+
     try {
       // Format chat message: Admin messages show as "Admin", customer messages show customer number
       const displayName = isAdminAuthenticated ? 'Admin' : username;
       const customerDisplayNumber = getCustomerNumber();
       const formattedMessage = isAdminAuthenticated ? 
-        `${newMessage}` : 
-        `Chat ${customerDisplayNumber} I ${newMessage}`;
+        `${messageToSend}` : 
+        `Chat ${customerDisplayNumber} I ${messageToSend}`;
+      
+      console.log('Sending message:', { displayName, formattedMessage });
       
       await axios.post(`${API}/chat`, {
         username: displayName,
         message: formattedMessage,
         emoji: ''
       });
-      setNewMessage('');
+      
+      console.log('Message sent successfully');
     } catch (error) {
       console.error('Error sending message:', error);
+      // Restore message on error
+      setNewMessage(messageToSend);
     }
   };
 
