@@ -303,7 +303,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Zebra Etiketten-Drucker frontend integration testing completed successfully"
+    - "Enhanced Zebra printer functionality testing completed successfully"
   stuck_tasks: []
   test_all: false
   test_priority: "critical_first"
