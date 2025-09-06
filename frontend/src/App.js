@@ -244,9 +244,17 @@ function App() {
         }
       };
       
-      ws.onclose = () => {
-        console.log('WebSocket disconnected, retrying...');
-        setTimeout(connectWebSocket, 3000);
+      ws.onclose = (event) => {
+        console.log('WebSocket connection closed:', event.code, event.reason);
+        // Reconnect after 3 seconds with exponential backoff
+        setTimeout(() => {
+          console.log('Attempting to reconnect WebSocket...');
+          connectWebSocket();
+        }, 3000);
+      };
+      
+      ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
       };
       
       wsRef.current = ws;
