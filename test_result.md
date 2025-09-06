@@ -288,10 +288,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Backend chat functionality testing completed - all systems working correctly"
+    - "CRITICAL DEBUG: WebSocket chat real-time functionality and timezone display fix"
   stuck_tasks: []
   test_all: false
-  test_priority: "high_first"
+  test_priority: "critical_first"
 
   - task: "Order chat message format fix"
     implemented: true
