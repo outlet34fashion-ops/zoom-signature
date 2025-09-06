@@ -3313,6 +3313,35 @@ function App() {
                         >
                           🔍 Vorschau generieren
                         </Button>
+                        
+                        <Button 
+                          onClick={async () => {
+                            try {
+                              // Download ZPL-Datei für manuellen Druck
+                              const response = await axios.get(
+                                `${API}/zebra/download/${labelPreviewCustomer}?price=${labelPreviewPrice}`,
+                                { responseType: 'blob' }
+                              );
+                              
+                              // Erstelle Download-Link
+                              const url = window.URL.createObjectURL(new Blob([response.data]));
+                              const link = document.createElement('a');
+                              link.href = url;
+                              link.setAttribute('download', `zebra_label_${labelPreviewCustomer}_${Date.now()}.zpl`);
+                              document.body.appendChild(link);
+                              link.click();
+                              link.remove();
+                              
+                              alert('✅ ZPL-Datei heruntergeladen! \n\nSo drucken:\n1. Öffnen Sie die .zpl Datei\n2. Kopieren Sie den Inhalt\n3. Senden Sie direkt an Zebra-Drucker');
+                            } catch (error) {
+                              alert('❌ Download-Fehler: ' + error.message);
+                            }
+                          }}
+                          className="bg-green-600 hover:bg-green-700 text-white w-full"
+                          disabled={!labelPreviewCustomer}
+                        >
+                          💾 ZPL-Datei downloaden
+                        </Button>
                       </div>
                       
                       {/* ZPL-Code Anzeige */}
