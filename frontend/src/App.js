@@ -1282,9 +1282,8 @@ function App() {
 
   const loadInitialData = async () => {
     try {
-      // Load chat messages
-      const chatResponse = await axios.get(`${API}/chat`);
-      setChatMessages(chatResponse.data);
+      // NOTE: Chat messages are loaded via polling, not here!
+      // This prevents overwriting real-time updates
 
       // Load products
       const productsResponse = await axios.get(`${API}/products`);
