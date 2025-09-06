@@ -1325,6 +1325,25 @@ function App() {
       });
       
       console.log('Message sent successfully');
+      
+      // FORCE IMMEDIATE POLLING after sending message
+      setTimeout(() => {
+        console.log('🚀 FORCE POLLING after message send');
+        // Trigger immediate poll
+        const pollForNewMessages = async () => {
+          try {
+            const response = await axios.get(`${API}/chat`);
+            const serverMessages = response.data;
+            console.log('🚀 FORCE POLL: Got', serverMessages.length, 'messages');
+            setChatMessages(serverMessages);
+            setPollingStatus(`Force updated: ${serverMessages.length} messages`);
+          } catch (error) {
+            console.error('❌ Force polling error:', error);
+          }
+        };
+        pollForNewMessages();
+      }, 100); // Poll after 100ms
+      
     } catch (error) {
       console.error('Error sending message:', error);
       // Restore message on error
