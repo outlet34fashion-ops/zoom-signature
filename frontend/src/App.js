@@ -324,17 +324,11 @@ function App() {
     };
   }, []);
 
-  useEffect(() => {
-    if (chatRef.current) {
-      // With reverse order, new messages appear at top, so scroll to top
-      chatRef.current.scrollTop = 0;
-    }
-  }, [chatMessages]);
-
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    if (chatRef.current) {
+      // Since messages are now added at the bottom, scroll to bottom for new messages
+      chatRef.current.scrollTop = chatRef.current.scrollHeight;
     }
   }, [chatMessages]);
 
