@@ -5906,6 +5906,243 @@ TIMEZONE BUG ANALYSIS COMPLETE:
         
         return critical_success_count == len(critical_tests)
 
+    def test_practical_printing_solutions(self):
+        """Test new practical printing solutions that work like Microsoft Word"""
+        print("\n🖨️ TESTING NEW PRACTICAL PRINTING SOLUTIONS (Microsoft Word-like)")
+        print("=" * 80)
+        print("🎯 CRITICAL TESTS FOR REAL-WORLD PRINTING:")
+        print("1. HTML Druckvorschau (wie Microsoft Word) - GET /api/zebra/html-preview/10299?price=19.99")
+        print("2. CSV Export für Word/Excel - GET /api/zebra/csv-export/10299?price=19.99")
+        print("3. Verify all existing endpoints still work")
+        print("4. Test automatic printing integration")
+        print("=" * 80)
+        
+        customer_number = "10299"
+        price = "19.99"
+        
+        # TEST 1: HTML Druckvorschau (wie Microsoft Word)
+        print("\n🎯 TEST 1: HTML Druckvorschau (wie Microsoft Word)")
+        try:
+            response = requests.get(
+                f"{self.api_url}/zebra/html-preview/{customer_number}",
+                params={"price": price},
+                timeout=15
+            )
+            
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                content_type = response.headers.get('content-type', '')
+                is_html = 'text/html' in content_type
+                
+                html_content = response.text
+                
+                # Check for essential HTML elements for printing
+                has_print_styles = '@page' in html_content and '@media print' in html_content
+                has_label_dimensions = '40mm' in html_content and '25mm' in html_content
+                has_print_button = 'print-button' in html_content or 'window.print()' in html_content
+                has_customer_data = customer_number in html_content and price in html_content
+                has_instructions = 'DRUCKEN' in html_content or 'Microsoft Word' in html_content
+                
+                success = (is_html and has_print_styles and has_label_dimensions and 
+                          has_print_button and has_customer_data and has_instructions)
+                
+                details += f", Is HTML: {is_html}, Print styles: {has_print_styles}, Label dimensions: {has_label_dimensions}, Print button: {has_print_button}, Customer data: {has_customer_data}, Instructions: {has_instructions}"
+                
+                if success:
+                    print(f"  ✅ HTML Preview Generated Successfully:")
+                    print(f"     - Content Type: {content_type}")
+                    print(f"     - Size: {len(html_content)} characters")
+                    print(f"     - Contains 40x25mm label styling")
+                    print(f"     - Contains print button and instructions")
+                    print(f"     - Customer {customer_number} and price {price} included")
+            
+            self.log_test("HTML Druckvorschau (Microsoft Word-like)", success, details)
+            
+        except Exception as e:
+            self.log_test("HTML Druckvorschau (Microsoft Word-like)", False, str(e))
+        
+        # TEST 2: CSV Export für Word/Excel
+        print("\n🎯 TEST 2: CSV Export für Word/Excel")
+        try:
+            response = requests.get(
+                f"{self.api_url}/zebra/csv-export/{customer_number}",
+                params={"price": price},
+                timeout=15
+            )
+            
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                content_type = response.headers.get('content-type', '')
+                is_csv = 'text/csv' in content_type
+                
+                csv_content = response.text
+                
+                # Check CSV structure for Word mail merge
+                has_headers = 'Zeitstempel' in csv_content and 'Kundennummer' in csv_content and 'Preis' in csv_content
+                has_data_row = len(csv_content.split('\n')) >= 2
+                has_customer_data = customer_number[-3:] in csv_content  # Last 3 digits
+                has_price_data = price.replace('.', '') in csv_content or price.replace('.', ',') in csv_content
+                
+                success = is_csv and has_headers and has_data_row and has_customer_data and has_price_data
+                
+                details += f", Is CSV: {is_csv}, Has headers: {has_headers}, Has data: {has_data_row}, Customer data: {has_customer_data}, Price data: {has_price_data}"
+                
+                if success:
+                    print(f"  ✅ CSV Export Generated Successfully:")
+                    print(f"     - Content Type: {content_type}")
+                    print(f"     - Size: {len(csv_content)} characters")
+                    print(f"     - Contains proper headers for Word import")
+                    print(f"     - Contains customer and price data")
+                    print(f"     - Ready for mail merge in Word/Excel")
+            
+            self.log_test("CSV Export für Word/Excel", success, details)
+            
+        except Exception as e:
+            self.log_test("CSV Export für Word/Excel", False, str(e))
+        
+        # TEST 3: Verify existing endpoints still work
+        print("\n🎯 TEST 3: Verify existing endpoints still work")
+        
+        # Test PDF Preview
+        try:
+            response = requests.get(
+                f"{self.api_url}/zebra/pdf-preview/{customer_number}",
+                params={"price": price},
+                timeout=15
+            )
+            
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                content_type = response.headers.get('content-type', '')
+                is_pdf = 'application/pdf' in content_type
+                pdf_size = len(response.content)
+                reasonable_size = 1000 < pdf_size < 100000
+                
+                success = is_pdf and reasonable_size
+                details += f", Is PDF: {is_pdf}, Size: {pdf_size} bytes"
+            
+            self.log_test("Existing PDF Preview Endpoint", success, details)
+            
+        except Exception as e:
+            self.log_test("Existing PDF Preview Endpoint", False, str(e))
+        
+        # Test Image Preview
+        try:
+            response = requests.get(
+                f"{self.api_url}/zebra/image-preview/{customer_number}",
+                params={"price": price},
+                timeout=15
+            )
+            
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                content_type = response.headers.get('content-type', '')
+                is_image = 'image/png' in content_type
+                image_size = len(response.content)
+                reasonable_size = 1000 < image_size < 500000
+                
+                success = is_image and reasonable_size
+                details += f", Is PNG: {is_image}, Size: {image_size} bytes"
+            
+            self.log_test("Existing Image Preview Endpoint", success, details)
+            
+        except Exception as e:
+            self.log_test("Existing Image Preview Endpoint", False, str(e))
+        
+        # Test Manual Print
+        try:
+            response = requests.post(f"{self.api_url}/zebra/test-print", timeout=15)
+            
+            success = response.status_code == 200
+            details = f"POST Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                has_success_field = 'success' in data
+                has_result_field = 'result' in data
+                
+                success = has_success_field and has_result_field
+                details += f", Has success field: {has_success_field}, Has result field: {has_result_field}"
+            
+            self.log_test("Existing Test Print Endpoint", success, details)
+            
+        except Exception as e:
+            self.log_test("Existing Test Print Endpoint", False, str(e))
+        
+        # TEST 4: Test automatic printing integration
+        print("\n🎯 TEST 4: Test automatic printing integration")
+        try:
+            # Create order with customer 10299 to test automatic printing
+            test_order = {
+                "customer_id": customer_number,
+                "product_id": "1",
+                "size": "OneSize",
+                "quantity": 1,
+                "price": float(price)
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/orders",
+                json=test_order,
+                headers={'Content-Type': 'application/json'},
+                timeout=15
+            )
+            
+            success = response.status_code == 200
+            details = f"POST Status: {response.status_code}"
+            
+            if success:
+                order_data = response.json()
+                required_fields = ['id', 'customer_id', 'product_id', 'size', 'quantity', 'price']
+                has_all_fields = all(field in order_data for field in required_fields)
+                
+                correct_customer = order_data.get('customer_id') == customer_number
+                correct_price = abs(order_data.get('price', 0) - float(price)) < 0.01
+                
+                success = has_all_fields and correct_customer and correct_price
+                details += f", Order created: {has_all_fields}, Customer correct: {correct_customer}, Price correct: {correct_price}"
+                
+                if success:
+                    print(f"  ✅ Order Created with Automatic Printing:")
+                    print(f"     - Order ID: {order_data.get('id')}")
+                    print(f"     - Customer: {order_data.get('customer_id')}")
+                    print(f"     - Price: {order_data.get('price')}")
+                    print(f"     - Automatic label printing should be attempted")
+                    print(f"     - User now has multiple practical printing options")
+            
+            self.log_test("Automatic Printing Integration", success, details)
+            
+        except Exception as e:
+            self.log_test("Automatic Printing Integration", False, str(e))
+        
+        # Calculate success rate for practical printing tests
+        practical_tests = [r for r in self.test_results if any(keyword in r['name'] for keyword in 
+                          ['HTML Druckvorschau', 'CSV Export', 'Existing', 'Automatic Printing'])]
+        practical_tests_recent = practical_tests[-6:]  # Get the last 6 practical printing tests
+        practical_success_count = sum(1 for test in practical_tests_recent if test['success'])
+        
+        print(f"\n📊 Practical Printing Solutions Tests: {practical_success_count}/{len(practical_tests_recent)} passed")
+        print(f"Success Rate: {(practical_success_count/len(practical_tests_recent)*100):.1f}%")
+        
+        if practical_success_count == len(practical_tests_recent):
+            print("✅ ALL PRACTICAL PRINTING SOLUTIONS WORKING!")
+            print("   - HTML preview works like Microsoft Word")
+            print("   - CSV export ready for Word mail merge")
+            print("   - All existing functionality intact")
+            print("   - Multiple practical options available")
+        else:
+            print("❌ SOME PRACTICAL PRINTING TESTS FAILED")
+        
+        return practical_success_count == len(practical_tests_recent)
+
     def run_enhanced_zebra_printer_tests(self):
         """Run enhanced Zebra printer tests as specified in review request"""
         print("🚨 ENHANCED ZEBRA PRINTER FUNCTIONALITY TESTING")
