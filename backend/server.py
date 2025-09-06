@@ -667,15 +667,15 @@ async def create_order(order: OrderCreate):
         else:
             logging.warning(f"⚠️  Etikett-Druck fehlgeschlagen für Bestellung {order_obj.id}: {print_result.get('message', 'Unknown error')}")
         
-        # Füge Print-Status zum Order-Objekt hinzu für Admin-Feedback
-        order_obj.label_printed = print_result["success"]
-        order_obj.label_print_message = print_result.get("message", "")
+        # Log print status for admin feedback (don't modify order object)
+        if print_result["success"]:
+            logging.info(f"✅ Label print successful for order {order_obj.id}")
+        else:
+            logging.warning(f"⚠️  Label print failed for order {order_obj.id}: {print_result.get('message', 'Unknown error')}")
         
     except Exception as print_error:
         logging.error(f"❌ Etiketten-Druck Fehler für Bestellung {order_obj.id}: {str(print_error)}")
         # Bestellung bleibt gültig, auch wenn Druck fehlschlägt
-        order_obj.label_printed = False
-        order_obj.label_print_message = f"Druck-Fehler: {str(print_error)}"
     
     return order_obj
 
