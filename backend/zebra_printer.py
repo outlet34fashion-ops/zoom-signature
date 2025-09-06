@@ -129,159 +129,162 @@ class ZebraPrinterService:
         Druckt Etikett über USB-Verbindung zum Zebra GK420d (macOS optimiert)
         """
         try:
-            print(f"🖨️  Attempting macOS USB printing to Zebra GK420d...")
+            print(f"🖨️  CRITICAL: Starting automatic print to Zebra GK420d...")
             print(f"ZPL Code length: {len(zpl_code)} characters")
             
-            # CRITICAL FIX: macOS-specific printing using exact printer name from system
-            printer_name = "Zebra_Technologies_ZTC_GK420d"  # Exact name from user's macOS
+            # FIXED: Use exact printer name and multiple methods
+            printer_name = "Zebra_Technologies_ZTC_GK420d"
             
-            # Method 1: macOS lpr with raw printing (best for Zebra ZPL)
+            # Method 1: Enhanced lpr with better macOS compatibility
             try:
-                print(f"🍎 Trying macOS lpr with printer: {printer_name}")
+                print(f"🍎 Method 1: Enhanced macOS lpr to {printer_name}")
                 
-                # Create temporary ZPL file
-                temp_file = f"/tmp/zebra_macos_{int(time.time())}.zpl"
-                with open(temp_file, 'w') as f:
+                # Create ZPL file with proper line endings for macOS
+                temp_file = f"/tmp/zebra_auto_{int(time.time())}.zpl"
+                with open(temp_file, 'w', newline='\n') as f:
                     f.write(zpl_code)
                 
-                # Use lpr with raw option for macOS
-                result = subprocess.run([
-                    'lpr', 
-                    '-P', printer_name,
-                    '-o', 'raw',
-                    '-o', 'media=Custom.40x25mm',  # Specify label size
-                    temp_file
-                ], capture_output=True, text=True, timeout=15)
+                # Try lpr with various options for macOS Zebra compatibility
+                lpr_commands = [
+                    ['lpr', '-P', printer_name, '-o', 'raw', '-o', 'media=Custom.40x25mm', temp_file],
+                    ['lpr', '-P', printer_name, '-o', 'raw', temp_file],
+                    ['lpr', '-P', printer_name, temp_file]
+                ]
                 
-                if result.returncode == 0:
-                    os.remove(temp_file)
-                    return {
-                        "success": True,
-                        "method": "macos_lpr_raw",
-                        "printer_name": printer_name,
-                        "message": f"✅ Label printed successfully via macOS lpr to {printer_name}"
-                    }
-                else:
-                    print(f"❌ lpr failed: {result.stderr}")
-                    
-            except Exception as lpr_error:
-                print(f"❌ macOS lpr failed: {lpr_error}")
+                for cmd in lpr_commands:
+                    try:
+                        print(f"  Trying: {' '.join(cmd)}")
+                        result = subprocess.run(cmd, capture_output=True, text=True, timeout=20)
+                        
+                        if result.returncode == 0:
+                            os.remove(temp_file)
+                            print(f"✅ SUCCESS: Label printed via {' '.join(cmd[:3])}")
+                            return {
+                                "success": True,
+                                "method": "enhanced_macos_lpr",
+                                "command": ' '.join(cmd),
+                                "message": f"✅ Label automatically printed to {printer_name}"
+                            }
+                        else:
+                            print(f"  Failed: {result.stderr}")
+                    except Exception as cmd_error:
+                        print(f"  Command error: {cmd_error}")
+                        continue
+                
+                os.remove(temp_file)
+                
+            except Exception as method1_error:
+                print(f"❌ Method 1 failed: {method1_error}")
             
-            # Method 2: Try with lpstat to check printer and then print
+            # Method 2: Direct pipe with enhanced error handling
             try:
-                print(f"🔍 Checking printer status first...")
+                print(f"🔧 Method 2: Direct pipe to {printer_name}")
                 
-                # Check if printer exists and is ready
-                status_result = subprocess.run([
-                    'lpstat', '-p', printer_name
-                ], capture_output=True, text=True, timeout=10)
+                # Enhanced pipe command with error catching
+                pipe_commands = [
+                    f'echo "{zpl_code}" | lpr -P "{printer_name}" -o raw',
+                    f'printf "{zpl_code}" | lpr -P "{printer_name}" -o raw',
+                    f'cat <<EOF | lpr -P "{printer_name}" -o raw\n{zpl_code}\nEOF'
+                ]
                 
-                print(f"Printer status: {status_result.stdout}")
+                for pipe_cmd in pipe_commands:
+                    try:
+                        print(f"  Trying pipe: {pipe_cmd[:50]}...")
+                        result = subprocess.run(['bash', '-c', pipe_cmd], 
+                                              capture_output=True, text=True, timeout=20)
+                        
+                        if result.returncode == 0:
+                            print(f"✅ SUCCESS: Pipe method worked")
+                            return {
+                                "success": True,
+                                "method": "enhanced_pipe",
+                                "command": pipe_cmd[:100],
+                                "message": f"✅ Label piped successfully to {printer_name}"
+                            }
+                        else:
+                            print(f"  Pipe failed: {result.stderr}")
+                    except Exception as pipe_error:
+                        print(f"  Pipe error: {pipe_error}")
+                        continue
+                        
+            except Exception as method2_error:
+                print(f"❌ Method 2 failed: {method2_error}")
+            
+            # Method 3: CUPS lpstat verification + print
+            try:
+                print(f"🔍 Method 3: CUPS verification + print")
                 
-                if status_result.returncode == 0:
-                    # Printer exists, try printing with different options
-                    temp_file = f"/tmp/zebra_status_{int(time.time())}.zpl"
-                    with open(temp_file, 'w') as f:
+                # First verify printer exists and is ready
+                lpstat_result = subprocess.run(['lpstat', '-p', printer_name], 
+                                             capture_output=True, text=True, timeout=10)
+                
+                print(f"Printer status: {lpstat_result.stdout}")
+                
+                if lpstat_result.returncode == 0 and 'idle' in lpstat_result.stdout.lower():
+                    print("✅ Printer is online and idle")
+                    
+                    # Create file and print with verification
+                    verified_file = f"/tmp/zebra_verified_{int(time.time())}.zpl"
+                    with open(verified_file, 'w') as f:
                         f.write(zpl_code)
                     
-                    # Try lpr without media specification
-                    result = subprocess.run([
-                        'lpr', '-P', printer_name, '-o', 'raw', temp_file
-                    ], capture_output=True, text=True, timeout=15)
+                    # Print with job tracking
+                    print_result = subprocess.run(
+                        ['lpr', '-P', printer_name, '-o', 'raw', verified_file],
+                        capture_output=True, text=True, timeout=20
+                    )
                     
-                    if result.returncode == 0:
-                        os.remove(temp_file)
+                    if print_result.returncode == 0:
+                        os.remove(verified_file)
+                        
+                        # Verify job was submitted
+                        time.sleep(1)
+                        job_result = subprocess.run(['lpq', '-P', printer_name], 
+                                                  capture_output=True, text=True, timeout=5)
+                        
+                        print(f"✅ SUCCESS: Print job submitted. Queue status: {job_result.stdout}")
                         return {
                             "success": True,
-                            "method": "macos_lpr_simple",
-                            "printer_name": printer_name,
-                            "message": f"✅ Label printed via simple lpr to {printer_name}"
+                            "method": "cups_verified",
+                            "job_queue": job_result.stdout,
+                            "message": f"✅ Verified print job sent to {printer_name}"
                         }
                     
-                    os.remove(temp_file)
+                    os.remove(verified_file)
                     
-            except Exception as status_error:
-                print(f"❌ Status check failed: {status_error}")
+            except Exception as method3_error:
+                print(f"❌ Method 3 failed: {method3_error}")
             
-            # Method 3: Direct pipe to printer using echo
-            try:
-                print(f"🔧 Trying direct pipe method...")
-                
-                result = subprocess.run([
-                    'sh', '-c', 
-                    f'echo "{zpl_code}" | lpr -P {printer_name} -o raw'
-                ], capture_output=True, text=True, timeout=15)
-                
-                if result.returncode == 0:
-                    return {
-                        "success": True,
-                        "method": "macos_pipe",
-                        "printer_name": printer_name,
-                        "message": f"✅ Label printed via pipe to {printer_name}"
-                    }
-                    
-            except Exception as pipe_error:
-                print(f"❌ Pipe method failed: {pipe_error}")
-            
-            # Method 4: Alternative printer names (in case of slight variations)
-            alternative_names = [
-                "Zebra Technologies ZTC GK420d",
-                "ZTC GK420d", 
-                "GK420d",
-                "Zebra_ZTC_GK420d"
-            ]
-            
-            for alt_name in alternative_names:
-                try:
-                    print(f"🔄 Trying alternative name: {alt_name}")
-                    
-                    temp_file = f"/tmp/zebra_alt_{int(time.time())}.zpl"
-                    with open(temp_file, 'w') as f:
-                        f.write(zpl_code)
-                    
-                    result = subprocess.run([
-                        'lpr', '-P', alt_name, '-o', 'raw', temp_file
-                    ], capture_output=True, text=True, timeout=10)
-                    
-                    if result.returncode == 0:
-                        os.remove(temp_file)
-                        return {
-                            "success": True,
-                            "method": "macos_alternative_name",
-                            "printer_name": alt_name,
-                            "message": f"✅ Label printed via alternative name {alt_name}"
-                        }
-                    
-                    os.remove(temp_file)
-                    
-                except Exception as alt_error:
-                    print(f"❌ Alternative {alt_name} failed: {alt_error}")
-                    continue
-            
-            # Method 5: Save to file for manual printing (always works)
-            manual_file = f"/tmp/zebra_manual_print_{int(time.time())}.zpl"
+            # If all methods fail, create manual instruction file
+            manual_file = f"/tmp/zebra_manual_{int(time.time())}.zpl"
             with open(manual_file, 'w') as f:
                 f.write(zpl_code)
             
+            print(f"❌ All automatic methods failed - created manual file: {manual_file}")
+            
             return {
                 "success": False,
-                "method": "manual_file_created",
-                "message": f"❌ Automatic printing failed. Manual file created: {manual_file}",
+                "method": "manual_fallback",
                 "manual_file": manual_file,
-                "instructions": [
-                    "1. Activate 'Use generic printer features' in printer settings",
-                    "2. Try: cat /tmp/zebra_manual_print_*.zpl | lpr -P Zebra_Technologies_ZTC_GK420d -o raw",
-                    "3. Or copy ZPL code and send directly to printer",
-                    "4. Check printer is online and has labels loaded"
+                "message": f"❌ Automatic printing failed. Manual file: {manual_file}",
+                "manual_commands": [
+                    f"cat {manual_file} | lpr -P {printer_name} -o raw",
+                    f"lpr -P {printer_name} -o raw {manual_file}"
                 ],
-                "zpl_code": zpl_code,
-                "printer_name_used": printer_name
+                "troubleshooting": [
+                    "1. Check printer is powered ON and ready",
+                    "2. Verify 'Use generic printer features' is enabled",
+                    "3. Check printer queue: lpq -P Zebra_Technologies_ZTC_GK420d",
+                    "4. Try manual command above"
+                ],
+                "zpl_code": zpl_code
             }
         
         except Exception as e:
+            print(f"❌ CRITICAL printing error: {e}")
             return {
                 "success": False,
-                "message": f"❌ Critical macOS printing error: {str(e)}",
+                "message": f"❌ Critical error: {str(e)}",
                 "zpl_code": zpl_code
             }
     
