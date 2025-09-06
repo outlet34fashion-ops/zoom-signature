@@ -3356,6 +3356,7 @@ function App() {
                               </div>
                             </div>
                           ))}
+                        <div ref={chatEndRef} />
                       </div>
 
                       {/* Chat Input */}
