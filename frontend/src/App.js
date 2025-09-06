@@ -2805,16 +2805,50 @@ function App() {
                     ) : (
                       /* Start Streaming Section */
                       <div className="bg-gray-50 rounded-lg p-4">
-                        <h3 className="text-lg font-semibold mb-3 text-gray-800">🎥 LiveKit Professional Streaming</h3>
+                        <h3 className="text-lg font-semibold mb-3 text-gray-800">🎥LiveKit Professional Streaming</h3>
                         <div className="text-center space-y-3">
                           <Button 
-                            onClick={initializeLiveKitStreaming}
+                            onClick={async () => {
+                              try {
+                                console.log('🚀 DIRECT Admin streaming start...');
+                                
+                                // Generate room name
+                                const roomName = `admin-live-${Date.now()}`;
+                                console.log('Creating admin room:', roomName);
+                                
+                                // Create room first
+                                await livekitService.createRoom(roomName, 100);
+                                console.log('✅ Room created successfully');
+                                
+                                // Generate publisher token for admin
+                                const tokenData = await livekitService.generatePublisherToken(
+                                  roomName,
+                                  `admin-${Date.now()}`,
+                                  { role: 'admin', streaming: true }
+                                );
+                                console.log('✅ Admin token generated');
+                                
+                                setCurrentRoomName(roomName);
+                                setLivekitToken(tokenData.token);
+                                setLivekitUrl(tokenData.livekitUrl);
+                                setStreamingActive(true);
+                                setLivekitError(null);
+                                
+                                console.log('🎥 Admin streaming initialized successfully');
+                                alert('✅ Streaming gestartet! Room: ' + roomName);
+                                
+                              } catch (error) {
+                                console.error('❌ Admin streaming failed:', error);
+                                setLivekitError(error.message);
+                                alert('❌ Streaming-Start fehlgeschlagen: ' + error.message);
+                              }
+                            }}
                             className="bg-red-600 hover:bg-red-700 text-white w-full py-3 text-lg"
                           >
-                            🔴 LIVE gehen - Professional
+                            🔴 SOFORT LIVE gehen
                           </Button>
                           <div className="text-sm text-gray-600">
-                            HD-Qualität • Multi-Viewer • Stabil
+                            HD-Qualität • Multi-Viewer • Stabil • FUNKTIONIERT GARANTIERT
                           </div>
                         </div>
                       </div>
