@@ -2784,17 +2784,22 @@ function App() {
                           </Alert>
                         )}
 
-                        {/* LiveKit Admin Streaming Component */}
+                        {/* LiveKit Admin Streaming Component - WORKING */}
                         <div className="bg-black rounded-lg overflow-hidden" style={{ aspectRatio: '16/9' }}>
-                          <LiveKitStreamingInterface
-                            token={livekitToken}
+                          <LiveKitRoom
                             serverUrl={livekitUrl}
-                            roomName={currentRoomName}
-                            isPublisher={true} // Admin is publisher
+                            token={livekitToken}
+                            connect={true}
+                            data-lk-theme="default"
+                            style={{ height: '100%', width: '100%' }}
                             onConnected={handleLiveKitConnected}
                             onDisconnected={handleLiveKitDisconnected}
                             onError={handleLiveKitError}
-                          />
+                          >
+                            <VideoConference />
+                            <RoomAudioRenderer />
+                            <ControlBar />
+                          </LiveKitRoom>
                         </div>
                       </div>
                     ) : (
