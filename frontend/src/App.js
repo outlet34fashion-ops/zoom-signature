@@ -3426,6 +3426,15 @@ function App() {
                         </h3>
                       </div>
 
+                      {/* DEBUG: Polling Status */}
+                      <div className="bg-blue-50 border border-blue-200 rounded p-2 mb-2">
+                        <div className="text-xs text-blue-600">
+                          <div>🔄 Polling Status: {pollingStatus}</div>
+                          {lastPollTime && <div>⏰ Last Poll: {lastPollTime}</div>}
+                          <div>📝 Local Messages: {chatMessages.length}</div>
+                        </div>
+                      </div>
+
                       {/* Gepinnte Nachrichten */}
                       {pinnedMessages.length > 0 && (
                         <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-3 mb-3">
