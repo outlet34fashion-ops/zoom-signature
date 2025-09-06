@@ -5593,6 +5593,40 @@ TIMEZONE BUG ANALYSIS COMPLETE:
             print("❌ SOME CRITICAL TESTS FAILED - REQUIRES ATTENTION")
         
         return critical_success_count == len(critical_tests)
+    def run_critical_livekit_tests(self):
+        """Run critical LiveKit streaming tests as specified in review request"""
+        print("🚨 CRITICAL LIVEKIT STREAMING BACKEND TESTING")
+        print("=" * 80)
+        print("REVIEW REQUEST FOCUS AREAS:")
+        print("1. LiveKit Token Generation - Publisher (admin) and Viewer (customer) tokens")
+        print("2. Room Management - Create, list, and delete rooms")
+        print("3. LiveKit Configuration - Streaming settings and credentials")
+        print("4. Credentials Verification - LiveKit API credentials validation")
+        print("5. Token Validation - JWT format and permissions verification")
+        print("=" * 80)
+        
+        # Run the critical LiveKit integration test
+        livekit_success = self.test_livekit_integration()
+        
+        # Run API root test to ensure basic connectivity
+        api_root_success = self.test_api_root()
+        
+        # Calculate overall success rate
+        critical_tests = [livekit_success, api_root_success]
+        critical_success_count = sum(1 for test in critical_tests if test)
+        
+        print("\n" + "=" * 80)
+        print("🎯 CRITICAL LIVEKIT STREAMING TESTING SUMMARY")
+        print("=" * 80)
+        print(f"Critical Tests Passed: {critical_success_count}/{len(critical_tests)}")
+        print(f"Overall Success Rate: {(critical_success_count/len(critical_tests)*100):.1f}%")
+        
+        if critical_success_count == len(critical_tests):
+            print("✅ ALL CRITICAL LIVEKIT STREAMING TESTS PASSED!")
+        else:
+            print("❌ SOME CRITICAL LIVEKIT TESTS FAILED - REQUIRES ATTENTION")
+        
+        return critical_success_count == len(critical_tests)
 
 def main():
     tester = LiveShoppingAPITester()
