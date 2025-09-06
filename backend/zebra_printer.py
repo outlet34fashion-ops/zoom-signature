@@ -73,6 +73,8 @@ class ZebraPrinterService:
 
 ^XZ
 """
+        return zpl_code.strip()
+    
     def generate_label_pdf(self, customer_number: str, price: str, timestamp: datetime) -> BytesIO:
         """
         Generiert PDF-Vorschau des Etiketts (40x25mm)
