@@ -5558,8 +5558,65 @@ TIMEZONE BUG ANALYSIS COMPLETE:
 
 def main():
     tester = LiveShoppingAPITester()
-    success = tester.run_all_tests()
+    
+    # Run critical WebSocket and chat tests as specified in review request
+    success = tester.run_critical_websocket_tests()
+    
+    # Print final summary
+    print("\n" + "=" * 80)
+    print("📊 FINAL TEST RESULTS")
+    print("=" * 80)
+    print(f"Tests Run: {tester.tests_run}")
+    print(f"Tests Passed: {tester.tests_passed}")
+    print(f"Success Rate: {(tester.tests_passed/tester.tests_run*100):.1f}%")
+    
+    if success:
+        print("\n🎉 ALL CRITICAL WEBSOCKET AND CHAT TESTS PASSED!")
+        print("Backend WebSocket and chat functionality is working correctly.")
+    else:
+        failed_count = tester.tests_run - tester.tests_passed
+        print(f"\n⚠️  {failed_count} test(s) failed. Please check the details above.")
+    
     return 0 if success else 1
+
+
+    def run_critical_websocket_tests(self):
+        """Run critical WebSocket and chat tests as specified in review request"""
+        print("🚨 CRITICAL BACKEND WEBSOCKET AND CHAT TESTING")
+        print("=" * 80)
+        print("REVIEW REQUEST FOCUS AREAS:")
+        print("1. WebSocket Endpoint Testing - Production URL accessibility")
+        print("2. Real-time Message Broadcasting - Multiple consecutive messages")
+        print("3. Message Storage and Retrieval - GET /api/chat verification")
+        print("4. Customer Authentication Integration - Customer 10299 testing")
+        print("5. Timezone Verification - German timezone conversion format")
+        print("=" * 80)
+        
+        # Run the critical WebSocket and chat functionality test
+        websocket_success = self.test_critical_websocket_chat_functionality()
+        
+        # Run WebSocket availability test
+        websocket_availability = self.test_websocket_availability()
+        
+        # Run basic chat endpoints test
+        chat_endpoints = self.test_chat_endpoints()
+        
+        # Calculate overall success rate
+        critical_tests = [websocket_success, websocket_availability, chat_endpoints]
+        critical_success_count = sum(1 for test in critical_tests if test)
+        
+        print("\n" + "=" * 80)
+        print("🎯 CRITICAL WEBSOCKET AND CHAT TESTING SUMMARY")
+        print("=" * 80)
+        print(f"Critical Tests Passed: {critical_success_count}/{len(critical_tests)}")
+        print(f"Overall Success Rate: {(critical_success_count/len(critical_tests)*100):.1f}%")
+        
+        if critical_success_count == len(critical_tests):
+            print("✅ ALL CRITICAL WEBSOCKET AND CHAT TESTS PASSED!")
+        else:
+            print("❌ SOME CRITICAL TESTS FAILED - REQUIRES ATTENTION")
+        
+        return critical_success_count == len(critical_tests)
 
 if __name__ == "__main__":
     sys.exit(main())
