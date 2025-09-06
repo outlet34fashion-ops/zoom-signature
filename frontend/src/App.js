@@ -512,15 +512,17 @@ function App() {
         return 'N/A';
       }
       
-      // Force German timezone conversion (UTC+2 or UTC+1 depending on DST)
+      // Force German timezone conversion (UTC+2 for CEST, UTC+1 for CET)
+      // Explicitly ensure we're showing the correct German local time
       const germanTime = date.toLocaleTimeString('de-DE', {
         timeZone: 'Europe/Berlin',
         hour: '2-digit',
         minute: '2-digit',
-        second: '2-digit'
+        second: '2-digit',
+        hourCycle: 'h23' // Use 24-hour format to avoid AM/PM confusion
       });
       
-      console.log('formatGermanTime output:', germanTime, 'from date:', date.toISOString());
+      console.log('formatGermanTime output:', germanTime, 'from UTC date:', date.toISOString(), 'German timezone offset:', date.getTimezoneOffset());
       return germanTime;
       
     } catch (error) {
