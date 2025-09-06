@@ -192,65 +192,94 @@ function App() {
 
 
   useEffect(() => {
-    // Initialize WebSocket connection
+    // Initialize WebSocket connection with improved reliability
     const connectWebSocket = () => {
       console.log('Connecting to Chat WebSocket:', CHAT_WS_URL);
+      
+      // Close existing connection if any
+      if (wsRef.current && wsRef.current.readyState !== WebSocket.CLOSED) {
+        wsRef.current.close();
+      }
+      
       const ws = new WebSocket(CHAT_WS_URL);
       
       ws.onopen = () => {
-        console.log('WebSocket connected');
+        console.log('WebSocket connected successfully');
+        // Reset reconnection attempts on successful connection
+        reconnectAttempts.current = 0;
       };
       
       ws.onmessage = (event) => {
         console.log('WebSocket message received:', event.data);
-        const data = JSON.parse(event.data);
-        console.log('Parsed WebSocket data:', data);
-        
-        if (data.type === 'chat_message') {
-          console.log('Processing chat message:', data.data);
-          console.log('Current chat messages count:', chatMessages.length);
+        try {
+          const data = JSON.parse(event.data);
+          console.log('Parsed WebSocket data:', data);
           
-          setChatMessages(prev => {
-            // Check if message already exists to avoid duplicates
-            const exists = prev.some(msg => msg.id === data.data.id);
-            if (!exists) {
-              console.log('Adding new message to chat, total messages will be:', prev.length + 1);
-              return [data.data, ...prev];
-            } else {
-              console.log('Message already exists, skipping duplicate:', data.data.id);
-              return prev;
-            }
-          });
-        } else if (data.type === 'viewer_count') {
-          setViewerCount(data.count);
-        } else if (data.type === 'order_notification') {
-          // Add order notification to chat in the new format
-          const orderMsg = {
-            id: `order_${Date.now()}`,
-            username: 'System',
-            message: data.data.message, // Already formatted: "Bestellung 1234 | 1 | 12,90 | OneSize"
-            timestamp: new Date(),
-            emoji: ''
-          };
-          setChatMessages(prev => [orderMsg, ...prev]);
-        } else if (data.type === 'order_counter_update') {
-          setAdminStats(prev => ({
-            ...prev,
-            session_orders: data.data.session_orders,
-            total_orders: data.data.total_orders
-          }));
-        } else if (data.type === 'ticker_update') {
-          setTickerSettings(data.data);
+          if (data.type === 'chat_message') {
+            console.log('Processing chat message:', data.data);
+            console.log('Current chat messages count before update:', chatMessages.length);
+            
+            setChatMessages(prev => {
+              // More robust duplicate checking using message content and timestamp
+              const messageExists = prev.some(msg => 
+                msg.id === data.data.id || 
+                (msg.message === data.data.message && 
+                 msg.username === data.data.username && 
+                 Math.abs(new Date(msg.timestamp) - new Date(data.data.timestamp)) < 1000)
+              );
+              
+              if (!messageExists) {
+                console.log('Adding new message to chat, new total will be:', prev.length + 1);
+                const newMessage = {
+                  ...data.data,
+                  timestamp: data.data.timestamp || new Date().toISOString()
+                };
+                return [newMessage, ...prev]; // Add new messages at the top
+              } else {
+                console.log('Message already exists, skipping duplicate:', data.data.id);
+                return prev;
+              }
+            });
+          } else if (data.type === 'viewer_count') {
+            setViewerCount(data.count);
+          } else if (data.type === 'order_notification') {
+            // Add order notification to chat in the new format
+            const orderMsg = {
+              id: `order_${Date.now()}_${Math.random()}`,
+              username: 'System',
+              message: data.data.message, // Already formatted: "Bestellung 1234 | 1 | 12,90 | OneSize"
+              timestamp: new Date().toISOString(),
+              emoji: ''
+            };
+            setChatMessages(prev => [orderMsg, ...prev]);
+            console.log('Order notification added to chat');
+          } else if (data.type === 'order_counter_update') {
+            setAdminStats(prev => ({
+              ...prev,
+              session_orders: data.data.session_orders,
+              total_orders: data.data.total_orders
+            }));
+          } else if (data.type === 'ticker_update') {
+            setTickerSettings(data.data);
+          }
+        } catch (parseError) {
+          console.error('Error parsing WebSocket message:', parseError, 'Raw data:', event.data);
         }
       };
       
       ws.onclose = (event) => {
         console.log('WebSocket connection closed:', event.code, event.reason);
-        // Reconnect after 3 seconds with exponential backoff
-        setTimeout(() => {
-          console.log('Attempting to reconnect WebSocket...');
-          connectWebSocket();
-        }, 3000);
+        // Implement exponential backoff for reconnection
+        if (reconnectAttempts.current < 5) {
+          const delay = Math.min(1000 * Math.pow(2, reconnectAttempts.current), 30000);
+          console.log(`Attempting to reconnect WebSocket in ${delay}ms (attempt ${reconnectAttempts.current + 1}/5)...`);
+          setTimeout(() => {
+            reconnectAttempts.current++;
+            connectWebSocket();
+          }, delay);
+        } else {
+          console.error('Max reconnection attempts reached, please refresh the page');
+        }
       };
       
       ws.onerror = (error) => {
