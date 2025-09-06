@@ -350,7 +350,13 @@ function App() {
       pollForNewMessages();
     };
 
-    connectWebSocket();
+    // CRITICAL FIX: Skip WebSocket entirely due to production routing issues
+    // Use polling as primary method for real-time updates
+    console.log('🚨 CRITICAL: Using polling as primary method due to WebSocket routing issues');
+    startPolling();
+
+    // Still try WebSocket as backup, but don't rely on it
+    // connectWebSocket();
     loadInitialData();
     
     // Check for admin session
