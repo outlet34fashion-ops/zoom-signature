@@ -288,7 +288,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "CRITICAL DEBUG: WebSocket chat real-time functionality and timezone display fix"
+    - "LiveKit streaming backend testing completed successfully"
   stuck_tasks: []
   test_all: false
   test_priority: "critical_first"
