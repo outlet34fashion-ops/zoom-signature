@@ -4282,16 +4282,21 @@ function App() {
               {/* CRITICAL: LiveKit Integration - Always Visible */}
               {streamingActive && livekitToken && livekitUrl ? (
                 <div className="w-full h-full">
-                  {/* LiveKit Streaming Component */}
-                  <LiveKitStreamingInterface
-                    token={livekitToken}
+                  {/* LiveKit Customer Viewing Component - WORKING */}
+                  <LiveKitRoom
                     serverUrl={livekitUrl}
-                    roomName={currentRoomName}
-                    isPublisher={false} // Customers are always viewers
+                    token={livekitToken}
+                    connect={true}
+                    data-lk-theme="default"
+                    style={{ height: '100%', width: '100%' }}
                     onConnected={handleLiveKitConnected}
                     onDisconnected={handleLiveKitDisconnected}
                     onError={handleLiveKitError}
-                  />
+                  >
+                    <VideoConference />
+                    <RoomAudioRenderer />
+                    <ControlBar />
+                  </LiveKitRoom>
                 </div>
               ) : (
                 /* Waiting for Stream Message */
