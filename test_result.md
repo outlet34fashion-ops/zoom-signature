@@ -544,11 +544,11 @@ test_plan:
 
   - task: "CRITICAL: LiveKit Live-Streaming Integration - Core Feature"
     implemented: true
-    working: "testing"
+    working: true
     file: "/app/frontend/src/App.js, /app/backend/server.py, /app/services/livekitService.js"
     stuck_count: 0
     priority: "critical"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "user"
