@@ -2715,20 +2715,65 @@ function App() {
                 
                 {showStreamingControls && (
                   <div className="p-6 border-t border-gray-200">
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <h3 className="text-lg font-semibold mb-3 text-gray-800">🎥 HD-Video-Streaming</h3>
-                      <div className="text-center space-y-3">
-                        <Button 
-                          onClick={startSimpleStream}
-                          className="bg-red-600 hover:bg-red-700 text-white w-full py-3 text-lg"
-                        >
-                          📺 HD Live-Stream starten
-                        </Button>
-                        <div className="text-sm text-gray-600">
-                          Einfach • Stabil • Sofort funktionsfähig
+                    {/* CRITICAL: LiveKit Streaming Admin Controls */}
+                    {streamingActive && livekitToken && livekitUrl ? (
+                      <div className="space-y-4">
+                        {/* Connection Status */}
+                        <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                          <div className="flex items-center space-x-2">
+                            <div className={`w-3 h-3 rounded-full ${isLiveKitConnected ? 'bg-green-500' : 'bg-yellow-500'} animate-pulse`} />
+                            <span className="text-sm font-medium">
+                              {isLiveKitConnected ? '🟢 Live Connected' : '🟡 Connecting...'}
+                            </span>
+                          </div>
+                          <Button 
+                            onClick={stopLiveKitStreaming}
+                            variant="destructive"
+                            size="sm"
+                          >
+                            ⏹️ Stream beenden
+                          </Button>
+                        </div>
+
+                        {/* LiveKit Error Display */}
+                        {livekitError && (
+                          <Alert className="border-red-200 bg-red-50">
+                            <AlertDescription className="text-red-800">
+                              ❌ Streaming Error: {livekitError}
+                            </AlertDescription>
+                          </Alert>
+                        )}
+
+                        {/* LiveKit Admin Streaming Component */}
+                        <div className="bg-black rounded-lg overflow-hidden" style={{ aspectRatio: '16/9' }}>
+                          <LiveKitStreamingInterface
+                            token={livekitToken}
+                            serverUrl={livekitUrl}
+                            roomName={currentRoomName}
+                            isPublisher={true} // Admin is publisher
+                            onConnected={handleLiveKitConnected}
+                            onDisconnected={handleLiveKitDisconnected}
+                            onError={handleLiveKitError}
+                          />
                         </div>
                       </div>
-                    </div>
+                    ) : (
+                      /* Start Streaming Section */
+                      <div className="bg-gray-50 rounded-lg p-4">
+                        <h3 className="text-lg font-semibold mb-3 text-gray-800">🎥 LiveKit Professional Streaming</h3>
+                        <div className="text-center space-y-3">
+                          <Button 
+                            onClick={initializeLiveKitStreaming}
+                            className="bg-red-600 hover:bg-red-700 text-white w-full py-3 text-lg"
+                          >
+                            🔴 LIVE gehen - Professional
+                          </Button>
+                          <div className="text-sm text-gray-600">
+                            HD-Qualität • Multi-Viewer • Stabil
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </CardContent>
