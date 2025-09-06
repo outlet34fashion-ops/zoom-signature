@@ -57,8 +57,8 @@
 ##   test_priority: "high_first"  # or "sequential" or "stuck_first"
 ##
 ## agent_communication:
-##     -agent: "main"  # or "testing" or "user"
-##     -message: "Communication message between agents"
+##     -agent: "user"
+##     -message: "CRITICAL BUG REPORTED: 1) Die erste Nachricht wird angezeigt, aber die zweite Nachricht erscheint nicht (First message displays but second message doesn't appear), 2) Uhrzeit ist falsch: aktuell 08:54 Uhr, korrekt wäre 10:54 Uhr deutsche Zeit UTC+2 (Time wrong: shows 08:54 but should be 10:54 German time UTC+2). Both are WebSocket real-time and timezone issues that need immediate fixing."
 
 # Protocol Guidelines for Main agent
 #
