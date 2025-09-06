@@ -316,6 +316,7 @@ function App() {
       
       console.log('🔄 Starting polling fallback for real-time updates...');
       
+      // ULTRA-SIMPLE POLLING: Just reload all messages every time
       const pollForNewMessages = async () => {
         try {
           setPollingStatus('Polling...');
@@ -324,33 +325,12 @@ function App() {
           const response = await axios.get(`${API}/chat`);
           const serverMessages = response.data;
           
-          console.log('🔄 POLLING: Fetched', serverMessages.length, 'messages from server');
+          console.log('🔄 SIMPLE POLLING: Got', serverMessages.length, 'messages, replacing all local messages');
           
-          setChatMessages(prev => {
-            // If we have no local messages, this is the initial load
-            if (prev.length === 0) {
-              console.log('📥 Initial chat load via polling:', serverMessages.length, 'messages');
-              setPollingStatus(`Loaded ${serverMessages.length} messages`);
-              return serverMessages;
-            }
-            
-            // Check for new messages since last update
-            const lastLocalMessage = prev[prev.length - 1];
-            const lastLocalTimestamp = new Date(lastLocalMessage.timestamp);
-            const newMessages = serverMessages.filter(msg => 
-              new Date(msg.timestamp) > lastLocalTimestamp
-            );
-            
-            if (newMessages.length > 0) {
-              console.log('📬 Polling found', newMessages.length, 'new messages');
-              setPollingStatus(`Found ${newMessages.length} new messages`);
-              return [...prev, ...newMessages];
-            } else {
-              setPollingStatus(`No new messages (${prev.length} total)`);
-            }
-            
-            return prev;
-          });
+          // SIMPLE APPROACH: Just replace all messages every time
+          setChatMessages(serverMessages);
+          setPollingStatus(`Updated: ${serverMessages.length} messages at ${new Date().toLocaleTimeString()}`);
+          
         } catch (error) {
           console.error('❌ Polling error:', error);
           setPollingStatus(`Error: ${error.message}`);
