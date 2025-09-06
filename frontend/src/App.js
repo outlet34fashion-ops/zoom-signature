@@ -3395,7 +3395,7 @@ function App() {
                             className="bg-pink-500 hover:bg-pink-600 text-white px-4"
                             size="sm"
                           >
-                            Senden
+                            Nachricht senden
                           </Button>
                         </div>
 
