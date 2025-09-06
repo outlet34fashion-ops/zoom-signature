@@ -3605,33 +3605,33 @@ function App() {
                             👍
                           </Button>
                           
-                          {/* Neue Angelköder Icons - Echtzeit Chat */}
+                          {/* Angelköder Icons - Echtzeit Chat */}
                           <Button 
                             variant="ghost" 
                             size="sm"
-                            onClick={() => sendEmoji('🎣')}
-                            className="bg-red-100 hover:bg-red-200"
+                            onClick={() => sendEmoji('🔴')}
+                            className="bg-red-100 hover:bg-red-200 text-xs px-2"
                             title="Roter Köder"
                           >
-                            🎣
+                            🔴
                           </Button>
                           <Button 
                             variant="ghost" 
                             size="sm"
-                            onClick={() => sendEmoji('🐟')}
-                            className="bg-orange-100 hover:bg-orange-200"
+                            onClick={() => sendEmoji('🟠')}
+                            className="bg-orange-100 hover:bg-orange-200 text-xs px-2"
                             title="Orange Köder"
                           >
-                            🐟
+                            🟠
                           </Button>
                           <Button 
                             variant="ghost" 
                             size="sm"
-                            onClick={() => sendEmoji('🎯')}
-                            className="bg-yellow-100 hover:bg-yellow-200"
+                            onClick={() => sendEmoji('🟡')}
+                            className="bg-yellow-100 hover:bg-yellow-200 text-xs px-2"
                             title="Gelber Köder"
                           >
-                            🎯
+                            🟡
                           </Button>
                         </div>
                       </div>
