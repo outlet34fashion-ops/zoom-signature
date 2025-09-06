@@ -1871,7 +1871,6 @@ function App() {
       {/* Main App - Only shown when authenticated */}
       {(isAuthenticated || isAdminView) && (
       <div>
-      {/* Header */}
       <header className="bg-pink-500 text-white">
         <div className="container mx-auto px-4 py-2">
           <div className="flex justify-between items-center">
