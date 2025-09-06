@@ -5668,6 +5668,10 @@ TIMEZONE BUG ANALYSIS COMPLETE:
         print(f"🔗 Testing against: {self.base_url}")
         print("=" * 60)
 
+        # CRITICAL PRIORITY: AUTOMATIC PRINTING REAL-WORLD TEST (Current Review Request)
+        print("\n🖨️ CRITICAL PRIORITY: AUTOMATIC PRINTING REAL-WORLD TEST...")
+        automatic_printing_success = self.test_automatic_printing_real_world()
+
         # CRITICAL PRIORITY: CHAT REAL-TIME FUNCTIONALITY TEST (Current German Review Request)
         print("\n🚨 CRITICAL PRIORITY: CHAT REAL-TIME FUNCTIONALITY TEST...")
         chat_realtime_success = self.test_chat_real_time_functionality()
