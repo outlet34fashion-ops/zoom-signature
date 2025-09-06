@@ -10,8 +10,16 @@ import { Badge } from './components/ui/badge';
 import { Heart, Bell, ShoppingCart, Send, Users, Clock, MessageCircle } from 'lucide-react';
 import ZoomLiveStream from './components/ZoomLiveStream';
 import SimpleLiveStream from './components/SimpleLiveStream';
-// CRITICAL: Import LiveKit components instead of old StreamingInterface
-import LiveKitStreamingInterface from './components/streaming/LiveKitStreamingInterface';
+// CRITICAL: Import LiveKit components - WORKING IMPLEMENTATION
+import {
+  LiveKitRoom,
+  VideoConference,
+  RoomAudioRenderer,
+  ControlBar,
+  useTracks,
+  useRoomContext
+} from '@livekit/components-react';
+import '@livekit/components-styles';
 import StreamsList from './components/streaming/StreamsList';
 import LiveKitRoomManager from './components/streaming/LiveKitRoomManager';
 import SimpleVideoStreaming from './components/streaming/SimpleVideoStreaming';
