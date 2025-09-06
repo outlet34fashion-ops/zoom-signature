@@ -396,13 +396,45 @@ function App() {
     };
   }, []);
 
-  // Auto-scroll to bottom when new messages arrive
+  // Auto-initialize LiveKit streaming for customers
   useEffect(() => {
-    if (chatRef.current) {
-      // Since messages are now added at the bottom, scroll to bottom for new messages
-      chatRef.current.scrollTop = chatRef.current.scrollHeight;
+    const checkForActiveStreams = async () => {
+      if (!isAdminAuthenticated && isAuthenticated && !streamingActive) {
+        try {
+          // Check if there are active rooms
+          const activeRooms = await livekitService.getActiveRooms();
+          if (activeRooms.length > 0) {
+            const room = activeRooms[0]; // Join first active room
+            console.log('🎥 Found active stream, auto-joining:', room.roomName);
+            
+            // Generate viewer token for customer
+            const customerNumber = getCustomerNumber();
+            const tokenData = await livekitService.generateViewerToken(
+              room.roomName,
+              `customer-${customerNumber}`,
+              { role: 'customer', customerNumber }
+            );
+            
+            setCurrentRoomName(room.roomName);
+            setLivekitToken(tokenData.token);
+            setLivekitUrl(tokenData.livekitUrl);
+            setStreamingActive(true);
+            
+            console.log('✅ Auto-joined customer to active stream');
+          }
+        } catch (error) {
+          console.log('ℹ️  No active streams available for customers');
+        }
+      }
+    };
+
+    // Check for active streams every 10 seconds for customers
+    if (!isAdminAuthenticated && isAuthenticated) {
+      checkForActiveStreams();
+      const interval = setInterval(checkForActiveStreams, 10000);
+      return () => clearInterval(interval);
     }
-  }, [chatMessages]);
+  }, [isAuthenticated, isAdminAuthenticated, streamingActive]);
 
   useEffect(() => {
     if (isAdminView) {
