@@ -53,6 +53,8 @@ function App() {
   const [loadingOrders, setLoadingOrders] = useState(false);
   const [showTopBuyers, setShowTopBuyers] = useState(true); // Top 3 Käufer auf/zuklappbar
   const [showLastOrder, setShowLastOrder] = useState(true); // Letzte Bestellung auf/zuklappbar
+  const [pollingStatus, setPollingStatus] = useState('Starting...'); // DEBUG: Show polling status
+  const [lastPollTime, setLastPollTime] = useState(null); // DEBUG: Show last poll time
   const [tickerSettings, setTickerSettings] = useState({ 
     text: "Nur für Händler | Ab 10 € - Heute 18:00 - Frische Ware | Young Fashion & Plus Size", 
     enabled: true 
