@@ -193,9 +193,9 @@ function App() {
 
 
   useEffect(() => {
-    // Initialize WebSocket connection with improved reliability
+    // Initialize WebSocket connection with polling fallback for reliability
     const connectWebSocket = () => {
-      console.log('Connecting to Chat WebSocket:', CHAT_WS_URL);
+      console.log('🔌 Attempting WebSocket connection to:', CHAT_WS_URL);
       
       // Close existing connection if any
       if (wsRef.current && wsRef.current.readyState !== WebSocket.CLOSED) {
@@ -203,22 +203,28 @@ function App() {
       }
       
       const ws = new WebSocket(CHAT_WS_URL);
+      let connectionSuccessful = false;
       
       ws.onopen = () => {
-        console.log('WebSocket connected successfully');
-        // Reset reconnection attempts on successful connection
+        console.log('✅ WebSocket connected successfully');
+        connectionSuccessful = true;
         reconnectAttempts.current = 0;
+        // Stop polling when WebSocket works
+        if (pollingInterval.current) {
+          clearInterval(pollingInterval.current);
+          pollingInterval.current = null;
+        }
       };
       
       ws.onmessage = (event) => {
-        console.log('WebSocket message received:', event.data);
+        console.log('📨 WebSocket message received:', event.data);
         try {
           const data = JSON.parse(event.data);
-          console.log('Parsed WebSocket data:', data);
+          console.log('📋 Parsed WebSocket data:', data);
           
           if (data.type === 'chat_message') {
-            console.log('Processing chat message:', data.data);
-            console.log('Current chat messages count before update:', chatMessages.length);
+            console.log('💬 Processing chat message:', data.data);
+            console.log('📊 Current chat messages count before update:', chatMessages.length);
             
             setChatMessages(prev => {
               // More robust duplicate checking using message content and timestamp
@@ -230,14 +236,14 @@ function App() {
               );
               
               if (!messageExists) {
-                console.log('Adding new message to chat, new total will be:', prev.length + 1);
+                console.log('✅ Adding new message to chat, new total will be:', prev.length + 1);
                 const newMessage = {
                   ...data.data,
                   timestamp: data.data.timestamp || new Date().toISOString()
                 };
                 return [...prev, newMessage]; // Add new messages at the END (bottom)
               } else {
-                console.log('Message already exists, skipping duplicate:', data.data.id);
+                console.log('⏭️  Message already exists, skipping duplicate:', data.data.id);
                 return prev;
               }
             });
@@ -253,7 +259,7 @@ function App() {
               emoji: ''
             };
             setChatMessages(prev => [...prev, orderMsg]); // Add order messages at the END (bottom)
-            console.log('Order notification added to chat');
+            console.log('📦 Order notification added to chat');
           } else if (data.type === 'order_counter_update') {
             setAdminStats(prev => ({
               ...prev,
@@ -264,30 +270,83 @@ function App() {
             setTickerSettings(data.data);
           }
         } catch (parseError) {
-          console.error('Error parsing WebSocket message:', parseError, 'Raw data:', event.data);
+          console.error('❌ Error parsing WebSocket message:', parseError, 'Raw data:', event.data);
         }
       };
       
       ws.onclose = (event) => {
-        console.log('WebSocket connection closed:', event.code, event.reason);
+        console.log('🔌 WebSocket connection closed:', event.code, event.reason);
+        
+        if (!connectionSuccessful) {
+          console.log('❌ WebSocket connection failed, starting polling fallback...');
+          startPolling();
+        }
+        
         // Implement exponential backoff for reconnection
         if (reconnectAttempts.current < 5) {
           const delay = Math.min(1000 * Math.pow(2, reconnectAttempts.current), 30000);
-          console.log(`Attempting to reconnect WebSocket in ${delay}ms (attempt ${reconnectAttempts.current + 1}/5)...`);
+          console.log(`🔄 Attempting to reconnect WebSocket in ${delay}ms (attempt ${reconnectAttempts.current + 1}/5)...`);
           setTimeout(() => {
             reconnectAttempts.current++;
             connectWebSocket();
           }, delay);
         } else {
-          console.error('Max reconnection attempts reached, please refresh the page');
+          console.error('❌ Max WebSocket reconnection attempts reached, using polling fallback');
+          startPolling();
         }
       };
       
       ws.onerror = (error) => {
-        console.error('WebSocket error:', error);
+        console.error('❌ WebSocket error:', error);
+        // Start polling immediately on WebSocket error
+        if (!connectionSuccessful) {
+          startPolling();
+        }
       };
       
       wsRef.current = ws;
+    };
+
+    // Polling fallback for when WebSocket doesn't work
+    const startPolling = () => {
+      if (pollingInterval.current) return; // Already polling
+      
+      console.log('🔄 Starting polling fallback for real-time updates...');
+      
+      const pollForNewMessages = async () => {
+        try {
+          const response = await axios.get(`${API}/chat`);
+          const serverMessages = response.data;
+          
+          setChatMessages(prev => {
+            // Check if we have new messages
+            const lastLocalMessage = prev[prev.length - 1];
+            if (!lastLocalMessage) {
+              console.log('📥 Initial chat load via polling:', serverMessages.length, 'messages');
+              return serverMessages;
+            }
+            
+            const lastLocalTimestamp = new Date(lastLocalMessage.timestamp);
+            const newMessages = serverMessages.filter(msg => 
+              new Date(msg.timestamp) > lastLocalTimestamp
+            );
+            
+            if (newMessages.length > 0) {
+              console.log('📬 Polling found', newMessages.length, 'new messages');
+              return [...prev, ...newMessages];
+            }
+            
+            return prev;
+          });
+        } catch (error) {
+          console.error('❌ Polling error:', error);
+        }
+      };
+      
+      // Poll every 2 seconds
+      pollingInterval.current = setInterval(pollForNewMessages, 2000);
+      // Initial poll
+      pollForNewMessages();
     };
 
     connectWebSocket();
