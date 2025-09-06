@@ -344,25 +344,35 @@ For help, check the host_print_service.py file.
     def print_order_label(self, order_data: Dict) -> Dict[str, any]:
         """
         Erstellt und druckt Etikett für eine Bestellung
+        ENHANCED: Speichert Bestelldaten für Host-Service
         """
         try:
             customer_number = str(order_data.get('customer_number', '000'))
             price = str(order_data.get('price', '0.00'))
             timestamp = datetime.now()
+            order_id = order_data.get('id', f"order_{int(time.time())}")
+            
+            # Speichere Bestelldaten für Host-Service
+            self._last_customer_number = customer_number
+            self._last_price = price  
+            self._last_order_id = order_id
+            
+            print(f"🖨️  AUTOMATIC ORDER LABEL: Customer {customer_number}, Price {price}, Order {order_id}")
             
             # Generiere ZPL-Code
             zpl_code = self.generate_zpl_label(customer_number, price, timestamp)
             
-            # Drucke Etikett
+            # AUTOMATISCHES DRUCKEN über Host-Service
             print_result = self.print_label_usb(zpl_code)
             
             # Erweitere Ergebnis um Order-Info
             print_result.update({
-                "order_id": order_data.get('id'),
+                "order_id": order_id,
                 "customer_number": customer_number,
                 "price": price,
                 "timestamp": timestamp.isoformat(),
-                "zpl_code": zpl_code
+                "zpl_code": zpl_code,
+                "automatic_print_attempt": True
             })
             
             return print_result
