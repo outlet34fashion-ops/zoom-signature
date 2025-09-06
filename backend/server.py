@@ -1470,33 +1470,165 @@ async def get_image_preview(customer_number: str, price: str = "0.00"):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Image preview failed: {str(e)}")
 
-@api_router.post("/zebra/print-order/{order_id}")
-async def reprint_order_label(order_id: str):
+@api_router.get("/zebra/html-preview/{customer_number}")
+async def get_html_preview(customer_number: str, price: str = "0.00"):
     """
-    Druckt Etikett für bestehende Bestellung erneut
+    PRAKTISCHE LÖSUNG: Generiert druckfreundliche HTML-Vorschau des Etiketts
+    Kann direkt aus dem Browser gedruckt werden (wie Microsoft Word)
     """
     try:
-        # Hole Bestellung aus DB
-        order = await db.orders.find_one({"id": order_id})
-        if not order:
-            raise HTTPException(status_code=404, detail="Order not found")
+        from datetime import datetime
+        from fastapi.responses import HTMLResponse
         
-        # Extract customer number
-        customer_number = order.get('customer_id', '000')[-4:]
+        # Format timestamp
+        formatted_time = datetime.now().strftime("%d.%m.%y %H:%M:%S")
         
-        label_data = {
-            "id": order_id,
-            "customer_number": customer_number,
-            "price": f"€{order.get('price', 0):.2f}".replace(".", ","),
-            "quantity": order.get('quantity', 1),
-            "size": order.get('size', ''),
-        }
+        # Process customer number like ZPL (split for layout)
+        customer_main = customer_number[-3:] if len(customer_number) >= 3 else customer_number
+        customer_prefix = customer_number[:-3] if len(customer_number) > 3 else ""
         
-        result = zebra_printer.print_order_label(label_data)
-        return {"success": result["success"], "result": result}
+        # Process price
+        price_display = price.replace("€", "").replace(",", "").replace(".", "")
+        
+        # Create HTML that mimics a 40x25mm label
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Zebra Label - Kunde {customer_number}</title>
+            <style>
+                @page {{
+                    size: 40mm 25mm;
+                    margin: 2mm;
+                }}
+                
+                @media print {{
+                    body {{ margin: 0; padding: 0; }}
+                    .no-print {{ display: none; }}
+                }}
+                
+                body {{
+                    font-family: Arial, sans-serif;
+                    margin: 0;
+                    padding: 5px;
+                    width: 36mm;
+                    height: 21mm;
+                    border: 1px solid #000;
+                    position: relative;
+                    background: white;
+                }}
+                
+                .timestamp {{
+                    font-size: 6pt;
+                    position: absolute;
+                    top: 2mm;
+                    left: 2mm;
+                }}
+                
+                .customer-main {{
+                    font-size: 18pt;
+                    font-weight: bold;
+                    position: absolute;
+                    top: 8mm;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    text-align: center;
+                }}
+                
+                .customer-prefix {{
+                    font-size: 8pt;
+                    position: absolute;
+                    bottom: 2mm;
+                    left: 2mm;
+                }}
+                
+                .price {{
+                    font-size: 8pt;
+                    position: absolute;
+                    bottom: 2mm;
+                    right: 2mm;
+                }}
+                
+                .instructions {{
+                    margin-top: 30mm;
+                    padding: 10px;
+                    background: #f0f0f0;
+                    border: 1px solid #ccc;
+                }}
+                
+                .print-button {{
+                    background: #4CAF50;
+                    color: white;
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 4px;
+                    cursor: pointer;
+                    font-size: 16px;
+                    margin: 10px 0;
+                }}
+            </style>
+        </head>
+        <body>
+            <!-- Das eigentliche 40x25mm Etikett -->
+            <div class="label">
+                <div class="timestamp">{formatted_time}</div>
+                <div class="customer-main">{customer_main}</div>
+                {f'<div class="customer-prefix">{customer_prefix}</div>' if customer_prefix else ''}
+                <div class="price">{price_display}</div>
+            </div>
+            
+            <!-- Anweisungen (werden nicht gedruckt) -->
+            <div class="instructions no-print">
+                <h3>🖨️ DRUCKEN WIE IN MICROSOFT WORD:</h3>
+                <button class="print-button" onclick="window.print()">📄 ETIKETT DRUCKEN</button>
+                <p><strong>Schritte:</strong></p>
+                <ol>
+                    <li>Klicken Sie auf "ETIKETT DRUCKEN" oder drücken Sie <kbd>Ctrl+P</kbd></li>
+                    <li>Wählen Sie Ihren Zebra-Drucker aus</li>
+                    <li>Stellen Sie Papierformat auf "Benutzerdefiniert: 40mm x 25mm" ein</li>
+                    <li>Drucken Sie wie ein normales Dokument</li>
+                </ol>
+                <p><strong>Kunde:</strong> {customer_number} | <strong>Preis:</strong> {price} | <strong>Zeit:</strong> {formatted_time}</p>
+            </div>
+        </body>
+        </html>
+        """
+        
+        return HTMLResponse(content=html_content)
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Reprint failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"HTML preview failed: {str(e)}")
+
+@api_router.get("/zebra/csv-export/{customer_number}")
+async def export_label_csv(customer_number: str, price: str = "0.00"):
+    """
+    CSV-Export für Microsoft Word/Excel Import
+    """
+    try:
+        from datetime import datetime
+        from fastapi.responses import Response
+        
+        # Format data
+        formatted_time = datetime.now().strftime("%d.%m.%y %H:%M:%S")
+        customer_main = customer_number[-3:] if len(customer_number) >= 3 else customer_number
+        customer_prefix = customer_number[:-3] if len(customer_number) > 3 else ""
+        price_display = price.replace("€", "").replace(",", "").replace(".", "")
+        
+        # Create CSV content
+        csv_content = f"""Zeitstempel,Kundennummer_Haupt,Kundennummer_Prefix,Preis
+{formatted_time},{customer_main},{customer_prefix},{price_display}
+"""
+        
+        return Response(
+            content=csv_content,
+            media_type="text/csv",
+            headers={
+                "Content-Disposition": f"attachment; filename=zebra_label_{customer_number}_{int(time.time())}.csv"
+            }
+        )
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"CSV export failed: {str(e)}")
 
 @api_router.post("/livekit/room/{room_name}/participant/{participant_identity}/remove")
 async def remove_participant_from_room(
