@@ -3515,9 +3515,9 @@ function App() {
                                 )}
                               </div>
                               
-                              {/* Zeitstempel */}
-                              <div className="text-xs text-gray-500 mt-1">
-                                {formatGermanTime(msg.timestamp || Date.now())}
+                              {/* Zeitstempel - VERBESSERT FÜR SICHTBARKEIT */}
+                              <div className="text-sm text-gray-700 mt-2 font-mono bg-gray-100 px-2 py-1 rounded">
+                                🕐 {formatGermanTime(msg.timestamp || Date.now())}
                                 {isPinned(msg.id) && <span className="ml-1 text-yellow-600">📍</span>}
                               </div>
                             </div>
