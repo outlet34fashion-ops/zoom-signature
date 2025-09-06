@@ -189,6 +189,7 @@ function App() {
   const chatRef = useRef(null);
   const wsRef = useRef(null);
   const reconnectAttempts = useRef(0);
+  const pollingInterval = useRef(null);
 
 
 
