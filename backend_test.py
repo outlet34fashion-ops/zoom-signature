@@ -705,22 +705,40 @@ class LiveShoppingAPITester:
         return customer_success_count == len(customer_tests_recent)
 
     def test_websocket_availability(self):
-        """Test if WebSocket endpoint is accessible (basic connectivity)"""
+        """Test if WebSocket endpoint is accessible from production URL"""
         try:
-            # We can't easily test WebSocket functionality in a simple script,
-            # but we can check if the endpoint responds to HTTP requests
-            ws_url = self.base_url.replace('https://', 'http://') + '/ws'
-            response = requests.get(ws_url, timeout=5)
+            # Test the production WebSocket URL as specified in review request
+            production_ws_url = "https://shopcast-live-3.preview.emergentagent.com/ws"
+            
+            # Test HTTP GET to WebSocket endpoint (should return specific status codes)
+            response = requests.get(production_ws_url, timeout=10)
             # WebSocket endpoints can return different status codes depending on proxy configuration
-            # Status 200 is acceptable if the endpoint is accessible through a proxy
-            success = response.status_code in [200, 426, 400, 405]  # Accept 200 for proxy setups
-            details = f"Status: {response.status_code} (WebSocket endpoint accessible)"
-            if response.status_code == 200:
-                details += " - Proxy-configured WebSocket endpoint"
-            self.log_test("WebSocket Endpoint Availability", success, details)
+            # Status 200, 426 (Upgrade Required), 400, 405 are acceptable for WebSocket endpoints
+            success = response.status_code in [200, 426, 400, 405]
+            details = f"Production WebSocket URL: {production_ws_url}, Status: {response.status_code}"
+            
+            if response.status_code == 426:
+                details += " (Upgrade Required - WebSocket endpoint ready)"
+            elif response.status_code == 200:
+                details += " (Proxy-configured WebSocket endpoint)"
+            elif response.status_code in [400, 405]:
+                details += " (WebSocket endpoint accessible)"
+            
+            self.log_test("WebSocket Production Endpoint Accessibility", success, details)
+            
+            # Also test the backend URL WebSocket endpoint
+            backend_ws_url = f"{self.base_url}/ws"
+            try:
+                backend_response = requests.get(backend_ws_url, timeout=5)
+                backend_success = backend_response.status_code in [200, 426, 400, 405]
+                backend_details = f"Backend WebSocket URL: {backend_ws_url}, Status: {backend_response.status_code}"
+                self.log_test("WebSocket Backend Endpoint Accessibility", backend_success, backend_details)
+            except Exception as e:
+                self.log_test("WebSocket Backend Endpoint Accessibility", False, f"Backend WebSocket test error: {str(e)}")
+            
             return success
         except Exception as e:
-            self.log_test("WebSocket Endpoint Availability", False, str(e))
+            self.log_test("WebSocket Production Endpoint Accessibility", False, str(e))
             return False
 
     def test_chat_real_time_functionality(self):
