@@ -5739,6 +5739,10 @@ TIMEZONE BUG ANALYSIS COMPLETE:
         print("\n🚨 PRIORITY 4: CRITICAL AUTHENTICATION ISSUE TEST...")
         critical_auth_success = self.test_critical_authentication_issue()
 
+        # CRITICAL PRIORITY: ZEBRA PRINTER TESTING (Current Review Request)
+        print("\n🖨️  CRITICAL PRIORITY: ZEBRA PRINTER TESTING...")
+        zebra_printer_success = self.test_zebra_printer_endpoints()
+
         # CRITICAL BUG TEST - User reported issue
         print("\n🚨 CRITICAL BUG TESTS (User Reported Issues)...")
         critical_success = self.test_critical_order_chat_integration()
