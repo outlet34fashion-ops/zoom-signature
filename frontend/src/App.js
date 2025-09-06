@@ -3311,7 +3311,41 @@ function App() {
                           className="bg-purple-600 hover:bg-purple-700 text-white w-full"
                           disabled={!labelPreviewCustomer}
                         >
-                          🔍 Vorschau generieren
+                          🔍 ZPL-Vorschau generieren
+                        </Button>
+                        
+                        <Button 
+                          onClick={async () => {
+                            try {
+                              // PDF-Vorschau öffnen
+                              const pdfUrl = `${API}/zebra/pdf-preview/${labelPreviewCustomer}?price=${labelPreviewPrice}`;
+                              window.open(pdfUrl, '_blank');
+                              alert('✅ PDF-Vorschau wird geöffnet!');
+                            } catch (error) {
+                              alert('❌ PDF-Fehler: ' + error.message);
+                            }
+                          }}
+                          className="bg-red-600 hover:bg-red-700 text-white w-full"
+                          disabled={!labelPreviewCustomer}
+                        >
+                          📄 PDF-Vorschau öffnen
+                        </Button>
+                        
+                        <Button 
+                          onClick={async () => {
+                            try {
+                              // Bild-Vorschau öffnen
+                              const imageUrl = `${API}/zebra/image-preview/${labelPreviewCustomer}?price=${labelPreviewPrice}`;
+                              window.open(imageUrl, '_blank');
+                              alert('✅ Bild-Vorschau wird geöffnet!');
+                            } catch (error) {
+                              alert('❌ Bild-Fehler: ' + error.message);
+                            }
+                          }}
+                          className="bg-blue-600 hover:bg-blue-700 text-white w-full"
+                          disabled={!labelPreviewCustomer}
+                        >
+                          🖼️ Bild-Vorschau öffnen
                         </Button>
                         
                         <Button 
@@ -3332,7 +3366,7 @@ function App() {
                               link.click();
                               link.remove();
                               
-                              alert('✅ ZPL-Datei heruntergeladen! \n\nSo drucken:\n1. Öffnen Sie die .zpl Datei\n2. Kopieren Sie den Inhalt\n3. Senden Sie direkt an Zebra-Drucker');
+                              alert('✅ ZPL-Datei heruntergeladen!');
                             } catch (error) {
                               alert('❌ Download-Fehler: ' + error.message);
                             }
