@@ -3418,6 +3418,7 @@ function App() {
                           <div>🔄 Polling Status: {pollingStatus}</div>
                           {lastPollTime && <div>⏰ Last Poll: {lastPollTime}</div>}
                           <div>📝 Local Messages: {chatMessages.length}</div>
+                          <div>🕐 Test Zeit: {formatGermanTime(new Date().toISOString())}</div>
                         </div>
                       </div>
 
