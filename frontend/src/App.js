@@ -101,6 +101,12 @@ function App() {
   const [showCalendarManagement, setShowCalendarManagement] = useState(false);
   const [showLiveStreamManagement, setShowLiveStreamManagement] = useState(false);
   
+  // Zebra Printer States
+  const [showZebraControls, setShowZebraControls] = useState(false);
+  const [labelPreviewCustomer, setLabelPreviewCustomer] = useState('');
+  const [labelPreviewPrice, setLabelPreviewPrice] = useState('');
+  const [labelPreview, setLabelPreview] = useState('');
+  
   // Manual Customer Creation States
   const [showCreateCustomer, setShowCreateCustomer] = useState(false);
   const [newCustomerData, setNewCustomerData] = useState({
