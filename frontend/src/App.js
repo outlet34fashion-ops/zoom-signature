@@ -1695,6 +1695,19 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      
+      {/* Fixed Ticker Bar at the very top */}
+      {tickerSettings.enabled && !isAdminView && (
+        <div className="fixed top-0 left-0 right-0 bg-pink-500 py-3 z-50 shadow-lg">
+          <div className="container mx-auto px-4 text-center">
+            <p className="text-white font-medium">{tickerSettings.text}</p>
+          </div>
+        </div>
+      )}
+      
+      {/* Add padding-top to push content down when ticker is visible */}
+      <div className={tickerSettings.enabled && !isAdminView ? "pt-16" : ""}>
+
       {/* Modern Guest Landing Screen */}
       {!isAuthenticated && !isAdminView && (
         <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
