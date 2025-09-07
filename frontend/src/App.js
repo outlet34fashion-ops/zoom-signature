@@ -43,6 +43,7 @@ function App() {
   const [selectedSize, setSelectedSize] = useState('');
   const [manualSize, setManualSize] = useState(''); // For manual size input
   const [selectedPrice, setSelectedPrice] = useState(0);
+  const [manualPrice, setManualPrice] = useState(''); // For manual price input
   const [quantity, setQuantity] = useState(1);
   const [showMobileChat, setShowMobileChat] = useState(false);
   const [customerId] = useState(() => `customer_${Math.random().toString(36).substr(2, 9)}`);
