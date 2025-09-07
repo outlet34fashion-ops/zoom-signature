@@ -4216,15 +4216,8 @@ function App() {
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex justify-center space-x-4 mt-6">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                  ➕ {t.nextArticle}
-                </Button>
-                <Button className="bg-green-600 hover:bg-green-700 text-white">
-                  ⚠️ {t.sendPriceSize}
-                </Button>
-              </div>
+              {/* Action Buttons - REMOVED per user request */}
+              {/* Blue and green buttons removed */}
             </CardContent>
           </Card>
         )}
