@@ -3645,19 +3645,10 @@ function App() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
           
-          {/* Video Stream Area - REMOVED: SimpleLiveStream (nicht funktionierend) */}
-          <div className="lg:col-span-2">
-            {/* SimpleLiveStream removed - was not working properly */}
-            <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-8 text-center">
-              <div className="text-gray-500 dark:text-gray-400">
-                <div className="text-4xl mb-4">📺</div>
-                <h3 className="text-xl font-semibold mb-2">Live Stream Bereich</h3>
-                <p className="text-sm">Live Streaming-Funktionen werden überarbeitet</p>
-              </div>
-            </div>
-          </div>
+          {/* Video Stream Area - COMPLETELY REMOVED */}
+          {/* SimpleLiveStream and placeholder removed - user requested complete removal */}
 
           {/* Order Section - Only for Customers - MOVED UP */}
           {selectedProduct && !isAdminView && (
