@@ -4153,7 +4153,10 @@ function App() {
                         key={size}
                         variant={selectedSize === size ? "default" : "outline"}
                         size="sm"
-                        onClick={() => setSelectedSize(size)}
+                        onClick={() => {
+                          setSelectedSize(size);
+                          setManualSize(size); // Copy selected size to manual field
+                        }}
                         className={selectedSize === size ? "bg-gray-800 text-white" : ""}
                       >
                         {size}
@@ -4163,6 +4166,11 @@ function App() {
                   <Input 
                     placeholder="Manuell" 
                     className="mt-2" 
+                    value={manualSize}
+                    onChange={(e) => {
+                      setManualSize(e.target.value);
+                      setSelectedSize(e.target.value); // Update selected size when typing
+                    }}
                   />
                 </div>
 
