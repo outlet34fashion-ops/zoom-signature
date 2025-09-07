@@ -1404,6 +1404,12 @@ function App() {
         setSelectedPrice(productsResponse.data[0].price);
       }
 
+      // Load events and customer reminders
+      await loadEvents();
+      if (isAuthenticated) {
+        await loadCustomerReminders();
+      }
+
       // Load admin stats if in admin view
       if (isAdminView) {
         const statsResponse = await axios.get(`${API}/admin/stats`);
