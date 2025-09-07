@@ -1768,19 +1768,7 @@ function App() {
                   </div>
                 )}
                 
-                {/* Language Selector */}
-                <div className="flex items-center space-x-2">
-                  <select
-                    value={i18n.language}
-                    onChange={(e) => i18n.changeLanguage(e.target.value)}
-                    className="bg-pink-600 text-white border border-pink-400 rounded px-2 py-1 text-sm"
-                  >
-                    <option value="de">🇩🇪 DE</option>
-                    <option value="en">🇬🇧 EN</option>
-                    <option value="tr">🇹🇷 TR</option>
-                    <option value="fr">🇫🇷 FR</option>
-                  </select>
-                </div>
+                {/* Language Selector moved to Profile Modal */}
               </div>
             </div>
           </div>
