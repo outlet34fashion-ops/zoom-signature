@@ -1707,8 +1707,8 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-50">
       
-      {/* Fixed Ticker Bar at the very top */}
-      {tickerSettings.enabled && !isAdminView && (
+      {/* Fixed Ticker Bar at the very top - ONLY for authenticated users */}
+      {tickerSettings.enabled && !isAdminView && isAuthenticated && (
         <div className="fixed top-0 left-0 right-0 bg-pink-500 py-3 z-50 shadow-lg">
           <div className="container mx-auto px-4 text-center">
             <p className="text-white font-medium">{tickerSettings.text}</p>
