@@ -4650,21 +4650,6 @@ function App() {
               </button>
             </div>
           </div>
-
-          {/* Additional Customer Content */}
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-gray-900">
-                🎥 Live Shopping Funktionen
-              </h3>
-            </div>
-            <div className="text-sm text-gray-600 space-y-2">
-              <p>🔥 <strong>Live Video:</strong> Sehen Sie Produkte in Echtzeit</p>
-              <p>💬 <strong>Live Chat:</strong> Stellen Sie direkt Fragen</p>
-              <p>🛒 <strong>Sofort bestellen:</strong> Produkte während dem Stream kaufen</p>
-              <p>📱 <strong>Mobile optimiert:</strong> Perfekt für iPhone und Android</p>
-            </div>
-          </div>
         </div>
       )}
 
