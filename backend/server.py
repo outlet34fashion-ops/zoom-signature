@@ -1896,6 +1896,119 @@ async def webrtc_signaling_viewer(websocket: WebSocket, stream_id: str):
         # Remove viewer from stream
         await stream_manager.leave_stream(stream_id, websocket)
 
+# Customer Reminder Models
+class CustomerReminder(BaseModel):
+    customer_number: str
+    event_id: str
+
+# Customer Reminder Endpoints
+@api_router.post("/customer/reminder")
+async def set_customer_reminder(reminder: CustomerReminder):
+    """Set a reminder for a customer for a specific event"""
+    try:
+        # Check if reminder already exists
+        existing = await db.customer_reminders.find_one({
+            "customer_number": reminder.customer_number,
+            "event_id": reminder.event_id
+        })
+        
+        if existing:
+            return {"success": True, "message": "Reminder already set"}
+        
+        # Create new reminder
+        reminder_doc = {
+            "id": str(uuid.uuid4()),
+            "customer_number": reminder.customer_number,
+            "event_id": reminder.event_id,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "active": True
+        }
+        
+        await db.customer_reminders.insert_one(reminder_doc)
+        return {"success": True, "message": "Reminder set successfully"}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.delete("/customer/reminder/{customer_number}/{event_id}")
+async def remove_customer_reminder(customer_number: str, event_id: str):
+    """Remove a customer's reminder for a specific event"""
+    try:
+        result = await db.customer_reminders.delete_one({
+            "customer_number": customer_number,
+            "event_id": event_id
+        })
+        
+        if result.deleted_count > 0:
+            return {"success": True, "message": "Reminder removed successfully"}
+        else:
+            return {"success": False, "message": "Reminder not found"}
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/customer/reminders/{customer_number}")
+async def get_customer_reminders(customer_number: str):
+    """Get all active reminders for a customer"""
+    try:
+        reminders = await db.customer_reminders.find({
+            "customer_number": customer_number,
+            "active": True
+        }).to_list(length=None)
+        
+        # Extract event IDs
+        reminder_event_ids = [reminder["event_id"] for reminder in reminders]
+        
+        return {"success": True, "reminders": reminder_event_ids}
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Background task to send notifications (simplified version)
+@api_router.post("/admin/send-reminder-notifications")
+async def send_reminder_notifications():
+    """Check for upcoming events and send notifications to customers with reminders"""
+    try:
+        # Get all events happening in the next 30 minutes
+        now = datetime.now(timezone.utc)
+        thirty_minutes_later = now + timedelta(minutes=30)
+        
+        # Get events from database
+        events = await db.events.find().to_list(length=None)
+        upcoming_events = []
+        
+        for event in events:
+            try:
+                event_datetime = datetime.fromisoformat(event['date'] + 'T' + event['time'])
+                if now <= event_datetime <= thirty_minutes_later:
+                    upcoming_events.append(event)
+            except:
+                continue
+        
+        notifications_sent = 0
+        
+        # For each upcoming event, find customers with reminders
+        for event in upcoming_events:
+            reminders = await db.customer_reminders.find({
+                "event_id": event["id"],
+                "active": True
+            }).to_list(length=None)
+            
+            for reminder in reminders:
+                # Here you would implement the actual push notification
+                # For now, we'll just log it
+                logger.info(f"Sending notification to customer {reminder['customer_number']} for event {event['title']}")
+                notifications_sent += 1
+        
+        return {
+            "success": True,
+            "message": f"Processed {len(upcoming_events)} upcoming events",
+            "notifications_sent": notifications_sent
+        }
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 # WebSocket endpoint
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
