@@ -224,6 +224,10 @@ function App() {
   // Profile Modal States
   const [showProfileModal, setShowProfileModal] = useState(false);
   
+  // Termine Modal States
+  const [showTerminModal, setShowTerminModal] = useState(false);
+  const [customerReminders, setCustomerReminders] = useState([]);
+  
   const chatRef = useRef(null);
   const wsRef = useRef(null);
   const reconnectAttempts = useRef(0);
