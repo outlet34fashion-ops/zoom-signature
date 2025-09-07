@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "WEBRTC LIVE VIDEO STREAMING IMPLEMENTATION: Implement WebRTC live video streaming functionality for the Live Shopping App. Requirements: 1) iPhone camera support (direct browser access), 2) Free solution (no paid services), 3) Best video quality, 4) Maximum 50 concurrent viewers, 5) Admin streaming capability, 6) Customer viewing capability, 7) Integration with existing FastAPI + React + MongoDB app. Expected functionality: Admins can start live streams from iPhone camera, customers can view live streams, real-time video streaming with optimal quality, proper viewer management and limits."
+user_problem_statement: "ADMIN DASHBOARD IMPROVEMENTS AND PENDING TASKS: Based on existing Live Shopping App with automatic Zebra printing, customer management, and streaming functionality, implement the following: 1) Make all admin dashboard boxes collapsed by default for cleaner interface, 2) Fix customer creation/login issues (customer 10299 not found error), 3) Implement desktop split-screen layout for Orders and Chat side-by-side, 4) Provide complete Mac auto-printer setup files (mac_auto_printer.py and sync_to_mac.sh). Focus on UI improvements and resolving customer authentication problems."
 
 backend:
   - task: "Multi-language functionality integration"
