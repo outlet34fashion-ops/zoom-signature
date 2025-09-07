@@ -41,6 +41,7 @@ function App() {
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedSize, setSelectedSize] = useState('');
+  const [manualSize, setManualSize] = useState(''); // For manual size input
   const [selectedPrice, setSelectedPrice] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [showMobileChat, setShowMobileChat] = useState(false);
