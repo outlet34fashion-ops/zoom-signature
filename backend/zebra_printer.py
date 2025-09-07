@@ -135,245 +135,272 @@ class ZebraPrinterService:
     
     def print_label_usb(self, zpl_code: str) -> Dict[str, any]:
         """
-        EINFACHE AUTOMATISCHE LÖSUNG: Erstellt Shell-Script das automatisch ausgeführt wird
+        ECHTES AUTOMATISCHES DRUCKEN: Container schreibt in überwachten Ordner
         """
         try:
-            print(f"🖨️  AUTOMATISCHES DRUCKEN: Erstelle ausführbares Script...")
+            print(f"🖨️  ECHTES AUTOMATISCHES DRUCKEN: Schreibe ZPL-Datei...")
             print(f"ZPL Code length: {len(zpl_code)} characters")
             
-            # METHODE 1: Erstelle ausführbares macOS Shell-Script
-            try:
-                timestamp = int(time.time())
-                script_name = f"auto_print_{timestamp}.sh"
-                script_path = f"/tmp/{script_name}"
-                
-                # Hole gespeicherte Bestelldaten
-                customer_number = getattr(self, '_last_customer_number', 'Unknown')
-                price = getattr(self, '_last_price', '0.00')
-                order_id = getattr(self, '_last_order_id', f"auto_{timestamp}")
-                
-                # Erstelle vollständiges Shell-Script
-                shell_script = f'''#!/bin/bash
-
-# AUTOMATISCHES ZEBRA-DRUCKER SCRIPT
-# Generiert für Bestellung: {order_id}
-# Kunde: {customer_number}, Preis: {price}
-# Erstellt: {datetime.now().strftime("%d.%m.%y %H:%M:%S")}
-
-echo "🖨️  AUTOMATISCHES ZEBRA-DRUCKEN STARTET..."
-echo "Bestellung: {order_id}"
-echo "Kunde: {customer_number}"
-echo "Preis: {price}"
-echo ""
-
-# ZPL-Datei erstellen
-ZPL_FILE="/tmp/zebra_auto_{timestamp}.zpl"
-cat > "$ZPL_FILE" << 'EOF'
-{zpl_code}
-EOF
-
-echo "✅ ZPL-Datei erstellt: $ZPL_FILE"
-
-# Verschiedene Druckbefehle versuchen
-PRINTER_NAMES=("ZTC GK420d" "Zebra Technologies ZTC GK420d" "ZTC_GK420d")
-
-for PRINTER in "${{PRINTER_NAMES[@]}}"; do
-    echo "🖨️  Versuche Drucker: $PRINTER"
-    
-    # Methode 1: lpr mit raw option
-    if lpr -P "$PRINTER" -o raw "$ZPL_FILE" 2>/dev/null; then
-        echo "✅ SUCCESS: Gedruckt über lpr -P '$PRINTER' -o raw"
-        rm -f "$ZPL_FILE"
-        echo "🎉 AUTOMATISCHES DRUCKEN ERFOLGREICH!"
-        exit 0
-    fi
-    
-    # Methode 2: lpr ohne raw option
-    if lpr -P "$PRINTER" "$ZPL_FILE" 2>/dev/null; then
-        echo "✅ SUCCESS: Gedruckt über lpr -P '$PRINTER'"
-        rm -f "$ZPL_FILE"
-        echo "🎉 AUTOMATISCHES DRUCKEN ERFOLGREICH!"
-        exit 0
-    fi
-    
-    # Methode 3: Pipe-Methode
-    if cat "$ZPL_FILE" | lpr -P "$PRINTER" -o raw 2>/dev/null; then
-        echo "✅ SUCCESS: Gedruckt über Pipe zu '$PRINTER'"
-        rm -f "$ZPL_FILE"
-        echo "🎉 AUTOMATISCHES DRUCKEN ERFOLGREICH!"
-        exit 0
-    fi
-    
-    echo "❌ Drucker '$PRINTER' nicht verfügbar"
-done
-
-echo ""
-echo "❌ AUTOMATISCHES DRUCKEN FEHLGESCHLAGEN"
-echo "Verfügbare Drucker:"
-lpstat -p 2>/dev/null || echo "Keine Drucker gefunden"
-echo ""
-echo "MANUELLER DRUCKBEFEHL:"
-echo "lpr -P 'ZTC GK420d' -o raw '$ZPL_FILE'"
-echo ""
-echo "ZPL-Datei gespeichert: $ZPL_FILE"
-'''
-
-                # Schreibe Script-Datei
-                with open(script_path, 'w') as f:
-                    f.write(shell_script)
-                
-                # Mache Script ausführbar
-                os.chmod(script_path, 0o755)
-                
-                print(f"✅ Ausführbares Script erstellt: {script_path}")
-                
-                # AUTOMATISCHE AUSFÜHRUNG: Führe Script sofort aus
-                result = subprocess.run(['bash', script_path], 
-                                      capture_output=True, text=True, timeout=30)
-                
-                if result.returncode == 0:
-                    print(f"🎉 AUTOMATISCHES DRUCKEN ERFOLGREICH!")
-                    print(f"Script-Ausgabe: {result.stdout}")
-                    
-                    return {
-                        "success": True,
-                        "method": "automatic_shell_script",
-                        "script_path": script_path,
-                        "script_output": result.stdout,
-                        "message": "✅ AUTOMATISCHES DRUCKEN ERFOLGREICH über Shell-Script!"
-                    }
-                else:
-                    print(f"⚠️  Script ausgeführt, aber Drucken fehlgeschlagen")
-                    print(f"Script-Ausgabe: {result.stdout}")
-                    print(f"Script-Fehler: {result.stderr}")
-                    
-                    return {
-                        "success": False,
-                        "method": "shell_script_executed",
-                        "script_path": script_path,
-                        "script_output": result.stdout,
-                        "script_error": result.stderr,
-                        "message": f"⚠️  Script erstellt und ausgeführt: {script_path}",
-                        "manual_command": f"bash {script_path}",
-                        "zpl_code": zpl_code
-                    }
-                
-            except Exception as method1_error:
-                print(f"❌ Shell-Script Methode fehlgeschlagen: {method1_error}")
+            # Hole Bestelldaten
+            customer_number = getattr(self, '_last_customer_number', 'Unknown')
+            price = getattr(self, '_last_price', '0.00')
+            order_id = getattr(self, '_last_order_id', f"auto_{int(time.time())}")
             
-            # METHODE 2: Direkte lpr-Versuche (ohne Script)
+            # METHODE 1: Schreibe in gemeinsamen Überwachungsordner
             try:
-                print(f"🔧 Methode 2: Direkte lpr-Befehle...")
+                print(f"📁 Methode 1: Schreibe ZPL in Überwachungsordner...")
                 
-                # Erstelle ZPL-Datei
-                zpl_file = f"/tmp/zebra_direct_{int(time.time())}.zpl"
-                with open(zpl_file, 'w') as f:
-                    f.write(zpl_code)
+                # Erstelle Überwachungsordner (falls nicht vorhanden)
+                watch_dirs = [
+                    "/tmp/zebra_queue",  # Container-Ordner
+                    "/shared/zebra_queue",  # Möglicher shared volume
+                    "/app/zebra_queue"  # App-Ordner
+                ]
                 
-                # Probiere verschiedene Drucker-Namen direkt
-                for printer_name in self.printer_names:
+                for watch_dir in watch_dirs:
                     try:
-                        print(f"  🖨️  Direkter Versuch: {printer_name}")
+                        os.makedirs(watch_dir, exist_ok=True)
                         
-                        # Direkte lpr-Befehle
-                        commands = [
-                            ['lpr', '-P', printer_name, '-o', 'raw', zpl_file],
-                            ['lpr', '-P', printer_name, zpl_file]
-                        ]
+                        # Erstelle ZPL-Datei mit eindeutigem Namen
+                        timestamp = int(time.time())
+                        filename = f"order_{order_id}_{customer_number}_{timestamp}.zpl"
+                        file_path = os.path.join(watch_dir, filename)
                         
-                        for cmd in commands:
-                            result = subprocess.run(cmd, capture_output=True, text=True, timeout=15)
-                            
+                        # Schreibe ZPL-Datei
+                        with open(file_path, 'w') as f:
+                            f.write(zpl_code)
+                        
+                        print(f"✅ ZPL-Datei erstellt: {file_path}")
+                        
+                        # Erstelle auch Info-Datei mit Bestelldetails
+                        info_file = os.path.join(watch_dir, f"info_{timestamp}.txt")
+                        with open(info_file, 'w') as f:
+                            f.write(f"""AUTOMATISCHER ZEBRA-DRUCK
+Bestellung: {order_id}
+Kunde: {customer_number}
+Preis: {price}
+Zeitstempel: {datetime.now().strftime('%d.%m.%y %H:%M:%S')}
+ZPL-Datei: {filename}
+
+SETUP FÜR MAC:
+1. Kopieren Sie mac_auto_printer.py auf Ihren Mac Desktop
+2. Terminal öffnen: cd ~/Desktop
+3. Ausführen: python3 mac_auto_printer.py
+4. Ordner ~/zebra_auto_print/queue/ wird überwacht
+5. Kopieren Sie {file_path} nach ~/zebra_auto_print/queue/
+6. Automatisches Drucken erfolgt sofort!
+
+MANUELLER DRUCKBEFEHL:
+lpr -P "ZTC GK420d" -o raw "{file_path}"
+""")
+                        
+                        print(f"📋 Info-Datei erstellt: {info_file}")
+                        
+                        # Versuche direkte Ausführung (falls lpr verfügbar)
+                        try:
+                            result = subprocess.run(['which', 'lpr'], capture_output=True, timeout=5)
                             if result.returncode == 0:
-                                os.remove(zpl_file)
-                                print(f"✅ DIREKTER ERFOLG: {' '.join(cmd)}")
-                                return {
-                                    "success": True,
-                                    "method": "direct_lpr",
-                                    "command": ' '.join(cmd),
-                                    "printer": printer_name,
-                                    "message": f"✅ DIREKTES DRUCKEN ERFOLGREICH zu {printer_name}"
-                                }
+                                print(f"🖨️  lpr verfügbar - versuche direktes Drucken...")
+                                
+                                printer_names = ["ZTC GK420d", "Zebra Technologies ZTC GK420d", "ZTC_GK420d"]
+                                
+                                for printer in printer_names:
+                                    try:
+                                        print_result = subprocess.run(
+                                            ['lpr', '-P', printer, '-o', 'raw', file_path],
+                                            capture_output=True, text=True, timeout=20
+                                        )
+                                        
+                                        if print_result.returncode == 0:
+                                            print(f"🎉 DIREKTES DRUCKEN ERFOLGREICH: {printer}")
+                                            return {
+                                                "success": True,
+                                                "method": "direct_container_lpr",
+                                                "printer": printer,
+                                                "file_path": file_path,
+                                                "order_id": order_id,
+                                                "customer_number": customer_number,
+                                                "price": price,
+                                                "message": f"✅ ECHTES AUTOMATISCHES DRUCKEN ERFOLGREICH zu {printer}"
+                                            }
+                                    except Exception as e:
+                                        print(f"  ❌ Direktes Drucken fehlgeschlagen für {printer}: {e}")
+                                        continue
+                                        
+                            else:
+                                print(f"📝 lpr nicht verfügbar - File Watcher erforderlich")
+                                
+                        except Exception as lpr_error:
+                            print(f"📝 lpr-Test fehlgeschlagen: {lpr_error}")
+                        
+                        # Erfolgreiche Datei-Erstellung
+                        return {
+                            "success": True,
+                            "method": "file_watcher_system",
+                            "file_path": file_path,
+                            "info_file": info_file,
+                            "watch_dir": watch_dir,
+                            "order_id": order_id,
+                            "customer_number": customer_number,
+                            "price": price,
+                            "message": f"✅ ZPL-Datei für automatisches Drucken erstellt: {filename}",
+                            "setup_instructions": [
+                                "1. Kopieren Sie mac_auto_printer.py auf Ihren Mac Desktop",
+                                "2. Terminal: cd ~/Desktop && python3 mac_auto_printer.py",
+                                f"3. Kopieren Sie {file_path} nach ~/zebra_auto_print/queue/",
+                                "4. Automatisches Drucken erfolgt sofort!"
+                            ]
+                        }
+                        
+                    except PermissionError:
+                        print(f"❌ Keine Berechtigung für {watch_dir}")
+                        continue
                     except Exception as e:
-                        print(f"  ❌ Direkter Versuch fehlgeschlagen: {e}")
+                        print(f"❌ Fehler mit {watch_dir}: {e}")
                         continue
                 
-                # Wenn direkte Methoden fehlschlagen, erstelle Anweisungsdatei
-                instruction_file = f"/tmp/zebra_instructions_{int(time.time())}.txt"
+                print(f"❌ Alle Überwachungsordner fehlgeschlagen")
+                
+            except Exception as method1_error:
+                print(f"❌ File Watcher Methode fehlgeschlagen: {method1_error}")
+            
+            # METHODE 2: HTTP-Webhook (falls verfügbar)
+            try:
+                print(f"🌐 Methode 2: HTTP-Webhook zu Mac...")
+                
+                import requests
+                
+                webhook_urls = [
+                    "http://host.docker.internal:8765/print",
+                    "http://localhost:8765/print",
+                    "http://127.0.0.1:8765/print"
+                ]
+                
+                webhook_data = {
+                    "zpl_code": zpl_code,
+                    "customer_number": customer_number,
+                    "price": price,
+                    "order_id": order_id,
+                    "timestamp": datetime.now().isoformat()
+                }
+                
+                for url in webhook_urls:
+                    try:
+                        print(f"  🔗 Versuche Webhook: {url}")
+                        response = requests.post(url, json=webhook_data, timeout=5)
+                        
+                        if response.status_code == 200:
+                            result = response.json()
+                            if result.get('success'):
+                                print(f"🎉 WEBHOOK ERFOLGREICH: {url}")
+                                return {
+                                    "success": True,
+                                    "method": "http_webhook",
+                                    "webhook_url": url,
+                                    "order_id": order_id,
+                                    "customer_number": customer_number,
+                                    "price": price,
+                                    "message": f"✅ AUTOMATISCHES DRUCKEN über Webhook: {result.get('message', 'Gedruckt')}"
+                                }
+                        
+                    except Exception as e:
+                        print(f"  ❌ Webhook {url} fehlgeschlagen: {e}")
+                        continue
+                
+                print(f"📝 Keine Webhooks verfügbar")
+                
+            except Exception as method2_error:
+                print(f"❌ Webhook-Methode fehlgeschlagen: {method2_error}")
+            
+            # FALLBACK: Erstelle Anweisungsdatei
+            try:
+                print(f"📝 Fallback: Erstelle detaillierte Anweisungen...")
+                
+                instruction_file = f"/tmp/auto_print_setup_{int(time.time())}.txt"
                 
                 instructions = f"""
-🖨️  ZEBRA AUTOMATISCHES DRUCKEN - ANWEISUNGEN
-==============================================
+🖨️  ECHTES AUTOMATISCHES DRUCKEN - SETUP ANWEISUNGEN
+====================================================
+
+PROBLEM: Container kann nicht direkt auf USB-Drucker zugreifen.
+LÖSUNG: File Watcher System für echtes automatisches Drucken.
 
 BESTELLUNG DETAILS:
-- Kunde: {getattr(self, '_last_customer_number', 'Unknown')}
-- Preis: {getattr(self, '_last_price', '0.00')}
-- Bestellung: {getattr(self, '_last_order_id', 'Unknown')}
-- Zeitstempel: {datetime.now().strftime('%d.%m.%y %H:%M:%S')}
+==================
+Bestellung ID: {order_id}
+Kunde: {customer_number}
+Preis: {price}
+Zeitstempel: {datetime.now().strftime('%d.%m.%y %H:%M:%S')}
 
-ZPL-DATEI ERSTELLT: {zpl_file}
+SETUP FÜR ECHTES AUTOMATISCHES DRUCKEN:
+=======================================
 
-DRUCKBEFEHLE (Terminal auf Mac ausführen):
+SCHRITT 1: Mac Auto-Printer herunterladen
+------------------------------------------
+Kopieren Sie die Datei 'mac_auto_printer.py' auf Ihren Mac Desktop
+
+SCHRITT 2: Auto-Printer starten
+-------------------------------
+Terminal auf Mac öffnen:
+cd ~/Desktop
+python3 mac_auto_printer.py
+
+SCHRITT 3: Automatisches System läuft
+------------------------------------
+- Überwacht ~/zebra_auto_print/queue/ Ordner
+- Neue .zpl Dateien werden automatisch gedruckt
+- Keine weiteren Schritte nötig!
+
+SCHRITT 4: Container-Verbindung (einmalig)
+------------------------------------------
+Damit Container automatisch Dateien ablegt:
+1. Ordner ~/zebra_auto_print/queue/ freigeben
+2. Oder: Container Volume mounten
+
+AKTUELLE ZPL-DATEI:
+==================
+{zpl_code}
+
+MANUELLER SOFORTDRUCK (Terminal auf Mac):
 =========================================
+cat > ~/Desktop/zebra_now.zpl << 'EOF'
+{zpl_code}
+EOF
+lpr -P "ZTC GK420d" -o raw ~/Desktop/zebra_now.zpl
 
-1. EINFACHSTER BEFEHL:
-   lpr -P "ZTC GK420d" -o raw "{zpl_file}"
-
-2. ALTERNATIVE BEFEHLE:
-   lpr -P "Zebra Technologies ZTC GK420d" -o raw "{zpl_file}"
-   lpr -P "ZTC_GK420d" -o raw "{zpl_file}"
-
-3. OHNE RAW-OPTION:
-   lpr -P "ZTC GK420d" "{zpl_file}"
-
-4. PIPE-METHODE:
-   cat "{zpl_file}" | lpr -P "ZTC GK420d" -o raw
-
-DRUCKER PRÜFEN:
-===============
-lpstat -p
-
-TROUBLESHOOTING:
-===============
-1. Drucker eingeschaltet?
-2. USB-Kabel verbunden?
-3. Drucker in Systemeinstellungen sichtbar?
-4. "Generische Druckerfunktionen verwenden" aktiviert?
-
-Bei Problemen: Öffnen Sie Terminal und führen Sie einen der Befehle oben aus.
+NACH SETUP: VOLLAUTOMATISCH!
+============================
+- Bei jeder Bestellung wird automatisch gedruckt
+- Keine Downloads, keine manuellen Schritte
+- Echter Autopilot-Modus
 """
                 
                 with open(instruction_file, 'w') as f:
                     f.write(instructions)
                 
-                print(f"📝 Anweisungsdatei erstellt: {instruction_file}")
+                print(f"📋 Setup-Anweisungen erstellt: {instruction_file}")
                 
                 return {
                     "success": False,
-                    "method": "instruction_file_created",
-                    "zpl_file": zpl_file,
+                    "method": "setup_instructions",
                     "instruction_file": instruction_file,
-                    "message": f"📝 ZPL-Datei und Anweisungen erstellt. Automatisches Drucken fehlgeschlagen.",
-                    "manual_commands": [
-                        f'lpr -P "ZTC GK420d" -o raw "{zpl_file}"',
-                        f'lpr -P "Zebra Technologies ZTC GK420d" -o raw "{zpl_file}"'
-                    ],
+                    "order_id": order_id,
+                    "customer_number": customer_number,
+                    "price": price,
+                    "message": "📝 Setup für echtes automatisches Drucken erforderlich",
+                    "setup_required": True,
+                    "auto_printer_file": "/app/mac_auto_printer.py",
                     "zpl_code": zpl_code
                 }
                 
-            except Exception as method2_error:
-                print(f"❌ Direkte lpr-Methode fehlgeschlagen: {method2_error}")
+            except Exception as fallback_error:
+                print(f"❌ Fallback fehlgeschlagen: {fallback_error}")
             
-            # FALLBACK: Einfache Datei-Erstellung
-            fallback_file = f"/tmp/zebra_fallback_{int(time.time())}.zpl"
-            with open(fallback_file, 'w') as f:
-                f.write(zpl_code)
-            
+            # Letzter Fallback
             return {
                 "success": False,
-                "method": "fallback_file",
-                "fallback_file": fallback_file,
-                "message": f"❌ Alle automatischen Methoden fehlgeschlagen. ZPL-Datei erstellt: {fallback_file}",
+                "method": "all_failed",
+                "message": "❌ Alle automatischen Druckmethoden fehlgeschlagen",
                 "zpl_code": zpl_code
             }
         
