@@ -170,6 +170,57 @@ function App() {
     }
   };
 
+  const setCustomerReminder = async (eventId) => {
+    try {
+      if (!notificationsEnabled) {
+        alert('Bitte aktivieren Sie Benachrichtigungen in Ihrem Profil, um Erinnerungen zu erhalten.');
+        return;
+      }
+
+      const customerNumber = currentCustomer?.customer_number || localStorage.getItem('customerNumber');
+      const response = await axios.post(`${API}/customer/reminder`, {
+        customer_number: customerNumber,
+        event_id: eventId
+      });
+
+      if (response.data.success) {
+        // Update local reminders state
+        setCustomerReminders(prev => [...prev, eventId]);
+        alert('✅ Erinnerung aktiviert! Sie werden 30 Minuten vor dem Termin benachrichtigt.');
+      }
+    } catch (error) {
+      console.error('Error setting reminder:', error);
+      alert('❌ Fehler beim Setzen der Erinnerung. Bitte versuchen Sie es erneut.');
+    }
+  };
+
+  const removeCustomerReminder = async (eventId) => {
+    try {
+      const customerNumber = currentCustomer?.customer_number || localStorage.getItem('customerNumber');
+      await axios.delete(`${API}/customer/reminder/${customerNumber}/${eventId}`);
+      
+      // Update local reminders state
+      setCustomerReminders(prev => prev.filter(id => id !== eventId));
+      alert('🔕 Erinnerung deaktiviert.');
+    } catch (error) {
+      console.error('Error removing reminder:', error);
+      alert('❌ Fehler beim Entfernen der Erinnerung.');
+    }
+  };
+
+  // Load customer reminders
+  const loadCustomerReminders = async () => {
+    try {
+      const customerNumber = currentCustomer?.customer_number || localStorage.getItem('customerNumber');
+      if (customerNumber) {
+        const response = await axios.get(`${API}/customer/reminders/${customerNumber}`);
+        setCustomerReminders(response.data.reminders || []);
+      }
+    } catch (error) {
+      console.error('Error loading reminders:', error);
+    }
+  };
+
   const toggleNotifications = async () => {
     if (notificationsEnabled) {
       // Disable notifications
