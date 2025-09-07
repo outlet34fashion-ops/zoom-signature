@@ -3627,57 +3627,46 @@ function App() {
                     )}
                   </div>
                   
-                  {/* Language Selection */}
-                  <div className="border-t pt-4">
-                    <h4 className="text-sm font-medium text-gray-700 mb-3 text-center">
-                      🌍 {t('customer.profile.language')}
-                    </h4>
-                    <div className="flex justify-center space-x-1">
-                      <button
-                        onClick={() => changeLanguage('de')}
-                        className={`px-3 py-2 rounded text-sm ${
-                          i18n.language === 'de' 
-                            ? 'bg-pink-500 text-white' 
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                        }`}
-                        title="Deutsch"
-                      >
-                        🇩🇪
-                      </button>
-                      <button
-                        onClick={() => changeLanguage('en')}
-                        className={`px-3 py-2 rounded text-sm ${
-                          i18n.language === 'en' 
-                            ? 'bg-pink-500 text-white' 
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                        }`}
-                        title="English"
-                      >
-                        🇺🇸
-                      </button>
-                      <button
-                        onClick={() => changeLanguage('tr')}
-                        className={`px-3 py-2 rounded text-sm ${
-                          i18n.language === 'tr' 
-                            ? 'bg-pink-500 text-white' 
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                        }`}
-                        title="Türkçe"
-                      >
-                        🇹🇷
-                      </button>
-                      <button
-                        onClick={() => changeLanguage('fr')}
-                        className={`px-3 py-2 rounded text-sm ${
-                          i18n.language === 'fr' 
-                            ? 'bg-pink-500 text-white' 
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                        }`}
-                        title="Français"
-                      >
-                        🇫🇷
-                      </button>
+                  {/* Notifications Toggle */}
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <span>🔔</span>
+                      <span className="text-sm font-medium text-gray-700">
+                        {t('customer.profile.notifications')}
+                      </span>
                     </div>
+                    <button
+                      onClick={toggleNotifications}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 ${
+                        notificationsEnabled ? 'bg-pink-600' : 'bg-gray-200'
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          notificationsEnabled ? 'translate-x-6' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+                  
+                  {/* Language Selector - MOVED FROM HEADER */}
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <span>🌐</span>
+                      <span className="text-sm font-medium text-gray-700">
+                        Sprache / Language
+                      </span>
+                    </div>
+                    <select
+                      value={i18n.language}
+                      onChange={(e) => i18n.changeLanguage(e.target.value)}
+                      className="bg-white border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
+                    >
+                      <option value="de">🇩🇪 Deutsch</option>
+                      <option value="en">🇬🇧 English</option>
+                      <option value="tr">🇹🇷 Türkçe</option>
+                      <option value="fr">🇫🇷 Français</option>
+                    </select>
                   </div>
                   
                   {/* Logout and Close Buttons */}
