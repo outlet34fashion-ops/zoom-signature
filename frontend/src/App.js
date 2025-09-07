@@ -4686,6 +4686,8 @@ function App() {
           onClose={handleSimpleStreamClose}
         />
       )}
+      
+      </div> {/* Close the padding div */}
     </div>
   );
 }
