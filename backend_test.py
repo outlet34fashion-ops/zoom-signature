@@ -6529,6 +6529,10 @@ TIMEZONE BUG ANALYSIS COMPLETE:
         print(f"🔗 Testing against: {self.base_url}")
         print("=" * 60)
 
+        # CRITICAL PRIORITY: NEW REAL AUTOMATIC PRINTING SYSTEM WITH FILE WATCHER (Current Review Request)
+        print("\n🖨️ CRITICAL PRIORITY: NEW REAL AUTOMATIC PRINTING SYSTEM WITH FILE WATCHER...")
+        real_printing_success = self.test_real_automatic_printing_system()
+
         # CRITICAL PRIORITY: AUTOMATIC PRINTING REAL-WORLD TEST (Current Review Request)
         print("\n🖨️ CRITICAL PRIORITY: AUTOMATIC PRINTING REAL-WORLD TEST...")
         automatic_printing_success = self.test_automatic_printing_real_world()
