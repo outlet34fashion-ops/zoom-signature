@@ -9,7 +9,7 @@ import { Card, CardContent } from './components/ui/card';
 import { Badge } from './components/ui/badge';
 import { Heart, Bell, ShoppingCart, Send, Users, Clock, MessageCircle } from 'lucide-react';
 import ZoomLiveStream from './components/ZoomLiveStream';
-import SimpleLiveStream from './components/SimpleLiveStream';
+// REMOVED: SimpleLiveStream - was not working properly
 // CRITICAL: Import LiveKit components - WORKING IMPLEMENTATION
 import {
   LiveKitRoom,
