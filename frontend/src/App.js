@@ -62,8 +62,8 @@ function App() {
   const [activeView, setActiveView] = useState('chat'); // 'chat' or 'orders' - Standard auf Chat
   const [allOrders, setAllOrders] = useState([]); // Alle Bestellungen von allen Kunden
   const [loadingOrders, setLoadingOrders] = useState(false);
-  const [showTopBuyers, setShowTopBuyers] = useState(true); // Top 3 Käufer auf/zuklappbar
-  const [showLastOrder, setShowLastOrder] = useState(true); // Letzte Bestellung auf/zuklappbar
+  const [showTopBuyers, setShowTopBuyers] = useState(false); // Top 3 Käufer auf/zuklappbar - standardmäßig zugeklappt
+  const [showLastOrder, setShowLastOrder] = useState(false); // Letzte Bestellung auf/zuklappbar - standardmäßig zugeklappt
   const [pollingStatus, setPollingStatus] = useState('Starting...'); // DEBUG: Show polling status
   const [lastPollTime, setLastPollTime] = useState(null); // DEBUG: Show last poll time
   const [tickerSettings, setTickerSettings] = useState({ 
