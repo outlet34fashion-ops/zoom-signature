@@ -187,6 +187,21 @@ backend:
         comment: "CONFIRMED NOT IMPLEMENTED: Customer authentication middleware still not present in backend. However, this is medium priority and does not affect core functionality. All customer authentication is handled at the API endpoint level with proper status checks. The existing customer status check API (GET /api/customers/check/{customer_number}) provides all necessary authentication functionality for the frontend. No critical impact on system operation."
 
 frontend:
+  - task: "Admin Dashboard Boxes Collapsed by Default"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "USER REQUEST: Make all admin dashboard boxes collapsed by default for cleaner interface. Need to change initial state values from true to false for all collapsible sections: showStatistics, showCustomerManagement, showStreamingControls, showTickerSettings, showCalendarManagement, showLiveStreamManagement."
+      - working: true
+        agent: "main"
+        comment: "✅ SUCCESSFULLY IMPLEMENTED: Changed all admin dashboard collapsible sections to collapsed by default. Updated initial state values in App.js lines 96-102: showStatistics (true→false), showCustomerManagement (true→false), showStreamingControls (already false), showTickerSettings (already false), showCalendarManagement (already false), showLiveStreamManagement (already false). Screenshot verification confirms all admin boxes now start collapsed with right-pointing arrows (►). Admin can still expand any box by clicking on it, providing cleaner default interface as requested."
+
   - task: "Zebra Etiketten-Drucker Frontend Integration"
     implemented: true
     working: true
