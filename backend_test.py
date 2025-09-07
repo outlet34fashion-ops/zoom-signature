@@ -5935,6 +5935,289 @@ TIMEZONE BUG ANALYSIS COMPLETE:
             self.log_test("CRITICAL - Automatic Printing Test Exception", False, str(e))
             return False
 
+    def test_zpl_download_system(self):
+        """Test the new simplified ZPL download solution as per review request"""
+        print("\n🏷️ CRITICAL: TESTING NEW SIMPLIFIED ZPL DOWNLOAD SOLUTION")
+        print("  🎯 REVIEW REQUEST REQUIREMENTS:")
+        print("    1. Test latest ZPL content endpoint - GET /api/zebra/latest-zpl-content")
+        print("    2. Test ZPL file download - GET /api/zebra/download-latest-zpl")
+        print("    3. Create new order to generate fresh ZPL - POST /api/orders with customer 10299")
+        print("    4. Verify file system - Check /tmp/ for zebra_auto_*.zpl files")
+        print("    5. Verify ZPL content is valid for customer 10299")
+        print("    6. Verify Mac print commands are generated correctly")
+        
+        try:
+            # STEP 1: Verify customer 10299 exists and is active
+            print("\n  🔍 STEP 1: Verifying customer 10299 status...")
+            check_response = requests.get(
+                f"{self.api_url}/customers/check/10299",
+                timeout=10
+            )
+            
+            if check_response.status_code != 200:
+                self.log_test("ZPL Download - Customer 10299 Verification", False, f"Customer check failed with status {check_response.status_code}")
+                return False
+            
+            customer_data = check_response.json()
+            if not customer_data.get('exists') or customer_data.get('activation_status') != 'active':
+                self.log_test("ZPL Download - Customer 10299 Active Status", False, f"Customer 10299 not active: {customer_data}")
+                return False
+            
+            self.log_test("ZPL Download - Customer 10299 Verification", True, "Customer 10299 exists and is ACTIVE - ready for immediate order creation and printing")
+            
+            # STEP 2: Test latest ZPL content endpoint
+            print("\n  📄 STEP 2: Testing GET /api/zebra/latest-zpl-content...")
+            
+            zpl_content_response = requests.get(
+                f"{self.api_url}/zebra/latest-zpl-content",
+                timeout=15
+            )
+            
+            zpl_content_success = zpl_content_response.status_code == 200
+            zpl_content_details = f"Status: {zpl_content_response.status_code}"
+            
+            if zpl_content_success:
+                zpl_data = zpl_content_response.json()
+                
+                # Check response structure
+                required_fields = ['success', 'zpl_content', 'mac_commands']
+                has_all_fields = all(field in zpl_data for field in required_fields)
+                
+                if has_all_fields and zpl_data.get('success'):
+                    zpl_content = zpl_data.get('zpl_content', '')
+                    mac_commands = zpl_data.get('mac_commands', [])
+                    
+                    # Validate ZPL content format
+                    has_zpl_start = '^XA' in zpl_content
+                    has_zpl_end = '^XZ' in zpl_content
+                    has_proper_width = '^PW320' in zpl_content  # 40mm = 320 dots
+                    has_proper_height = '^LL200' in zpl_content  # 25mm = 200 dots
+                    
+                    # Check Mac commands
+                    has_mac_commands = len(mac_commands) > 0
+                    has_lpr_commands = any('lpr' in str(cmd) for cmd in mac_commands)
+                    
+                    zpl_content_success = (has_zpl_start and has_zpl_end and 
+                                         has_proper_width and has_proper_height and
+                                         has_mac_commands and has_lpr_commands)
+                    
+                    zpl_content_details += f", ZPL format valid: {has_zpl_start and has_zpl_end}, Dimensions correct: {has_proper_width and has_proper_height}, Mac commands: {len(mac_commands)}"
+                else:
+                    zpl_content_success = False
+                    zpl_content_details += f", Missing fields or success=false: {zpl_data}"
+            
+            self.log_test("ZPL Download - Latest ZPL Content Endpoint", zpl_content_success, zpl_content_details)
+            
+            # STEP 3: Test ZPL file download endpoint
+            print("\n  📥 STEP 3: Testing GET /api/zebra/download-latest-zpl...")
+            
+            zpl_download_response = requests.get(
+                f"{self.api_url}/zebra/download-latest-zpl",
+                timeout=15
+            )
+            
+            zpl_download_success = zpl_download_response.status_code == 200
+            zpl_download_details = f"Status: {zpl_download_response.status_code}"
+            
+            if zpl_download_success:
+                content_type = zpl_download_response.headers.get('content-type', '')
+                content_disposition = zpl_download_response.headers.get('content-disposition', '')
+                
+                # Check if it's a downloadable file
+                is_downloadable = 'attachment' in content_disposition
+                has_zpl_filename = '.zpl' in content_disposition
+                
+                # Check ZPL content
+                response_content = zpl_download_response.text
+                has_zpl_format = '^XA' in response_content and '^XZ' in response_content
+                
+                zpl_download_success = is_downloadable and has_zpl_filename and has_zpl_format
+                zpl_download_details += f", Downloadable: {is_downloadable}, ZPL filename: {has_zpl_filename}, Valid ZPL: {has_zpl_format}"
+            
+            self.log_test("ZPL Download - ZPL File Download", zpl_download_success, zpl_download_details)
+            
+            # STEP 4: Create new order to generate fresh ZPL
+            print("\n  🛒 STEP 4: Creating new order with customer 10299 to generate fresh ZPL...")
+            
+            # Get products first
+            products_response = requests.get(f"{self.api_url}/products", timeout=10)
+            if products_response.status_code != 200:
+                self.log_test("ZPL Download - Get Products for Order", False, f"Products endpoint failed: {products_response.status_code}")
+                return False
+            
+            products = products_response.json()
+            if not products:
+                self.log_test("ZPL Download - Products Available", False, "No products available for order creation")
+                return False
+            
+            # Create order with customer 10299
+            order_data = {
+                "customer_id": "10299",
+                "product_id": products[0]['id'],
+                "size": "OneSize",
+                "quantity": 1,
+                "price": 12.90
+            }
+            
+            order_response = requests.post(
+                f"{self.api_url}/orders",
+                json=order_data,
+                headers={'Content-Type': 'application/json'},
+                timeout=15
+            )
+            
+            order_success = order_response.status_code == 200
+            order_details = f"Status: {order_response.status_code}"
+            
+            if order_success:
+                order_result = order_response.json()
+                order_id = order_result.get('id')
+                order_details += f", Order ID: {order_id}, Customer: {order_result.get('customer_id')}, Price: {order_result.get('price')}"
+            
+            self.log_test("ZPL Download - Order Creation Success", order_success, order_details)
+            
+            if not order_success:
+                return False
+            
+            # Wait a moment for automatic ZPL file generation
+            time.sleep(2)
+            
+            # STEP 5: Verify file system - Check /tmp/ for zebra_auto_*.zpl files
+            print("\n  📁 STEP 5: Verifying file system - checking /tmp/ for ZPL files...")
+            
+            import glob
+            import os
+            
+            try:
+                # Look for zebra_auto_*.zpl files
+                zpl_files = glob.glob("/tmp/zebra_auto_*.zpl")
+                
+                file_system_success = len(zpl_files) > 0
+                file_system_details = f"ZPL files found: {len(zpl_files)}"
+                
+                if file_system_success:
+                    # Get the newest file
+                    latest_zpl_file = max(zpl_files, key=os.path.getctime)
+                    file_size = os.path.getsize(latest_zpl_file)
+                    file_system_details += f", Latest file: {latest_zpl_file}, Size: {file_size} bytes"
+                    
+                    # Check file content
+                    with open(latest_zpl_file, 'r') as f:
+                        file_content = f.read()
+                    
+                    # Verify ZPL format
+                    zpl_format_checks = {
+                        'has_start_command': '^XA' in file_content,
+                        'has_end_command': '^XZ' in file_content,
+                        'correct_width': '^PW320' in file_content,
+                        'correct_height': '^LL200' in file_content,
+                        'has_font_commands': '^A0N' in file_content,
+                        'has_field_commands': '^FT' in file_content,
+                        'has_field_data': '^FD' in file_content,
+                        'has_field_separator': '^FS' in file_content
+                    }
+                    
+                    format_checks_passed = sum(zpl_format_checks.values())
+                    file_system_details += f", ZPL format checks: {format_checks_passed}/8 passed"
+                    
+                    # Check if customer 10299 data is in the ZPL
+                    has_customer_data = '299' in file_content or '10299' in file_content
+                    file_system_details += f", Contains customer data: {has_customer_data}"
+                    
+                    file_system_success = format_checks_passed >= 6 and has_customer_data
+                
+                self.log_test("ZPL Download - File System Verification", file_system_success, file_system_details)
+                
+            except Exception as e:
+                self.log_test("ZPL Download - File System Verification", False, f"File system check error: {str(e)}")
+                file_system_success = False
+            
+            # STEP 6: Test latest ZPL content endpoint again (should have new content)
+            print("\n  🔄 STEP 6: Testing latest ZPL content endpoint after order creation...")
+            
+            # Wait a moment for file processing
+            time.sleep(1)
+            
+            new_zpl_content_response = requests.get(
+                f"{self.api_url}/zebra/latest-zpl-content",
+                timeout=15
+            )
+            
+            new_zpl_success = new_zpl_content_response.status_code == 200
+            new_zpl_details = f"Status: {new_zpl_content_response.status_code}"
+            
+            if new_zpl_success:
+                new_zpl_data = new_zpl_content_response.json()
+                
+                if new_zpl_data.get('success'):
+                    zpl_content = new_zpl_data.get('zpl_content', '')
+                    mac_commands = new_zpl_data.get('mac_commands', [])
+                    
+                    # Check if ZPL contains customer 10299 data
+                    has_customer_10299 = '299' in zpl_content
+                    
+                    # Check Mac print commands
+                    mac_commands_str = '\n'.join(str(cmd) for cmd in mac_commands)
+                    has_lpr_command = 'lpr' in mac_commands_str
+                    has_zebra_printer = any('zebra' in str(cmd).lower() or 'gk420' in str(cmd).lower() for cmd in mac_commands)
+                    has_raw_option = '-o raw' in mac_commands_str
+                    
+                    new_zpl_success = (has_customer_10299 and has_lpr_command and has_raw_option)
+                    new_zpl_details += f", Customer 10299 in ZPL: {has_customer_10299}, Mac lpr commands: {has_lpr_command}, Raw option: {has_raw_option}"
+                else:
+                    new_zpl_success = False
+                    new_zpl_details += f", API returned success=false"
+            
+            self.log_test("ZPL Download - Updated ZPL Content for Customer 10299", new_zpl_success, new_zpl_details)
+            
+            # STEP 7: Test ZPL download endpoint again (should have fresh file)
+            print("\n  📥 STEP 7: Testing ZPL download endpoint after order creation...")
+            
+            fresh_download_response = requests.get(
+                f"{self.api_url}/zebra/download-latest-zpl",
+                timeout=15
+            )
+            
+            fresh_download_success = fresh_download_response.status_code == 200
+            fresh_download_details = f"Status: {fresh_download_response.status_code}"
+            
+            if fresh_download_success:
+                fresh_content = fresh_download_response.text
+                
+                # Verify fresh ZPL contains customer 10299 data
+                has_fresh_customer_data = '299' in fresh_content
+                has_fresh_zpl_format = '^XA' in fresh_content and '^XZ' in fresh_content
+                
+                fresh_download_success = has_fresh_customer_data and has_fresh_zpl_format
+                fresh_download_details += f", Contains customer 10299: {has_fresh_customer_data}, Valid ZPL format: {has_fresh_zpl_format}"
+            
+            self.log_test("ZPL Download - Fresh ZPL File Download", fresh_download_success, fresh_download_details)
+            
+            # STEP 8: Summary and final verification
+            print("\n  📊 STEP 8: ZPL Download System Summary...")
+            
+            all_steps_success = (zpl_content_success and zpl_download_success and 
+                               order_success and file_system_success and 
+                               new_zpl_success and fresh_download_success)
+            
+            print(f"  ✅ EXPECTED RESULTS VERIFICATION:")
+            print(f"    - Latest ZPL content endpoint working: {'✅' if zpl_content_success else '❌'}")
+            print(f"    - ZPL download provides downloadable file: {'✅' if zpl_download_success else '❌'}")
+            print(f"    - Mac print commands generated correctly: {'✅' if new_zpl_success else '❌'}")
+            print(f"    - New orders create fresh ZPL files: {'✅' if order_success and file_system_success else '❌'}")
+            print(f"    - User can download and print ZPL files manually: {'✅' if fresh_download_success else '❌'}")
+            
+            print(f"\n  🎯 PRACTICAL SOLUTION CONFIRMED:")
+            print(f"    - Automatic ZPL file generation with easy download: {'✅' if all_steps_success else '❌'}")
+            print(f"    - Manual printing on Mac via lpr commands: {'✅' if new_zpl_success else '❌'}")
+            print(f"    - Valid ZPL format for customer 10299: {'✅' if new_zpl_success and fresh_download_success else '❌'}")
+            
+            return all_steps_success
+            
+        except Exception as e:
+            self.log_test("ZPL Download - System Exception", False, str(e))
+            return False
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("🚀 Starting Live Shopping App Backend API Tests")
