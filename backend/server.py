@@ -571,7 +571,7 @@ async def get_products():
             "id": "1",
             "name": "Young Fashion Shirt",
             "price": 12.90,
-            "sizes": ["OneSize", "A460", "A465", "A470", "A475", "Oversize"],
+            "sizes": ["OneSize", "AA60", "AA65", "AA70", "AA75", "Oversize"],
             "image_url": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400",
             "description": "Trendy fashion shirt for young adults"
         },
