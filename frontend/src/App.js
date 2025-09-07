@@ -1705,8 +1705,94 @@ function App() {
         </div>
       )}
       
-      {/* Add padding-top to push content down when ticker is visible */}
-      <div className={tickerSettings.enabled && !isAdminView ? "pt-16" : ""}>
+      {/* Fixed Header Navigation - MOVED TO TOP */}
+      {(isAuthenticated || isAdminView) && (
+        <header className={`fixed left-0 right-0 bg-pink-500 text-white z-40 shadow-lg ${tickerSettings.enabled && !isAdminView ? 'top-16' : 'top-0'}`}>
+          <div className="container mx-auto px-4 py-2">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center space-x-3">
+                {/* WhatsApp Support Button links - größeres Logo für Kunden */}
+                {isAuthenticated && !isAdminView && (
+                  <a 
+                    href="https://wa.me/4917621105848?text=Hallo%20OUTLET34%20Team,%20ich%20brauche%20Hilfe%20beim%20Live%20Shopping..." 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center p-2 text-white hover:bg-pink-600 rounded transition-colors duration-200"
+                  >
+                    <img 
+                      src="/images/whatsapp-logo-dark.png" 
+                      alt="WhatsApp Support" 
+                      className="w-8 h-8 mr-2 rounded"
+                    />
+                    <span className="text-sm font-medium">Support</span>
+                  </a>
+                )}
+                
+                {/* Admin Navigation */}
+                {isAdminAuthenticated && isAdminView && (
+                  <div className="flex items-center space-x-2">
+                    <img 
+                      src="/images/logo.jfif" 
+                      alt="OUTLET34 Logo" 
+                      className="w-10 h-10 rounded-full border-2 border-white"
+                    />
+                    <h1 className="text-xl font-bold">OUTLET34 Admin</h1>
+                  </div>
+                )}
+              </div>
+              
+              <div className="flex items-center space-x-4">
+                {/* View Toggle for Admin */}
+                {isAdminAuthenticated && (
+                  <div className="flex bg-pink-600 rounded-lg p-1">
+                    <button
+                      onClick={() => setIsAdminView(true)}
+                      className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                        isAdminView 
+                          ? 'bg-white text-pink-600' 
+                          : 'text-white hover:bg-pink-500'
+                      }`}
+                    >
+                      🔧 Admin
+                    </button>
+                    <button
+                      onClick={() => setIsAdminView(false)}
+                      className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                        !isAdminView 
+                          ? 'bg-white text-pink-600' 
+                          : 'text-white hover:bg-pink-500'
+                      }`}
+                    >
+                      👤 Kunde
+                    </button>
+                  </div>
+                )}
+                
+                {/* Language Selector */}
+                <div className="flex items-center space-x-2">
+                  <select
+                    value={i18n.language}
+                    onChange={(e) => i18n.changeLanguage(e.target.value)}
+                    className="bg-pink-600 text-white border border-pink-400 rounded px-2 py-1 text-sm"
+                  >
+                    <option value="de">🇩🇪 DE</option>
+                    <option value="en">🇬🇧 EN</option>
+                    <option value="tr">🇹🇷 TR</option>
+                    <option value="fr">🇫🇷 FR</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+      )}
+      
+      {/* Add padding-top to push content down when ticker and header are visible */}
+      <div className={
+        (isAuthenticated || isAdminView) 
+          ? (tickerSettings.enabled && !isAdminView ? "pt-32" : "pt-16") 
+          : (tickerSettings.enabled && !isAdminView ? "pt-16" : "")
+      }>
 
       {/* Modern Guest Landing Screen */}
       {!isAuthenticated && !isAdminView && (
