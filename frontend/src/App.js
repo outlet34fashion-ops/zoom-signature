@@ -4145,67 +4145,74 @@ function App() {
             <CardContent className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
-                {/* Size Selection */}
-                <div>
-                  <h4 className="font-semibold mb-3">{t.size}</h4>
-                  <div className="grid grid-cols-3 gap-2">
-                    {selectedProduct.sizes.map((size) => (
-                      <Button
-                        key={size}
-                        variant={selectedSize === size ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => {
-                          setSelectedSize(size);
-                          setManualSize(size); // Copy selected size to manual field
+                {/* Size and Price Selection - Combined in one row */}
+                <div className="md:col-span-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    {/* Size Selection */}
+                    <div>
+                      <h4 className="font-semibold mb-3">Größe</h4>
+                      <div className="grid grid-cols-3 gap-2">
+                        {selectedProduct.sizes.map((size) => (
+                          <Button
+                            key={size}
+                            variant={selectedSize === size ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => {
+                              setSelectedSize(size);
+                              setManualSize(size); // Copy selected size to manual field
+                            }}
+                            className={selectedSize === size ? "bg-gray-800 text-white" : ""}
+                          >
+                            {size}
+                          </Button>
+                        ))}
+                      </div>
+                      <Input 
+                        placeholder="Manuell" 
+                        className="mt-2" 
+                        value={manualSize}
+                        onChange={(e) => {
+                          setManualSize(e.target.value);
+                          setSelectedSize(e.target.value); // Update selected size when typing
                         }}
-                        className={selectedSize === size ? "bg-gray-800 text-white" : ""}
-                      >
-                        {size}
-                      </Button>
-                    ))}
-                  </div>
-                  <Input 
-                    placeholder="Manuell" 
-                    className="mt-2" 
-                    value={manualSize}
-                    onChange={(e) => {
-                      setManualSize(e.target.value);
-                      setSelectedSize(e.target.value); // Update selected size when typing
-                    }}
-                  />
-                </div>
+                      />
+                    </div>
 
-                {/* Price Selection */}
-                <div>
-                  <h4 className="font-semibold mb-3">{t.price}</h4>
-                  <div className="grid grid-cols-4 gap-2">
-                    {priceOptions.map((price) => (
-                      <Button
-                        key={price}
-                        variant={selectedPrice === parseFloat(price.replace(',', '.').replace(' €', '')) ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => handlePriceSelect(price)}
-                        className={selectedPrice === parseFloat(price.replace(',', '.').replace(' €', '')) ? "bg-pink-500 text-white" : "text-xs hover:bg-pink-50"}
-                      >
-                        {price}
-                      </Button>
-                    ))}
+                    {/* Price Selection */}
+                    <div>
+                      <h4 className="font-semibold mb-3">Preis</h4>
+                      <div className="grid grid-cols-4 gap-2">
+                        {priceOptions.map((price) => (
+                          <Button
+                            key={price}
+                            variant={selectedPrice === parseFloat(price.replace(',', '.').replace(' €', '')) ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => {
+                              const numPrice = parseFloat(price.replace(',', '.').replace(' €', ''));
+                              setSelectedPrice(numPrice);
+                              setManualPrice(numPrice.toFixed(2)); // Copy selected price to manual field
+                            }}
+                            className={selectedPrice === parseFloat(price.replace(',', '.').replace(' €', '')) ? "bg-pink-500 text-white" : "text-xs hover:bg-pink-50"}
+                          >
+                            {price}
+                          </Button>
+                        ))}
+                      </div>
+                      <Input 
+                        placeholder="Manuell (z.B. 5,00)" 
+                        className="mt-2"
+                        type="text"
+                        value={manualPrice}
+                        onChange={(e) => {
+                          setManualPrice(e.target.value);
+                          // Convert comma to dot for price calculation
+                          const numValue = parseFloat(e.target.value.replace(',', '.')) || 0;
+                          setSelectedPrice(numValue);
+                        }}
+                      />
+                    </div>
                   </div>
-                  <Input 
-                    placeholder="Manuell" 
-                    className="mt-2"
-                    type="number"
-                    step="0.01"
-                    value={selectedPrice}
-                    onChange={(e) => setSelectedPrice(parseFloat(e.target.value) || 0)}
-                  />
-                  <Button 
-                    className="w-full mt-2 text-sm"
-                    variant="outline"
-                    onClick={() => setSelectedPrice(selectedProduct?.price || 0)}
-                  >
-                    {t.keepPrice}
-                  </Button>
                 </div>
               </div>
 
