@@ -1724,19 +1724,31 @@ function App() {
               <div className="flex items-center space-x-3">
                 {/* WhatsApp Support Button links - größeres Logo für Kunden */}
                 {isAuthenticated && !isAdminView && (
-                  <a 
-                    href="https://wa.me/4917621105848?text=Hallo%20OUTLET34%20Team,%20ich%20brauche%20Hilfe%20beim%20Live%20Shopping..." 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center p-2 text-white hover:bg-pink-600 rounded transition-colors duration-200"
-                  >
-                    <img 
-                      src="/images/whatsapp-logo-dark.png" 
-                      alt="WhatsApp Support" 
-                      className="w-8 h-8 mr-2 rounded"
-                    />
-                    <span className="text-sm font-medium">Support</span>
-                  </a>
+                  <div className="flex items-center space-x-2">
+                    <a 
+                      href="https://wa.me/4917621105848?text=Hallo%20OUTLET34%20Team,%20ich%20brauche%20Hilfe%20beim%20Live%20Shopping..." 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center p-2 text-white hover:bg-pink-600 rounded transition-colors duration-200"
+                    >
+                      <img 
+                        src="/images/whatsapp-logo-dark.png" 
+                        alt="WhatsApp Support" 
+                        className="w-8 h-8 mr-2 rounded"
+                      />
+                      <span className="text-sm font-medium">Support</span>
+                    </a>
+                    
+                    {/* Termine Button */}
+                    <button 
+                      onClick={() => setShowTerminModal(true)}
+                      className="inline-flex items-center p-2 text-white hover:bg-pink-600 rounded transition-colors duration-200"
+                      title="Termine anzeigen"
+                    >
+                      📅
+                      <span className="text-sm font-medium ml-1">Termine</span>
+                    </button>
+                  </div>
                 )}
                 
                 {/* Admin Navigation */}
