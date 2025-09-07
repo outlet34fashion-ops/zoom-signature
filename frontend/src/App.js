@@ -1753,6 +1753,29 @@ function App() {
               </div>
               
               <div className="flex items-center space-x-4">
+                {/* Profile Button for customers - MOVED TO FIXED HEADER */}
+                {isAuthenticated && !isAdminView && (
+                  <button 
+                    onClick={() => setShowProfileModal(true)}
+                    className="w-8 h-8 rounded-full border-2 border-white hover:border-pink-200 transition-all duration-200 flex items-center justify-center"
+                    title="Profil öffnen"
+                  >
+                    {currentCustomer?.profile_image ? (
+                      <img
+                        src={currentCustomer.profile_image}
+                        alt="Profil"
+                        className="w-full h-full rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full rounded-full bg-white/20 flex items-center justify-center">
+                        <span className="text-white text-xs font-bold">
+                          {currentCustomer?.name ? currentCustomer.name.charAt(0).toUpperCase() : '👤'}
+                        </span>
+                      </div>
+                    )}
+                  </button>
+                )}
+                
                 {/* View Toggle for Admin */}
                 {isAdminAuthenticated && (
                   <div className="flex bg-pink-600 rounded-lg p-1">
