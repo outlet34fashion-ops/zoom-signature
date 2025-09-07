@@ -3334,44 +3334,85 @@ function App() {
                         <Button 
                           onClick={async () => {
                             try {
-                              // NEUE LÖSUNG: HTML-Druckvorschau (wie Microsoft Word)
-                              const htmlUrl = `${API}/zebra/html-preview/${labelPreviewCustomer}?price=${labelPreviewPrice}`;
-                              window.open(htmlUrl, '_blank');
-                              alert('✅ Druckfreundliche Vorschau geöffnet! Drucken Sie wie ein normales Dokument.');
+                              // NEUE EINFACHE LÖSUNG: ZPL-Datei herunterladen
+                              const downloadUrl = `${API}/zebra/download-latest-zpl`;
+                              
+                              // Erstelle unsichtbaren Link zum Download
+                              const link = document.createElement('a');
+                              link.href = downloadUrl;
+                              link.download = 'zebra_label.zpl';
+                              document.body.appendChild(link);
+                              link.click();
+                              document.body.removeChild(link);
+                              
+                              // Zeige auch die Druckbefehle
+                              const contentResponse = await axios.get(`${API}/zebra/latest-zpl-content`);
+                              if (contentResponse.data.success) {
+                                const commands = contentResponse.data.mac_commands.join('\n');
+                                
+                                // Zeige Popup mit Druckbefehlen
+                                const popup = window.open('', '_blank', 'width=600,height=400');
+                                popup.document.write(`
+                                  <html>
+                                    <head><title>ZPL Druckbefehle für Mac</title></head>
+                                    <body style="font-family: monospace; padding: 20px;">
+                                      <h2>🖨️ ZPL-Datei heruntergeladen!</h2>
+                                      <p><strong>Schritt 1:</strong> Datei wurde heruntergeladen</p>
+                                      <p><strong>Schritt 2:</strong> Terminal auf Mac öffnen und eingeben:</p>
+                                      <pre style="background: #f0f0f0; padding: 10px; border: 1px solid #ccc;">${commands}</pre>
+                                      <p><strong>Das Etikett wird sofort gedruckt!</strong></p>
+                                    </body>
+                                  </html>
+                                `);
+                              }
+                              
+                              alert('✅ ZPL-Datei heruntergeladen! Öffnen Sie das neue Fenster für Druckbefehle.');
                             } catch (error) {
-                              alert('❌ HTML-Fehler: ' + error.message);
+                              alert('❌ Download-Fehler: ' + error.message);
                             }
                           }}
-                          className="bg-green-600 hover:bg-green-700 text-white w-full font-bold"
+                          className="bg-green-600 hover:bg-green-700 text-white w-full font-bold text-lg py-3"
                           disabled={!labelPreviewCustomer}
                         >
-                          🖨️ DIREKT DRUCKEN (wie Word)
+                          🖨️ ZPL HERUNTERLADEN & DRUCKEN
                         </Button>
                         
                         <Button 
                           onClick={async () => {
                             try {
-                              // CSV-Export für Word/Excel
-                              const csvUrl = `${API}/zebra/csv-export/${labelPreviewCustomer}?price=${labelPreviewPrice}`;
-                              const response = await axios.get(csvUrl, { responseType: 'blob' });
-                              
-                              const url = window.URL.createObjectURL(new Blob([response.data]));
-                              const link = document.createElement('a');
-                              link.href = url;
-                              link.setAttribute('download', `zebra_label_${labelPreviewCustomer}_${Date.now()}.csv`);
-                              document.body.appendChild(link);
-                              link.click();
-                              link.remove();
-                              
-                              alert('✅ CSV-Datei heruntergeladen! Öffnen Sie sie in Excel/Word für Seriendruck.');
+                              // Zeige neueste ZPL-Inhalte
+                              const response = await axios.get(`${API}/zebra/latest-zpl-content`);
+                              if (response.data.success) {
+                                const commands = response.data.mac_commands.join('\n');
+                                
+                                // Zeige Popup mit vollständigen Befehlen
+                                const popup = window.open('', '_blank', 'width=700,height=500');
+                                popup.document.write(`
+                                  <html>
+                                    <head><title>Aktuelle ZPL-Datei - Druckbefehle</title></head>
+                                    <body style="font-family: monospace; padding: 20px;">
+                                      <h2>🖨️ Neueste ZPL-Datei - Druckbefehle</h2>
+                                      <p><strong>Datei:</strong> ${response.data.zpl_file}</p>
+                                      <h3>Mac Terminal Befehle:</h3>
+                                      <pre style="background: #f0f0f0; padding: 15px; border: 1px solid #ccc; white-space: pre-wrap;">${commands}</pre>
+                                      <button onclick="navigator.clipboard.writeText('${commands.replace(/'/g, "\\'")}'); alert('Befehle kopiert!');" 
+                                              style="background: #4CAF50; color: white; padding: 10px; border: none; cursor: pointer;">
+                                        📋 Befehle kopieren
+                                      </button>
+                                    </body>
+                                  </html>
+                                `);
+                              } else {
+                                alert('❌ Keine ZPL-Datei gefunden: ' + response.data.message);
+                              }
                             } catch (error) {
-                              alert('❌ CSV-Fehler: ' + error.message);
+                              alert('❌ Fehler: ' + error.message);
                             }
                           }}
-                          className="bg-purple-600 hover:bg-purple-700 text-white w-full"
+                          className="bg-blue-600 hover:bg-blue-700 text-white w-full"
                           disabled={!labelPreviewCustomer}
                         >
-                          📊 CSV für Word/Excel Export
+                          📋 DRUCKBEFEHLE ANZEIGEN
                         </Button>
                         
                         <Button 
