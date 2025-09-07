@@ -94,8 +94,8 @@ function App() {
   const [customerSearch, setCustomerSearch] = useState(''); // Search by customer number
   
   // Admin Dashboard Collapsible Sections
-  const [showStatistics, setShowStatistics] = useState(true);
-  const [showCustomerManagement, setShowCustomerManagement] = useState(true);
+  const [showStatistics, setShowStatistics] = useState(false);
+  const [showCustomerManagement, setShowCustomerManagement] = useState(false);
   const [showStreamingControls, setShowStreamingControls] = useState(false);
   const [showTickerSettings, setShowTickerSettings] = useState(false);
   const [showCalendarManagement, setShowCalendarManagement] = useState(false);
