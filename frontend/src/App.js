@@ -170,6 +170,17 @@ function App() {
     }
   };
 
+  const toggleNotifications = async () => {
+    if (notificationsEnabled) {
+      // Disable notifications
+      setNotificationsEnabled(false);
+      localStorage.setItem('notificationsEnabled', 'false');
+    } else {
+      // Enable notifications - request permission first
+      await requestNotificationPermission();
+    }
+  };
+
   // WebRTC Streaming States (Legacy - keeping for backward compatibility)
   const [showStreaming, setShowStreaming] = useState(false);
   const [currentStreamId, setCurrentStreamId] = useState(null);
