@@ -4735,6 +4735,113 @@ function App() {
       </>
       )}
 
+      {/* Termine Modal for Customers */}
+      {showTerminModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-2xl mx-4 max-h-[80vh] overflow-hidden">
+            <CardContent className="p-6">
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-xl font-semibold text-gray-800">
+                    📅 Anstehende Live Shopping Termine
+                  </h3>
+                  <button 
+                    onClick={() => setShowTerminModal(false)}
+                    className="text-gray-500 hover:text-gray-700 text-2xl"
+                  >
+                    ×
+                  </button>
+                </div>
+                
+                <div className="max-h-[60vh] overflow-y-auto space-y-3">
+                  {events.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500">
+                      <div className="text-4xl mb-4">📅</div>
+                      <p>Keine Termine verfügbar</p>
+                      <p className="text-sm mt-2">Neue Termine werden hier angezeigt</p>
+                    </div>
+                  ) : (
+                    events.map((event) => {
+                      const eventDateTime = new Date(event.date + 'T' + event.time);
+                      const isUpcoming = eventDateTime > new Date();
+                      const hasReminder = customerReminders.includes(event.id);
+                      
+                      if (!isUpcoming) return null; // Nur zukünftige Termine anzeigen
+                      
+                      return (
+                        <div key={event.id} className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-lg p-4 border border-pink-200">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <h4 className="font-semibold text-gray-800 mb-2">
+                                {event.title}
+                              </h4>
+                              <div className="text-sm text-gray-600 space-y-1">
+                                <div className="flex items-center">
+                                  <span className="mr-2">📅</span>
+                                  <span>{formatGermanDate(event.date)}</span>
+                                </div>
+                                <div className="flex items-center">
+                                  <span className="mr-2">🕐</span>
+                                  <span>{event.time} Uhr</span>
+                                </div>
+                                {event.description && (
+                                  <div className="flex items-start mt-2">
+                                    <span className="mr-2">📝</span>
+                                    <span className="text-gray-700">{event.description}</span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            
+                            <div className="ml-4">
+                              {hasReminder ? (
+                                <button
+                                  onClick={() => removeCustomerReminder(event.id)}
+                                  className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                                >
+                                  🔕 Erinnerung aus
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={() => setCustomerReminder(event.id)}
+                                  className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                                >
+                                  🔔 Erinnern
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                          
+                          {hasReminder && (
+                            <div className="mt-3 p-2 bg-green-100 rounded-lg border border-green-300">
+                              <div className="text-green-700 text-sm flex items-center">
+                                <span className="mr-2">✅</span>
+                                <span>Sie werden 30 Minuten vor dem Termin benachrichtigt</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+                
+                <div className="border-t pt-4">
+                  <div className="text-center">
+                    <button 
+                      onClick={() => setShowTerminModal(false)}
+                      className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg"
+                    >
+                      Schließen
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       {/* Simple Video Streaming Modal */}
       {showSimpleStream && (
         <SimpleVideoStreaming
