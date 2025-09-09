@@ -799,6 +799,21 @@ function App() {
     // Load events on component mount
     loadEvents();
   }, []);
+
+  // Load catalog data for admin view
+  useEffect(() => {
+    if (isAdminAuthenticated && isAdminView) {
+      loadCategories();
+      loadCatalogProducts();
+    }
+  }, [isAdminAuthenticated, isAdminView]);
+
+  // Load customer catalog orders when authenticated
+  useEffect(() => {
+    if (isAuthenticated && currentCustomer?.customer_number && !isAdminView) {
+      loadCustomerCatalogOrders(currentCustomer.customer_number);
+    }
+  }, [isAuthenticated, currentCustomer?.customer_number, isAdminView]);
   // Lade Bestellungen auch bei View-Wechsel neu (für Timezone-Fix)
   useEffect(() => {
     if (activeView === 'orders') {
