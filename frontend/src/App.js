@@ -5788,6 +5788,75 @@ function App() {
               </div>
             </div>
 
+            {/* Recently Viewed Section */}
+            {showRecentlyViewed && (
+              <div className="bg-blue-50 border-b p-4">
+                <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                  <span className="mr-2">👁️</span>
+                  Kürzlich angesehen ({recentlyViewedProducts.length})
+                </h3>
+                {recentlyViewedProducts.length > 0 ? (
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                    {recentlyViewedProducts.map((product) => (
+                      <div
+                        key={product.id}
+                        onClick={() => {
+                          setSelectedCatalogProduct(product);
+                          setShowProductDetail(true);
+                          setSelectedProductSize(product.sizes?.[0] || 'OneSize');
+                          addToRecentlyViewed(product.id);
+                        }}
+                        className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer group relative"
+                      >
+                        {/* Square Image Container */}
+                        <div className="relative w-full pt-[100%] bg-gray-100 rounded-t-lg overflow-hidden">
+                          {product.image_url ? (
+                            <img
+                              src={product.image_url}
+                              alt={product.name}
+                              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                            />
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center text-gray-400">
+                              <span className="text-2xl">📷</span>
+                            </div>
+                          )}
+                          
+                          {/* Favorite Heart */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleFavorite(product.id);
+                            }}
+                            className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center transition-colors duration-200"
+                          >
+                            <span className={`text-lg ${productFavoriteStatus[product.id] ? 'text-red-500' : 'text-gray-400'}`}>
+                              {productFavoriteStatus[product.id] ? '❤️' : '🤍'}
+                            </span>
+                          </button>
+                        </div>
+                        
+                        {/* Product Info */}
+                        <div className="p-2">
+                          <div className="text-xs text-gray-500 mb-1">
+                            {product.article_number}
+                          </div>
+                          <h4 className="font-medium text-xs text-gray-800 line-clamp-2 mb-1">
+                            {product.name}
+                          </h4>
+                          <div className="text-sm font-bold text-pink-600">
+                            {product.price.toFixed(2)} €
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-600 text-sm">Keine kürzlich angesehenen Produkte</p>
+                )}
+              </div>
+            )}
+
             {/* Content Area */}
             <div className="flex-1 overflow-y-auto p-6">
               {loadingCatalog ? (
