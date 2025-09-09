@@ -2097,8 +2097,8 @@ function App() {
               </div>
             </div>
           </div>
-        </header>
-      )}
+        )}
+      </header>
       
       {/* Add padding-top to push content down when ticker and header are visible - FOR ALL USERS */}
       <div className={
