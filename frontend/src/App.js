@@ -1934,7 +1934,7 @@ function App() {
                 {isAdminAuthenticated && isAdminView && (
                   <div className="flex items-center space-x-2">
                     <img 
-                      src="/images/logo.jfif" 
+                      src="/images/outlet34-logo-small.png" 
                       alt="OUTLET34 Logo" 
                       className="w-10 h-10 rounded-full border-2 border-white"
                     />
