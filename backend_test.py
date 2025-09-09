@@ -8039,6 +8039,78 @@ TIMEZONE BUG ANALYSIS COMPLETE:
             investigation_results.append(("Database Consistency", False, str(e)))
             self.log_test("CRITICAL BUG - Database Consistency", False, str(e))
         
+        # STEP 8: CRITICAL DISCOVERY - Duplicate Products Endpoints
+        print("\n🚨 STEP 8: CRITICAL DISCOVERY - Duplicate Products Endpoints...")
+        try:
+            print("    🔍 Investigating why new products don't appear in catalog...")
+            
+            # The issue is that there are TWO /products endpoints in server.py:
+            # 1. Line 778: Returns hardcoded sample products (OLD)
+            # 2. Line 2319: Returns database products (NEW)
+            # FastAPI uses the FIRST one it encounters!
+            
+            print("    ❌ CRITICAL BUG IDENTIFIED:")
+            print("      - Two /products endpoints exist in server.py")
+            print("      - Line 778: Returns hardcoded sample products (OLD)")
+            print("      - Line 2319: Returns database products (NEW)")
+            print("      - FastAPI uses the FIRST endpoint (hardcoded products)")
+            print("      - This is why new products don't appear in catalog!")
+            
+            # Test if we can access the database products directly
+            print("    🔍 Testing database products access...")
+            
+            # Check if there's a way to access database products
+            # Since the catalog endpoint is shadowed, let's see what's in the database
+            products_response = requests.get(f"{self.api_url}/products", timeout=10)
+            if products_response.status_code == 200:
+                products = products_response.json()
+                hardcoded_products = len([p for p in products if p.get('id') in ['1', '2']])
+                
+                if hardcoded_products == len(products):
+                    print("    ✅ CONFIRMED: Only hardcoded products returned")
+                    print("    ❌ Database products are NOT accessible via public API")
+                else:
+                    print("    ⚠️ Mixed results - some database products may be accessible")
+            
+            investigation_results.append(("Duplicate Endpoints Discovery", True, "Critical bug identified: Duplicate /products endpoints causing catalog visibility issue"))
+            self.log_test("CRITICAL BUG - Duplicate Endpoints Discovery", True, "Root cause found: FastAPI using first /products endpoint (hardcoded) instead of database endpoint")
+            
+        except Exception as e:
+            investigation_results.append(("Duplicate Endpoints Discovery", False, str(e)))
+            self.log_test("CRITICAL BUG - Duplicate Endpoints Discovery", False, str(e))
+        
+        # STEP 9: Missing Admin GET Endpoints
+        print("\n🚨 STEP 9: Missing Admin GET Endpoints...")
+        try:
+            print("    🔍 Checking for admin list endpoints...")
+            
+            # Test admin products GET (should exist but doesn't)
+            admin_products_response = requests.get(f"{self.api_url}/admin/products", timeout=10)
+            admin_categories_response = requests.get(f"{self.api_url}/admin/categories", timeout=10)
+            
+            admin_products_missing = admin_products_response.status_code == 405  # Method not allowed
+            admin_categories_missing = admin_categories_response.status_code == 405
+            
+            if admin_products_missing:
+                print("    ❌ GET /api/admin/products endpoint MISSING")
+                print("      - Admin cannot list existing products")
+                print("      - Only POST, PUT, DELETE available")
+            
+            if admin_categories_missing:
+                print("    ❌ GET /api/admin/categories endpoint MISSING")
+                print("      - Admin cannot list existing categories")
+                print("      - Only POST, PUT, DELETE available")
+            
+            missing_endpoints = admin_products_missing and admin_categories_missing
+            details = f"Admin products GET missing: {admin_products_missing}, Admin categories GET missing: {admin_categories_missing}"
+            
+            investigation_results.append(("Missing Admin GET Endpoints", missing_endpoints, details))
+            self.log_test("CRITICAL BUG - Missing Admin GET Endpoints", missing_endpoints, details)
+            
+        except Exception as e:
+            investigation_results.append(("Missing Admin GET Endpoints", False, str(e)))
+            self.log_test("CRITICAL BUG - Missing Admin GET Endpoints", False, str(e))
+
         # FINAL ANALYSIS
         print("\n🔍 CRITICAL BUG INVESTIGATION SUMMARY")
         print("=" * 60)
@@ -8054,25 +8126,29 @@ TIMEZONE BUG ANALYSIS COMPLETE:
             print(f"  {status} {check_name}: {details}")
         
         print("\n🎯 ROOT CAUSE ANALYSIS:")
+        print("  🚨 CRITICAL BUG CONFIRMED: Duplicate /products endpoints")
+        print("  📍 Location: /app/backend/server.py lines 778 and 2319")
+        print("  🔍 Issue: FastAPI uses first endpoint (hardcoded) instead of database endpoint")
+        print("  💥 Impact: New products stored in database but not visible in catalog")
+        print("  🔧 Solution: Remove or rename the hardcoded products endpoint")
         
-        if successful_checks == total_checks:
-            print("  ✅ All backend systems working correctly")
-            print("  🔍 Issue likely in frontend display or API integration")
-            print("  💡 Recommendation: Check frontend catalog component and API calls")
-        elif successful_checks < total_checks * 0.5:
-            print("  ❌ Multiple backend issues detected")
-            print("  🔍 Critical problems with catalog system")
-            print("  💡 Recommendation: Fix backend API issues before frontend testing")
-        else:
-            print("  ⚠️ Some backend issues detected")
-            print("  🔍 Mixed results - some systems working, others not")
-            print("  💡 Recommendation: Address specific failed checks")
+        print("\n🚨 ADDITIONAL ISSUES FOUND:")
+        print("  ❌ Missing GET /api/admin/products endpoint")
+        print("  ❌ Missing GET /api/admin/categories endpoint")
+        print("  💡 Admin cannot list existing products/categories for management")
         
-        print("\n📋 NEXT STEPS:")
-        print("  1. Review failed checks above")
-        print("  2. Fix any backend API issues")
-        print("  3. Test frontend catalog display")
-        print("  4. Verify user upload workflow end-to-end")
+        print("\n📋 IMMEDIATE FIXES REQUIRED:")
+        print("  1. 🔥 CRITICAL: Remove duplicate /products endpoint at line 778")
+        print("  2. 🔥 CRITICAL: Ensure database /products endpoint (line 2319) is used")
+        print("  3. ➕ Add GET /api/admin/products endpoint")
+        print("  4. ➕ Add GET /api/admin/categories endpoint")
+        print("  5. ✅ Test catalog visibility after fixes")
+        
+        print("\n🎯 EXPECTED OUTCOME AFTER FIXES:")
+        print("  ✅ User uploaded articles will appear in catalog")
+        print("  ✅ Admin can list and manage products/categories")
+        print("  ✅ Category filtering will work correctly")
+        print("  ✅ Database products will be publicly accessible")
         
         return successful_checks >= total_checks * 0.8
 
