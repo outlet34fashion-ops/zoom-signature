@@ -2752,6 +2752,104 @@ async def check_favorite(customer_number: str, product_id: str):
         logging.error(f"Check favorite error: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to check favorite")
 
+# ==============================================
+# FILE UPLOAD ENDPOINTS
+# ==============================================
+
+# Create uploads directory if it doesn't exist
+UPLOAD_DIR = ROOT_DIR / "uploads" / "products"
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+
+# Create default categories on startup
+async def create_default_categories():
+    """Create default categories if they don't exist"""
+    try:
+        # Check if categories already exist
+        existing_cats = await db.categories.find().to_list(length=None)
+        
+        if len(existing_cats) == 0:
+            default_categories = [
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Neu Eingestellt",
+                    "description": "Die neuesten Artikel in unserem Sortiment",
+                    "sort_order": 1,
+                    "created_at": datetime.now(timezone.utc),
+                    "updated_at": datetime.now(timezone.utc)
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Bestseller",
+                    "description": "Unsere beliebtesten Artikel",
+                    "sort_order": 2,
+                    "created_at": datetime.now(timezone.utc),
+                    "updated_at": datetime.now(timezone.utc)
+                }
+            ]
+            
+            await db.categories.insert_many(default_categories)
+            logging.info("Default categories created successfully")
+    except Exception as e:
+        logging.error(f"Error creating default categories: {str(e)}")
+
+@api_router.post("/upload/product-media")
+async def upload_product_media(files: List[UploadFile] = File(...)):
+    """Upload multiple images/videos for products"""
+    try:
+        uploaded_files = []
+        
+        for file in files:
+            # Validate file type
+            if not file.content_type.startswith(('image/', 'video/')):
+                raise HTTPException(status_code=400, detail=f"Invalid file type: {file.content_type}")
+            
+            # Generate unique filename
+            file_extension = file.filename.split('.')[-1] if '.' in file.filename else ''
+            unique_filename = f"{uuid.uuid4()}.{file_extension}"
+            file_path = UPLOAD_DIR / unique_filename
+            
+            # Save file
+            with open(file_path, "wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+            
+            # Create file URL (will be served by static files)
+            file_url = f"/api/uploads/products/{unique_filename}"
+            
+            uploaded_files.append({
+                "id": str(uuid.uuid4()),
+                "filename": file.filename,
+                "url": file_url,
+                "type": "image" if file.content_type.startswith('image/') else "video",
+                "size": file.size,
+                "content_type": file.content_type
+            })
+        
+        return {"success": True, "files": uploaded_files}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"File upload error: {str(e)}")
+        raise HTTPException(status_code=500, detail="File upload failed")
+
+@api_router.delete("/upload/product-media/{filename}")
+async def delete_product_media(filename: str):
+    """Delete uploaded media file"""
+    try:
+        file_path = UPLOAD_DIR / filename
+        
+        if file_path.exists():
+            file_path.unlink()
+            return {"success": True, "message": "File deleted successfully"}
+        else:
+            raise HTTPException(status_code=404, detail="File not found")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"File deletion error: {str(e)}")
+        raise HTTPException(status_code=500, detail="File deletion failed")
+
 # WebSocket endpoint
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
