@@ -382,7 +382,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "NEW REAL Automatic Printing System with File Watcher"
+    - "CRITICAL: LiveKit Streaming System Diagnosis and Fix"
   stuck_tasks: []
   test_all: false
   test_priority: "critical_first"
