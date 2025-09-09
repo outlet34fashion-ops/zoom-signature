@@ -105,7 +105,20 @@
 user_problem_statement: "LIVE-STREAMING CRITICAL ISSUE: Das größte Problem ist das Live-Streaming. Alles andere wie Chat oder Icons ist nebensächlich. We need a stable streaming solution that works as reliably as Zoom. During testing, live-streaming did not work - no video/audio reached viewers. Please implement a working solution with very low latency that is stable for 30-100 viewers. If LiveKit is not reliable, consider Amazon AWS IVS or similar stable technology. Critical: Only live-streaming, everything else is uninteresting. This is the central feature of our app."
 
 backend:
-  - task: "Multi-language functionality integration"
+  - task: "CRITICAL: LiveKit Streaming System Diagnosis and Fix"
+    implemented: false
+    working: false
+    file: "/app/backend/livekit_service.py, /app/frontend/src/components/streaming/"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "USER REPORTED CRITICAL ISSUE: Live-streaming does not work - no video/audio reaches viewers during testing. This is the most important feature and needs immediate diagnosis and fix. LiveKit implementation exists but is not functional. If LiveKit cannot be fixed, consider AWS IVS alternative."
+      - working: "NA"
+        agent: "main"
+        comment: "STARTING DIAGNOSIS: Found existing LiveKit implementation with proper credentials (LIVEKIT_URL, API_KEY, API_SECRET) configured. Will test backend token generation, room creation, and frontend streaming components to identify root cause of streaming failure."
     implemented: true
     working: true
     file: "/app/backend/server.py, /app/frontend/src/App.js"
