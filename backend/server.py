@@ -942,6 +942,8 @@ async def register_customer(customer: CustomerCreate):
         created_customer = {
             "id": customer_obj.id,
             "customer_number": customer_obj.customer_number,
+            "first_name": customer_obj.first_name,
+            "last_name": customer_obj.last_name,
             "email": customer_obj.email,
             "name": customer_obj.name,
             "profile_image": customer_obj.profile_image,
