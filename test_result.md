@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "ADMIN DASHBOARD IMPROVEMENTS AND PENDING TASKS: Based on existing Live Shopping App with automatic Zebra printing, customer management, and streaming functionality, implement the following: 1) Make all admin dashboard boxes collapsed by default for cleaner interface, 2) Fix customer creation/login issues (customer 10299 not found error), 3) Implement desktop split-screen layout for Orders and Chat side-by-side, 4) Provide complete Mac auto-printer setup files (mac_auto_printer.py and sync_to_mac.sh). Focus on UI improvements and resolving customer authentication problems."
+user_problem_statement: "LIVE-STREAMING CRITICAL ISSUE: Das größte Problem ist das Live-Streaming. Alles andere wie Chat oder Icons ist nebensächlich. We need a stable streaming solution that works as reliably as Zoom. During testing, live-streaming did not work - no video/audio reached viewers. Please implement a working solution with very low latency that is stable for 30-100 viewers. If LiveKit is not reliable, consider Amazon AWS IVS or similar stable technology. Critical: Only live-streaming, everything else is uninteresting. This is the central feature of our app."
 
 backend:
   - task: "Multi-language functionality integration"
