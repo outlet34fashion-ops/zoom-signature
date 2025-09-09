@@ -1968,6 +1968,54 @@ function App() {
               </div>
             </div>
             
+            {/* LIVE STREAM PREVIEW FOR GUESTS */}
+            {!isAuthenticated && !isAdminAuthenticated && streamingActive && livekitToken && livekitUrl && (
+              <div className="absolute top-20 left-1/2 transform -translate-x-1/2 w-full max-w-4xl px-4 z-10">
+                <div className="bg-black/80 backdrop-blur-md rounded-2xl overflow-hidden border border-white/20 shadow-2xl">
+                  <div className="bg-gradient-to-r from-red-600 to-pink-600 px-4 py-2">
+                    <div className="flex items-center justify-center space-x-2">
+                      <div className="w-3 h-3 bg-white rounded-full animate-pulse"></div>
+                      <span className="text-white font-bold text-sm">🔴 LIVE STREAM - OUTLET34 FASHION SHOW</span>
+                    </div>
+                  </div>
+                  <div className="aspect-video">
+                    <LiveKitRoom
+                      serverUrl={livekitUrl}
+                      token={livekitToken}
+                      connect={true}
+                      data-lk-theme="default"
+                      style={{ height: '100%', width: '100%' }}
+                      onConnected={handleLiveKitConnected}
+                      onDisconnected={handleLiveKitDisconnected}
+                      onError={handleLiveKitError}
+                    >
+                      <VideoConference />
+                      <RoomAudioRenderer />
+                    </LiveKitRoom>
+                  </div>
+                  <div className="p-4 text-center">
+                    <p className="text-white/80 text-sm mb-3">
+                      🎉 Live Fashion Show läuft! Registrieren Sie sich für vollen Zugang
+                    </p>
+                    <div className="flex space-x-3 justify-center">
+                      <button 
+                        onClick={() => setShowCustomerLogin(true)}
+                        className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white py-2 px-6 rounded-xl font-medium transition-all duration-300 hover:scale-105"
+                      >
+                        🔑 Anmelden 
+                      </button>
+                      <button 
+                        onClick={() => setShowRegistration(true)}
+                        className="bg-gradient-to-r from-pink-500 to-red-600 hover:from-pink-600 hover:to-red-700 text-white py-2 px-6 rounded-xl font-medium transition-all duration-300 hover:scale-105"
+                      >
+                        📝 Registrieren
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Main Content */}
             <div className="flex-1 flex items-center justify-center px-6">
               <div className="w-full max-w-md space-y-8">
