@@ -6401,7 +6401,7 @@ function App() {
               </button>
               <button
                 onClick={createProduct}
-                disabled={creatingProduct || !newProductData.article_number.trim() || !newProductData.name.trim() || !newProductData.category_id}
+                disabled={creatingProduct || !newProductData.name.trim() || !newProductData.category_id}
                 className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-6 py-2 rounded-lg transition-colors duration-200"
               >
                 {creatingProduct ? 'Erstelle...' : 'Erstellen'}
