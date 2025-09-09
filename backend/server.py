@@ -344,6 +344,9 @@ class CategoryCreate(BaseModel):
 class CategoryUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
+    icon: Optional[str] = None
+    parent_category_id: Optional[str] = None
+    is_main_category: Optional[bool] = None
     image_url: Optional[str] = None
     sort_order: Optional[int] = None
 
