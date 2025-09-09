@@ -7732,6 +7732,350 @@ TIMEZONE BUG ANALYSIS COMPLETE:
         
         return katalog_success_count >= len(katalog_tests_recent) * 0.8
 
+    def test_critical_catalog_bug_investigation(self):
+        """CRITICAL BUG INVESTIGATION: User uploaded article but cannot see it in catalog"""
+        print("\n🚨 CRITICAL BUG INVESTIGATION: CATALOG VISIBILITY ISSUE")
+        print("=" * 80)
+        print("ISSUE REPORTED: User uploaded article but cannot see it in catalog")
+        print("INVESTIGATION AREAS:")
+        print("1. Check existing products in database: GET /api/products")
+        print("2. Check existing categories: GET /api/categories")
+        print("3. Test product creation: POST /api/admin/products")
+        print("4. Verify category filtering: GET /api/products?category_id={id}")
+        print("5. Test file upload functionality: POST /api/upload/product-media")
+        print("6. Check category order issues")
+        print("=" * 80)
+        
+        investigation_results = []
+        
+        # STEP 1: Check existing products in database
+        print("\n📦 STEP 1: Checking existing products in database...")
+        try:
+            response = requests.get(f"{self.api_url}/products", timeout=10)
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                products = response.json()
+                is_list = isinstance(products, list)
+                product_count = len(products) if is_list else 0
+                
+                success = is_list
+                details += f", Is list: {is_list}, Product count: {product_count}"
+                
+                if product_count > 0:
+                    # Check structure of products
+                    first_product = products[0]
+                    required_fields = ['id', 'name', 'price', 'sizes']
+                    has_all_fields = all(field in first_product for field in required_fields)
+                    details += f", First product structure valid: {has_all_fields}"
+                    
+                    print(f"    📋 Found {product_count} products in database:")
+                    for i, product in enumerate(products[:5]):  # Show first 5 products
+                        print(f"      {i+1}. {product.get('name', 'N/A')} - €{product.get('price', 'N/A')} (ID: {product.get('id', 'N/A')})")
+                    if product_count > 5:
+                        print(f"      ... and {product_count - 5} more products")
+                else:
+                    print("    ⚠️ NO PRODUCTS FOUND IN DATABASE - This could be the issue!")
+                    details += " - NO PRODUCTS FOUND"
+            
+            investigation_results.append(("Existing Products Check", success, details))
+            self.log_test("CRITICAL BUG - Existing Products Check", success, details)
+            
+        except Exception as e:
+            investigation_results.append(("Existing Products Check", False, str(e)))
+            self.log_test("CRITICAL BUG - Existing Products Check", False, str(e))
+        
+        # STEP 2: Check existing categories and their sort_order
+        print("\n🏷️ STEP 2: Checking existing categories and sort order...")
+        try:
+            response = requests.get(f"{self.api_url}/categories", timeout=10)
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                categories = response.json()
+                is_list = isinstance(categories, list)
+                category_count = len(categories) if is_list else 0
+                
+                success = is_list
+                details += f", Is list: {is_list}, Category count: {category_count}"
+                
+                if category_count > 0:
+                    # Check structure and sort order
+                    print(f"    📋 Found {category_count} categories:")
+                    for i, category in enumerate(categories):
+                        sort_order = category.get('sort_order', 'N/A')
+                        print(f"      {i+1}. {category.get('name', 'N/A')} (Sort Order: {sort_order}, ID: {category.get('id', 'N/A')})")
+                    
+                    # Check if categories are properly sorted
+                    sort_orders = [cat.get('sort_order', 0) for cat in categories if cat.get('sort_order') is not None]
+                    is_sorted = sort_orders == sorted(sort_orders)
+                    details += f", Categories sorted correctly: {is_sorted}"
+                    
+                    if not is_sorted:
+                        print("    ⚠️ CATEGORY ORDER ISSUE DETECTED - Categories not in correct sort order!")
+                else:
+                    print("    ⚠️ NO CATEGORIES FOUND - This could prevent product visibility!")
+                    details += " - NO CATEGORIES FOUND"
+            
+            investigation_results.append(("Existing Categories Check", success, details))
+            self.log_test("CRITICAL BUG - Existing Categories Check", success, details)
+            
+        except Exception as e:
+            investigation_results.append(("Existing Categories Check", False, str(e)))
+            self.log_test("CRITICAL BUG - Existing Categories Check", False, str(e))
+        
+        # STEP 3: Test product creation workflow
+        print("\n➕ STEP 3: Testing complete product creation workflow...")
+        
+        # First, ensure we have a category to work with
+        test_category_id = None
+        try:
+            # Try to create a test category first
+            test_category = {
+                "name": "Test Category for Bug Investigation",
+                "description": "Category created during bug investigation",
+                "sort_order": 999
+            }
+            
+            cat_response = requests.post(
+                f"{self.api_url}/admin/categories",
+                json=test_category,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            if cat_response.status_code == 200:
+                category_data = cat_response.json()
+                test_category_id = category_data.get('id')
+                print(f"    ✅ Test category created: {category_data.get('name')} (ID: {test_category_id})")
+            else:
+                print(f"    ⚠️ Could not create test category: Status {cat_response.status_code}")
+                
+        except Exception as e:
+            print(f"    ❌ Category creation failed: {str(e)}")
+        
+        # Now test product creation
+        if test_category_id:
+            try:
+                timestamp = int(time.time())
+                test_product = {
+                    "article_number": f"BUG_TEST_{timestamp}",
+                    "name": "Bug Investigation Test Article",
+                    "description": "Article created during bug investigation to test visibility",
+                    "category_id": test_category_id,
+                    "price": 29.99,
+                    "sizes": ["S", "M", "L"],
+                    "image_url": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400",
+                    "stock_quantity": 10,
+                    "is_active": True
+                }
+                
+                print(f"    📝 Creating test product: {test_product['name']}")
+                
+                response = requests.post(
+                    f"{self.api_url}/admin/products",
+                    json=test_product,
+                    headers={'Content-Type': 'application/json'},
+                    timeout=10
+                )
+                
+                success = response.status_code == 200
+                details = f"POST Status: {response.status_code}"
+                
+                if success:
+                    product_data = response.json()
+                    required_fields = ['id', 'article_number', 'name', 'category_id', 'price', 'is_active']
+                    has_all_fields = all(field in product_data for field in required_fields)
+                    is_active = product_data.get('is_active', False)
+                    
+                    success = has_all_fields and is_active
+                    details += f", Has all fields: {has_all_fields}, Is active: {is_active}"
+                    details += f", Product ID: {product_data.get('id')}, Article: {product_data.get('article_number')}"
+                    
+                    if success:
+                        print(f"    ✅ Product created successfully:")
+                        print(f"      ID: {product_data.get('id')}")
+                        print(f"      Article Number: {product_data.get('article_number')}")
+                        print(f"      Name: {product_data.get('name')}")
+                        print(f"      Category ID: {product_data.get('category_id')}")
+                        print(f"      Price: €{product_data.get('price')}")
+                        print(f"      Active: {product_data.get('is_active')}")
+                        
+                        # STEP 4: Immediately check if product appears in catalog
+                        print("\n🔍 STEP 4: Verifying product appears in catalog...")
+                        
+                        # Wait a moment for database consistency
+                        time.sleep(1)
+                        
+                        catalog_response = requests.get(f"{self.api_url}/products", timeout=10)
+                        if catalog_response.status_code == 200:
+                            all_products = catalog_response.json()
+                            new_product_found = any(p.get('id') == product_data.get('id') for p in all_products)
+                            
+                            if new_product_found:
+                                print("    ✅ NEW PRODUCT FOUND IN CATALOG - Product creation and visibility working!")
+                                self.log_test("CRITICAL BUG - Product Visibility After Creation", True, "New product immediately visible in catalog")
+                            else:
+                                print("    ❌ NEW PRODUCT NOT FOUND IN CATALOG - CRITICAL BUG CONFIRMED!")
+                                print("    🔍 This indicates a problem with product visibility in the catalog API")
+                                self.log_test("CRITICAL BUG - Product Visibility After Creation", False, "New product not visible in catalog despite successful creation")
+                        else:
+                            print(f"    ❌ Could not check catalog: Status {catalog_response.status_code}")
+                            self.log_test("CRITICAL BUG - Product Visibility After Creation", False, f"Catalog check failed: {catalog_response.status_code}")
+                
+                investigation_results.append(("Product Creation Workflow", success, details))
+                self.log_test("CRITICAL BUG - Product Creation Workflow", success, details)
+                
+            except Exception as e:
+                investigation_results.append(("Product Creation Workflow", False, str(e)))
+                self.log_test("CRITICAL BUG - Product Creation Workflow", False, str(e))
+        else:
+            print("    ❌ Cannot test product creation - no category available")
+            self.log_test("CRITICAL BUG - Product Creation Workflow", False, "No category available for testing")
+        
+        # STEP 5: Test category filtering
+        print("\n🔍 STEP 5: Testing category filtering...")
+        if test_category_id:
+            try:
+                response = requests.get(f"{self.api_url}/products?category_id={test_category_id}", timeout=10)
+                success = response.status_code == 200
+                details = f"GET Status: {response.status_code}"
+                
+                if success:
+                    filtered_products = response.json()
+                    is_list = isinstance(filtered_products, list)
+                    product_count = len(filtered_products) if is_list else 0
+                    
+                    success = is_list
+                    details += f", Is list: {is_list}, Filtered products: {product_count}"
+                    
+                    if product_count > 0:
+                        # Check if all products belong to the correct category
+                        correct_category = all(p.get('category_id') == test_category_id for p in filtered_products)
+                        details += f", All products in correct category: {correct_category}"
+                        print(f"    ✅ Category filtering working: {product_count} products found for category {test_category_id}")
+                    else:
+                        print(f"    ⚠️ No products found for category {test_category_id}")
+                
+                investigation_results.append(("Category Filtering", success, details))
+                self.log_test("CRITICAL BUG - Category Filtering", success, details)
+                
+            except Exception as e:
+                investigation_results.append(("Category Filtering", False, str(e)))
+                self.log_test("CRITICAL BUG - Category Filtering", False, str(e))
+        
+        # STEP 6: Test file upload functionality
+        print("\n📁 STEP 6: Testing file upload functionality...")
+        try:
+            # Check if upload endpoint exists
+            upload_response = requests.post(
+                f"{self.api_url}/upload/product-media",
+                files={'file': ('test.txt', 'test content', 'text/plain')},
+                timeout=10
+            )
+            
+            # We expect this to fail with validation error, but endpoint should exist
+            endpoint_exists = upload_response.status_code != 404
+            details = f"POST Status: {upload_response.status_code}"
+            
+            if endpoint_exists:
+                if upload_response.status_code == 400:
+                    details += " (Endpoint exists, validation working)"
+                    print("    ✅ Upload endpoint exists and has validation")
+                elif upload_response.status_code == 200:
+                    details += " (Upload successful)"
+                    print("    ✅ Upload endpoint working")
+                else:
+                    details += " (Endpoint exists but unexpected response)"
+                    print(f"    ⚠️ Upload endpoint exists but returned {upload_response.status_code}")
+            else:
+                details += " (Endpoint not found)"
+                print("    ❌ Upload endpoint not found - this could be the issue!")
+            
+            investigation_results.append(("File Upload Functionality", endpoint_exists, details))
+            self.log_test("CRITICAL BUG - File Upload Functionality", endpoint_exists, details)
+            
+        except Exception as e:
+            investigation_results.append(("File Upload Functionality", False, str(e)))
+            self.log_test("CRITICAL BUG - File Upload Functionality", False, str(e))
+        
+        # STEP 7: Database consistency check
+        print("\n🗄️ STEP 7: Database consistency check...")
+        try:
+            # Check if products and categories are properly linked
+            products_response = requests.get(f"{self.api_url}/products", timeout=10)
+            categories_response = requests.get(f"{self.api_url}/categories", timeout=10)
+            
+            if products_response.status_code == 200 and categories_response.status_code == 200:
+                products = products_response.json()
+                categories = categories_response.json()
+                
+                category_ids = {cat.get('id') for cat in categories}
+                orphaned_products = []
+                
+                for product in products:
+                    product_category_id = product.get('category_id')
+                    if product_category_id and product_category_id not in category_ids:
+                        orphaned_products.append(product)
+                
+                consistency_good = len(orphaned_products) == 0
+                details = f"Products: {len(products)}, Categories: {len(categories)}, Orphaned products: {len(orphaned_products)}"
+                
+                if consistency_good:
+                    print("    ✅ Database consistency good - all products have valid categories")
+                else:
+                    print(f"    ⚠️ Found {len(orphaned_products)} products with invalid category references")
+                    for orphan in orphaned_products[:3]:  # Show first 3
+                        print(f"      - {orphan.get('name')} (Category ID: {orphan.get('category_id')})")
+                
+                investigation_results.append(("Database Consistency", consistency_good, details))
+                self.log_test("CRITICAL BUG - Database Consistency", consistency_good, details)
+            else:
+                self.log_test("CRITICAL BUG - Database Consistency", False, "Could not fetch products or categories")
+                
+        except Exception as e:
+            investigation_results.append(("Database Consistency", False, str(e)))
+            self.log_test("CRITICAL BUG - Database Consistency", False, str(e))
+        
+        # FINAL ANALYSIS
+        print("\n🔍 CRITICAL BUG INVESTIGATION SUMMARY")
+        print("=" * 60)
+        
+        successful_checks = sum(1 for _, success, _ in investigation_results if success)
+        total_checks = len(investigation_results)
+        
+        print(f"Investigation Results: {successful_checks}/{total_checks} checks passed")
+        print("\nDetailed Findings:")
+        
+        for check_name, success, details in investigation_results:
+            status = "✅ PASS" if success else "❌ FAIL"
+            print(f"  {status} {check_name}: {details}")
+        
+        print("\n🎯 ROOT CAUSE ANALYSIS:")
+        
+        if successful_checks == total_checks:
+            print("  ✅ All backend systems working correctly")
+            print("  🔍 Issue likely in frontend display or API integration")
+            print("  💡 Recommendation: Check frontend catalog component and API calls")
+        elif successful_checks < total_checks * 0.5:
+            print("  ❌ Multiple backend issues detected")
+            print("  🔍 Critical problems with catalog system")
+            print("  💡 Recommendation: Fix backend API issues before frontend testing")
+        else:
+            print("  ⚠️ Some backend issues detected")
+            print("  🔍 Mixed results - some systems working, others not")
+            print("  💡 Recommendation: Address specific failed checks")
+        
+        print("\n📋 NEXT STEPS:")
+        print("  1. Review failed checks above")
+        print("  2. Fix any backend API issues")
+        print("  3. Test frontend catalog display")
+        print("  4. Verify user upload workflow end-to-end")
+        
+        return successful_checks >= total_checks * 0.8
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("🚀 Starting Live Shopping App Backend API Tests")
