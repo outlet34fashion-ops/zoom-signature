@@ -9384,8 +9384,8 @@ TIMEZONE BUG ANALYSIS COMPLETE:
                             hierarchy_correct = False
                             break
                 
-                success = has_main_categories and has_subcategories and hierarchy_correct
-                details += f", Total: {len(all_categories)}, Main: {main_count}/5, Subs: {sub_count}, Hierarchy correct: {hierarchy_correct}"
+                success = has_hierarchical_categories and has_subcategories and hierarchy_correct
+                details += f", Total: {len(all_categories)}, Hierarchical main: {hierarchical_main_count}/5, Subs: {sub_count}, Hierarchy correct: {hierarchy_correct}"
             
             self.log_test("Hierarchical Categories - All Categories Endpoint", success, details)
         except Exception as e:
