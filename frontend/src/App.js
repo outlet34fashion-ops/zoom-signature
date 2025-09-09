@@ -1023,8 +1023,24 @@ function App() {
   useEffect(() => {
     if (isAuthenticated && currentCustomer?.customer_number && !isAdminView) {
       loadCustomerCatalogOrders(currentCustomer.customer_number);
+      loadFavoriteProducts(currentCustomer.customer_number);
+      loadRecentlyViewed(currentCustomer.customer_number);
     }
   }, [isAuthenticated, currentCustomer?.customer_number, isAdminView]);
+
+  // Search when query changes (with debouncing)
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (searchQuery.trim()) {
+        searchProducts();
+      } else if (searchQuery === '') {
+        // Reset to show all products when search is cleared
+        loadCatalogProducts(selectedCategory?.id);
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
   // Lade Bestellungen auch bei View-Wechsel neu (für Timezone-Fix)
   useEffect(() => {
     if (activeView === 'orders') {
