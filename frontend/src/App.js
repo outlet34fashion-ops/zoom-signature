@@ -481,7 +481,8 @@ function App() {
   // Auto-initialize LiveKit streaming for customers - check for active admin streams
   useEffect(() => {
     const checkForActiveStreams = async () => {
-      if (!isAdminAuthenticated && isAuthenticated && !streamingActive) {
+      // CRITICAL FIX: Allow non-authenticated users to see streams too (for demo/preview)
+      if (!isAdminAuthenticated && !streamingActive) {
         try {
           console.log('🔍 Checking for active admin streams...');
           
@@ -493,12 +494,14 @@ function App() {
             const activeRoom = data.rooms[0]; // Join first active room
             console.log('🎥 Found active admin stream, auto-joining:', activeRoom.name);
             
-            // Generate viewer token for customer
-            const customerNumber = getCustomerNumber();
+            // Generate viewer token - use customer number if logged in, otherwise anonymous
+            const customerIdentity = isAuthenticated 
+              ? `customer-${localStorage.getItem('customerNumber') || 'guest'}`
+              : `guest-viewer-${Date.now()}`;
+            
             const tokenData = await livekitService.generateViewerToken(
               activeRoom.name,
-              `customer-${customerNumber}`,
-              { role: 'customer', customerNumber }
+              customerIdentity
             );
             
             setCurrentRoomName(activeRoom.name);
@@ -507,20 +510,27 @@ function App() {
             setStreamingActive(true);
             setLivekitError(null);
             
-            console.log('✅ Customer auto-joined active admin stream');
+            console.log('✅ Auto-joined active admin stream:', customerIdentity);
           } else {
             console.log('ℹ️  No active admin streams available');
+            // Reset streaming state if no streams available
+            if (streamingActive) {
+              setStreamingActive(false);
+              setLivekitToken(null);
+              setLivekitUrl(null);
+              setCurrentRoomName(null);
+            }
           }
         } catch (error) {
-          console.log('ℹ️  Error checking for active streams:', error.message);
+          console.error('❌ Error checking for active streams:', error);
         }
       }
     };
 
-    // Check for active streams every 5 seconds for customers
-    if (!isAdminAuthenticated && isAuthenticated) {
+    // Check for active streams every 3 seconds (faster check)
+    if (!isAdminAuthenticated) {
       checkForActiveStreams();
-      const interval = setInterval(checkForActiveStreams, 5000);
+      const interval = setInterval(checkForActiveStreams, 3000);
       return () => clearInterval(interval);
     }
   }, [isAuthenticated, isAdminAuthenticated, streamingActive]);
