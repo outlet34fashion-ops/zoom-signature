@@ -6131,6 +6131,39 @@ function App() {
                   </span>
                 </div>
 
+                {/* Material */}
+                {selectedCatalogProduct.material && (
+                  <div>
+                    <h4 className="font-semibold text-gray-800 mb-2">Material</h4>
+                    <p className="text-blue-600 font-medium">{selectedCatalogProduct.material}</p>
+                  </div>
+                )}
+
+                {/* Available Colors */}
+                {selectedCatalogProduct.colors && selectedCatalogProduct.colors.length > 0 && (
+                  <div>
+                    <h4 className="font-semibold text-gray-800 mb-2">Verfügbare Farben</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedCatalogProduct.colors.map((color, index) => (
+                        <div key={index} className="flex items-center space-x-2 bg-gray-100 rounded-full px-3 py-1">
+                          <div
+                            className="w-4 h-4 rounded-full border border-gray-300"
+                            style={{
+                              backgroundColor: color.toLowerCase() === 'schwarz' ? '#000000' :
+                                             color.toLowerCase() === 'weiß' ? '#FFFFFF' :
+                                             color.toLowerCase() === 'blau' ? '#0066CC' :
+                                             color.toLowerCase() === 'rot' ? '#CC0000' :
+                                             color.toLowerCase() === 'beige' ? '#F5F5DC' : 
+                                             color.startsWith('#') ? color : '#CCCCCC'
+                            }}
+                          />
+                          <span className="text-sm text-gray-700">{color}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {selectedCatalogProduct.description && (
                   <div>
                     <h4 className="font-semibold text-gray-800 mb-2">Beschreibung</h4>
