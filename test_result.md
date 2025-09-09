@@ -455,11 +455,11 @@ test_plan:
 
   - task: "Produktkatalog Backend API Implementation"
     implemented: true
-    working: true
+    working: false
     file: "/app/backend/server.py"
-    stuck_count: 0
+    stuck_count: 1
     priority: "critical"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: "NA"
         agent: "main"
@@ -467,6 +467,9 @@ test_plan:
       - working: true
         agent: "testing"
         comment: "🛍️ PRODUKTKATALOG BACKEND API COMPREHENSIVE TESTING COMPLETED SUCCESSFULLY! Comprehensive testing shows EXCELLENT IMPLEMENTATION (18/19 tests passed - 94.7% success rate): 1) ✅ CATEGORIES API TESTING: GET /api/categories (public endpoint) working correctly, POST /api/admin/categories (admin create) working with Fashion and Accessories test categories, GET /api/categories/{category_id} (public endpoint) working correctly, PUT /api/admin/categories/{category_id} (admin update) working correctly, DELETE /api/admin/categories/{category_id} (admin delete) working correctly, 2) ✅ PRODUCTS API TESTING: GET /api/products (public endpoint with category filtering) working correctly, POST /api/admin/products (admin create with article_number uniqueness) working correctly with test products (Trendy Summer Dress, Designer Handbag), article_number uniqueness validation working (returns 400 for duplicates), GET /api/products/{product_id} (public endpoint) working correctly, PUT /api/admin/products/{product_id} (admin update) working correctly, DELETE /api/admin/products/{product_id} (admin delete) working correctly, 3) ✅ CATALOG ORDERS API TESTING: Customer 10299 verification and activation working correctly, POST /api/catalog/orders (customer order creation with stock checking) working correctly - created order with Customer 10299, Product 'Updated Summer Dress', Size S, Quantity 2, Total €119.98, German chat message format generated correctly: '**Katalog-Bestellung** 10299 I 2x I 119.98 € I S', GET /api/catalog/orders/customer/{customer_number} (customer orders) working correctly, GET /api/admin/catalog/orders (admin all orders) working correctly, 4) ✅ INTEGRATION TESTING: Customer 10299 authentication integration working, German formatting for order messages working correctly, WebSocket notifications endpoint ready for real-time broadcasts, Database collections (categories, products, catalog_orders) working correctly, Stock management and price calculation working, UUIDs used correctly instead of ObjectIDs, 5) ⚠️ MINOR ISSUE: PUT /api/admin/catalog/orders/{order_id}/status returns 422 error - endpoint signature issue (expects status as path parameter vs request body), but this is a minor validation issue not affecting core functionality. CONCLUSION: The Produktkatalog Backend API implementation is WORKING CORRECTLY and ready for WhatsApp-style catalog frontend implementation! All critical endpoints functional, customer integration working, German chat messages generated properly, and WebSocket notifications ready. Success rate: 94.7% (18/19 tests passed)."
+      - working: false
+        agent: "testing"
+        comment: "🚨 CRITICAL BUG INVESTIGATION COMPLETED - ROOT CAUSE IDENTIFIED! Comprehensive investigation (8/9 tests passed - 88.9% success) reveals the exact cause of user's catalog visibility issue: 🔥 CRITICAL BUG CONFIRMED: Duplicate /products endpoints in server.py at lines 778 and 2319. FastAPI uses the FIRST endpoint (hardcoded sample products) instead of the database endpoint, causing new products to be stored but not visible in catalog. DETAILED FINDINGS: 1) ✅ Product creation workflow working correctly - products stored in database successfully, 2) ✅ Categories and database consistency working correctly, 3) ❌ CRITICAL ISSUE: GET /api/products returns only hardcoded products (Young Fashion Shirt, Plus Size Blouse) instead of database products, 4) ❌ Missing GET /api/admin/products and GET /api/admin/categories endpoints - admin cannot list existing items, 5) ✅ Category filtering works but only for hardcoded products. IMMEDIATE FIXES REQUIRED: 1) Remove duplicate /products endpoint at line 778 (hardcoded), 2) Ensure database /products endpoint (line 2319) is used, 3) Add missing GET /api/admin/products endpoint, 4) Add missing GET /api/admin/categories endpoint. IMPACT: User uploaded articles are stored in database but invisible in catalog due to endpoint shadowing. This explains the exact issue reported in review request."
 
   - task: "Customer status check API fix"
     implemented: true
