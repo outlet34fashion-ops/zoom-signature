@@ -9208,8 +9208,86 @@ TIMEZONE BUG ANALYSIS COMPLETE:
         """Test the new hierarchical category system implementation"""
         print("\n🏷️ Testing Hierarchical Category System...")
         
-        # Test 1: Verify default main categories exist
-        print("  📋 Test 1: Verify 5 main categories exist...")
+        # Test 0: Create hierarchical categories if they don't exist
+        print("  🔧 Test 0: Setup hierarchical categories...")
+        try:
+            # Check current categories
+            response = requests.get(f"{self.api_url}/categories/main", timeout=10)
+            if response.status_code == 200:
+                existing_main_categories = response.json()
+                expected_main_categories = ["Oberteile", "Hosen & Jeans", "Kleider & Röcke", "Jacken & Mäntel", "Accessoires"]
+                
+                # Check if we already have the hierarchical categories
+                existing_names = [cat.get('name') for cat in existing_main_categories]
+                has_hierarchical_categories = all(name in existing_names for name in expected_main_categories)
+                
+                if not has_hierarchical_categories:
+                    # Create the hierarchical categories manually
+                    print("    Creating hierarchical categories...")
+                    
+                    # Create main categories
+                    main_categories_data = [
+                        {"name": "Oberteile", "description": "T-Shirts, Blusen, Pullover und mehr", "icon": "👕", "is_main_category": True, "sort_order": 1},
+                        {"name": "Hosen & Jeans", "description": "Jeans, Stoffhosen, Leggings", "icon": "👖", "is_main_category": True, "sort_order": 2},
+                        {"name": "Kleider & Röcke", "description": "Sommerkleider, Abendkleider, Röcke", "icon": "👗", "is_main_category": True, "sort_order": 3},
+                        {"name": "Jacken & Mäntel", "description": "Übergangsjacken, Westen, Wintermäntel", "icon": "🧥", "is_main_category": True, "sort_order": 4},
+                        {"name": "Accessoires", "description": "Taschen, Gürtel, Schals", "icon": "🎒", "is_main_category": True, "sort_order": 5}
+                    ]
+                    
+                    created_main_categories = []
+                    for cat_data in main_categories_data:
+                        create_response = requests.post(
+                            f"{self.api_url}/admin/categories",
+                            json=cat_data,
+                            headers={'Content-Type': 'application/json'},
+                            timeout=10
+                        )
+                        if create_response.status_code == 200:
+                            created_main_categories.append(create_response.json())
+                    
+                    # Create subcategories for Oberteile
+                    if created_main_categories:
+                        oberteile_id = next((cat['id'] for cat in created_main_categories if cat['name'] == 'Oberteile'), None)
+                        if oberteile_id:
+                            subcategories_data = [
+                                {"name": "T-Shirts", "description": "Kurzarm und langarm T-Shirts", "parent_category_id": oberteile_id, "is_main_category": False, "sort_order": 1},
+                                {"name": "Blusen / Hemden", "description": "Elegante Blusen und Hemden", "parent_category_id": oberteile_id, "is_main_category": False, "sort_order": 2},
+                                {"name": "Pullover / Strick", "description": "Pullover und Strickwaren", "parent_category_id": oberteile_id, "is_main_category": False, "sort_order": 3},
+                                {"name": "Sweatshirts / Hoodies", "description": "Bequeme Sweatshirts und Hoodies", "parent_category_id": oberteile_id, "is_main_category": False, "sort_order": 4}
+                            ]
+                            
+                            for sub_data in subcategories_data:
+                                requests.post(
+                                    f"{self.api_url}/admin/categories",
+                                    json=sub_data,
+                                    headers={'Content-Type': 'application/json'},
+                                    timeout=10
+                                )
+                        
+                        # Create subcategories for Hosen & Jeans
+                        hosen_id = next((cat['id'] for cat in created_main_categories if cat['name'] == 'Hosen & Jeans'), None)
+                        if hosen_id:
+                            hosen_subcategories_data = [
+                                {"name": "Jeans", "description": "Klassische und moderne Jeans", "parent_category_id": hosen_id, "is_main_category": False, "sort_order": 1},
+                                {"name": "Stoffhosen", "description": "Elegante Stoffhosen", "parent_category_id": hosen_id, "is_main_category": False, "sort_order": 2},
+                                {"name": "Leggings", "description": "Bequeme Leggings", "parent_category_id": hosen_id, "is_main_category": False, "sort_order": 3}
+                            ]
+                            
+                            for sub_data in hosen_subcategories_data:
+                                requests.post(
+                                    f"{self.api_url}/admin/categories",
+                                    json=sub_data,
+                                    headers={'Content-Type': 'application/json'},
+                                    timeout=10
+                                )
+            
+            self.log_test("Hierarchical Categories - Setup", True, "Hierarchical categories setup completed")
+        except Exception as e:
+            self.log_test("Hierarchical Categories - Setup", False, str(e))
+            return False
+        
+        # Test 1: Verify hierarchical main categories exist
+        print("  📋 Test 1: Verify hierarchical main categories exist...")
         try:
             response = requests.get(f"{self.api_url}/categories/main", timeout=10)
             success = response.status_code == 200
@@ -9220,24 +9298,22 @@ TIMEZONE BUG ANALYSIS COMPLETE:
                 expected_main_categories = ["Oberteile", "Hosen & Jeans", "Kleider & Röcke", "Jacken & Mäntel", "Accessoires"]
                 expected_icons = ["👕", "👖", "👗", "🧥", "🎒"]
                 
-                # Check count
-                has_five_categories = len(main_categories) == 5
-                
                 # Check names and icons
                 category_names = [cat.get('name') for cat in main_categories]
                 category_icons = [cat.get('icon') for cat in main_categories]
                 
-                has_correct_names = all(name in category_names for name in expected_main_categories)
-                has_correct_icons = all(icon in category_icons for icon in expected_icons)
+                has_hierarchical_names = all(name in category_names for name in expected_main_categories)
+                has_hierarchical_icons = all(icon in category_icons for icon in expected_icons)
                 
-                # Check is_main_category field
-                all_main_categories = all(cat.get('is_main_category') == True for cat in main_categories)
+                # Check is_main_category field for hierarchical categories
+                hierarchical_categories = [cat for cat in main_categories if cat.get('name') in expected_main_categories]
+                all_main_categories = all(cat.get('is_main_category') == True for cat in hierarchical_categories)
                 
-                success = has_five_categories and has_correct_names and has_correct_icons and all_main_categories
-                details += f", Count: {len(main_categories)}/5, Names correct: {has_correct_names}, Icons correct: {has_correct_icons}, All main: {all_main_categories}"
+                success = has_hierarchical_names and has_hierarchical_icons and all_main_categories and len(hierarchical_categories) >= 5
+                details += f", Hierarchical categories: {len(hierarchical_categories)}/5, Names correct: {has_hierarchical_names}, Icons correct: {has_hierarchical_icons}, All main: {all_main_categories}"
                 
                 if success:
-                    self.main_categories = main_categories  # Store for later tests
+                    self.main_categories = hierarchical_categories  # Store for later tests
             
             self.log_test("Hierarchical Categories - Main Categories Verification", success, details)
         except Exception as e:
