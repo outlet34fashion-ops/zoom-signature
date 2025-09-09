@@ -2129,7 +2129,7 @@ function App() {
                   <div className="relative inline-block">
                     <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full blur-2xl opacity-30 animate-pulse"></div>
                     <img 
-                      src="/images/outlet34-logo.jpg" 
+                      src="/images/outlet34-logo-new.png" 
                       alt="OUTLET34 Fashion Logo" 
                       className="relative w-32 h-32 rounded-full shadow-2xl border-4 border-white/20 mx-auto hover:scale-105 transition-transform duration-300"
                     />
