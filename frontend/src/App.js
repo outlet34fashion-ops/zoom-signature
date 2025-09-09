@@ -1835,41 +1835,6 @@ function App() {
       console.error('❌ Failed to stop Daily.co streaming:', error);
     }
   };
-      
-      if (!stream) {
-        throw lastError || new Error('Kamera-Zugriff verweigert');
-      }
-      
-      // Test stream validity
-      const videoTracks = stream.getVideoTracks();
-      const audioTracks = stream.getAudioTracks();
-      
-      console.log('✅ Camera access validated:', {
-        video: videoTracks.length > 0,
-        audio: audioTracks.length > 0,
-        videoSettings: videoTracks[0]?.getSettings()
-      });
-      
-      // Clean up test stream
-      stream.getTracks().forEach(track => track.stop());
-      
-      return videoTracks.length > 0;
-      
-    } catch (error) {
-      console.error('❌ Camera access check failed:', error);
-      
-      // Provide specific error messages
-      if (error.name === 'NotAllowedError') {
-        throw new Error('Kamera-Zugriff verweigert. Bitte erlauben Sie den Zugriff in den Browser-Einstellungen.');
-      } else if (error.name === 'NotFoundError') {
-        throw new Error('Keine Kamera gefunden. Bitte stellen Sie sicher, dass eine Kamera angeschlossen und verfügbar ist.');
-      } else if (error.name === 'NotReadableError') {
-        throw new Error('Kamera wird bereits von einer anderen Anwendung verwendet. Bitte schließen Sie andere Programme und versuchen Sie es erneut.');
-      } else {
-        throw new Error(`Kamera-Fehler: ${error.message}`);
-      }
-    }
-  };
 
   const stopLiveKitStreaming = async () => {
     try {
