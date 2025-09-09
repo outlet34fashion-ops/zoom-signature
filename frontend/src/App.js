@@ -1643,7 +1643,7 @@ function App() {
       const customerNumber = newCustomerData.customer_number;
       
       // Reset form and close modal
-      setNewCustomerData({ customer_number: '', email: '', first_name: '', last_name: '', company_name: '' });
+      setNewCustomerData({ customer_number: '', email: '', first_name: '', last_name: '', company_name: '', member_since: '', status: 'Starter' });
       setShowCreateCustomer(false);
       setCreateCustomerError('');
       
