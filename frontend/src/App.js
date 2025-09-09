@@ -2582,9 +2582,9 @@ function App() {
               </div>
             </div>
 
-            {/* Embedded Live Stream Video - NUR für eingeloggte Kunden */}
+            {/* Embedded Live Stream Video - ENHANCED für alle Benutzer */}
             <div className="bg-black rounded-xl overflow-hidden mb-4" style={{ aspectRatio: '16/9' }}>
-              {/* CRITICAL: LiveKit Integration - NUR wenn Stream AKTIV ist */}
+              {/* CRITICAL: LiveKit Integration - ENHANCED mit besserer Fehlerbehandlung */}
               {streamingActive && livekitToken && livekitUrl ? (
                 <div className="w-full h-full">
                   <LiveKitRoom
@@ -2595,20 +2595,109 @@ function App() {
                     style={{ height: '100%', width: '100%' }}
                     onConnected={handleLiveKitConnected}
                     onDisconnected={handleLiveKitDisconnected}
-                    onError={handleLiveKitError}
+                    onError={(error) => {
+                      console.error('❌ LiveKit Room Error:', error);
+                      handleLiveKitError(error);
+                      setLivekitError(`Verbindungsfehler: ${error.message}`);
+                    }}
+                    options={{
+                      // Enhanced room options for better reliability
+                      videoCaptureDefaults: {
+                        resolution: { width: 1920, height: 1080 },
+                        frameRate: 30
+                      },
+                      audioCaptureDefaults: {
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true
+                      },
+                      publishDefaults: {
+                        videoSimulcastLayers: [
+                          { resolution: { width: 1920, height: 1080 }, encoding: { maxBitrate: 3500000 } },
+                          { resolution: { width: 1280, height: 720 }, encoding: { maxBitrate: 1500000 } },
+                          { resolution: { width: 640, height: 360 }, encoding: { maxBitrate: 500000 } }
+                        ],
+                        audioPreset: {
+                          maxBitrate: 128000
+                        }
+                      }
+                    }}
                   >
-                    <VideoConference />
+                    <VideoConference 
+                      chatMessageFormatter={(message, participant) => {
+                        // German chat formatting
+                        return `${participant?.name || participant?.identity}: ${message}`;
+                      }}
+                    />
                     <RoomAudioRenderer />
-                    <ControlBar />
+                    <ControlBar 
+                      controls={{
+                        camera: isAdminAuthenticated, // Only admin can control camera
+                        microphone: isAdminAuthenticated, // Only admin can control microphone
+                        chat: true, // Everyone can chat
+                        leave: true, // Everyone can leave
+                        settings: false // Simplified settings
+                      }}
+                    />
                   </LiveKitRoom>
+                  
+                  {/* ENHANCED: Connection Status Indicator */}
+                  <div className="absolute top-2 right-2 z-10">
+                    <div className={`flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-medium ${
+                      isLiveKitConnected 
+                        ? 'bg-green-500 text-white' 
+                        : 'bg-yellow-500 text-black'
+                    }`}>
+                      <div className={`w-2 h-2 rounded-full ${
+                        isLiveKitConnected ? 'bg-white animate-pulse' : 'bg-red-500'
+                      }`}></div>
+                      {isLiveKitConnected ? '🔴 LIVE' : '🔄 Verbinde...'}
+                    </div>
+                  </div>
+                  
+                  {/* ENHANCED: Error Display */}
+                  {livekitError && (
+                    <div className="absolute bottom-2 left-2 right-2 z-10">
+                      <div className="bg-red-500/90 text-white px-3 py-2 rounded-lg text-sm">
+                        ⚠️ {livekitError}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
-                /* Warten auf Stream - NUR für eingeloggte Kunden */
-                <div className="w-full h-full flex items-center justify-center text-white">
-                  <div className="text-center">
-                    <div className="text-2xl mb-4">📺</div>
-                    <div className="text-lg mb-2">Warten auf Live-Stream...</div>
-                    <div className="text-sm opacity-75">Der Stream beginnt in Kürze</div>
+                /* ENHANCED: Warten auf Stream - Mit besserer User Experience */
+                <div className="w-full h-full flex items-center justify-center text-white relative">
+                  <div className="text-center space-y-4">
+                    <div className="text-4xl mb-4">📺</div>
+                    <h3 className="text-xl font-bold mb-2">
+                      {isAuthenticated ? 'Live-Stream wird gesucht...' : 'Willkommen bei OUTLET34'}
+                    </h3>
+                    <p className="text-white/70 text-sm max-w-md">
+                      {isAuthenticated 
+                        ? 'Wir suchen nach aktiven Live-Streams. Sobald ein Administrator einen Stream startet, wird er hier angezeigt.'
+                        : 'Melden Sie sich an, um Live-Fashion-Shows zu sehen und exklusive Angebote zu erhalten.'
+                      }
+                    </p>
+                    
+                    {/* ENHANCED: Loading animation when checking for streams */}
+                    <div className="flex items-center justify-center space-x-2 mt-4">
+                      <div className="w-2 h-2 bg-pink-500 rounded-full animate-pulse"></div>
+                      <div className="w-2 h-2 bg-pink-400 rounded-full animate-pulse delay-75"></div>
+                      <div className="w-2 h-2 bg-pink-300 rounded-full animate-pulse delay-150"></div>
+                    </div>
+                    
+                    {/* ENHANCED: Stream status info */}
+                    <div className="text-xs text-white/50 mt-2">
+                      Streaming wird alle 3 Sekunden überprüft
+                    </div>
+                  </div>
+
+                  {/* ENHANCED: Auto-refresh indicator */}
+                  <div className="absolute top-2 left-2">
+                    <div className="flex items-center space-x-1 px-2 py-1 bg-white/10 rounded-full text-xs">
+                      <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-ping"></div>
+                      <span className="text-white/70">Auto-Check</span>
+                    </div>
                   </div>
                 </div>
               )}
