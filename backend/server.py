@@ -275,13 +275,22 @@ class LiveKitRoomResponse(BaseModel):
 class Customer(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     customer_number: str
+    first_name: str = Field(..., description="Customer first name")
+    last_name: str = Field(..., description="Customer last name") 
     email: str
-    name: str
-    profile_image: Optional[str] = None  # URL to profile image
+    company_name: str = Field(default="", description="Company name (optional)")
+    member_since: Optional[date] = Field(None, description="Member since date (optional)")
+    status: str = Field(default="Starter", description="Customer status (Starter/Business/Gold/Platinum)")
     activation_status: str = "pending"  # pending, active, blocked
+    profile_image: Optional[str] = None  # URL to profile image
     preferred_language: str = "de"  # de, en, tr, fr
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    
+    # Computed property for full name
+    @property
+    def name(self) -> str:
+        return f"{self.first_name} {self.last_name}".strip()
 
 class CustomerCreate(BaseModel):
     customer_number: str
