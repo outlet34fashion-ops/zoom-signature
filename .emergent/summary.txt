@@ -1,106 +1,97 @@
 <analysis>
-The AI engineer's trajectory details a highly iterative development process, initially inheriting a challenging task of automatic Zebra label printing, which it addressed through host-side scripts. The bulk of the provided trajectory, however, showcases extensive UI/UX improvements based on explicit user feedback. The engineer systematically tackled requests such as collapsing UI sections, removing non-functional elements, refining input fields, and implementing sticky navigation bars. A significant new feature, an appointment (Termine) system with push notifications, was also fully implemented. The approach demonstrates a strong focus on user satisfaction, iterating rapidly, and performing comprehensive tests after each change, ensuring a clean, functional, and user-friendly application.
+The AI engineer successfully migrated the live shopping application's streaming functionality from a problematic LiveKit integration to a stable Daily.co solution, addressing a critical user requirement for low-latency streaming. This involved extensive backend and frontend modifications, including setting up new Daily.co API endpoints and refactoring  to replace LiveKit components. Subsequently, the engineer handled branding updates by replacing existing logos with new ones provided by the user. The final phase focused on refining the application's header: implementing dynamic login/logout buttons based on user authentication, and ultimately removing the header for unauthenticated users to create a cleaner landing page. Throughout the process, the engineer demonstrated adaptability, switching from AWS IVS to Daily.co based on user feedback, and meticulously debugging and refactoring code to meet specific UI/UX demands.
 </analysis>
 
 <product_requirements>
-The Live Shopping App is a full-stack platform for live streaming, chat, and product ordering. Initial requirements included a modern UI/UX (dark theme, glassmorphism, collapsible sections, refactored admin dashboard), core bug fixes (timezone), robust chat, registration enhancements, and stable LiveKit-based streaming.
+The Live Shopping App is designed for live streaming, chat, and product ordering with a modern UI, including features like automatic Zebra label printing. Initial requests covered UI/UX improvements such as collapsible sections, refined input fields, sticky header/ticker, moving language selection, and a Termine (appointments) system with push notifications.
 
-The most complex feature was **Automatic Zebra Label Printing** (40x25mm labels with customer number, price, timestamp upon order confirmation; admin previews).
+The **overriding current product requirement** during this trajectory was to deliver a **highly stable, low-latency live streaming solution (like Zoom)**, capable of supporting 30-100 viewers, replacing the unreliable LiveKit. Initially, Amazon AWS IVS was considered, but due to delays, the user opted for **Daily.co**.
 
-During the current trajectory, the user explicitly requested:
-1.  Admin dashboard boxes to be **collapsed by default**.
-2.  Removal of a **non-functional Live Stream Control window** and its placeholder.
-3.  Size selection: Replace A4xx with **AAxx** and implement a **manual, editable size input field** that populates with the last selected value.
-4.  Price input: Display **price and size input fields on one line**, make the **price input manual and editable**, showing the entered value (e.g., 5.00 for 5,00) instead of 0.
-5.  Removal of **blue and green Action Buttons**.
-6.  Customer view sections Deine letzte Bestellung and Top 3 Käufer to be **collapsed by default**.
-7.  Move **streaming video to the top** in the customer view and **remove Live Shopping Funktionen info text**.
-8.  Make the **pink ticker bar sticky** and position it at the very top.
-9.  Make the **main header/navigation bar sticky** as well, positioned below the ticker.
-10. Move **language selection from the header to the customer profile modal**.
-11. The **ticker bar should only appear for logged-in users**, not on the landing page.
-12. Add a **Termine** (Appointments) button leading to a list of appointments with a **reminder function** for customers, triggering **push notifications** upon activation.
+Subsequent user requests involved:
+1.  **Logo Replacement**: Update the application's branding with new logo images provided by the user.
+2.  **Header Navigation and Authentication**: Integrate login (Kunden Login, Admin Login) and logout (Abmelden) buttons into the main header bar, making them conditionally visible based on user authentication status.
+3.  **Header Visibility for Unauthenticated Users**: Remove the header navigation entirely from the main page for unauthenticated users, keeping it visible only after login.
 </product_requirements>
 
 <key_technical_concepts>
-- **FastAPI**: Python backend for APIs, WebSockets.
-- **React**: Frontend framework, UI components, state management.
-- **MongoDB**: Database for data persistence.
-- **LiveKit/WebRTC**: Real-time video streaming.
-- **Tailwind CSS**: Utility-first CSS for styling.
-- **CUPS/lpr**: Unix printing system integration (host-side).
-- **ZPL (Zebra Programming Language)**: Label generation.
-- **Containerization/Kubernetes**: Deployment environment.
-- **Push Notifications**: Browser-based notifications for reminders.
+-   **FastAPI**: Python backend for APIs and business logic.
+-   **React**: Frontend framework for UI and state management.
+-   **MongoDB**: Database for data persistence.
+-   **LiveKit/WebRTC**: Initial streaming technology, deprecated and replaced.
+-   **Daily.co/WebRTC**: Current real-time video streaming solution for low latency.
+-   **Tailwind CSS**: Utility-first CSS framework for styling.
+-   **Yarn**: Frontend package manager for dependency handling.
 </key_technical_concepts>
 
 <code_architecture>
-The application uses a React frontend and FastAPI backend with MongoDB.
+The application utilizes a React frontend and a FastAPI backend with MongoDB.
 
 
 
-- :
-    - **Importance**: Main FastAPI backend, handles API routes and business logic.
-    - **Changes Made**:
-        - Product definitions updated for size changes (A4xx to AAxx).
-        - New API endpoints for customer reminders (, ) added, including logic for setting, fetching, and deleting reminders, and a background task for sending push notifications.
-- :
-    - **Importance**: Encapsulates Zebra printer communication and ZPL generation.
-    - **Changes Made**: Initial setup and logic for ZPL generation, file writing for Mac-side printing. (Changes were pre-trajectory, but context is important).
-- :
-    - **Importance**: Central React component, orchestrates UI rendering and state.
-    - **Changes Made**:
-        - Admin dashboard collapsible states (, etc.) set to  by default.
-        - Rendering of  component removed.
-        - Customer view collapsible states (, ) set to .
-        - UI logic for manual size and price input fields, including states (, ).
-        - Layout adjusted for size/price fields to be on one line.
-        - Removed Action Buttons (Next Article, Send Price & Size).
-        - Reordered components to place live stream video at the very top of the customer view.
-        - Removed Live Shopping Funktionen informational text.
-        - Implemented sticky header and ticker bars ( for ticker,  for header).
-        - Adjusted main content padding (, ) dynamically.
-        - Language selector moved from header to , which was integrated into the fixed header.
-        - Ticker bar rendering made conditional based on user authentication status.
-        - Added Termine button to the fixed header (conditional on authentication).
-        - Integrated  component, states (, , ), and functions (, ).
-        -  added to load events and reminders on login.
-- :
-    - **Importance**: Python script for user's Mac to watch for ZPL files and print.
-    - **Changes Made**: Created to provide host-side automation for Zebra printing. (Pre-trajectory, but context is important).
-- :
-    - **Importance**: Shell script for user's Mac to sync ZPL files from container to Mac.
-    - **Changes Made**: Created to facilitate host-side automation for Zebra printing. (Pre-trajectory, but context is important).
+-   :
+    -   **Importance**: Main entry point for FastAPI backend, defines API routes.
+    -   **Changes Made**: Added new API endpoints (, ) to integrate with the Daily.co service for live streaming functionality.
+-   :
+    -   **Importance**: Handles LiveKit token generation and room management.
+    -   **Changes Made**: No direct changes in this trajectory, but its functionality is now superseded by the Daily.co integration.
+-   :
+    -   **Importance**: **NEW** Python service dedicated to interacting with the Daily.co API, responsible for creating meeting rooms and generating participant tokens.
+    -   **Changes Made**: Newly created to abstract Daily.co API logic.
+-   :
+    -   **Importance**: Stores environment variables for the backend.
+    -   **Changes Made**: Added  to enable secure communication with Daily.co.
+-   :
+    -   **Importance**: Manages frontend dependencies.
+    -   **Changes Made**: Added  for Daily.co SDK and  (specifically ) to resolve a  error during frontend startup.
+-   :
+    -   **Importance**: Directory for static image assets.
+    -   **Changes Made**: Old  was removed. New logo files,  and , were added to update branding.
+-   :
+    -   **Importance**: The central React component, orchestrating UI rendering and application state.
+    -   **Changes Made**: Underwent significant refactoring:
+        -   All LiveKit-specific states, functions, and component usages (, , , ) were removed and replaced with Daily.co equivalents (, , ).
+        -   New Daily.co related states (, , , ) were introduced.
+        -   Logo references were updated to use the newly provided .
+        -   Dynamic header navigation was implemented: ,  states and their respective modals were added. Login/logout buttons were conditionally rendered based on user authentication.
+        -   The header component was entirely removed for unauthenticated users, and page padding was adjusted to maintain layout.
+        -   Multiple JSX syntax errors encountered during these extensive changes were debugged and fixed.
+-    & :
+    -   **Importance**: **NEW** React component and its styling, specifically designed to embed and manage the Daily.co video conferencing interface within the application.
+    -   **Changes Made**: Newly created to encapsulate the Daily.co frontend integration logic and UI.
+-   , , :
+    -   **Importance**: Components for automatic Zebra label printing.
+    -   **Changes Made**: These files were created and functional prior to this trajectory and were not modified during this development phase.
 </code_architecture>
 
 <pending_tasks>
-- **Customer Creation/Login Issue**: Investigate and fix the customer creation/login problem (kunden sind nicht angelegt, customer 10299 not found/not created in admin).
-- **Implement Desktop Split-Screen Layout**: Implement a desktop view where Orders and Chat are displayed side-by-side. The user needs to confirm the preferred column ratio (e.g., 50/50, 60/40, 40/60).
-- **Mac Auto-Printer Files**: Provide the user with the complete  and  files for their Mac setup (this was developed prior to the UI/UX tasks but has not yet been delivered to the user for setup).
+-   **Customer Creation/Login Issue**: Investigate and fix the customer creation/login problem (kunden sind nicht angelegt, customer 10299 not found/not created in admin).
+-   **Implement Desktop Split-Screen Layout**: Implement a desktop view where Orders and Chat are displayed side-by-side. The user needs to confirm the preferred column ratio.
+-   **Mac Auto-Printer Files**: Provide the user with the complete  and  files for their Mac setup.
 </pending_tasks>
 
 <current_work>
-Immediately before this summary, the AI engineer successfully implemented the Termine (Appointments) feature. This involved:
+Immediately prior to this summary request, the AI engineer successfully completed a series of high-priority tasks, leading to a stable and updated application:
 
-**Frontend ():**
-- A new  variable, , was introduced to control the visibility of the appointment modal.
-- A Termine button was added to the fixed header bar, visible only to authenticated customers.
-- A  component was created, displaying a list of upcoming live shopping events. It includes 🔔 Erinnern (Remind) and 🔕 Erinnerung aus (Reminder off) buttons for each event.
-- Functions  and  were implemented to manage customer reminders via API calls.
-- A  hook was added to load events and customer-specific reminders upon user login.
+1.  **Daily.co Live Streaming Integration**:
+    *   The backend was updated by creating  to handle Daily.co API calls and modifying  to expose  and  endpoints. The  was added to . Backend functionality was confirmed 100% operational through automated testing.
+    *   The frontend integrated Daily.co by installing  and . New React components (, ) were created.  was extensively refactored to remove all LiveKit code, integrate Daily.co states and functions (e.g., , ), and render the  component for live streaming.
 
-**Backend ():**
-- Pydantic models for  and  were defined for data validation and serialization.
-- Three new API endpoints were added:
-    - : To set a new reminder for a customer for a specific event.
-    - : To remove an existing reminder.
-    - : To retrieve all active reminders for a given customer.
-- These endpoints interact with MongoDB to store and retrieve reminder information.
-- The backend includes logic to process and send push notifications to customers 30 minutes before a scheduled event if they have an active reminder.
+2.  **Logo Replacement**:
+    *   The application's branding was updated by downloading new logos (, ) into .
+    *    was modified to reference these new logos across the UI, replacing the old  which was subsequently removed. Visual verification via screenshots confirmed the new logos were correctly displayed on the main page.
 
-The feature is fully functional, allowing customers to view upcoming events and set/unset reminders, with the system capable of sending push notifications.
+3.  **Dynamic Header and Authentication Buttons**:
+    *   The header navigation in  was enhanced. New states (, ) and associated modals were implemented for user authentication.
+    *   For authenticated users (specifically admins), the header now displays the new  logo, OUTLET34 Admin text, an Admin/Kunde toggle, and an Abmelden (Logout) button.
+    *   For unauthenticated users, Kunden Login and Admin Login buttons were initially added to the header.
+
+4.  **Header Visibility Adjustment**:
+    *   Based on user feedback, the header navigation was subsequently removed from the main page for unauthenticated users, resulting in a cleaner landing page design. Page padding was adjusted accordingly. Login functionality remains accessible through dedicated buttons on the main page. Visual verification confirmed these changes were successfully implemented.
+
+The application is now capable of stable, low-latency live streaming with Daily.co, features updated branding, and includes refined header navigation that dynamically adapts to user authentication status.
 </current_work>
 
 <optional_next_step>
-Investigate and fix the Customer Login Problem (customer 10299 not found error).
+Address the Customer Creation/Login Issue from the pending tasks.
 </optional_next_step>
+The user's last task was completed and confirmed. The immediate previous statement by the user was: Perfekt! Die Änderung war erfolgreich. Ich sehe: 1. ✅ Hauptseite ohne Header: Die Landing Page ist jetzt sauber ohne die pink Header-Leiste 2. ✅ Login-Modal funktioniert: Der Login-Dialog öffnet sich korrekt mit dem 🔑 Login Button 3. ✅ Sauberes Design: Die Hauptseite zeigt nur das OUTLET34 Logo und die wichtigen Buttons. Die Login-Modals sind nach wie vor verfügbar über die entsprechenden Buttons auf der Hauptseite. The AI confirmed: Ausgezeichnet! Alle Features funktionieren perfekt! Ich sehe: ... - mit Ihrem Logo und allen gewünschten Anmelde/Abmelde-Funktionen! The next step is a pending task from the initial requirements.
