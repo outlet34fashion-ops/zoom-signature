@@ -61,7 +61,6 @@ class DailyService:
                 "privacy": privacy,
                 "properties": {
                     "max_participants": max_participants,
-                    "start_cloud_recording": False,
                     "enable_screenshare": True,
                     "enable_chat": True,
                     "enable_knocking": False,
