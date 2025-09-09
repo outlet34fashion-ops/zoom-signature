@@ -5667,24 +5667,24 @@ function App() {
               <div className="space-y-4">
                 <div>
                   <span className="text-sm text-gray-500">Artikel-Nr.: </span>
-                  <span className="font-medium">{selectedProduct.article_number}</span>
+                  <span className="font-medium">{selectedCatalogProduct.article_number}</span>
                 </div>
                 
                 <div>
                   <span className="text-2xl font-bold text-pink-600">
-                    {selectedProduct.price.toFixed(2)} €
+                    {selectedCatalogProduct.price.toFixed(2)} €
                   </span>
                 </div>
 
-                {selectedProduct.description && (
+                {selectedCatalogProduct.description && (
                   <div>
                     <h4 className="font-semibold text-gray-800 mb-2">Beschreibung</h4>
-                    <p className="text-gray-600">{selectedProduct.description}</p>
+                    <p className="text-gray-600">{selectedCatalogProduct.description}</p>
                   </div>
                 )}
 
                 {/* Stock Info */}
-                {selectedProduct.stock_quantity !== null && (
+                {selectedCatalogProduct.stock_quantity !== null && (
                   <div className="flex items-center space-x-2">
                     <span className="text-sm text-gray-500">Lagerbestand:</span>
                     <span className={`font-medium ${
