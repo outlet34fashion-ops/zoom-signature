@@ -2219,6 +2219,348 @@ async def send_reminder_notifications():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+# ==============================================
+# PRODUKTKATALOG API ENDPOINTS
+# ==============================================
+
+# Categories - Public Endpoints
+@api_router.get("/categories", response_model=List[Category])
+async def get_categories():
+    """Get all categories (public)"""
+    try:
+        categories = await db.categories.find().sort("sort_order", 1).to_list(length=None)
+        return [Category(**cat) for cat in categories]
+    except Exception as e:
+        logging.error(f"Error getting categories: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to get categories")
+
+@api_router.get("/categories/{category_id}", response_model=Category)
+async def get_category(category_id: str):
+    """Get category by ID (public)"""
+    try:
+        category = await db.categories.find_one({"id": category_id})
+        if not category:
+            raise HTTPException(status_code=404, detail="Category not found")
+        return Category(**category)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Error getting category: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to get category")
+
+# Categories - Admin Endpoints
+@api_router.post("/admin/categories", response_model=Category)
+async def create_category(category: CategoryCreate):
+    """Create new category (admin only)"""
+    try:
+        category_dict = category.dict()
+        category_dict["id"] = str(uuid.uuid4())
+        category_dict["created_at"] = datetime.now(timezone.utc)
+        category_dict["updated_at"] = datetime.now(timezone.utc)
+        
+        await db.categories.insert_one(category_dict)
+        return Category(**category_dict)
+    except Exception as e:
+        logging.error(f"Category creation error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Category creation failed")
+
+@api_router.put("/admin/categories/{category_id}", response_model=Category)
+async def update_category(category_id: str, category: CategoryUpdate):
+    """Update category (admin only)"""
+    try:
+        update_data = {k: v for k, v in category.dict().items() if v is not None}
+        if not update_data:
+            raise HTTPException(status_code=400, detail="No fields to update")
+        
+        update_data["updated_at"] = datetime.now(timezone.utc)
+        
+        result = await db.categories.update_one(
+            {"id": category_id},
+            {"$set": update_data}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Category not found")
+        
+        category = await db.categories.find_one({"id": category_id})
+        return Category(**category)
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Category update error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Category update failed")
+
+@api_router.delete("/admin/categories/{category_id}")
+async def delete_category(category_id: str):
+    """Delete category (admin only)"""
+    try:
+        # Check if any products are using this category
+        products_count = await db.products.count_documents({"category_id": category_id})
+        if products_count > 0:
+            raise HTTPException(status_code=400, detail=f"Cannot delete category with {products_count} products")
+        
+        result = await db.categories.delete_one({"id": category_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Category not found")
+        
+        return {"message": "Category deleted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Category deletion error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Category deletion failed")
+
+# Products - Public Endpoints
+@api_router.get("/products", response_model=List[CatalogProduct])
+async def get_products(category_id: Optional[str] = None, active_only: bool = True):
+    """Get all products (public) - optionally filtered by category"""
+    try:
+        query = {}
+        if category_id:
+            query["category_id"] = category_id
+        if active_only:
+            query["is_active"] = True
+            
+        products = await db.products.find(query).sort("created_at", -1).to_list(length=None)
+        return [CatalogProduct(**prod) for prod in products]
+    except Exception as e:
+        logging.error(f"Error getting products: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to get products")
+
+@api_router.get("/products/{product_id}", response_model=CatalogProduct)
+async def get_product(product_id: str):
+    """Get product by ID (public)"""
+    try:
+        product = await db.products.find_one({"id": product_id})
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+        
+        # Only return active products for public endpoint
+        if not product.get("is_active", True):
+            raise HTTPException(status_code=404, detail="Product not found")
+            
+        return CatalogProduct(**product)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Error getting product: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to get product")
+
+# Products - Admin Endpoints
+@api_router.post("/admin/products", response_model=CatalogProduct)
+async def create_product(product: CatalogProductCreate):
+    """Create new product (admin only)"""
+    try:
+        # Verify category exists
+        category = await db.categories.find_one({"id": product.category_id})
+        if not category:
+            raise HTTPException(status_code=400, detail="Category not found")
+        
+        # Check if article_number is unique
+        existing = await db.products.find_one({"article_number": product.article_number})
+        if existing:
+            raise HTTPException(status_code=400, detail="Article number already exists")
+        
+        product_dict = product.dict()
+        product_dict["id"] = str(uuid.uuid4())
+        product_dict["is_active"] = True
+        product_dict["created_at"] = datetime.now(timezone.utc)
+        product_dict["updated_at"] = datetime.now(timezone.utc)
+        
+        await db.products.insert_one(product_dict)
+        return CatalogProduct(**product_dict)
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Product creation error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Product creation failed")
+
+@api_router.put("/admin/products/{product_id}", response_model=CatalogProduct)
+async def update_product(product_id: str, product: CatalogProductUpdate):
+    """Update product (admin only)"""
+    try:
+        update_data = {k: v for k, v in product.dict().items() if v is not None}
+        if not update_data:
+            raise HTTPException(status_code=400, detail="No fields to update")
+        
+        # If category_id is being updated, verify it exists
+        if "category_id" in update_data:
+            category = await db.categories.find_one({"id": update_data["category_id"]})
+            if not category:
+                raise HTTPException(status_code=400, detail="Category not found")
+        
+        update_data["updated_at"] = datetime.now(timezone.utc)
+        
+        result = await db.products.update_one(
+            {"id": product_id},
+            {"$set": update_data}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Product not found")
+        
+        product = await db.products.find_one({"id": product_id})
+        return CatalogProduct(**product)
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Product update error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Product update failed")
+
+@api_router.delete("/admin/products/{product_id}")
+async def delete_product(product_id: str):
+    """Delete product (admin only)"""
+    try:
+        result = await db.products.delete_one({"id": product_id})
+        
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Product not found")
+        
+        return {"message": "Product deleted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Product deletion error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Product deletion failed")
+
+# Catalog Orders - Customer Endpoints
+@api_router.post("/catalog/orders", response_model=CatalogOrder)
+async def create_catalog_order(order: CatalogOrderCreate):
+    """Create catalog order (customer)"""
+    try:
+        # Verify customer exists and is active
+        customer = await db.customers.find_one({"customer_number": order.customer_number})
+        if not customer:
+            raise HTTPException(status_code=404, detail="Customer not found")
+        if customer.get("activation_status") != "active":
+            raise HTTPException(status_code=403, detail="Customer not activated")
+        
+        # Verify product exists and is active
+        product = await db.products.find_one({"id": order.product_id})
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+        if not product.get("is_active", True):
+            raise HTTPException(status_code=400, detail="Product not available")
+        
+        # Check stock if applicable
+        if product.get("stock_quantity") is not None:
+            if product["stock_quantity"] < order.quantity:
+                raise HTTPException(status_code=400, detail="Insufficient stock")
+        
+        # Calculate total price
+        unit_price = product["price"]
+        total_price = unit_price * order.quantity
+        
+        order_dict = order.dict()
+        order_dict["id"] = str(uuid.uuid4())
+        order_dict["article_number"] = product["article_number"]
+        order_dict["product_name"] = product["name"]
+        order_dict["unit_price"] = unit_price
+        order_dict["total_price"] = total_price
+        order_dict["status"] = "pending"
+        order_dict["created_at"] = datetime.now(timezone.utc)
+        order_dict["updated_at"] = datetime.now(timezone.utc)
+        
+        # Insert order
+        await db.catalog_orders.insert_one(order_dict)
+        
+        # Update stock if applicable
+        if product.get("stock_quantity") is not None:
+            await db.products.update_one(
+                {"id": order.product_id},
+                {"$inc": {"stock_quantity": -order.quantity}}
+            )
+        
+        # Create chat message for order (similar to live shopping orders)
+        chat_message = {
+            "id": str(uuid.uuid4()),
+            "username": f"Kunde {order.customer_number[-4:]}",  # Last 4 digits
+            "message": f"**Katalog-Bestellung** {order.customer_number[-4:]} I {order.quantity}x I {total_price:.2f} € I {order.size}",
+            "timestamp": datetime.now(timezone.utc),
+            "emoji": "📦"
+        }
+        await db.messages.insert_one(chat_message)
+        
+        # Broadcast order notification
+        await manager.broadcast(json.dumps({
+            "type": "catalog_order",
+            "customer": order.customer_number[-4:],
+            "product": product["name"],
+            "quantity": order.quantity,
+            "total": total_price,
+            "size": order.size
+        }))
+        
+        return CatalogOrder(**order_dict)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Catalog order creation error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Order creation failed")
+
+@api_router.get("/catalog/orders/customer/{customer_number}", response_model=List[CatalogOrder])
+async def get_customer_catalog_orders(customer_number: str):
+    """Get customer's catalog orders"""
+    try:
+        orders = await db.catalog_orders.find(
+            {"customer_number": customer_number}
+        ).sort("created_at", -1).to_list(length=None)
+        
+        return [CatalogOrder(**order) for order in orders]
+        
+    except Exception as e:
+        logging.error(f"Error getting customer orders: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to get orders")
+
+# Catalog Orders - Admin Endpoints
+@api_router.get("/admin/catalog/orders", response_model=List[CatalogOrder])
+async def get_all_catalog_orders(status: Optional[str] = None):
+    """Get all catalog orders (admin only)"""
+    try:
+        query = {}
+        if status:
+            query["status"] = status
+            
+        orders = await db.catalog_orders.find(query).sort("created_at", -1).to_list(length=None)
+        return [CatalogOrder(**order) for order in orders]
+        
+    except Exception as e:
+        logging.error(f"Error getting catalog orders: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to get catalog orders")
+
+@api_router.put("/admin/catalog/orders/{order_id}/status")
+async def update_catalog_order_status(order_id: str, status: str):
+    """Update catalog order status (admin only)"""
+    try:
+        valid_statuses = ["pending", "confirmed", "shipped", "cancelled"]
+        if status not in valid_statuses:
+            raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {valid_statuses}")
+        
+        result = await db.catalog_orders.update_one(
+            {"id": order_id},
+            {"$set": {
+                "status": status,
+                "updated_at": datetime.now(timezone.utc)
+            }}
+        )
+        
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Order not found")
+        
+        return {"message": f"Order status updated to {status}"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Order status update error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Order status update failed")
+
 # WebSocket endpoint
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
