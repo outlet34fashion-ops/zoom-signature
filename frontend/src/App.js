@@ -5096,7 +5096,7 @@ function App() {
                     </div>
                     {isAdminAuthenticated && (
                       <Button 
-                        onClick={startLiveKitStreaming}
+                        onClick={startDailyStreaming}
                         className="bg-red-600 hover:bg-red-700 text-white"
                         size="lg"
                       >
