@@ -517,11 +517,18 @@ function App() {
         ? newProductData.sizes 
         : ['OneSize'];
       
+      // Sort media files by order and extract URLs
+      const sortedMedia = productMediaFiles.sort((a, b) => a.order - b.order);
+      const imageUrl = sortedMedia.find(file => file.type === 'image')?.url || '';
+      const additionalImages = sortedMedia.filter(file => file.type === 'image').slice(1).map(file => file.url);
+      
       const productData = {
         ...newProductData,
         sizes: sizesArray,
         price: parseFloat(newProductData.price),
-        stock_quantity: newProductData.stock_quantity ? parseInt(newProductData.stock_quantity) : null
+        stock_quantity: newProductData.stock_quantity ? parseInt(newProductData.stock_quantity) : null,
+        image_url: imageUrl,
+        additional_images: additionalImages
       };
       
       await axios.post(`${API}/admin/products`, productData);
