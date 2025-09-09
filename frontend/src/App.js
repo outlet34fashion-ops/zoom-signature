@@ -104,7 +104,9 @@ function App() {
   const [newCustomerData, setNewCustomerData] = useState({
     customer_number: '',
     email: '',
-    name: ''
+    first_name: '',
+    last_name: '',
+    company_name: ''
   });
   const [createCustomerError, setCreateCustomerError] = useState('');
   const [creatingCustomer, setCreatingCustomer] = useState(false);
