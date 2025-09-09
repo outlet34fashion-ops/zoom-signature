@@ -420,6 +420,92 @@ function App() {
     }
   };
 
+  // Upload Media Files
+  const uploadMediaFiles = async (files) => {
+    try {
+      setUploadingMedia(true);
+      
+      const formData = new FormData();
+      for (const file of files) {
+        formData.append('files', file);
+      }
+      
+      const response = await axios.post(`${API}/upload/product-media`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      
+      if (response.data.success) {
+        const newFiles = response.data.files.map(file => ({
+          ...file,
+          order: productMediaFiles.length + response.data.files.indexOf(file)
+        }));
+        
+        setProductMediaFiles(prev => [...prev, ...newFiles]);
+      }
+      
+    } catch (error) {
+      console.error('Error uploading files:', error);
+      setCatalogError('Fehler beim Hochladen der Dateien');
+    } finally {
+      setUploadingMedia(false);
+    }
+  };
+
+  // Handle file drop
+  const handleFileDrop = (e) => {
+    e.preventDefault();
+    setDragOver(false);
+    
+    const files = Array.from(e.dataTransfer.files).filter(file => 
+      file.type.startsWith('image/') || file.type.startsWith('video/')
+    );
+    
+    if (files.length > 0) {
+      uploadMediaFiles(files);
+    }
+  };
+
+  // Handle file input
+  const handleFileInput = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length > 0) {
+      uploadMediaFiles(files);
+    }
+  };
+
+  // Remove media file
+  const removeMediaFile = async (fileId, filename) => {
+    try {
+      // Remove from server
+      await axios.delete(`${API}/upload/product-media/${filename.split('/').pop()}`);
+      
+      // Remove from local state
+      setProductMediaFiles(prev => prev.filter(file => file.id !== fileId));
+      
+    } catch (error) {
+      console.error('Error removing file:', error);
+    }
+  };
+
+  // Move media file up/down
+  const moveMediaFile = (fileId, direction) => {
+    setProductMediaFiles(prev => {
+      const index = prev.findIndex(file => file.id === fileId);
+      if (index === -1) return prev;
+      
+      const newIndex = direction === 'up' ? index - 1 : index + 1;
+      if (newIndex < 0 || newIndex >= prev.length) return prev;
+      
+      const newFiles = [...prev];
+      [newFiles[index], newFiles[newIndex]] = [newFiles[newIndex], newFiles[index]];
+      
+      // Update order values
+      return newFiles.map((file, idx) => ({ ...file, order: idx }));
+    });
+  };
+
   // Admin: Create Product
   const createProduct = async () => {
     try {
