@@ -9368,7 +9368,11 @@ TIMEZONE BUG ANALYSIS COMPLETE:
                 main_count = len([cat for cat in all_categories if cat.get('is_main_category') == True])
                 sub_count = len([cat for cat in all_categories if cat.get('is_main_category') == False])
                 
-                has_main_categories = main_count == 5
+                # Check for hierarchical categories specifically
+                hierarchical_main_names = ["Oberteile", "Hosen & Jeans", "Kleider & Röcke", "Jacken & Mäntel", "Accessoires"]
+                hierarchical_main_count = len([cat for cat in all_categories if cat.get('is_main_category') == True and cat.get('name') in hierarchical_main_names])
+                
+                has_hierarchical_categories = hierarchical_main_count == 5
                 has_subcategories = sub_count > 0  # Should have multiple subcategories
                 
                 # Check hierarchy structure
