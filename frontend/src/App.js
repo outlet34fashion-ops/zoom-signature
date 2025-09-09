@@ -6814,22 +6814,62 @@ function App() {
                 </div>
               </div>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Kategorie *
-                </label>
-                <select
-                  value={newProductData.category_id}
-                  onChange={(e) => setNewProductData({ ...newProductData, category_id: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                >
-                  <option value="">Kategorie auswählen</option>
-                  {categories.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))}
-                </select>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Hauptkategorie * (Pflicht)
+                  </label>
+                  <select
+                    value={newProductData.main_category_id}
+                    onChange={(e) => {
+                      const mainCatId = e.target.value;
+                      setNewProductData({ 
+                        ...newProductData, 
+                        main_category_id: mainCatId,
+                        sub_category_id: '' // Reset subcategory when main category changes
+                      });
+                      if (mainCatId) {
+                        loadSubCategories(mainCatId);
+                      } else {
+                        setSubCategories([]);
+                      }
+                    }}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    required
+                  >
+                    <option value="">Hauptkategorie auswählen</option>
+                    {mainCategories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.icon} {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Unterkategorie (optional)
+                  </label>
+                  <select
+                    value={newProductData.sub_category_id}
+                    onChange={(e) => setNewProductData({ ...newProductData, sub_category_id: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    disabled={!newProductData.main_category_id || subCategories.length === 0}
+                  >
+                    <option value="">Unterkategorie auswählen (optional)</option>
+                    {subCategories.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                  {!newProductData.main_category_id && (
+                    <p className="text-xs text-gray-500 mt-1">Erst Hauptkategorie auswählen</p>
+                  )}
+                  {newProductData.main_category_id && subCategories.length === 0 && (
+                    <p className="text-xs text-gray-500 mt-1">Keine Unterkategorien verfügbar</p>
+                  )}
+                </div>
               </div>
               
               <div>
