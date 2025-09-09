@@ -7181,6 +7181,9 @@ TIMEZONE BUG ANALYSIS COMPLETE:
         # Test Zoom integration endpoints
         zoom_success = self.test_zoom_integration()
         
+        # Test Daily.co integration endpoints (NEW FEATURE - Review Request)
+        daily_success = self.test_daily_co_integration()
+        
         # Test Customer Management System (NEW FEATURE)
         customer_success = self.test_customer_management()
         
