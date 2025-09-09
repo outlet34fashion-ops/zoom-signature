@@ -6854,6 +6854,244 @@ TIMEZONE BUG ANALYSIS COMPLETE:
         
         return livekit_success_count >= 7
 
+    def test_daily_co_integration(self):
+        """Test Daily.co API integration endpoints"""
+        print("\n📹 Testing Daily.co API Integration...")
+        
+        # Test data as specified in review request
+        room_name = "test-live-shopping"
+        admin_user = "Test Admin"
+        customer_user = "Test Customer"
+        
+        # Test 1: Daily.co Service Configuration
+        try:
+            response = requests.get(f"{self.api_url}/daily/config", timeout=10)
+            config_success = response.status_code == 200
+            config_details = f"GET Status: {response.status_code}"
+            
+            if config_success:
+                config_data = response.json()
+                has_config = isinstance(config_data, dict) and len(config_data) > 0
+                config_success = has_config
+                config_details += f", Has config data: {has_config}"
+                if has_config:
+                    config_details += f", Keys: {list(config_data.keys())}"
+            
+            self.log_test("Daily.co Service Configuration", config_success, config_details)
+        except Exception as e:
+            self.log_test("Daily.co Service Configuration", False, str(e))
+            config_success = False
+        
+        # Test 2: Room Creation
+        try:
+            room_request = {
+                "room_name": room_name,
+                "privacy": "public",
+                "max_participants": 100,
+                "properties": {
+                    "enable_screenshare": True,
+                    "enable_chat": True,
+                    "lang": "de"
+                }
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/daily/rooms",
+                json=room_request,
+                headers={'Content-Type': 'application/json'},
+                timeout=15
+            )
+            
+            room_success = response.status_code == 200
+            room_details = f"POST Status: {response.status_code}"
+            
+            if room_success:
+                room_data = response.json()
+                required_fields = ['id', 'name', 'api_created', 'privacy', 'url', 'created_at', 'config']
+                has_all_fields = all(field in room_data for field in required_fields)
+                correct_name = room_data.get('name') == room_name
+                room_success = has_all_fields and correct_name
+                room_details += f", Has all fields: {has_all_fields}, Correct name: {correct_name}"
+                if room_success:
+                    created_room_url = room_data.get('url', '')
+                    room_details += f", Room URL: {created_room_url}"
+            
+            self.log_test("Daily.co Room Creation", room_success, room_details)
+        except Exception as e:
+            self.log_test("Daily.co Room Creation", False, str(e))
+            room_success = False
+        
+        # Test 3: Admin Token Generation
+        try:
+            admin_token_request = {
+                "room_name": room_name,
+                "user_name": admin_user,
+                "is_owner": True,
+                "enable_screenshare": True,
+                "enable_recording": False,
+                "enable_live_streaming": True
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/daily/meeting-tokens",
+                json=admin_token_request,
+                headers={'Content-Type': 'application/json'},
+                timeout=15
+            )
+            
+            admin_token_success = response.status_code == 200
+            admin_token_details = f"POST Status: {response.status_code}"
+            
+            if admin_token_success:
+                token_data = response.json()
+                required_fields = ['token', 'room_name', 'user_name', 'is_owner', 'expires_in']
+                has_all_fields = all(field in token_data for field in required_fields)
+                is_owner = token_data.get('is_owner') == True
+                token_length = len(token_data.get('token', ''))
+                token_valid = token_length > 500  # Daily.co tokens are typically long
+                
+                admin_token_success = has_all_fields and is_owner and token_valid
+                admin_token_details += f", Has all fields: {has_all_fields}, Is owner: {is_owner}, Token length: {token_length}"
+            
+            self.log_test("Daily.co Admin Token Generation", admin_token_success, admin_token_details)
+        except Exception as e:
+            self.log_test("Daily.co Admin Token Generation", False, str(e))
+            admin_token_success = False
+        
+        # Test 4: Customer/Viewer Token Generation
+        try:
+            viewer_token_request = {
+                "room_name": room_name,
+                "user_name": customer_user,
+                "is_owner": False,
+                "enable_screenshare": False,
+                "enable_recording": False,
+                "enable_live_streaming": False
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/daily/meeting-tokens",
+                json=viewer_token_request,
+                headers={'Content-Type': 'application/json'},
+                timeout=15
+            )
+            
+            viewer_token_success = response.status_code == 200
+            viewer_token_details = f"POST Status: {response.status_code}"
+            
+            if viewer_token_success:
+                token_data = response.json()
+                required_fields = ['token', 'room_name', 'user_name', 'is_owner', 'expires_in']
+                has_all_fields = all(field in token_data for field in required_fields)
+                is_viewer = token_data.get('is_owner') == False
+                token_length = len(token_data.get('token', ''))
+                token_valid = token_length > 500  # Daily.co tokens are typically long
+                
+                viewer_token_success = has_all_fields and is_viewer and token_valid
+                viewer_token_details += f", Has all fields: {has_all_fields}, Is viewer: {is_viewer}, Token length: {token_length}"
+            
+            self.log_test("Daily.co Viewer Token Generation", viewer_token_success, viewer_token_details)
+        except Exception as e:
+            self.log_test("Daily.co Viewer Token Generation", False, str(e))
+            viewer_token_success = False
+        
+        # Test 5: Room Information Retrieval
+        try:
+            response = requests.get(f"{self.api_url}/daily/rooms/{room_name}", timeout=10)
+            room_info_success = response.status_code == 200
+            room_info_details = f"GET Status: {response.status_code}"
+            
+            if room_info_success:
+                room_info = response.json()
+                has_room_data = isinstance(room_info, dict) and 'id' in room_info
+                room_info_success = has_room_data
+                room_info_details += f", Has room data: {has_room_data}"
+                if has_room_data:
+                    room_info_details += f", Room ID: {room_info.get('id', 'N/A')}"
+            
+            self.log_test("Daily.co Room Information", room_info_success, room_info_details)
+        except Exception as e:
+            self.log_test("Daily.co Room Information", False, str(e))
+            room_info_success = False
+        
+        # Test 6: List All Rooms
+        try:
+            response = requests.get(f"{self.api_url}/daily/rooms", timeout=10)
+            list_success = response.status_code == 200
+            list_details = f"GET Status: {response.status_code}"
+            
+            if list_success:
+                rooms_data = response.json()
+                has_data_field = 'data' in rooms_data
+                rooms_list = rooms_data.get('data', [])
+                is_list = isinstance(rooms_list, list)
+                has_test_room = any(room.get('name') == room_name for room in rooms_list)
+                
+                list_success = has_data_field and is_list
+                list_details += f", Has data field: {has_data_field}, Is list: {is_list}, Rooms count: {len(rooms_list)}, Has test room: {has_test_room}"
+            
+            self.log_test("Daily.co Rooms List", list_success, list_details)
+        except Exception as e:
+            self.log_test("Daily.co Rooms List", False, str(e))
+            list_success = False
+        
+        # Test 7: Error Handling - Invalid Room Name
+        try:
+            invalid_room_name = "non-existent-room-12345"
+            response = requests.get(f"{self.api_url}/daily/rooms/{invalid_room_name}", timeout=10)
+            error_handling_success = response.status_code == 404
+            error_details = f"GET Status: {response.status_code} (should be 404 for non-existent room)"
+            
+            self.log_test("Daily.co Error Handling (Invalid Room)", error_handling_success, error_details)
+        except Exception as e:
+            self.log_test("Daily.co Error Handling (Invalid Room)", False, str(e))
+            error_handling_success = False
+        
+        # Test 8: Error Handling - Invalid Token Request
+        try:
+            invalid_token_request = {
+                "room_name": "non-existent-room-12345",
+                "user_name": "Test User",
+                "is_owner": False
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/daily/meeting-tokens",
+                json=invalid_token_request,
+                headers={'Content-Type': 'application/json'},
+                timeout=15
+            )
+            
+            # Daily.co might return different error codes for invalid rooms
+            token_error_success = response.status_code in [400, 404, 500]
+            token_error_details = f"POST Status: {response.status_code} (should be error code for invalid room)"
+            
+            self.log_test("Daily.co Error Handling (Invalid Token)", token_error_success, token_error_details)
+        except Exception as e:
+            self.log_test("Daily.co Error Handling (Invalid Token)", False, str(e))
+            token_error_success = False
+        
+        # Calculate success rate
+        daily_tests = [
+            config_success, room_success, admin_token_success, viewer_token_success,
+            room_info_success, list_success, error_handling_success, token_error_success
+        ]
+        daily_success_count = sum(daily_tests)
+        
+        print(f"  📊 Daily.co Integration Tests: {daily_success_count}/{len(daily_tests)} passed")
+        
+        # Clean up - try to delete the test room
+        try:
+            delete_response = requests.delete(f"{self.api_url}/daily/rooms/{room_name}", timeout=10)
+            if delete_response.status_code == 200:
+                print(f"  🧹 Test room '{room_name}' cleaned up successfully")
+            else:
+                print(f"  ⚠️ Could not clean up test room (Status: {delete_response.status_code})")
+        except Exception as e:
+            print(f"  ⚠️ Room cleanup failed: {str(e)}")
+        
+        return daily_success_count == len(daily_tests)
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("🚀 Starting Live Shopping App Backend API Tests")
