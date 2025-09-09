@@ -1663,11 +1663,16 @@ function App() {
     }
   };
 
-  // CRITICAL: LiveKit Streaming Functions
-  const initializeLiveKitStreaming = async () => {
+  // ENHANCED: Start LiveKit streaming with better error handling
+  const startLiveKitStreaming = async () => {
     try {
-      console.log('🚀 Initializing LiveKit streaming...');
-      setLivekitError(null);
+      console.log('🎥 Starting enhanced LiveKit streaming...');
+      
+      // Check device capabilities first
+      const hasCamera = await checkCameraAccess();
+      if (!hasCamera) {
+        throw new Error('Kamera-Zugriff nicht verfügbar. Bitte erlauben Sie Kamera-Zugriff in den Browser-Einstellungen.');
+      }
       
       // Generate room name
       const roomName = `live-shopping-${Date.now()}`;
@@ -1683,13 +1688,13 @@ function App() {
         // Admin = Publisher (can stream)
         tokenData = await livekitService.generatePublisherToken(
           roomName,
-          `admin-${Date.now()}`,
+          `admin-publisher-${Date.now()}`,
           { role: 'admin', streaming: true }
         );
         console.log('✅ Admin publisher token generated');
       } else {
-        // Customer = Viewer (watch only)
-        const customerNumber = getCustomerNumber();
+        // Customer = Viewer (can watch)
+        const customerNumber = localStorage.getItem('customerNumber') || 'guest';
         tokenData = await livekitService.generateViewerToken(
           roomName,
           `customer-${customerNumber}`,
@@ -1702,11 +1707,114 @@ function App() {
       setLivekitUrl(tokenData.livekitUrl);
       setStreamingActive(true);
       
-      console.log('🎥 LiveKit streaming initialized successfully');
+      console.log('🎥 Enhanced LiveKit streaming initialized successfully');
       
     } catch (error) {
       console.error('❌ Failed to initialize LiveKit streaming:', error);
       setLivekitError(error.message);
+      
+      // Show user-friendly error message
+      if (error.message.includes('camera') || error.message.includes('Kamera')) {
+        alert('🚨 Kamera-Zugriff Fehler:\n\n' + error.message + '\n\nBitte:\n1. Erlauben Sie Kamera-Zugriff\n2. Stellen Sie sicher, dass Ihre Kamera nicht von anderen Apps verwendet wird\n3. Versuchen Sie es erneut');
+      } else {
+        alert('❌ Streaming-Fehler: ' + error.message);
+      }
+    }
+  };
+
+  // ENHANCED: Check camera access before streaming  
+  const checkCameraAccess = async () => {
+    try {
+      console.log('🔍 Checking camera access...');
+      
+      // First enumerate devices
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter(device => device.kind === 'videoinput');
+      console.log('📹 Found video devices:', videoDevices.length);
+      
+      if (videoDevices.length === 0) {
+        throw new Error('Keine Kamera gefunden. Bitte schließen Sie eine Kamera an.');
+      }
+      
+      // Try to get user media with multiple constraints
+      const constraints = [
+        // Try preferred settings first
+        {
+          video: {
+            width: { ideal: 1920, min: 640 },
+            height: { ideal: 1080, min: 480 },
+            frameRate: { ideal: 30, min: 15 },
+            facingMode: 'user'
+          },
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true
+          }
+        },
+        // Fallback: Basic settings
+        {
+          video: {
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+            frameRate: { ideal: 24 }
+          },
+          audio: true
+        },
+        // Last resort: Any video/audio
+        {
+          video: true,
+          audio: true
+        }
+      ];
+      
+      let stream = null;
+      let lastError = null;
+      
+      for (const constraint of constraints) {
+        try {
+          console.log('🔄 Trying camera access with constraint:', constraint);
+          stream = await navigator.mediaDevices.getUserMedia(constraint);
+          console.log('✅ Camera access successful with constraint');
+          break;
+        } catch (err) {
+          console.warn('⚠️ Camera access failed with constraint:', err.message);
+          lastError = err;
+        }
+      }
+      
+      if (!stream) {
+        throw lastError || new Error('Kamera-Zugriff verweigert');
+      }
+      
+      // Test stream validity
+      const videoTracks = stream.getVideoTracks();
+      const audioTracks = stream.getAudioTracks();
+      
+      console.log('✅ Camera access validated:', {
+        video: videoTracks.length > 0,
+        audio: audioTracks.length > 0,
+        videoSettings: videoTracks[0]?.getSettings()
+      });
+      
+      // Clean up test stream
+      stream.getTracks().forEach(track => track.stop());
+      
+      return videoTracks.length > 0;
+      
+    } catch (error) {
+      console.error('❌ Camera access check failed:', error);
+      
+      // Provide specific error messages
+      if (error.name === 'NotAllowedError') {
+        throw new Error('Kamera-Zugriff verweigert. Bitte erlauben Sie den Zugriff in den Browser-Einstellungen.');
+      } else if (error.name === 'NotFoundError') {
+        throw new Error('Keine Kamera gefunden. Bitte stellen Sie sicher, dass eine Kamera angeschlossen und verfügbar ist.');
+      } else if (error.name === 'NotReadableError') {
+        throw new Error('Kamera wird bereits von einer anderen Anwendung verwendet. Bitte schließen Sie andere Programme und versuchen Sie es erneut.');
+      } else {
+        throw new Error(`Kamera-Fehler: ${error.message}`);
+      }
     }
   };
 
