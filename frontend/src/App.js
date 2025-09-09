@@ -2095,11 +2095,11 @@ function App() {
         </header>
       )}
       
-      {/* Add padding-top to push content down when ticker and header are visible - ONLY for authenticated users */}
+      {/* Add padding-top to push content down when ticker and header are visible - FOR ALL USERS */}
       <div className={
         (isAuthenticated || isAdminView) 
-          ? (tickerSettings.enabled && !isAdminView && isAuthenticated ? "pt-32" : "pt-16") 
-          : ""
+          ? (tickerSettings.enabled && !isAdminView && isAuthenticated ? "pt-32" : "pt-16")
+          : "pt-16"
       }>
 
       {/* Modern Guest Landing Screen */}
