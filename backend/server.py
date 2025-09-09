@@ -925,8 +925,12 @@ async def register_customer(customer: CustomerCreate):
         # Create new customer with pending status
         customer_obj = Customer(
             customer_number=customer.customer_number,
+            first_name=customer.first_name,
+            last_name=customer.last_name,
             email=customer.email,
-            name=customer.name,
+            company_name=customer.company_name,
+            member_since=customer.member_since,
+            status=customer.status,
             preferred_language=customer.preferred_language or "de",
             activation_status="pending"
         )
