@@ -292,6 +292,85 @@ class CustomerUpdate(BaseModel):
     activation_status: str  # active, blocked
     profile_image: Optional[str] = None
 
+# Produktkatalog Models
+class Category(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    name: str
+    description: str = ""
+    image_url: Optional[str] = None
+    sort_order: int = 0
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class CategoryCreate(BaseModel):
+    name: str
+    description: str = ""
+    image_url: Optional[str] = None
+    sort_order: Optional[int] = 0
+
+class CategoryUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    image_url: Optional[str] = None
+    sort_order: Optional[int] = None
+
+class CatalogProduct(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    article_number: str  # Artikelnummer
+    name: str
+    description: str = ""
+    category_id: str
+    price: float
+    sizes: List[str] = []
+    image_url: Optional[str] = None
+    additional_images: List[str] = []
+    stock_quantity: Optional[int] = None  # Lagerbestand optional
+    is_active: bool = True
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class CatalogProductCreate(BaseModel):
+    article_number: str
+    name: str
+    description: str = ""
+    category_id: str
+    price: float
+    sizes: List[str] = []
+    image_url: Optional[str] = None
+    additional_images: List[str] = []
+    stock_quantity: Optional[int] = None
+
+class CatalogProductUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    category_id: Optional[str] = None
+    price: Optional[float] = None
+    sizes: Optional[List[str]] = None
+    image_url: Optional[str] = None
+    additional_images: Optional[List[str]] = None
+    stock_quantity: Optional[int] = None
+    is_active: Optional[bool] = None
+
+class CatalogOrder(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    customer_number: str
+    product_id: str
+    article_number: str  # For reference
+    product_name: str  # For reference
+    size: str
+    quantity: int
+    unit_price: float
+    total_price: float
+    status: str = "pending"  # pending, confirmed, shipped, cancelled
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+    updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class CatalogOrderCreate(BaseModel):
+    customer_number: str
+    product_id: str
+    size: str
+    quantity: int
+
 # In-memory counter and settings for demo
 order_counter = 0
 ticker_settings = {
