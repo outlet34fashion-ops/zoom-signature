@@ -4890,9 +4890,9 @@ function App() {
                     serverUrl={livekitUrl}
                     roomName={currentRoomName}
                     isPublisher={isAdminAuthenticated}
-                    onConnected={handleLiveKitConnected}
-                    onDisconnected={handleLiveKitDisconnected}
-                    onError={handleLiveKitError}
+                    onConnected={handleDailyConnected}
+                    onDisconnected={handleDailyDisconnected}
+                    onError={handleDailyError}
                   />
                 </div>
               ) : (
