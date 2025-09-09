@@ -2606,13 +2606,21 @@ function App() {
                     onError={(error) => {
                       console.error('❌ LiveKit Room Error:', error);
                       handleLiveKitError(error);
-                      setLivekitError(`Verbindungsfehler: ${error.message}`);
+                      // ENHANCED: Better error handling for video conflicts
+                      const errorMessage = error.message || error.toString();
+                      if (errorMessage.includes('play()') || errorMessage.includes('load request')) {
+                        setLivekitError('Video-Wiedergabe-Konflikt. Bitte laden Sie die Seite neu.');
+                      } else if (errorMessage.includes('camera') || errorMessage.includes('NotAllowedError')) {
+                        setLivekitError('Kamera-Zugriff verweigert. Bitte erlauben Sie Kamera-Zugriff.');
+                      } else {
+                        setLivekitError(`Verbindungsfehler: ${errorMessage}`);
+                      }
                     }}
                     options={{
-                      // Enhanced room options for better reliability
+                      // ENHANCED: Better video handling to prevent conflicts
                       videoCaptureDefaults: {
-                        resolution: { width: 1920, height: 1080 },
-                        frameRate: 30
+                        resolution: { width: 1280, height: 720 }, // Reduced resolution for better compatibility
+                        frameRate: 24 // Reduced framerate for stability
                       },
                       audioCaptureDefaults: {
                         echoCancellation: true,
@@ -2621,14 +2629,28 @@ function App() {
                       },
                       publishDefaults: {
                         videoSimulcastLayers: [
-                          { resolution: { width: 1920, height: 1080 }, encoding: { maxBitrate: 3500000 } },
-                          { resolution: { width: 1280, height: 720 }, encoding: { maxBitrate: 1500000 } },
+                          { resolution: { width: 1280, height: 720 }, encoding: { maxBitrate: 2000000 } },
                           { resolution: { width: 640, height: 360 }, encoding: { maxBitrate: 500000 } }
                         ],
                         audioPreset: {
                           maxBitrate: 128000
                         }
-                      }
+                      },
+                      // CRITICAL: Video element management
+                      e2ee: undefined, // Disable E2EE for compatibility
+                      dynacast: true,
+                      adaptiveStream: true,
+                      // Prevent video conflicts
+                      autoPlayVideo: false, // Let LiveKit handle video playback
+                      autoPlayAudio: false  // Let LiveKit handle audio playback
+                    }}
+                    connectOptions={{
+                      // ENHANCED: Connection options for better stability
+                      autoSubscribe: true,
+                      maxRetries: 3,
+                      peerConnectionTimeout: 15000,
+                      // Prevent concurrent connection attempts
+                      publishOnly: isAdminAuthenticated ? undefined : false
                     }}
                   >
                     <VideoConference 
