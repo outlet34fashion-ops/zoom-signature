@@ -3139,7 +3139,7 @@ function App() {
                             </span>
                           </div>
                           <Button 
-                            onClick={stopLiveKitStreaming}
+                            onClick={stopDailyStreaming}
                             variant="destructive"
                             size="sm"
                           >
