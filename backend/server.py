@@ -18,8 +18,8 @@ import base64
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# Import livekit_service after loading environment variables
-from livekit_service import livekit_service
+# Import Daily.co service after loading environment variables
+from daily_service import daily_service
 # CRITICAL: Import Zebra Printer Service for automatic label printing
 from zebra_printer import zebra_printer
 
