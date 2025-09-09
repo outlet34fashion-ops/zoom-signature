@@ -3569,6 +3569,110 @@ function App() {
           </div>
         )}
 
+        {/* Produktkatalog Management (Admin) */}
+        {isAdminAuthenticated && isAdminView && (
+          <Card className="border-l-4 border-l-purple-500 shadow-lg mb-6">
+            <CardContent className="p-0">
+              <button
+                onClick={() => setShowCatalogManagement(!showCatalogManagement)}
+                className="w-full p-6 text-left bg-gradient-to-r from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-150 transition-all duration-300 flex justify-between items-center"
+              >
+                <div className="flex items-center space-x-3">
+                  <span className="text-2xl">🛍️</span>
+                  <div>
+                    <h3 className="text-xl font-bold text-purple-800">Produktkatalog Verwaltung</h3>
+                    <p className="text-purple-600 text-sm">Kategorien und Produkte verwalten</p>
+                  </div>
+                </div>
+                <span className="text-2xl text-purple-600">
+                  {showCatalogManagement ? '▼' : '▶'}
+                </span>
+              </button>
+
+              {showCatalogManagement && (
+                <div className="p-6 bg-white border-t">
+                  {/* Quick Stats */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-blue-100 text-sm">Kategorien</p>
+                          <p className="text-2xl font-bold">{categories.length}</p>
+                        </div>
+                        <span className="text-3xl">🏷️</span>
+                      </div>
+                    </div>
+                    <div className="bg-gradient-to-r from-green-500 to-green-600 text-white p-4 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-green-100 text-sm">Produkte</p>
+                          <p className="text-2xl font-bold">{catalogProducts.length}</p>
+                        </div>
+                        <span className="text-3xl">📦</span>
+                      </div>
+                    </div>
+                    <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-4 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-purple-100 text-sm">Bestellungen</p>
+                          <p className="text-2xl font-bold">-</p>
+                        </div>
+                        <span className="text-3xl">🛒</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Management Buttons */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <button
+                      onClick={() => {
+                        setShowCreateCategory(true);
+                        setCatalogError('');
+                      }}
+                      className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center space-x-2"
+                    >
+                      <span>➕</span>
+                      <span>Neue Kategorie erstellen</span>
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowCreateProduct(true);
+                        setCatalogError('');
+                        // Load categories for dropdown
+                        loadCategories();
+                      }}
+                      className="bg-green-600 hover:bg-green-700 text-white p-4 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center space-x-2"
+                    >
+                      <span>➕</span>
+                      <span>Neues Produkt erstellen</span>
+                    </button>
+                  </div>
+
+                  {/* Load Data Button */}
+                  <div className="text-center">
+                    <button
+                      onClick={() => {
+                        loadCategories();
+                        loadCatalogProducts();
+                      }}
+                      className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200"
+                    >
+                      🔄 Daten neu laden
+                    </button>
+                  </div>
+
+                  {/* Error Display */}
+                  {catalogError && (
+                    <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-4">
+                      <p className="text-red-800">{catalogError}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         {/* Live Shopping Calendar Management (Admin) */}
         {isAdminAuthenticated && isAdminView && (
           <Card className="border-l-4 border-l-pink-500 shadow-lg mb-6">
