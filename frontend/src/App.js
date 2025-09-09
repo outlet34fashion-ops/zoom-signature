@@ -3175,14 +3175,14 @@ function App() {
                 {showStreamingControls && (
                   <div className="p-6 border-t border-gray-200">
                     {/* CRITICAL: LiveKit Streaming Admin Controls */}
-                    {streamingActive && livekitToken && livekitUrl ? (
+                    {streamingActive && dailyToken && dailyRoomUrl ? (
                       <div className="space-y-4">
                         {/* Connection Status */}
                         <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
                           <div className="flex items-center space-x-2">
-                            <div className={`w-3 h-3 rounded-full ${isLiveKitConnected ? 'bg-green-500' : 'bg-yellow-500'} animate-pulse`} />
+                            <div className={`w-3 h-3 rounded-full ${isDailyConnected ? 'bg-green-500' : 'bg-yellow-500'} animate-pulse`} />
                             <span className="text-sm font-medium">
-                              {isLiveKitConnected ? '🟢 Live Connected' : '🟡 Connecting...'}
+                              {isDailyConnected ? '🟢 Live Connected' : '🟡 Connecting...'}
                             </span>
                           </div>
                           <Button 
