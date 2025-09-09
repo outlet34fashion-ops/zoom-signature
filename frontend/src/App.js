@@ -5688,14 +5688,14 @@ function App() {
                   <div className="flex items-center space-x-2">
                     <span className="text-sm text-gray-500">Lagerbestand:</span>
                     <span className={`font-medium ${
-                      selectedProduct.stock_quantity > 10
+                      selectedCatalogProduct.stock_quantity > 10
                         ? 'text-green-600'
-                        : selectedProduct.stock_quantity > 0
+                        : selectedCatalogProduct.stock_quantity > 0
                           ? 'text-yellow-600'
                           : 'text-red-600'
                     }`}>
-                      {selectedProduct.stock_quantity > 0 
-                        ? `${selectedProduct.stock_quantity} Stück verfügbar`
+                      {selectedCatalogProduct.stock_quantity > 0 
+                        ? `${selectedCatalogProduct.stock_quantity} Stück verfügbar`
                         : 'Ausverkauft'
                       }
                     </span>
