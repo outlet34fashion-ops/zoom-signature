@@ -6035,21 +6035,87 @@ function App() {
 
             {/* Content */}
             <div className="p-6">
-              {/* Large Product Image */}
+              {/* Image Gallery */}
               <div className="mb-6">
-                <div className="w-full h-64 bg-gray-100 rounded-lg overflow-hidden">
-                  {selectedCatalogProduct.image_url ? (
-                    <img
-                      src={selectedCatalogProduct.image_url}
-                      alt={selectedCatalogProduct.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400">
-                      <span className="text-6xl">📷</span>
-                    </div>
-                  )}
+                {/* Main Image */}
+                <div className="w-full h-64 bg-gray-100 rounded-lg overflow-hidden mb-4 relative">
+                  {(() => {
+                    const allImages = [selectedCatalogProduct.image_url, ...(selectedCatalogProduct.additional_images || [])].filter(Boolean);
+                    const currentImage = allImages[currentImageIndex] || null;
+                    
+                    return currentImage ? (
+                      <img
+                        src={currentImage}
+                        alt={selectedCatalogProduct.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-400">
+                        <span className="text-6xl">📷</span>
+                      </div>
+                    );
+                  })()}
+                  
+                  {/* Image Navigation Arrows */}
+                  {(() => {
+                    const allImages = [selectedCatalogProduct.image_url, ...(selectedCatalogProduct.additional_images || [])].filter(Boolean);
+                    return allImages.length > 1 && (
+                      <>
+                        <button
+                          onClick={() => setCurrentImageIndex(prev => prev > 0 ? prev - 1 : allImages.length - 1)}
+                          className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors duration-200"
+                        >
+                          ←
+                        </button>
+                        <button
+                          onClick={() => setCurrentImageIndex(prev => prev < allImages.length - 1 ? prev + 1 : 0)}
+                          className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors duration-200"
+                        >
+                          →
+                        </button>
+                        
+                        {/* Image Counter */}
+                        <div className="absolute bottom-2 right-2 bg-black/50 text-white text-sm px-2 py-1 rounded-full">
+                          {currentImageIndex + 1} / {allImages.length}
+                        </div>
+                      </>
+                    );
+                  })()}
+                  
+                  {/* Favorite Heart */}
+                  <button
+                    onClick={() => toggleFavorite(selectedCatalogProduct.id)}
+                    className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/80 hover:bg-white flex items-center justify-center transition-colors duration-200"
+                  >
+                    <span className={`text-xl ${productFavoriteStatus[selectedCatalogProduct.id] ? 'text-red-500' : 'text-gray-400'}`}>
+                      {productFavoriteStatus[selectedCatalogProduct.id] ? '❤️' : '🤍'}
+                    </span>
+                  </button>
                 </div>
+                
+                {/* Thumbnail Strip */}
+                {(() => {
+                  const allImages = [selectedCatalogProduct.image_url, ...(selectedCatalogProduct.additional_images || [])].filter(Boolean);
+                  return allImages.length > 1 && (
+                    <div className="flex space-x-2 overflow-x-auto pb-2">
+                      {allImages.map((image, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setCurrentImageIndex(index)}
+                          className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors duration-200 ${
+                            currentImageIndex === index ? 'border-pink-500' : 'border-gray-300'
+                          }`}
+                        >
+                          <img
+                            src={image}
+                            alt={`${selectedCatalogProduct.name} ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Product Info */}
