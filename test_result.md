@@ -209,6 +209,21 @@ backend:
         comment: "CONFIRMED NOT IMPLEMENTED: Customer authentication middleware still not present in backend. However, this is medium priority and does not affect core functionality. All customer authentication is handled at the API endpoint level with proper status checks. The existing customer status check API (GET /api/customers/check/{customer_number}) provides all necessary authentication functionality for the frontend. No critical impact on system operation."
 
 frontend:
+  - task: "VIDEO CONFLICT FIX: LiveKit Streaming Video Playback Error Resolution"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "user"
+        comment: "CRITICAL ISSUE REPORTED: User reported video playback error 'The play() request was interrupted by a new load request' when trying to start admin streaming. This is blocking the core live-streaming functionality."
+      - working: "NA"
+        agent: "main"
+        comment: "FIXES APPLIED: 1) Enhanced video error handling with specific recovery for play() conflicts (lines 1872-1883), 2) Reduced video resolution/framerate for better compatibility (1280x720@24fps), 3) Added autoPlayVideo/autoPlayAudio: false to prevent conflicts (lines 2673-2674), 4) Enhanced error recovery with automatic reinitialiation, 5) Better German error messages for users. Need testing to verify the video conflict fix is working."
+
   - task: "Admin Dashboard Boxes Collapsed by Default"
     implemented: true
     working: true
