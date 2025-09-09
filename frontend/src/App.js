@@ -170,12 +170,16 @@ function App() {
     article_number: '',
     name: '',
     description: '',
+    material: '',
     category_id: '',
     price: 0,
     sizes: [],
+    colors: [],
     image_url: '',
     stock_quantity: null
   });
+  
+  const [customColor, setCustomColor] = useState('');
   
   // Media Upload States
   const [productMediaFiles, setProductMediaFiles] = useState([]);
