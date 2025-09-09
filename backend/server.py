@@ -2693,6 +2693,49 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+@app.on_event("startup")
+async def startup_db_client():
+    """Initialize database connection"""
+    global db
+    try:
+        # Test database connection
+        await client.admin.command('ping')
+        logging.info("Successfully connected to MongoDB!")
+        
+        # Get database
+        db = client[os.environ['DB_NAME']]
+        
+        # Initialize collections if they don't exist
+        collections = await db.list_collection_names()
+        
+        if "customers" not in collections:
+            logging.info("Creating customers collection...")
+            
+        if "messages" not in collections:
+            logging.info("Creating messages collection...")
+            
+        if "streaming_sessions" not in collections:
+            logging.info("Creating streaming_sessions collection...")
+            
+        if "events" not in collections:
+            logging.info("Creating events collection...")
+            
+        if "categories" not in collections:
+            logging.info("Creating categories collection...")
+            
+        if "products" not in collections:
+            logging.info("Creating products collection...")
+            
+        if "catalog_orders" not in collections:
+            logging.info("Creating catalog_orders collection...")
+        
+        # Create default categories
+        await create_default_categories()
+        
+    except Exception as e:
+        logging.error(f"Database initialization failed: {str(e)}")
+        raise
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()
