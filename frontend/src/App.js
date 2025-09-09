@@ -5603,7 +5603,7 @@ function App() {
                         <div className="text-xs text-gray-500 mb-1">
                           Art.-Nr.: {product.article_number}
                         </div>
-                        <h3 className="font-semibold text-sm text-gray-800 mb-1 line-clamp-2">
+                        <h3 className="font-semibold text-sm text-gray-800 mb-1 line-clamp-2" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                           {product.name}
                         </h3>
                         <div className="flex justify-between items-center">
