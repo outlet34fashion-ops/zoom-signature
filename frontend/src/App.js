@@ -478,43 +478,77 @@ function App() {
     };
   }, []);
 
-  // Auto-initialize LiveKit streaming for customers - check for active admin streams
+  // Auto-initialize LiveKit streaming for customers - check for active admin streams - ENHANCED DEBUG
   useEffect(() => {
     const checkForActiveStreams = async () => {
       // CRITICAL FIX: Allow non-authenticated users to see streams too (for demo/preview)
       if (!isAdminAuthenticated && !streamingActive) {
         try {
-          console.log('🔍 Checking for active admin streams...');
+          console.log('🔍 DEBUG: Checking for active admin streams...');
+          console.log('🔍 DEBUG: isAdminAuthenticated:', isAdminAuthenticated);
+          console.log('🔍 DEBUG: streamingActive:', streamingActive);
+          console.log('🔍 DEBUG: isAuthenticated:', isAuthenticated);
           
           // Check if there are active rooms
-          const response = await fetch(`${API}/livekit/rooms`);
+          const response = await fetch(`${API}/livekit/rooms`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+          
+          console.log('🔍 DEBUG: Rooms API response status:', response.status);
+          
+          if (!response.ok) {
+            throw new Error(`Rooms API failed: ${response.status}`);
+          }
+          
           const data = await response.json();
+          console.log('🔍 DEBUG: Rooms API data:', data);
           
           if (data.rooms && data.rooms.length > 0) {
             const activeRoom = data.rooms[0]; // Join first active room
-            console.log('🎥 Found active admin stream, auto-joining:', activeRoom.name);
+            console.log('🎥 DEBUG: Found active admin stream:', activeRoom);
             
             // Generate viewer token - use customer number if logged in, otherwise anonymous
             const customerIdentity = isAuthenticated 
               ? `customer-${localStorage.getItem('customerNumber') || 'guest'}`
               : `guest-viewer-${Date.now()}`;
             
-            const tokenData = await livekitService.generateViewerToken(
-              activeRoom.name,
-              customerIdentity
-            );
+            console.log('🔍 DEBUG: Generating viewer token for:', customerIdentity);
+            console.log('🔍 DEBUG: Room name:', activeRoom.name);
             
-            setCurrentRoomName(activeRoom.name);
-            setLivekitToken(tokenData.token);
-            setLivekitUrl(tokenData.livekitUrl);
-            setStreamingActive(true);
-            setLivekitError(null);
+            try {
+              const tokenData = await livekitService.generateViewerToken(
+                activeRoom.name,
+                customerIdentity
+              );
+              
+              console.log('✅ DEBUG: Viewer token generated:', {
+                token: tokenData.token.substring(0, 50) + '...',
+                roomName: tokenData.roomName,
+                livekitUrl: tokenData.livekitUrl
+              });
+              
+              setCurrentRoomName(activeRoom.name);
+              setLivekitToken(tokenData.token);
+              setLivekitUrl(tokenData.livekitUrl);
+              setStreamingActive(true);  // CRITICAL: Set streaming active for customer
+              setLivekitError(null);
+              
+              console.log('✅ DEBUG: Customer states updated - streamingActive should be true now');
+              console.log('✅ Auto-joined active admin stream:', customerIdentity);
+              
+            } catch (tokenError) {
+              console.error('❌ DEBUG: Token generation failed:', tokenError);
+              setLivekitError(`Token-Fehler: ${tokenError.message}`);
+            }
             
-            console.log('✅ Auto-joined active admin stream:', customerIdentity);
           } else {
-            console.log('ℹ️  No active admin streams available');
+            console.log('ℹ️ DEBUG: No active admin streams available, rooms:', data.rooms);
             // Reset streaming state if no streams available
             if (streamingActive) {
+              console.log('🔄 DEBUG: Resetting streaming state (no active rooms)');
               setStreamingActive(false);
               setLivekitToken(null);
               setLivekitUrl(null);
@@ -522,18 +556,34 @@ function App() {
             }
           }
         } catch (error) {
-          console.error('❌ Error checking for active streams:', error);
+          console.error('❌ DEBUG: Error checking for active streams:', error);
+          console.error('❌ DEBUG: Error details:', {
+            message: error.message,
+            stack: error.stack
+          });
+          // Don't set error for customer - just log it
         }
+      } else {
+        console.log('🔍 DEBUG: Skipping stream check - isAdminAuthenticated:', isAdminAuthenticated, 'streamingActive:', streamingActive);
       }
     };
 
-    // Check for active streams every 3 seconds (faster check)
+    // Check for active streams every 3 seconds (faster check) - ENHANCED LOGGING
     if (!isAdminAuthenticated) {
+      console.log('🔄 DEBUG: Starting stream detection for customer/guest');
       checkForActiveStreams();
-      const interval = setInterval(checkForActiveStreams, 3000);
-      return () => clearInterval(interval);
+      const interval = setInterval(() => {
+        console.log('🔄 DEBUG: Periodic stream check...');
+        checkForActiveStreams();
+      }, 3000);
+      return () => {
+        console.log('🔄 DEBUG: Cleaning up stream detection interval');
+        clearInterval(interval);
+      };
+    } else {
+      console.log('🔍 DEBUG: Not starting stream detection - user is admin');
     }
-  }, [isAuthenticated, isAdminAuthenticated, streamingActive]);
+  }, [isAuthenticated, isAdminAuthenticated, streamingActive, API, livekitService]);
 
   useEffect(() => {
     if (isAdminView) {
