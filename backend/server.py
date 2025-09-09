@@ -291,6 +291,18 @@ class Customer(BaseModel):
     @property
     def name(self) -> str:
         return f"{self.first_name} {self.last_name}".strip()
+    
+    def dict_for_mongo(self):
+        """Convert to dict with proper serialization for MongoDB"""
+        data = self.dict()
+        # Convert date objects to ISO strings for MongoDB compatibility
+        if data.get('member_since'):
+            data['member_since'] = data['member_since'].isoformat()
+        if data.get('created_at'):
+            data['created_at'] = data['created_at'].isoformat() if hasattr(data['created_at'], 'isoformat') else str(data['created_at'])
+        if data.get('updated_at'):
+            data['updated_at'] = data['updated_at'].isoformat() if hasattr(data['updated_at'], 'isoformat') else str(data['updated_at'])
+        return data
 
 class CustomerCreate(BaseModel):
     customer_number: str
