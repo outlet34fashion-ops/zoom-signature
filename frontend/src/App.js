@@ -265,6 +265,10 @@ function App() {
   // Profile Modal States
   const [showProfileModal, setShowProfileModal] = useState(false);
   
+  // Login Modal States
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showAdminLoginModal, setShowAdminLoginModal] = useState(false);
+  
   // Termine Modal States
   const [showTerminModal, setShowTerminModal] = useState(false);
   const [customerReminders, setCustomerReminders] = useState([]);
