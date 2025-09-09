@@ -2451,10 +2451,23 @@ async def get_product(product_id: str):
 async def create_product(product: CatalogProductCreate):
     """Create new product (admin only)"""
     try:
-        # Verify category exists
-        category = await db.categories.find_one({"id": product.category_id})
-        if not category:
-            raise HTTPException(status_code=400, detail="Category not found")
+        # Verify main category exists and is a main category
+        main_category = await db.categories.find_one({
+            "id": product.main_category_id,
+            "is_main_category": True
+        })
+        if not main_category:
+            raise HTTPException(status_code=400, detail="Main category not found or invalid")
+        
+        # Verify subcategory if provided
+        if product.sub_category_id:
+            sub_category = await db.categories.find_one({
+                "id": product.sub_category_id,
+                "parent_category_id": product.main_category_id,
+                "is_main_category": False
+            })
+            if not sub_category:
+                raise HTTPException(status_code=400, detail="Subcategory not found or doesn't belong to main category")
         
         # Auto-generate article number if not provided
         article_number = product.article_number
