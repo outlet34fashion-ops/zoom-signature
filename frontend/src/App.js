@@ -2151,6 +2151,24 @@ function App() {
                       📅
                       <span className="text-sm font-medium ml-1">Termine</span>
                     </button>
+                    
+                    {/* Katalog Button */}
+                    <button 
+                      onClick={() => {
+                        setShowCatalog(true);
+                        loadCategories();
+                        loadCatalogProducts();
+                        // Load customer orders if authenticated
+                        if (isAuthenticated && currentCustomer?.customer_number) {
+                          loadCustomerCatalogOrders(currentCustomer.customer_number);
+                        }
+                      }}
+                      className="inline-flex items-center p-2 text-white hover:bg-pink-600 rounded transition-colors duration-200"
+                      title="Produktkatalog anzeigen"
+                    >
+                      🛍️
+                      <span className="text-sm font-medium ml-1">Katalog</span>
+                    </button>
                   </div>
                 )}
                 
