@@ -2294,6 +2294,29 @@ async def get_categories():
         logging.error(f"Error getting categories: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to get categories")
 
+@api_router.get("/categories/main", response_model=List[Category])
+async def get_main_categories():
+    """Get only main categories (Hauptkategorien)"""
+    try:
+        categories = await db.categories.find({"is_main_category": True}).sort("sort_order", 1).to_list(length=None)
+        return [Category(**cat) for cat in categories]
+    except Exception as e:
+        logging.error(f"Error getting main categories: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to get main categories")
+
+@api_router.get("/categories/sub/{parent_id}", response_model=List[Category])
+async def get_subcategories(parent_id: str):
+    """Get subcategories for a main category"""
+    try:
+        categories = await db.categories.find({
+            "parent_category_id": parent_id,
+            "is_main_category": False
+        }).sort("sort_order", 1).to_list(length=None)
+        return [Category(**cat) for cat in categories]
+    except Exception as e:
+        logging.error(f"Error getting subcategories: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to get subcategories")
+
 @api_router.get("/categories/{category_id}", response_model=Category)
 async def get_category(category_id: str):
     """Get category by ID (public)"""
