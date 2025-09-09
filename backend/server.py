@@ -1292,7 +1292,7 @@ async def end_livekit_room(room_name: str, current_user_id: str = "admin"):
 async def get_livekit_config():
     """Get LiveKit configuration for frontend"""
     try:
-        config = livekit_service.get_config()
+        config = await livekit_service.get_livekit_config()
         return {"success": True, "config": config}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get config: {str(e)}")
