@@ -948,7 +948,7 @@ async def register_customer(customer: CustomerCreate):
         )
         
         # Store in database
-        await db.customers.insert_one(customer_obj.dict())
+        await db.customers.insert_one(customer_obj.dict_for_mongo())
         
         # Return clean serializable customer data
         created_customer = {
@@ -1037,7 +1037,7 @@ async def create_customer_by_admin(customer: CustomerCreate):
         )
         
         # Store in database
-        await db.customers.insert_one(customer_obj.dict())
+        await db.customers.insert_one(customer_obj.dict_for_mongo())
         
         # Return clean serializable customer data
         created_customer = {
