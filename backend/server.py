@@ -2364,6 +2364,7 @@ async def create_product(product: CatalogProductCreate):
             raise HTTPException(status_code=400, detail="Article number already exists")
         
         product_dict = product.dict()
+        product_dict["article_number"] = article_number  # Use the generated or provided article number
         product_dict["id"] = str(uuid.uuid4())
         product_dict["is_active"] = True
         product_dict["created_at"] = datetime.now(timezone.utc)
