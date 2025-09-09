@@ -2563,6 +2563,72 @@ async def update_catalog_order_status(order_id: str, status: str):
         logging.error(f"Order status update error: {str(e)}")
         raise HTTPException(status_code=500, detail="Order status update failed")
 
+# ==============================================
+# FILE UPLOAD ENDPOINTS
+# ==============================================
+
+# Create uploads directory if it doesn't exist
+UPLOAD_DIR = ROOT_DIR / "uploads" / "products"
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+
+@api_router.post("/upload/product-media")
+async def upload_product_media(files: List[UploadFile] = File(...)):
+    """Upload multiple images/videos for products"""
+    try:
+        uploaded_files = []
+        
+        for file in files:
+            # Validate file type
+            if not file.content_type.startswith(('image/', 'video/')):
+                raise HTTPException(status_code=400, detail=f"Invalid file type: {file.content_type}")
+            
+            # Generate unique filename
+            file_extension = file.filename.split('.')[-1] if '.' in file.filename else ''
+            unique_filename = f"{uuid.uuid4()}.{file_extension}"
+            file_path = UPLOAD_DIR / unique_filename
+            
+            # Save file
+            with open(file_path, "wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+            
+            # Create file URL (will be served by static files)
+            file_url = f"/api/uploads/products/{unique_filename}"
+            
+            uploaded_files.append({
+                "id": str(uuid.uuid4()),
+                "filename": file.filename,
+                "url": file_url,
+                "type": "image" if file.content_type.startswith('image/') else "video",
+                "size": file.size,
+                "content_type": file.content_type
+            })
+        
+        return {"success": True, "files": uploaded_files}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"File upload error: {str(e)}")
+        raise HTTPException(status_code=500, detail="File upload failed")
+
+@api_router.delete("/upload/product-media/{filename}")
+async def delete_product_media(filename: str):
+    """Delete uploaded media file"""
+    try:
+        file_path = UPLOAD_DIR / filename
+        
+        if file_path.exists():
+            file_path.unlink()
+            return {"success": True, "message": "File deleted successfully"}
+        else:
+            raise HTTPException(status_code=404, detail="File not found")
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"File deletion error: {str(e)}")
+        raise HTTPException(status_code=500, detail="File deletion failed")
+
 # WebSocket endpoint
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
