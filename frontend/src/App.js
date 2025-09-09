@@ -6107,7 +6107,7 @@ function App() {
                   Verfügbare Größen
                 </label>
                 <div className="flex flex-wrap gap-2 mb-2">
-                  {['XS', 'S', 'M', 'L', 'XL', 'XXL', 'OneSize'].map((size) => (
+                  {['OneSize', 'AA60', 'AA65', 'AA70', 'AA75', 'oversize', 'XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'].map((size) => (
                     <button
                       key={size}
                       type="button"
