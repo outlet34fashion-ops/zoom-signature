@@ -5717,7 +5717,7 @@ function App() {
                         onChange={(e) => setSelectedProductSize(e.target.value)}
                         className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
                       >
-                        {selectedProduct.sizes?.map((size) => (
+                        {selectedCatalogProduct.sizes?.map((size) => (
                           <option key={size} value={size}>
                             {size}
                           </option>
