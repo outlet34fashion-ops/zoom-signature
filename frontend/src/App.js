@@ -106,7 +106,9 @@ function App() {
     email: '',
     first_name: '',
     last_name: '',
-    company_name: ''
+    company_name: '',
+    member_since: '',
+    status: 'Starter'
   });
   const [createCustomerError, setCreateCustomerError] = useState('');
   const [creatingCustomer, setCreatingCustomer] = useState(false);
