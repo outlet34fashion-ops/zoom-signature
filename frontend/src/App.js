@@ -5634,7 +5634,7 @@ function App() {
               <button
                 onClick={() => {
                   setShowProductDetail(false);
-                  setSelectedProduct(null);
+                  setSelectedCatalogProduct(null);
                   setSelectedProductSize('');
                   setCatalogOrderQuantity(1);
                 }}
