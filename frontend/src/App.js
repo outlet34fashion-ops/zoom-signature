@@ -5329,6 +5329,458 @@ function App() {
         </div>
       )}
 
+      {/* Produktkatalog Modal */}
+      {showCatalog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-hidden">
+          <div className="bg-white w-full h-full max-w-7xl max-h-full flex flex-col">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-pink-600 to-purple-600 text-white p-4 flex justify-between items-center">
+              <div className="flex items-center space-x-3">
+                <h2 className="text-2xl font-bold">🛍️ OUTLET34 Produktkatalog</h2>
+                {selectedCategory && (
+                  <span className="bg-white/20 px-3 py-1 rounded-full text-sm">
+                    {selectedCategory.name}
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center space-x-2">
+                {isAuthenticated && (
+                  <button
+                    onClick={() => setShowMyOrders(true)}
+                    className="bg-white/20 hover:bg-white/30 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center space-x-1"
+                  >
+                    <span>📦</span>
+                    <span>Meine Bestellungen</span>
+                  </button>
+                )}
+                <button
+                  onClick={() => {
+                    setShowCatalog(false);
+                    setSelectedCategory(null);
+                    setSelectedProduct(null);
+                    setShowProductDetail(false);
+                  }}
+                  className="bg-white/20 hover:bg-white/30 p-2 rounded-lg transition-colors duration-200"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+
+            {/* Category Navigation */}
+            <div className="bg-gray-50 p-4 border-b">
+              <div className="flex space-x-2 overflow-x-auto pb-2">
+                <button
+                  onClick={() => {
+                    setSelectedCategory(null);
+                    loadCatalogProducts();
+                  }}
+                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-200 ${
+                    !selectedCategory
+                      ? 'bg-pink-600 text-white'
+                      : 'bg-white text-gray-700 hover:bg-pink-100'
+                  }`}
+                >
+                  Alle Kategorien
+                </button>
+                {categories.map((category) => (
+                  <button
+                    key={category.id}
+                    onClick={() => {
+                      setSelectedCategory(category);
+                      loadCatalogProducts(category.id);
+                    }}
+                    className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-200 ${
+                      selectedCategory?.id === category.id
+                        ? 'bg-pink-600 text-white'
+                        : 'bg-white text-gray-700 hover:bg-pink-100'
+                    }`}
+                  >
+                    {category.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Content Area */}
+            <div className="flex-1 overflow-y-auto p-6">
+              {loadingCatalog ? (
+                <div className="flex items-center justify-center h-64">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto mb-4"></div>
+                    <p className="text-gray-600">Lade Produkte...</p>
+                  </div>
+                </div>
+              ) : catalogError ? (
+                <div className="text-center text-red-600 py-8">
+                  <p>{catalogError}</p>
+                  <button
+                    onClick={() => loadCatalogProducts(selectedCategory?.id)}
+                    className="mt-4 bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition-colors duration-200"
+                  >
+                    Erneut versuchen
+                  </button>
+                </div>
+              ) : catalogProducts.length === 0 ? (
+                <div className="text-center text-gray-600 py-8">
+                  <p>Keine Produkte gefunden</p>
+                  {selectedCategory && (
+                    <button
+                      onClick={() => {
+                        setSelectedCategory(null);
+                        loadCatalogProducts();
+                      }}
+                      className="mt-4 text-pink-600 hover:text-pink-700 underline"
+                    >
+                      Alle Kategorien anzeigen
+                    </button>
+                  )}
+                </div>
+              ) : (
+                /* WhatsApp-Style Product Grid */
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                  {catalogProducts.map((product) => (
+                    <div
+                      key={product.id}
+                      onClick={() => {
+                        setSelectedProduct(product);
+                        setShowProductDetail(true);
+                        setSelectedProductSize(product.sizes?.[0] || 'OneSize');
+                      }}
+                      className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 cursor-pointer group"
+                    >
+                      {/* Square Image Container - WhatsApp Style */}
+                      <div className="relative w-full pt-[100%] bg-gray-100 rounded-t-lg overflow-hidden">
+                        {product.image_url ? (
+                          <img
+                            src={product.image_url}
+                            alt={product.name}
+                            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                          />
+                        ) : (
+                          <div className="absolute inset-0 flex items-center justify-center text-gray-400">
+                            <span className="text-4xl">📷</span>
+                          </div>
+                        )}
+                        
+                        {/* Stock Badge */}
+                        {product.stock_quantity !== null && (
+                          <div className="absolute top-2 right-2">
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              product.stock_quantity > 10
+                                ? 'bg-green-100 text-green-700'
+                                : product.stock_quantity > 0
+                                  ? 'bg-yellow-100 text-yellow-700'
+                                  : 'bg-red-100 text-red-700'
+                            }`}>
+                              {product.stock_quantity > 0 ? `${product.stock_quantity} St.` : 'Ausverkauft'}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Product Info */}
+                      <div className="p-3">
+                        <div className="text-xs text-gray-500 mb-1">
+                          Art.-Nr.: {product.article_number}
+                        </div>
+                        <h3 className="font-semibold text-sm text-gray-800 mb-1 line-clamp-2">
+                          {product.name}
+                        </h3>
+                        <div className="flex justify-between items-center">
+                          <span className="text-lg font-bold text-pink-600">
+                            {product.price.toFixed(2)} €
+                          </span>
+                          <div className="text-xs text-gray-500">
+                            {product.sizes?.join(', ') || 'OneSize'}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Product Detail Modal */}
+      {showProductDetail && selectedProduct && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center">
+              <h3 className="text-xl font-bold text-gray-800">{selectedProduct.name}</h3>
+              <button
+                onClick={() => {
+                  setShowProductDetail(false);
+                  setSelectedProduct(null);
+                  setSelectedProductSize('');
+                  setCatalogOrderQuantity(1);
+                }}
+                className="text-gray-500 hover:text-gray-700 text-2xl"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-6">
+              {/* Large Product Image */}
+              <div className="mb-6">
+                <div className="w-full h-64 bg-gray-100 rounded-lg overflow-hidden">
+                  {selectedProduct.image_url ? (
+                    <img
+                      src={selectedProduct.image_url}
+                      alt={selectedProduct.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-400">
+                      <span className="text-6xl">📷</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Product Info */}
+              <div className="space-y-4">
+                <div>
+                  <span className="text-sm text-gray-500">Artikel-Nr.: </span>
+                  <span className="font-medium">{selectedProduct.article_number}</span>
+                </div>
+                
+                <div>
+                  <span className="text-2xl font-bold text-pink-600">
+                    {selectedProduct.price.toFixed(2)} €
+                  </span>
+                </div>
+
+                {selectedProduct.description && (
+                  <div>
+                    <h4 className="font-semibold text-gray-800 mb-2">Beschreibung</h4>
+                    <p className="text-gray-600">{selectedProduct.description}</p>
+                  </div>
+                )}
+
+                {/* Stock Info */}
+                {selectedProduct.stock_quantity !== null && (
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-500">Lagerbestand:</span>
+                    <span className={`font-medium ${
+                      selectedProduct.stock_quantity > 10
+                        ? 'text-green-600'
+                        : selectedProduct.stock_quantity > 0
+                          ? 'text-yellow-600'
+                          : 'text-red-600'
+                    }`}>
+                      {selectedProduct.stock_quantity > 0 
+                        ? `${selectedProduct.stock_quantity} Stück verfügbar`
+                        : 'Ausverkauft'
+                      }
+                    </span>
+                  </div>
+                )}
+
+                {/* Order Form */}
+                {isAuthenticated && selectedProduct.stock_quantity !== 0 ? (
+                  <div className="bg-gray-50 rounded-lg p-4 space-y-4">
+                    <h4 className="font-semibold text-gray-800">Bestellung aufgeben</h4>
+                    
+                    {/* Size Selection */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Größe
+                      </label>
+                      <select
+                        value={selectedProductSize}
+                        onChange={(e) => setSelectedProductSize(e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      >
+                        {selectedProduct.sizes?.map((size) => (
+                          <option key={size} value={size}>
+                            {size}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Quantity Selection */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Anzahl
+                      </label>
+                      <div className="flex items-center space-x-3">
+                        <button
+                          onClick={() => setCatalogOrderQuantity(Math.max(1, catalogOrderQuantity - 1))}
+                          className="w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center font-bold"
+                        >
+                          −
+                        </button>
+                        <span className="text-xl font-semibold w-12 text-center">
+                          {catalogOrderQuantity}
+                        </span>
+                        <button
+                          onClick={() => {
+                            const maxQty = selectedProduct.stock_quantity || 999;
+                            setCatalogOrderQuantity(Math.min(maxQty, catalogOrderQuantity + 1));
+                          }}
+                          className="w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center font-bold"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Total Price */}
+                    <div className="flex justify-between items-center pt-2 border-t">
+                      <span className="font-semibold text-gray-800">Gesamtpreis:</span>
+                      <span className="text-xl font-bold text-pink-600">
+                        {(selectedProduct.price * catalogOrderQuantity).toFixed(2)} €
+                      </span>
+                    </div>
+
+                    {/* Order Button */}
+                    <button
+                      onClick={placeCatalogOrder}
+                      disabled={!selectedProductSize}
+                      className="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 disabled:scale-100"
+                    >
+                      🛒 In Bestellung hinzufügen
+                    </button>
+                  </div>
+                ) : !isAuthenticated ? (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+                    <p className="text-blue-800 mb-3">
+                      Bitte melden Sie sich an, um Bestellungen aufzugeben.
+                    </p>
+                    <button
+                      onClick={() => {
+                        setShowCatalog(false);
+                        setShowProductDetail(false);
+                        setShowCustomerLogin(true);
+                      }}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+                    >
+                      Anmelden
+                    </button>
+                  </div>
+                ) : (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+                    <p className="text-red-800">Dieses Produkt ist derzeit ausverkauft.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* My Orders Modal */}
+      {showMyOrders && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center">
+              <h3 className="text-xl font-bold text-gray-800">📦 Meine Bestellungen</h3>
+              <button
+                onClick={() => setShowMyOrders(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-6">
+              {customerCatalogOrders.length === 0 ? (
+                <div className="text-center text-gray-600 py-8">
+                  <p>Sie haben noch keine Bestellungen aufgegeben.</p>
+                  <button
+                    onClick={() => {
+                      setShowMyOrders(false);
+                      // Catalog is already open
+                    }}
+                    className="mt-4 text-pink-600 hover:text-pink-700 underline"
+                  >
+                    Jetzt Produkte entdecken
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {customerCatalogOrders.map((order) => (
+                    <div key={order.id} className="bg-gray-50 rounded-lg p-4 border">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <h4 className="font-semibold text-gray-800">{order.product_name}</h4>
+                          <p className="text-sm text-gray-600">Art.-Nr.: {order.article_number}</p>
+                        </div>
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          order.status === 'pending' 
+                            ? 'bg-yellow-100 text-yellow-700'
+                            : order.status === 'confirmed'
+                              ? 'bg-blue-100 text-blue-700'
+                              : order.status === 'shipped'
+                                ? 'bg-green-100 text-green-700'
+                                : 'bg-red-100 text-red-700'
+                        }`}>
+                          {order.status === 'pending' && 'Ausstehend'}
+                          {order.status === 'confirmed' && 'Bestätigt'}
+                          {order.status === 'shipped' && 'Versandt'}
+                          {order.status === 'cancelled' && 'Storniert'}
+                        </span>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                        <div>
+                          <span className="text-gray-500">Größe:</span>
+                          <span className="ml-2 font-medium">{order.size}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">Anzahl:</span>
+                          <span className="ml-2 font-medium">{order.quantity}x</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">Einzelpreis:</span>
+                          <span className="ml-2 font-medium">{order.unit_price.toFixed(2)} €</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">Gesamtpreis:</span>
+                          <span className="ml-2 font-bold text-pink-600">{order.total_price.toFixed(2)} €</span>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-3 text-sm text-gray-500">
+                        Bestellt am: {new Date(order.created_at).toLocaleDateString('de-DE', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {/* Order Summary */}
+                  <div className="bg-pink-50 border border-pink-200 rounded-lg p-4 mt-6">
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-semibold text-gray-800">
+                        Gesamtsumme ({customerCatalogOrders.length} Bestellungen):
+                      </span>
+                      <span className="text-2xl font-bold text-pink-600">
+                        {customerCatalogOrders.reduce((sum, order) => sum + order.total_price, 0).toFixed(2)} €
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Simple Video Streaming Modal */}
       {showSimpleStream && (
         <SimpleVideoStreaming
