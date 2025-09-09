@@ -5901,6 +5901,8 @@ function App() {
                         setSelectedCatalogProduct(product);
                         setShowProductDetail(true);
                         setSelectedProductSize(product.sizes?.[0] || 'OneSize');
+                        setCurrentImageIndex(0);
+                        addToRecentlyViewed(product.id);
                       }}
                       className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 cursor-pointer group"
                     >
@@ -5918,6 +5920,19 @@ function App() {
                           </div>
                         )}
                         
+                        {/* Favorite Heart */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleFavorite(product.id);
+                          }}
+                          className="absolute top-2 left-2 w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center transition-colors duration-200"
+                        >
+                          <span className={`text-lg ${productFavoriteStatus[product.id] ? 'text-red-500' : 'text-gray-400'}`}>
+                            {productFavoriteStatus[product.id] ? '❤️' : '🤍'}
+                          </span>
+                        </button>
+                        
                         {/* Stock Badge */}
                         {product.stock_quantity !== null && (
                           <div className="absolute top-2 right-2">
@@ -5929,6 +5944,15 @@ function App() {
                                   : 'bg-red-100 text-red-700'
                             }`}>
                               {product.stock_quantity > 0 ? `${product.stock_quantity} St.` : 'Ausverkauft'}
+                            </span>
+                          </div>
+                        )}
+                        
+                        {/* Multiple Images Indicator */}
+                        {product.additional_images && product.additional_images.length > 0 && (
+                          <div className="absolute bottom-2 left-2">
+                            <span className="bg-black/50 text-white text-xs px-2 py-1 rounded-full">
+                              📷 {product.additional_images.length + 1}
                             </span>
                           </div>
                         )}
