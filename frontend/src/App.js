@@ -5756,7 +5756,7 @@ function App() {
                     <div className="flex justify-between items-center pt-2 border-t">
                       <span className="font-semibold text-gray-800">Gesamtpreis:</span>
                       <span className="text-xl font-bold text-pink-600">
-                        {(selectedProduct.price * catalogOrderQuantity).toFixed(2)} €
+                        {(selectedCatalogProduct.price * catalogOrderQuantity).toFixed(2)} €
                       </span>
                     </div>
 
