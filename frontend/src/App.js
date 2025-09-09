@@ -1637,7 +1637,7 @@ function App() {
       const response = await axios.post(`${API}/admin/customers/create`, newCustomerData);
       
       // Store customer info for notification before reset
-      const customerName = newCustomerData.name;
+      const customerName = `${newCustomerData.first_name} ${newCustomerData.last_name}`;
       const customerNumber = newCustomerData.customer_number;
       
       // Reset form and close modal
