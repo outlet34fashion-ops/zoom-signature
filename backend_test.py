@@ -9379,6 +9379,7 @@ TIMEZONE BUG ANALYSIS COMPLETE:
             ("🌍 MULTI-LANGUAGE FUNCTIONALITY", multi_language_success),
             ("🎯 GERMAN ORDER FORMAT VERIFICATION", german_format_success),
             ("🚨 CRITICAL AUTH ISSUE (Customer 10299)", critical_auth_success),
+            ("🆕 EXTENDED CUSTOMER SYSTEM (Current Review)", extended_customer_success),
             ("CRITICAL BUG TEST", critical_success),
             ("API Root", any(r['name'] == 'API Root' and r['success'] for r in self.test_results)),
             ("Stream Status", stream_success),
