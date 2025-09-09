@@ -245,8 +245,8 @@ function App() {
       setTimeout(() => {
         new Notification('🛍️ OUTLET34 Live Shopping', {
           body: `"${event.title}" startet in 30 Minuten! Nicht verpassen!`,
-          icon: '/images/outlet34-logo.jpg',
-          badge: '/images/outlet34-logo.jpg',
+          icon: '/images/outlet34-logo-new.png',
+          badge: '/images/outlet34-logo-new.png',
           tag: `event-${event.id}`,
           requireInteraction: true
         });
