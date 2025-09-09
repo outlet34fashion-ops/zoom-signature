@@ -424,7 +424,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Catalog visibility bug fixes verification completed"
+    - "NEW CATALOG FEATURES IMPLEMENTATION testing completed successfully"
   stuck_tasks: []
   test_all: false
   test_priority: "critical_first"
