@@ -142,6 +142,43 @@ function App() {
   const [showCalendar, setShowCalendar] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
 
+  // Produktkatalog States
+  const [showCatalog, setShowCatalog] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [catalogProducts, setCatalogProducts] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showProductDetail, setShowProductDetail] = useState(false);
+  const [catalogOrderQuantity, setCatalogOrderQuantity] = useState(1);
+  const [selectedProductSize, setSelectedProductSize] = useState('');
+  const [loadingCatalog, setLoadingCatalog] = useState(false);  
+  const [catalogError, setCatalogError] = useState('');
+  const [customerCatalogOrders, setCustomerCatalogOrders] = useState([]);
+  const [showMyOrders, setShowMyOrders] = useState(false);
+  
+  // Admin Katalog States
+  const [showCatalogManagement, setShowCatalogManagement] = useState(false);
+  const [showCreateCategory, setShowCreateCategory] = useState(false);
+  const [showCreateProduct, setShowCreateProduct] = useState(false);
+  const [newCategoryData, setNewCategoryData] = useState({
+    name: '',
+    description: '',
+    image_url: '',
+    sort_order: 0
+  });
+  const [newProductData, setNewProductData] = useState({
+    article_number: '',
+    name: '',
+    description: '',
+    category_id: '',
+    price: 0,
+    sizes: [],
+    image_url: '',
+    stock_quantity: null
+  });
+  const [creatingCategory, setCreatingCategory] = useState(false);
+  const [creatingProduct, setCreatingProduct] = useState(false);
+
   // Push Notification Functions
   const requestNotificationPermission = async () => {
     if (!('Notification' in window)) {
