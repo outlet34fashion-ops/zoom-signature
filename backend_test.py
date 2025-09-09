@@ -9249,6 +9249,10 @@ TIMEZONE BUG ANALYSIS COMPLETE:
         print("\n🚨 CRITICAL PRIORITY: CUSTOMER 10299 LAST ORDER SYNC ISSUE...")
         customer_10299_success = self.test_customer_10299_last_order_sync()
 
+        # CRITICAL PRIORITY: EXTENDED CUSTOMER SYSTEM TESTING (Current Review Request)
+        print("\n🆕 CRITICAL PRIORITY: EXTENDED CUSTOMER SYSTEM TESTING...")
+        extended_customer_success = self.test_extended_customer_system()
+
         # CRITICAL PRIORITY: TIMEZONE BUG DEBUGGING (Previous Review Request)
         print("\n🕐 CRITICAL PRIORITY: TIMEZONE BUG DEBUGGING...")
         self.test_timezone_bug_debugging_detailed()
