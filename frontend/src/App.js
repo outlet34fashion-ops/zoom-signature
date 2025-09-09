@@ -6111,6 +6111,142 @@ function App() {
               <h3 className="text-xl font-bold text-gray-800">Neues Produkt erstellen</h3>
             </div>
             <div className="p-6 space-y-4">
+              {/* Media Upload Section - Ganz oben */}
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50">
+                <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                  📸 Bilder und Videos hinzufügen
+                </h4>
+                
+                {/* Drag & Drop Area */}
+                <div
+                  className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors duration-200 ${
+                    dragOver 
+                      ? 'border-green-400 bg-green-50' 
+                      : 'border-gray-300 hover:border-gray-400'
+                  }`}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setDragOver(true);
+                  }}
+                  onDragLeave={(e) => {
+                    e.preventDefault();
+                    setDragOver(false);
+                  }}
+                  onDrop={handleFileDrop}
+                >
+                  <div className="space-y-4">
+                    <div className="text-6xl text-gray-400">
+                      📁
+                    </div>
+                    <div>
+                      <p className="text-lg font-medium text-gray-700">
+                        Dateien hier hineinziehen oder klicken zum Auswählen
+                      </p>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Unterstützt: Bilder (JPG, PNG, GIF) und Videos (MP4, MOV, AVI)
+                      </p>
+                    </div>
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*,video/*"
+                      onChange={handleFileInput}
+                      className="hidden"
+                      id="media-upload"
+                    />
+                    <label
+                      htmlFor="media-upload"
+                      className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg cursor-pointer transition-colors duration-200"
+                    >
+                      Dateien auswählen
+                    </label>
+                  </div>
+                </div>
+
+                {/* Uploaded Files Preview */}
+                {productMediaFiles.length > 0 && (
+                  <div className="mt-6">
+                    <h5 className="font-medium text-gray-800 mb-3">
+                      Hochgeladene Dateien ({productMediaFiles.length})
+                    </h5>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {productMediaFiles
+                        .sort((a, b) => a.order - b.order)
+                        .map((file, index) => (
+                        <div key={file.id} className="relative group bg-white rounded-lg shadow-md overflow-hidden">
+                          {/* File Preview */}
+                          <div className="aspect-square bg-gray-100 flex items-center justify-center">
+                            {file.type === 'image' ? (
+                              <img 
+                                src={file.url} 
+                                alt={file.filename}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="text-center">
+                                <div className="text-2xl text-blue-600 mb-2">🎥</div>
+                                <p className="text-xs text-gray-600 px-2">{file.filename}</p>
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Controls Overlay */}
+                          <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                            <div className="flex space-x-2">
+                              {/* Move Up */}
+                              {index > 0 && (
+                                <button
+                                  onClick={() => moveMediaFile(file.id, 'up')}
+                                  className="bg-white hover:bg-gray-100 text-gray-800 p-2 rounded-full transition-colors duration-200"
+                                  title="Nach oben"
+                                >
+                                  ↑
+                                </button>
+                              )}
+                              
+                              {/* Move Down */}
+                              {index < productMediaFiles.length - 1 && (
+                                <button
+                                  onClick={() => moveMediaFile(file.id, 'down')}
+                                  className="bg-white hover:bg-gray-100 text-gray-800 p-2 rounded-full transition-colors duration-200"
+                                  title="Nach unten"
+                                >
+                                  ↓
+                                </button>
+                              )}
+                              
+                              {/* Delete */}
+                              <button
+                                onClick={() => removeMediaFile(file.id, file.url)}
+                                className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full transition-colors duration-200"
+                                title="Löschen"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          </div>
+                          
+                          {/* Order Indicator */}
+                          <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded-full">
+                            {index + 1}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Upload Progress */}
+                {uploadingMedia && (
+                  <div className="mt-4 text-center">
+                    <div className="inline-flex items-center space-x-2 text-blue-600">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+                      <span>Dateien werden hochgeladen...</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
