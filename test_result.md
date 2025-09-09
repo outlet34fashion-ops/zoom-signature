@@ -409,9 +409,8 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Produktkatalog Backend API Implementation"
-  stuck_tasks:
-    - "Produktkatalog Backend API Implementation"
+    - "Catalog visibility bug fixes verification completed"
+  stuck_tasks: []
   test_all: false
   test_priority: "critical_first"
 
