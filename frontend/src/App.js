@@ -181,6 +181,14 @@ function App() {
   const [productMediaFiles, setProductMediaFiles] = useState([]);
   const [uploadingMedia, setUploadingMedia] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  
+  // New Catalog Features States
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showRecentlyViewed, setShowRecentlyViewed] = useState(false);
+  const [recentlyViewedProducts, setRecentlyViewedProducts] = useState([]);
+  const [favoriteProducts, setFavoriteProducts] = useState([]);
+  const [productFavoriteStatus, setProductFavoriteStatus] = useState({});
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [creatingCategory, setCreatingCategory] = useState(false);
   const [creatingProduct, setCreatingProduct] = useState(false);
 
