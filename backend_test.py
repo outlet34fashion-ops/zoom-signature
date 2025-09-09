@@ -10411,12 +10411,12 @@ TIMEZONE BUG ANALYSIS COMPLETE:
 def main():
     tester = LiveShoppingAPITester()
     
-    # Run automatic printing system tests as specified in review request
-    print("🚨 STARTING AUTOMATIC PRINTING SHELL SCRIPT CREATION TESTING")
-    print("Focus: New simplified automatic printing solution with shell script creation")
+    # Run extended customer system tests as specified in review request
+    print("🚨 STARTING EXTENDED CUSTOMER SYSTEM TESTING")
+    print("Focus: Test extended customer system with new fields")
     print("=" * 80)
     
-    success = tester.test_automatic_printing_shell_script_creation()
+    success = tester.test_extended_customer_system()
     
     # Print final summary
     print("\n" + "=" * 80)
@@ -10427,15 +10427,13 @@ def main():
     print(f"Success Rate: {(tester.tests_passed/tester.tests_run*100):.1f}%")
     
     if success:
-        print("\n🎉 ALL AUTOMATIC PRINTING SHELL SCRIPT TESTS PASSED!")
-        print("✅ Customer 10299 verification working")
-        print("✅ ZPL code generation working")
-        print("✅ Manual print trigger (shell script creation) working")
-        print("✅ Real order creation triggers automatic printing")
-        print("✅ File creation in /tmp/ working")
-        print("✅ Shell script content verification working")
-        print("✅ ZPL file content verification working")
-        print("Backend automatic printing with shell script creation is working correctly.")
+        print("\n🎉 ALL EXTENDED CUSTOMER SYSTEM TESTS PASSED!")
+        print("✅ Enhanced Customer Model working")
+        print("✅ Customer Status System working")
+        print("✅ Member Since Field working")
+        print("✅ Updated API Endpoints working")
+        print("✅ Backward Compatibility working")
+        print("Backend extended customer system is working correctly.")
     else:
         failed_count = tester.tests_run - tester.tests_passed
         print(f"\n⚠️  {failed_count} test(s) failed. Please check the details above.")
