@@ -6250,14 +6250,14 @@ function App() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Artikelnummer *
+                    Artikelnummer (optional - wird automatisch generiert)
                   </label>
                   <input
                     type="text"
                     value={newProductData.article_number}
                     onChange={(e) => setNewProductData({ ...newProductData, article_number: e.target.value })}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="z.B. ART-001"
+                    placeholder="Leer lassen für automatische Generierung (1, 2, 3...)"
                   />
                 </div>
                 
