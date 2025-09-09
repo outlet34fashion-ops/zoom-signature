@@ -10,7 +10,7 @@ from datetime import datetime, timezone, timedelta
 import time
 
 class TimezoneOrdersTest:
-    def __init__(self, base_url="https://zebra-print-flow.preview.emergentagent.com"):
+    def __init__(self, base_url="https://appoint-notify-shop.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         

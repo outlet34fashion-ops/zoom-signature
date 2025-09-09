@@ -1,26 +1,37 @@
 <analysis>
-The AI engineer's trajectory chronicles an intensive, iterative development process focused primarily on resolving the persistent challenge of **automatic Zebra label printing** within a Kubernetes containerized environment. Initial efforts involved fixing chat functionality (real-time updates, timezones, emoji reactions) and integrating LiveKit for streaming, but the bulk of the conversation revolves around the printer.
-
-Key decisions included a shift from direct container printing (due to CUPS not being present/accessible) to various host-side interaction methods: initially manual  instructions, then web-based preview and CSV export, then a dedicated Flask host-side service, then an automatic shell script execution, and finally, a file-sharing system with a Mac auto-printer script. Each attempt was met with user feedback highlighting the failure to achieve *truly* automatic printing. The AI demonstrated persistence, leveraging  to diagnose environment-specific issues (e.g., CUPS not installed, container isolation). The final proposed solution involves a Mac-side file watcher and sync script, aiming for full automation.
+The AI engineer's trajectory details a highly iterative development process, initially inheriting a challenging task of automatic Zebra label printing, which it addressed through host-side scripts. The bulk of the provided trajectory, however, showcases extensive UI/UX improvements based on explicit user feedback. The engineer systematically tackled requests such as collapsing UI sections, removing non-functional elements, refining input fields, and implementing sticky navigation bars. A significant new feature, an appointment (Termine) system with push notifications, was also fully implemented. The approach demonstrates a strong focus on user satisfaction, iterating rapidly, and performing comprehensive tests after each change, ensuring a clean, functional, and user-friendly application.
 </analysis>
 
 <product_requirements>
-The Live Shopping App is a full-stack platform integrating live streaming, chat, and product ordering, with administrative features. The user explicitly requested a modern UI/UX (dark theme, glassmorphism, collapsible sections for customers, refactored admin dashboard), core bug fixes (timezone), robust chat functionality (real-time, chronological, auto-scroll, sender info, specific emojis), registration enhancements (kostenlos text, paragraph removal), and stable LiveKit-based live streaming (real-time video/audio, active stream indication, restricted to authenticated customers/admin).
+The Live Shopping App is a full-stack platform for live streaming, chat, and product ordering. Initial requirements included a modern UI/UX (dark theme, glassmorphism, collapsible sections, refactored admin dashboard), core bug fixes (timezone), robust chat, registration enhancements, and stable LiveKit-based streaming.
 
-The most challenging and iterated feature has been the **Automatic Zebra Label Printing**: labels (40x25mm) must automatically print upon new order confirmation from a Zebra GK420d printer, containing customer number, price, and timestamp. Admin previews (image or PDF) were also requested. Other pending features include a desktop split-screen layout for orders and chat, and resolution of customer creation/login issues (specifically customer 10299 not found or new customers not appearing).
+The most complex feature was **Automatic Zebra Label Printing** (40x25mm labels with customer number, price, timestamp upon order confirmation; admin previews).
+
+During the current trajectory, the user explicitly requested:
+1.  Admin dashboard boxes to be **collapsed by default**.
+2.  Removal of a **non-functional Live Stream Control window** and its placeholder.
+3.  Size selection: Replace A4xx with **AAxx** and implement a **manual, editable size input field** that populates with the last selected value.
+4.  Price input: Display **price and size input fields on one line**, make the **price input manual and editable**, showing the entered value (e.g., 5.00 for 5,00) instead of 0.
+5.  Removal of **blue and green Action Buttons**.
+6.  Customer view sections Deine letzte Bestellung and Top 3 Käufer to be **collapsed by default**.
+7.  Move **streaming video to the top** in the customer view and **remove Live Shopping Funktionen info text**.
+8.  Make the **pink ticker bar sticky** and position it at the very top.
+9.  Make the **main header/navigation bar sticky** as well, positioned below the ticker.
+10. Move **language selection from the header to the customer profile modal**.
+11. The **ticker bar should only appear for logged-in users**, not on the landing page.
+12. Add a **Termine** (Appointments) button leading to a list of appointments with a **reminder function** for customers, triggering **push notifications** upon activation.
 </product_requirements>
 
 <key_technical_concepts>
-- **FastAPI**: Python backend, APIs, WebSockets.
-- **React**: Frontend framework.
-- **MongoDB**: Database.
+- **FastAPI**: Python backend for APIs, WebSockets.
+- **React**: Frontend framework, UI components, state management.
+- **MongoDB**: Database for data persistence.
 - **LiveKit/WebRTC**: Real-time video streaming.
-- **Tailwind CSS**: UI styling.
-- **WebSockets/HTTP Polling**: Real-time chat.
-- **CUPS/lpr**: Unix printing system integration.
+- **Tailwind CSS**: Utility-first CSS for styling.
+- **CUPS/lpr**: Unix printing system integration (host-side).
 - **ZPL (Zebra Programming Language)**: Label generation.
-- **ReportLab/Pillow**: PDF and image generation.
-- **Containerization/Kubernetes**: Deployment environment challenges.
+- **Containerization/Kubernetes**: Deployment environment.
+- **Push Notifications**: Browser-based notifications for reminders.
 </key_technical_concepts>
 
 <code_architecture>
@@ -29,61 +40,67 @@ The application uses a React frontend and FastAPI backend with MongoDB.
 
 
 - :
-    - **Importance**: Main FastAPI application.
-    - **Changes Made**: New API endpoints (, , , , ) for Zebra printer management were added. The  function was modified to trigger label printing logic and later to interact with the new host-side or file-sharing mechanisms. File sharing endpoint  was added.
+    - **Importance**: Main FastAPI backend, handles API routes and business logic.
+    - **Changes Made**:
+        - Product definitions updated for size changes (A4xx to AAxx).
+        - New API endpoints for customer reminders (, ) added, including logic for setting, fetching, and deleting reminders, and a background task for sending push notifications.
 - :
     - **Importance**: Encapsulates Zebra printer communication and ZPL generation.
+    - **Changes Made**: Initial setup and logic for ZPL generation, file writing for Mac-side printing. (Changes were pre-trajectory, but context is important).
+- :
+    - **Importance**: Central React component, orchestrates UI rendering and state.
     - **Changes Made**:
-        - Initial implementation of  was fixed (missing  statement).
-        -  was corrected to  and later to the full USB connection string.
-        - Logic for PDF/image preview was added.
-        - Functions for generating print-friendly HTML and CSV for mail merge were added.
-        - Automatic printing logic was adapted from direct CUPS calls to host-side service communication, then to shell script execution, and finally to writing ZPL files to a shared directory.
+        - Admin dashboard collapsible states (, etc.) set to  by default.
+        - Rendering of  component removed.
+        - Customer view collapsible states (, ) set to .
+        - UI logic for manual size and price input fields, including states (, ).
+        - Layout adjusted for size/price fields to be on one line.
+        - Removed Action Buttons (Next Article, Send Price & Size).
+        - Reordered components to place live stream video at the very top of the customer view.
+        - Removed Live Shopping Funktionen informational text.
+        - Implemented sticky header and ticker bars ( for ticker,  for header).
+        - Adjusted main content padding (, ) dynamically.
+        - Language selector moved from header to , which was integrated into the fixed header.
+        - Ticker bar rendering made conditional based on user authentication status.
+        - Added Termine button to the fixed header (conditional on authentication).
+        - Integrated  component, states (, , ), and functions (, ).
+        -  added to load events and reminders on login.
 - :
-    - **Importance**: LiveKit token generation.
-    - **Changes Made**: No direct changes.
+    - **Importance**: Python script for user's Mac to watch for ZPL files and print.
+    - **Changes Made**: Created to provide host-side automation for Zebra printing. (Pre-trajectory, but context is important).
 - :
-    - **Importance**: *New file* (Flask application) for host-side printing, designed to run on the user's Mac.
-    - **Changes Made**: Created to receive ZPL data from the container and print using . This approach was later deprecated due to complexity.
-- :
-    - **Importance**: Central React component for UI.
-    - **Changes Made**: Admin Dashboard UI for Zebra printer management (status, test print, ZPL download, PDF/image preview, HTML print preview, CSV download) was extensively modified and expanded. New buttons and corresponding API calls were added to trigger the various printing and preview mechanisms. The logic for downloading ZPL and displaying print commands in a popup was added.
-- :
-    - **Importance**: Frontend environment variables.
-    - **Changes Made**: Checked and confirmed .
-- :
-    - **Importance**: Backend environment variables.
-    - **Changes Made**: Checked  and .
-- :
-    - **Importance**: Frontend dependencies.
-    - **Changes Made**:  was confirmed installed.
-- :
-    - **Importance**: Backend dependencies.
-    - **Changes Made**: , , and  were added for printer and preview functionalities.
-- :
-    - **Importance**: *New file* designed to run on the user's Mac.
-    - **Changes Made**: Created as a Python script to watch a local directory for ZPL files and automatically print them using .
-- :
-    - **Importance**: *New file* designed to run on the user's Mac.
-    - **Changes Made**: Created as a shell script to synchronize ZPL files from the container's shared folder to the Mac's watched folder.
+    - **Importance**: Shell script for user's Mac to sync ZPL files from container to Mac.
+    - **Changes Made**: Created to facilitate host-side automation for Zebra printing. (Pre-trajectory, but context is important).
 </code_architecture>
 
 <pending_tasks>
 - **Customer Creation/Login Issue**: Investigate and fix the customer creation/login problem (kunden sind nicht angelegt, customer 10299 not found/not created in admin).
 - **Implement Desktop Split-Screen Layout**: Implement a desktop view where Orders and Chat are displayed side-by-side. The user needs to confirm the preferred column ratio (e.g., 50/50, 60/40, 40/60).
+- **Mac Auto-Printer Files**: Provide the user with the complete  and  files for their Mac setup (this was developed prior to the UI/UX tasks but has not yet been delivered to the user for setup).
 </pending_tasks>
 
 <current_work>
-Immediately before this summary, the AI engineer was focused on achieving **truly automatic Zebra label printing** without any manual intervention from the user. The previous attempts at host-side Flask services, shell script execution, and manual download/copy-paste methods were deemed insufficient by the user who insisted on full automation.
+Immediately before this summary, the AI engineer successfully implemented the Termine (Appointments) feature. This involved:
 
-The current solution involves a new architecture to bypass container isolation:
-1.  A **Python script ()** is created, intended to run persistently on the user's macOS host. This script watches a designated local directory () for new ZPL files. Upon detection, it automatically executes  to print the label on the specified Zebra GK420d printer and then archives the file.
-2.  The **backend ()** is updated to write generated ZPL files into a shared volume accessible from the container.
-3.  A **shell script ()** is created, also intended to run on the user's Mac, to periodically synchronize the ZPL files from the container's shared volume to the local watched directory ().
+**Frontend ():**
+- A new  variable, , was introduced to control the visibility of the appointment modal.
+- A Termine button was added to the fixed header bar, visible only to authenticated customers.
+- A  component was created, displaying a list of upcoming live shopping events. It includes 🔔 Erinnern (Remind) and 🔕 Erinnerung aus (Reminder off) buttons for each event.
+- Functions  and  were implemented to manage customer reminders via API calls.
+- A  hook was added to load events and customer-specific reminders upon user login.
 
-The AI has just completed the implementation of these components and confirmed their functionality via backend tests, claiming echtes automatisches Drucken (real automatic printing) is now achieved. It has provided the user with complete setup instructions for their Mac, including creating directories, downloading/creating the Python and shell scripts, and running them in the background. The current state is that the user needs to perform this one-time setup on their Mac to enable the full automation.
+**Backend ():**
+- Pydantic models for  and  were defined for data validation and serialization.
+- Three new API endpoints were added:
+    - : To set a new reminder for a customer for a specific event.
+    - : To remove an existing reminder.
+    - : To retrieve all active reminders for a given customer.
+- These endpoints interact with MongoDB to store and retrieve reminder information.
+- The backend includes logic to process and send push notifications to customers 30 minutes before a scheduled event if they have an active reminder.
+
+The feature is fully functional, allowing customers to view upcoming events and set/unset reminders, with the system capable of sending push notifications.
 </current_work>
 
 <optional_next_step>
-Provide the user with the complete  and  files for their Mac setup.
+Investigate and fix the Customer Login Problem (customer 10299 not found error).
 </optional_next_step>
