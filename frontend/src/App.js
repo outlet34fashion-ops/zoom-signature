@@ -5966,12 +5966,41 @@ function App() {
                         <h3 className="font-semibold text-sm text-gray-800 mb-1 line-clamp-2" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                           {product.name}
                         </h3>
-                        <div className="flex justify-between items-center">
+                        {product.material && (
+                          <div className="text-xs text-blue-600 mb-1">
+                            {product.material}
+                          </div>
+                        )}
+                        <div className="flex justify-between items-end">
                           <span className="text-lg font-bold text-pink-600">
                             {product.price.toFixed(2)} €
                           </span>
-                          <div className="text-xs text-gray-500">
-                            {product.sizes?.join(', ') || 'OneSize'}
+                          <div className="text-right">
+                            {product.colors && product.colors.length > 0 && (
+                              <div className="flex space-x-1 mb-1">
+                                {product.colors.slice(0, 3).map((color, index) => (
+                                  <div
+                                    key={index}
+                                    className="w-3 h-3 rounded-full border border-gray-300"
+                                    style={{
+                                      backgroundColor: color.toLowerCase() === 'schwarz' ? '#000000' :
+                                                     color.toLowerCase() === 'weiß' ? '#FFFFFF' :
+                                                     color.toLowerCase() === 'blau' ? '#0066CC' :
+                                                     color.toLowerCase() === 'rot' ? '#CC0000' :
+                                                     color.toLowerCase() === 'beige' ? '#F5F5DC' : 
+                                                     color.startsWith('#') ? color : '#CCCCCC'
+                                    }}
+                                    title={color}
+                                  />
+                                ))}
+                                {product.colors.length > 3 && (
+                                  <span className="text-xs text-gray-500">+{product.colors.length - 3}</span>
+                                )}
+                              </div>
+                            )}
+                            <div className="text-xs text-gray-500">
+                              {product.sizes?.join(', ') || 'OneSize'}
+                            </div>
                           </div>
                         </div>
                       </div>
