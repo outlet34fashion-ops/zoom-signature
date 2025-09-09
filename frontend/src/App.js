@@ -118,12 +118,12 @@ function App() {
   const [customerLastOrder, setCustomerLastOrder] = useState(null);
   const [loadingLastOrder, setLoadingLastOrder] = useState(false);
 
-  // LiveKit Streaming States - CRITICAL FOR STREAMING
-  const [livekitToken, setLivekitToken] = useState(null);
-  const [livekitUrl, setLivekitUrl] = useState(null);
-  const [currentRoomName, setCurrentRoomName] = useState(null);
-  const [isLiveKitConnected, setIsLiveKitConnected] = useState(false);
-  const [livekitError, setLivekitError] = useState(null);
+  // Daily.co Streaming States - STABLE LOW-LATENCY SOLUTION
+  const [dailyToken, setDailyToken] = useState(null);
+  const [dailyRoomUrl, setDailyRoomUrl] = useState(null);
+  const [roomName, setRoomName] = useState('live-shopping-stream');
+  const [isDailyConnected, setIsDailyConnected] = useState(false);
+  const [dailyError, setDailyError] = useState(null);
   const [streamingActive, setStreamingActive] = useState(false);
 
   // Live Shopping Calendar States
