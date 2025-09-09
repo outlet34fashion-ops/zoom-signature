@@ -8889,8 +8889,12 @@ TIMEZONE BUG ANALYSIS COMPLETE:
         print(f"🔗 Testing against: {self.base_url}")
         print("=" * 60)
 
-        # CRITICAL PRIORITY #0: CATALOG VISIBILITY BUG FIXES (Current Review Request)
-        print("\n🛍️ CRITICAL PRIORITY #0: CATALOG VISIBILITY BUG FIXES...")
+        # CRITICAL PRIORITY #0: NEW CATALOG FEATURES IMPLEMENTATION (Current Review Request)
+        print("\n🛍️ CRITICAL PRIORITY #0: NEW CATALOG FEATURES IMPLEMENTATION...")
+        new_catalog_features_success = self.test_new_catalog_features()
+
+        # CRITICAL PRIORITY #1: CATALOG VISIBILITY BUG FIXES (Previous Review Request)
+        print("\n🛍️ CRITICAL PRIORITY #1: CATALOG VISIBILITY BUG FIXES...")
         catalog_fixes_success = self.test_catalog_visibility_bug_fixes()
 
         # CRITICAL PRIORITY #1: CATALOG VISIBILITY BUG INVESTIGATION (Current Review Request)
