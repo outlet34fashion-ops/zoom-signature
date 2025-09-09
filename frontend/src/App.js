@@ -176,6 +176,11 @@ function App() {
     image_url: '',
     stock_quantity: null
   });
+  
+  // Media Upload States
+  const [productMediaFiles, setProductMediaFiles] = useState([]);
+  const [uploadingMedia, setUploadingMedia] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
   const [creatingCategory, setCreatingCategory] = useState(false);
   const [creatingProduct, setCreatingProduct] = useState(false);
 
