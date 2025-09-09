@@ -409,7 +409,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "VIDEO CONFLICT FIX: LiveKit Streaming Video Playback Error Resolution"
+    - "Daily.co API Integration"
   stuck_tasks: []
   test_all: false
   test_priority: "critical_first"
