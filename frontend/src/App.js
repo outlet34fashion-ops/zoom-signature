@@ -291,6 +291,179 @@ function App() {
     }
   };
 
+  // ==============================================
+  // PRODUKTKATALOG FUNCTIONS
+  // ==============================================
+
+  // Load categories
+  const loadCategories = async () => {
+    try {
+      setLoadingCatalog(true);
+      setCatalogError('');
+      
+      const response = await axios.get(`${API}/categories`);
+      setCategories(response.data);
+      
+    } catch (error) {
+      console.error('Error loading categories:', error);
+      setCatalogError('Fehler beim Laden der Kategorien');
+    } finally {
+      setLoadingCatalog(false);
+    }
+  };
+
+  // Load products (optionally filtered by category)
+  const loadCatalogProducts = async (categoryId = null) => {
+    try {
+      setLoadingCatalog(true);
+      setCatalogError('');
+      
+      const url = categoryId 
+        ? `${API}/products?category_id=${categoryId}`
+        : `${API}/products`;
+      
+      const response = await axios.get(url);
+      setCatalogProducts(response.data);
+      
+    } catch (error) {
+      console.error('Error loading products:', error);
+      setCatalogError('Fehler beim Laden der Produkte');
+    } finally {
+      setLoadingCatalog(false);
+    }
+  };
+
+  // Load customer orders
+  const loadCustomerCatalogOrders = async (customerNumber) => {
+    try {
+      const response = await axios.get(`${API}/catalog/orders/customer/${customerNumber}`);
+      setCustomerCatalogOrders(response.data);
+    } catch (error) {
+      console.error('Error loading customer orders:', error);
+    }
+  };
+
+  // Place catalog order
+  const placeCatalogOrder = async () => {
+    if (!selectedProduct || !selectedProductSize || !isAuthenticated) return;
+    
+    try {
+      const customerNumber = currentCustomer?.customer_number || localStorage.getItem('customerNumber');
+      if (!customerNumber) {
+        alert('Kunden-Nummer nicht gefunden. Bitte neu anmelden.');
+        return;
+      }
+
+      const orderData = {
+        customer_number: customerNumber,
+        product_id: selectedProduct.id,
+        size: selectedProductSize,
+        quantity: catalogOrderQuantity
+      };
+
+      const response = await axios.post(`${API}/catalog/orders`, orderData);
+      
+      alert(`✅ Bestellung erfolgreich aufgegeben!\nArtikel: ${selectedProduct.name}\nGröße: ${selectedProductSize}\nAnzahl: ${catalogOrderQuantity}\nGesamtpreis: ${response.data.total_price.toFixed(2)} €`);
+      
+      // Reset order form
+      setSelectedProduct(null);
+      setShowProductDetail(false);
+      setSelectedProductSize('');
+      setCatalogOrderQuantity(1);
+      
+      // Reload customer orders
+      loadCustomerCatalogOrders(customerNumber);
+      
+    } catch (error) {
+      console.error('Error placing catalog order:', error);
+      if (error.response?.status === 400 && error.response.data.detail.includes('stock')) {
+        alert('❌ Nicht genügend Lagerbestand verfügbar!');
+      } else if (error.response?.status === 403) {
+        alert('❌ Ihr Konto ist nicht aktiviert. Bitte wenden Sie sich an den Administrator.');
+      } else {
+        alert('❌ Fehler beim Aufgeben der Bestellung. Bitte versuchen Sie es erneut.');
+      }
+    }
+  };
+
+  // Admin: Create Category
+  const createCategory = async () => {
+    try {
+      setCreatingCategory(true);
+      setCatalogError('');
+      
+      await axios.post(`${API}/admin/categories`, newCategoryData);
+      
+      // Reset form
+      setNewCategoryData({
+        name: '',
+        description: '',
+        image_url: '',
+        sort_order: 0
+      });
+      setShowCreateCategory(false);
+      
+      // Reload categories
+      await loadCategories();
+      alert('✅ Kategorie erfolgreich erstellt!');
+      
+    } catch (error) {
+      console.error('Error creating category:', error);
+      setCatalogError('Fehler beim Erstellen der Kategorie');
+    } finally {
+      setCreatingCategory(false);
+    }
+  };
+
+  // Admin: Create Product
+  const createProduct = async () => {
+    try {
+      setCreatingProduct(true);
+      setCatalogError('');
+      
+      // Convert sizes string to array
+      const sizesArray = newProductData.sizes.length > 0 
+        ? newProductData.sizes 
+        : ['OneSize'];
+      
+      const productData = {
+        ...newProductData,
+        sizes: sizesArray,
+        price: parseFloat(newProductData.price),
+        stock_quantity: newProductData.stock_quantity ? parseInt(newProductData.stock_quantity) : null
+      };
+      
+      await axios.post(`${API}/admin/products`, productData);
+      
+      // Reset form
+      setNewProductData({
+        article_number: '',
+        name: '',
+        description: '',
+        category_id: '',
+        price: 0,
+        sizes: [],
+        image_url: '',
+        stock_quantity: null
+      });
+      setShowCreateProduct(false);
+      
+      // Reload products
+      await loadCatalogProducts();
+      alert('✅ Produkt erfolgreich erstellt!');
+      
+    } catch (error) {
+      console.error('Error creating product:', error);
+      if (error.response?.status === 400 && error.response.data.detail.includes('Article number')) {
+        setCatalogError('Artikelnummer bereits vorhanden');
+      } else {
+        setCatalogError('Fehler beim Erstellen des Produkts');
+      }
+    } finally {
+      setCreatingProduct(false);
+    }
+  };
+
   // Check notification permission on load
   useEffect(() => {
     const savedNotification = localStorage.getItem('notificationsEnabled');
