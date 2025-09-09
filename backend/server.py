@@ -1,4 +1,5 @@
 from fastapi import FastAPI, APIRouter, WebSocket, WebSocketDisconnect, HTTPException, File, UploadFile, Depends
+from fastapi.staticfiles import StaticFiles
 from fastapi.websockets import WebSocketState
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
