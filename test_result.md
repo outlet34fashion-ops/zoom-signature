@@ -410,7 +410,8 @@ metadata:
 test_plan:
   current_focus:
     - "Produktkatalog Backend API Implementation"
-  stuck_tasks: []
+  stuck_tasks:
+    - "Produktkatalog Backend API Implementation"
   test_all: false
   test_priority: "critical_first"
 
