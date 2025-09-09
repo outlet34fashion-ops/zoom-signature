@@ -3580,17 +3580,51 @@ function App() {
                       />
                     </div>
                     
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Vorname *
+                        </label>
+                        <Input
+                          type="text"
+                          placeholder="Vorname"
+                          value={newCustomerData.first_name}
+                          onChange={(e) => setNewCustomerData(prev => ({
+                            ...prev,
+                            first_name: e.target.value
+                          }))}
+                          className="w-full"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Nachname *
+                        </label>
+                        <Input
+                          type="text"
+                          placeholder="Nachname"
+                          value={newCustomerData.last_name}
+                          onChange={(e) => setNewCustomerData(prev => ({
+                            ...prev,
+                            last_name: e.target.value
+                          }))}
+                          className="w-full"
+                        />
+                      </div>
+                    </div>
+                    
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Name *
+                        Firmenname (optional)
                       </label>
                       <Input
                         type="text"
-                        placeholder="Vollständiger Name"
-                        value={newCustomerData.name}
+                        placeholder="Firmenname"
+                        value={newCustomerData.company_name}
                         onChange={(e) => setNewCustomerData(prev => ({
                           ...prev,
-                          name: e.target.value
+                          company_name: e.target.value
                         }))}
                         className="w-full"
                       />
