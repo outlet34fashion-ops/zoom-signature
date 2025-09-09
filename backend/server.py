@@ -2820,35 +2820,274 @@ async def check_favorite(customer_number: str, product_id: str):
 UPLOAD_DIR = ROOT_DIR / "uploads" / "products"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
-# Create default categories on startup
+# Create default hierarchical categories on startup
 async def create_default_categories():
-    """Create default categories if they don't exist"""
+    """Create default hierarchical categories if they don't exist"""
     try:
         # Check if categories already exist
         existing_cats = await db.categories.find().to_list(length=None)
         
         if len(existing_cats) == 0:
-            default_categories = [
+            # Main Categories (Hauptkategorien - schwarz/fett)
+            main_categories = [
                 {
                     "id": str(uuid.uuid4()),
-                    "name": "Neu Eingestellt",
-                    "description": "Die neuesten Artikel in unserem Sortiment",
+                    "name": "Oberteile",
+                    "description": "T-Shirts, Blusen, Pullover und mehr",
+                    "icon": "👕",
+                    "parent_category_id": None,
+                    "is_main_category": True,
                     "sort_order": 1,
                     "created_at": datetime.now(timezone.utc),
                     "updated_at": datetime.now(timezone.utc)
                 },
                 {
                     "id": str(uuid.uuid4()),
-                    "name": "Bestseller",
-                    "description": "Unsere beliebtesten Artikel",
+                    "name": "Hosen & Jeans",
+                    "description": "Jeans, Stoffhosen, Leggings",
+                    "icon": "👖",
+                    "parent_category_id": None,
+                    "is_main_category": True,
                     "sort_order": 2,
+                    "created_at": datetime.now(timezone.utc),
+                    "updated_at": datetime.now(timezone.utc)
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Kleider & Röcke",
+                    "description": "Sommerkleider, Abendkleider, Röcke",
+                    "icon": "👗",
+                    "parent_category_id": None,
+                    "is_main_category": True,
+                    "sort_order": 3,
+                    "created_at": datetime.now(timezone.utc),
+                    "updated_at": datetime.now(timezone.utc)
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Jacken & Mäntel",
+                    "description": "Übergangsjacken, Westen, Wintermäntel",
+                    "icon": "🧥",
+                    "parent_category_id": None,
+                    "is_main_category": True,
+                    "sort_order": 4,
+                    "created_at": datetime.now(timezone.utc),
+                    "updated_at": datetime.now(timezone.utc)
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Accessoires",
+                    "description": "Taschen, Gürtel, Schals",
+                    "icon": "🎒",
+                    "parent_category_id": None,
+                    "is_main_category": True,
+                    "sort_order": 5,
                     "created_at": datetime.now(timezone.utc),
                     "updated_at": datetime.now(timezone.utc)
                 }
             ]
             
-            await db.categories.insert_many(default_categories)
-            logging.info("Default categories created successfully")
+            # Insert main categories first
+            await db.categories.insert_many(main_categories)
+            
+            # Get inserted main categories for subcategory references
+            inserted_cats = await db.categories.find({"is_main_category": True}).to_list(length=None)
+            cat_id_map = {cat["name"]: cat["id"] for cat in inserted_cats}
+            
+            # Sub Categories (Unterkategorien - unter Hauptkategorien)
+            sub_categories = [
+                # Oberteile subcategories
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "T-Shirts",
+                    "description": "Kurzarm und langarm T-Shirts",
+                    "icon": "",
+                    "parent_category_id": cat_id_map["Oberteile"],
+                    "is_main_category": False,
+                    "sort_order": 1,
+                    "created_at": datetime.now(timezone.utc),
+                    "updated_at": datetime.now(timezone.utc)
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Blusen / Hemden",
+                    "description": "Elegante Blusen und Hemden",
+                    "icon": "",
+                    "parent_category_id": cat_id_map["Oberteile"],
+                    "is_main_category": False,
+                    "sort_order": 2,
+                    "created_at": datetime.now(timezone.utc),
+                    "updated_at": datetime.now(timezone.utc)
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Pullover / Strick",
+                    "description": "Pullover und Strickwaren",
+                    "icon": "",
+                    "parent_category_id": cat_id_map["Oberteile"],
+                    "is_main_category": False,
+                    "sort_order": 3,
+                    "created_at": datetime.now(timezone.utc),
+                    "updated_at": datetime.now(timezone.utc)
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Sweatshirts / Hoodies",
+                    "description": "Bequeme Sweatshirts und Hoodies",
+                    "icon": "",
+                    "parent_category_id": cat_id_map["Oberteile"],
+                    "is_main_category": False,
+                    "sort_order": 4,
+                    "created_at": datetime.now(timezone.utc),
+                    "updated_at": datetime.now(timezone.utc)
+                },
+                
+                # Hosen & Jeans subcategories
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Jeans",
+                    "description": "Klassische und moderne Jeans",
+                    "icon": "",
+                    "parent_category_id": cat_id_map["Hosen & Jeans"],
+                    "is_main_category": False,
+                    "sort_order": 1,
+                    "created_at": datetime.now(timezone.utc),
+                    "updated_at": datetime.now(timezone.utc)
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Stoffhosen",
+                    "description": "Elegante Stoffhosen",
+                    "icon": "",
+                    "parent_category_id": cat_id_map["Hosen & Jeans"],
+                    "is_main_category": False,
+                    "sort_order": 2,
+                    "created_at": datetime.now(timezone.utc),
+                    "updated_at": datetime.now(timezone.utc)
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Leggings",
+                    "description": "Bequeme Leggings",
+                    "icon": "",
+                    "parent_category_id": cat_id_map["Hosen & Jeans"],
+                    "is_main_category": False,
+                    "sort_order": 3,
+                    "created_at": datetime.now(timezone.utc),
+                    "updated_at": datetime.now(timezone.utc)
+                },
+                
+                # Kleider & Röcke subcategories
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Sommerkleider",
+                    "description": "Leichte Sommerkleider",
+                    "icon": "",
+                    "parent_category_id": cat_id_map["Kleider & Röcke"],
+                    "is_main_category": False,
+                    "sort_order": 1,
+                    "created_at": datetime.now(timezone.utc),
+                    "updated_at": datetime.now(timezone.utc)
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Abendkleider",
+                    "description": "Elegante Abendkleider",
+                    "icon": "",
+                    "parent_category_id": cat_id_map["Kleider & Röcke"],
+                    "is_main_category": False,
+                    "sort_order": 2,
+                    "created_at": datetime.now(timezone.utc),
+                    "updated_at": datetime.now(timezone.utc)
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Röcke",
+                    "description": "Verschiedene Röcke",
+                    "icon": "",
+                    "parent_category_id": cat_id_map["Kleider & Röcke"],
+                    "is_main_category": False,
+                    "sort_order": 3,
+                    "created_at": datetime.now(timezone.utc),
+                    "updated_at": datetime.now(timezone.utc)
+                },
+                
+                # Jacken & Mäntel subcategories
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Übergangsjacken",
+                    "description": "Leichte Jacken für Übergangszeiten",
+                    "icon": "",
+                    "parent_category_id": cat_id_map["Jacken & Mäntel"],
+                    "is_main_category": False,
+                    "sort_order": 1,
+                    "created_at": datetime.now(timezone.utc),
+                    "updated_at": datetime.now(timezone.utc)
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Westen",
+                    "description": "Praktische Westen",
+                    "icon": "",
+                    "parent_category_id": cat_id_map["Jacken & Mäntel"],
+                    "is_main_category": False,
+                    "sort_order": 2,
+                    "created_at": datetime.now(timezone.utc),
+                    "updated_at": datetime.now(timezone.utc)
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Wintermäntel",
+                    "description": "Warme Wintermäntel",
+                    "icon": "",
+                    "parent_category_id": cat_id_map["Jacken & Mäntel"],
+                    "is_main_category": False,
+                    "sort_order": 3,
+                    "created_at": datetime.now(timezone.utc),
+                    "updated_at": datetime.now(timezone.utc)
+                },
+                
+                # Accessoires subcategories
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Taschen",
+                    "description": "Handtaschen und Rucksäcke",
+                    "icon": "",
+                    "parent_category_id": cat_id_map["Accessoires"],
+                    "is_main_category": False,
+                    "sort_order": 1,
+                    "created_at": datetime.now(timezone.utc),
+                    "updated_at": datetime.now(timezone.utc)
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Gürtel",
+                    "description": "Verschiedene Gürtel",
+                    "icon": "",
+                    "parent_category_id": cat_id_map["Accessoires"],
+                    "is_main_category": False,
+                    "sort_order": 2,
+                    "created_at": datetime.now(timezone.utc),
+                    "updated_at": datetime.now(timezone.utc)
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Schals",
+                    "description": "Schals und Tücher",
+                    "icon": "",
+                    "parent_category_id": cat_id_map["Accessoires"],
+                    "is_main_category": False,
+                    "sort_order": 3,
+                    "created_at": datetime.now(timezone.utc),
+                    "updated_at": datetime.now(timezone.utc)
+                }
+            ]
+            
+            # Insert subcategories
+            await db.categories.insert_many(sub_categories)
+            
+            logging.info("Default hierarchical categories created successfully")
+            logging.info(f"Created {len(main_categories)} main categories and {len(sub_categories)} subcategories")
     except Exception as e:
         logging.error(f"Error creating default categories: {str(e)}")
 
