@@ -3194,11 +3194,11 @@ function App() {
                           </Button>
                         </div>
 
-                        {/* LiveKit Error Display */}
-                        {livekitError && (
+                        {/* Daily.co Error Display */}
+                        {dailyError && (
                           <Alert className="border-red-200 bg-red-50">
                             <AlertDescription className="text-red-800">
-                              ❌ Streaming Error: {livekitError}
+                              ❌ Streaming Error: {dailyError}
                             </AlertDescription>
                           </Alert>
                         )}
