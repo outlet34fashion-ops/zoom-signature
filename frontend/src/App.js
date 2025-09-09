@@ -1802,43 +1802,39 @@ function App() {
     }
   };
 
-  // ENHANCED: Check camera access before streaming  
-  const checkCameraAccess = async () => {
+  // Stop Daily.co streaming
+  const stopDailyStreaming = async () => {
     try {
-      console.log('🔍 Checking camera access...');
+      console.log('🛑 Stopping Daily.co streaming...');
       
-      // First enumerate devices
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      const videoDevices = devices.filter(device => device.kind === 'videoinput');
-      console.log('📹 Found video devices:', videoDevices.length);
+      // Clear streaming state
+      setStreamingActive(false);
+      setDailyToken(null);
+      setDailyRoomUrl(null);
+      setDailyError(null);
       
-      if (videoDevices.length === 0) {
-        throw new Error('Keine Kamera gefunden. Bitte schließen Sie eine Kamera an.');
+      // Optionally delete the room (admin only)
+      if (isAdminAuthenticated && roomName) {
+        try {
+          await fetch(`${API}/daily/rooms/${roomName}`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+          console.log('✅ Daily.co room deleted:', roomName);
+        } catch (deleteError) {
+          console.warn('⚠️ Failed to delete room:', deleteError);
+        }
       }
       
-      // Try to get user media with multiple constraints
-      const constraints = [
-        // Try preferred settings first
-        {
-          video: {
-            width: { ideal: 1920, min: 640 },
-            height: { ideal: 1080, min: 480 },
-            frameRate: { ideal: 30, min: 15 },
-            facingMode: 'user'
-          },
-          audio: {
-            echoCancellation: true,
-            noiseSuppression: true,
-            autoGainControl: true
-          }
-        },
-        // Fallback: Basic settings
-        {
-          video: {
-            width: { ideal: 1280 },
-            height: { ideal: 720 },
-            frameRate: { ideal: 24 }
-          },
+      setRoomName('live-shopping-stream');
+      console.log('✅ Daily.co streaming stopped');
+      
+    } catch (error) {
+      console.error('❌ Failed to stop Daily.co streaming:', error);
+    }
+  };
           audio: true
         },
         // Last resort: Any video/audio
