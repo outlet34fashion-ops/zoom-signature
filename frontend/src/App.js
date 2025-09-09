@@ -147,7 +147,7 @@ function App() {
   const [categories, setCategories] = useState([]);
   const [catalogProducts, setCatalogProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedCatalogProduct, setSelectedCatalogProduct] = useState(null);
   const [showProductDetail, setShowProductDetail] = useState(false);
   const [catalogOrderQuantity, setCatalogOrderQuantity] = useState(1);
   const [selectedProductSize, setSelectedProductSize] = useState('');
