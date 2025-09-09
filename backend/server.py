@@ -775,28 +775,7 @@ async def get_chat_messages(limit: int = 50):
     messages = await db.chat_messages.find().sort("timestamp", -1).limit(limit).to_list(limit)
     return [ChatMessage(**msg) for msg in reversed(messages)]
 
-@api_router.get("/products", response_model=List[Product])
-async def get_products():
-    # Sample products for demo
-    products = [
-        {
-            "id": "1",
-            "name": "Young Fashion Shirt",
-            "price": 12.90,
-            "sizes": ["OneSize", "AA60", "AA65", "AA70", "AA75", "Oversize"],
-            "image_url": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400",
-            "description": "Trendy fashion shirt for young adults"
-        },
-        {
-            "id": "2", 
-            "name": "Plus Size Blouse",
-            "price": 15.90,
-            "sizes": ["L", "XL", "XXL", "XXXL"],
-            "image_url": "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400",
-            "description": "Comfortable plus size blouse"
-        }
-    ]
-    return products
+
 
 @api_router.post("/orders", response_model=Order)
 async def create_order(order: OrderCreate):
