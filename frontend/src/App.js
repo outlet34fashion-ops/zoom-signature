@@ -1624,8 +1624,12 @@ function App() {
         setCreateCustomerError('E-Mail ist erforderlich.');
         return;
       }
-      if (!newCustomerData.name.trim()) {
-        setCreateCustomerError('Name ist erforderlich.');
+      if (!newCustomerData.first_name.trim()) {
+        setCreateCustomerError('Vorname ist erforderlich.');
+        return;
+      }
+      if (!newCustomerData.last_name.trim()) {
+        setCreateCustomerError('Nachname ist erforderlich.');
         return;
       }
       
