@@ -456,11 +456,11 @@ test_plan:
 
   - task: "Produktkatalog Backend API Implementation"
     implemented: true
-    working: false
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 1
     priority: "critical"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
@@ -471,6 +471,9 @@ test_plan:
       - working: false
         agent: "testing"
         comment: "🚨 CRITICAL BUG INVESTIGATION COMPLETED - ROOT CAUSE IDENTIFIED! Comprehensive investigation (8/9 tests passed - 88.9% success) reveals the exact cause of user's catalog visibility issue: 🔥 CRITICAL BUG CONFIRMED: Duplicate /products endpoints in server.py at lines 778 and 2319. FastAPI uses the FIRST endpoint (hardcoded sample products) instead of the database endpoint, causing new products to be stored but not visible in catalog. DETAILED FINDINGS: 1) ✅ Product creation workflow working correctly - products stored in database successfully, 2) ✅ Categories and database consistency working correctly, 3) ❌ CRITICAL ISSUE: GET /api/products returns only hardcoded products (Young Fashion Shirt, Plus Size Blouse) instead of database products, 4) ❌ Missing GET /api/admin/products and GET /api/admin/categories endpoints - admin cannot list existing items, 5) ✅ Category filtering works but only for hardcoded products. IMMEDIATE FIXES REQUIRED: 1) Remove duplicate /products endpoint at line 778 (hardcoded), 2) Ensure database /products endpoint (line 2319) is used, 3) Add missing GET /api/admin/products endpoint, 4) Add missing GET /api/admin/categories endpoint. IMPACT: User uploaded articles are stored in database but invisible in catalog due to endpoint shadowing. This explains the exact issue reported in review request."
+      - working: true
+        agent: "testing"
+        comment: "🎉 CATALOG VISIBILITY BUG FIXES VERIFICATION COMPLETED SUCCESSFULLY! Comprehensive testing (7/7 tests passed - 100% success rate) confirms ALL bug fixes from review request are working perfectly! DETAILED VERIFICATION RESULTS: 1) ✅ DEFAULT CATEGORIES CREATED: Both required categories exist with correct sort orders - 'Neu Eingestellt' (sort_order=1) and 'Bestseller' (sort_order=2), created automatically on backend startup, 2) ✅ DATABASE PRODUCTS ENDPOINT: GET /api/products now returns real database products with proper catalog structure (id, article_number, name, category_id, price, is_active, created_at), duplicate endpoint conflict resolved, 3) ✅ AUTOMATIC ARTICLE NUMBER GENERATION: System generates sequential article numbers starting from 1 and incrementing (tested: '1', '2', '3'...), works when article_number field is omitted from product creation, 4) ✅ MANUAL ARTICLE NUMBER ASSIGNMENT: Manual article numbers still work correctly (tested: 'MANUAL123'), system preserves custom article numbers when provided, 5) ✅ COMPLETE PRODUCT CREATION WORKFLOW: Products created via POST /api/admin/products immediately appear in GET /api/products, no visibility delays, complete end-to-end workflow functional, 6) ✅ NO DUPLICATE ENDPOINT CONFLICTS: Only one /products endpoint exists (line 2298), database endpoint properly handles product retrieval, 7) ✅ UPLOADED ARTICLES NOW VISIBLE: All created products immediately visible in catalog, resolves user's main complaint about catalog visibility. CONCLUSION: The catalog visibility issue has been COMPLETELY RESOLVED! All uploaded articles are now visible in the catalog, default categories exist, automatic article number generation works perfectly, and the complete product creation workflow is functional. The duplicate endpoint bug has been fixed and the system is ready for production use."
 
   - task: "Customer status check API fix"
     implemented: true
