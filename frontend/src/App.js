@@ -1939,6 +1939,7 @@ function App() {
           </div>
         )}
         
+        
         {/* Header for authenticated users */}
         {(isAuthenticated || isAdminView) && (
           <div className="container mx-auto px-4 py-2">
