@@ -1694,70 +1694,111 @@ function App() {
     }
   };
 
-  // ENHANCED: Start LiveKit streaming with better error handling - FIXED CAMERA ISSUE
-  const startLiveKitStreaming = async () => {
+  // Start Daily.co streaming with stable low-latency connection
+  const startDailyStreaming = async () => {
     try {
-      console.log('🎥 Starting enhanced LiveKit streaming...');
-      
-      // CRITICAL FIX: Make camera check non-blocking for initial testing
-      try {
-        const hasCamera = await checkCameraAccess();
-        if (!hasCamera) {
-          console.warn('⚠️ Camera access check failed, but continuing with streaming setup...');
-          // Don't throw error - continue with streaming setup
-        } else {
-          console.log('✅ Camera access validated successfully');
-        }
-      } catch (cameraError) {
-        console.warn('⚠️ Camera access check failed:', cameraError.message);
-        console.log('🔄 Continuing with streaming setup anyway...');
-        // Continue instead of blocking
-      }
+      console.log('🎥 Starting Daily.co streaming...');
       
       // Generate room name
-      const roomName = `live-shopping-${Date.now()}`;
-      setCurrentRoomName(roomName);
+      const newRoomName = `live-shopping-${Date.now()}`;
+      setRoomName(newRoomName);
       
-      // Create room first
-      await livekitService.createRoom(roomName, 100);
-      console.log('✅ LiveKit room created:', roomName);
+      // Create Daily.co room first
+      const roomResponse = await fetch(`${API}/daily/rooms`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          room_name: newRoomName,
+          privacy: 'public',
+          max_participants: 100,
+          properties: {
+            enable_screenshare: true,
+            enable_chat: true,
+            start_cloud_recording: false,
+            lang: 'de'
+          }
+        })
+      });
+      
+      if (!roomResponse.ok) {
+        const errorText = await roomResponse.text();
+        throw new Error(`Room creation failed: ${errorText}`);
+      }
+      
+      const roomData = await roomResponse.json();
+      console.log('✅ Daily.co room created:', roomData);
       
       // Generate token based on user type
       let tokenData;
       if (isAdminAuthenticated) {
-        // Admin = Publisher (can stream)
-        tokenData = await livekitService.generatePublisherToken(
-          roomName,
-          `admin-publisher-${Date.now()}`,
-          { role: 'admin', streaming: true }
-        );
-        console.log('✅ Admin publisher token generated');
+        // Admin = Owner (can stream and control)
+        const tokenResponse = await fetch(`${API}/daily/meeting-tokens`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            room_name: newRoomName,
+            user_name: 'Admin',
+            is_owner: true,
+            enable_screenshare: true,
+            enable_recording: false,
+            enable_live_streaming: true
+          })
+        });
+        
+        if (!tokenResponse.ok) {
+          const errorText = await tokenResponse.text();
+          throw new Error(`Admin token generation failed: ${errorText}`);
+        }
+        
+        tokenData = await tokenResponse.json();
+        console.log('✅ Admin owner token generated');
       } else {
         // Customer = Viewer (can watch)
         const customerNumber = localStorage.getItem('customerNumber') || 'guest';
-        tokenData = await livekitService.generateViewerToken(
-          roomName,
-          `customer-${customerNumber}`,
-          { role: 'customer', customerNumber }
-        );
+        const tokenResponse = await fetch(`${API}/daily/meeting-tokens`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            room_name: newRoomName,
+            user_name: `Kunde ${customerNumber}`,
+            is_owner: false,
+            enable_screenshare: false,
+            enable_recording: false,
+            enable_live_streaming: false
+          })
+        });
+        
+        if (!tokenResponse.ok) {
+          const errorText = await tokenResponse.text();
+          throw new Error(`Customer token generation failed: ${errorText}`);
+        }
+        
+        tokenData = await tokenResponse.json();
         console.log('✅ Customer viewer token generated');
       }
       
-      setLivekitToken(tokenData.token);
-      setLivekitUrl(tokenData.livekitUrl);
+      setDailyToken(tokenData.token);
+      setDailyRoomUrl(roomData.url);
       setStreamingActive(true);
+      setDailyError(null);
       
-      console.log('🎥 Enhanced LiveKit streaming initialized successfully');
+      console.log('🎥 Daily.co streaming initialized successfully');
       
       // Show success message
-      alert('✅ Streaming gestartet!\n\nRoom: ' + roomName + '\n\nTipp: Wenn die Kamera nicht funktioniert, erlauben Sie den Kamera-Zugriff in Ihrem Browser.');
+      alert('✅ Live-Stream gestartet!\n\nRoom: ' + newRoomName + '\n\n🔥 Stabile Verbindung mit Daily.co');
       
     } catch (error) {
-      console.error('❌ Failed to initialize LiveKit streaming:', error);
-      setLivekitError(error.message);
+      console.error('❌ Failed to initialize Daily.co streaming:', error);
+      setDailyError(error.message);
       
       // Show user-friendly error message
-      alert('❌ Streaming-Fehler: ' + error.message + '\n\nVersuchen Sie:\n1. Browser neu laden\n2. Kamera-Zugriff erlauben\n3. Andere Browser verwenden');
+      alert('❌ Streaming-Fehler: ' + error.message + '\n\nBitte versuchen Sie es erneut.');
     }
   };
 
