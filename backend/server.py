@@ -335,6 +335,9 @@ class Category(BaseModel):
 class CategoryCreate(BaseModel):
     name: str
     description: str = ""
+    icon: str = ""
+    parent_category_id: Optional[str] = None
+    is_main_category: bool = True
     image_url: Optional[str] = None
     sort_order: Optional[int] = 0
 
