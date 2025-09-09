@@ -2595,102 +2595,162 @@ async def update_catalog_order_status(order_id: str, status: str):
         raise HTTPException(status_code=500, detail="Order status update failed")
 
 # ==============================================
-# FILE UPLOAD ENDPOINTS
+# FAVORITES AND RECENTLY VIEWED ENDPOINTS
 # ==============================================
 
-# Create uploads directory if it doesn't exist
-UPLOAD_DIR = ROOT_DIR / "uploads" / "products"
-UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
-
-# Create default categories on startup
-async def create_default_categories():
-    """Create default categories if they don't exist"""
+@api_router.post("/favorites/{customer_number}/{product_id}")
+async def add_favorite(customer_number: str, product_id: str):
+    """Add product to customer favorites"""
     try:
-        # Check if categories already exist
-        existing_cats = await db.categories.find().to_list(length=None)
+        # Check if already in favorites
+        existing = await db.favorites.find_one({
+            "customer_number": customer_number,
+            "product_id": product_id
+        })
         
-        if len(existing_cats) == 0:
-            default_categories = [
-                {
-                    "id": str(uuid.uuid4()),
-                    "name": "Neu Eingestellt",
-                    "description": "Die neuesten Artikel in unserem Sortiment",
-                    "sort_order": 1,
-                    "created_at": datetime.now(timezone.utc),
-                    "updated_at": datetime.now(timezone.utc)
-                },
-                {
-                    "id": str(uuid.uuid4()),
-                    "name": "Bestseller",
-                    "description": "Unsere beliebtesten Artikel",
-                    "sort_order": 2,
-                    "created_at": datetime.now(timezone.utc),
-                    "updated_at": datetime.now(timezone.utc)
-                }
-            ]
-            
-            await db.categories.insert_many(default_categories)
-            logging.info("Default categories created successfully")
+        if existing:
+            return {"message": "Product already in favorites"}
+        
+        # Add to favorites
+        favorite = {
+            "id": str(uuid.uuid4()),
+            "customer_number": customer_number,
+            "product_id": product_id,
+            "created_at": datetime.now(timezone.utc)
+        }
+        
+        await db.favorites.insert_one(favorite)
+        return {"message": "Product added to favorites", "success": True}
+        
     except Exception as e:
-        logging.error(f"Error creating default categories: {str(e)}")
+        logging.error(f"Add favorite error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to add favorite")
 
-@api_router.post("/upload/product-media")
-async def upload_product_media(files: List[UploadFile] = File(...)):
-    """Upload multiple images/videos for products"""
+@api_router.delete("/favorites/{customer_number}/{product_id}")
+async def remove_favorite(customer_number: str, product_id: str):
+    """Remove product from customer favorites"""
     try:
-        uploaded_files = []
+        result = await db.favorites.delete_one({
+            "customer_number": customer_number,
+            "product_id": product_id
+        })
         
-        for file in files:
-            # Validate file type
-            if not file.content_type.startswith(('image/', 'video/')):
-                raise HTTPException(status_code=400, detail=f"Invalid file type: {file.content_type}")
-            
-            # Generate unique filename
-            file_extension = file.filename.split('.')[-1] if '.' in file.filename else ''
-            unique_filename = f"{uuid.uuid4()}.{file_extension}"
-            file_path = UPLOAD_DIR / unique_filename
-            
-            # Save file
-            with open(file_path, "wb") as buffer:
-                shutil.copyfileobj(file.file, buffer)
-            
-            # Create file URL (will be served by static files)
-            file_url = f"/api/uploads/products/{unique_filename}"
-            
-            uploaded_files.append({
-                "id": str(uuid.uuid4()),
-                "filename": file.filename,
-                "url": file_url,
-                "type": "image" if file.content_type.startswith('image/') else "video",
-                "size": file.size,
-                "content_type": file.content_type
-            })
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Favorite not found")
         
-        return {"success": True, "files": uploaded_files}
+        return {"message": "Product removed from favorites", "success": True}
         
     except HTTPException:
         raise
     except Exception as e:
-        logging.error(f"File upload error: {str(e)}")
-        raise HTTPException(status_code=500, detail="File upload failed")
+        logging.error(f"Remove favorite error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to remove favorite")
 
-@api_router.delete("/upload/product-media/{filename}")
-async def delete_product_media(filename: str):
-    """Delete uploaded media file"""
+@api_router.get("/favorites/{customer_number}", response_model=List[CatalogProduct])
+async def get_customer_favorites(customer_number: str):
+    """Get customer's favorite products"""
     try:
-        file_path = UPLOAD_DIR / filename
+        # Get favorite product IDs
+        favorites = await db.favorites.find(
+            {"customer_number": customer_number}
+        ).sort("created_at", -1).to_list(length=None)
         
-        if file_path.exists():
-            file_path.unlink()
-            return {"success": True, "message": "File deleted successfully"}
-        else:
-            raise HTTPException(status_code=404, detail="File not found")
-            
-    except HTTPException:
-        raise
+        if not favorites:
+            return []
+        
+        # Get products
+        favorite_product_ids = [fav["product_id"] for fav in favorites]
+        products = await db.products.find(
+            {"id": {"$in": favorite_product_ids}, "is_active": True}
+        ).to_list(length=None)
+        
+        return [CatalogProduct(**prod) for prod in products]
+        
     except Exception as e:
-        logging.error(f"File deletion error: {str(e)}")
-        raise HTTPException(status_code=500, detail="File deletion failed")
+        logging.error(f"Get favorites error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to get favorites")
+
+@api_router.post("/recently-viewed/{customer_number}/{product_id}")
+async def add_recently_viewed(customer_number: str, product_id: str):
+    """Add product to recently viewed"""
+    try:
+        # Remove existing entry if exists
+        await db.recently_viewed.delete_many({
+            "customer_number": customer_number,
+            "product_id": product_id
+        })
+        
+        # Add new entry
+        recently_viewed = {
+            "id": str(uuid.uuid4()),
+            "customer_number": customer_number,
+            "product_id": product_id,
+            "viewed_at": datetime.now(timezone.utc)
+        }
+        
+        await db.recently_viewed.insert_one(recently_viewed)
+        
+        # Keep only last 20 viewed items per customer
+        all_viewed = await db.recently_viewed.find(
+            {"customer_number": customer_number}
+        ).sort("viewed_at", -1).to_list(length=None)
+        
+        if len(all_viewed) > 20:
+            # Remove oldest entries
+            oldest_ids = [item["id"] for item in all_viewed[20:]]
+            await db.recently_viewed.delete_many({"id": {"$in": oldest_ids}})
+        
+        return {"message": "Product added to recently viewed", "success": True}
+        
+    except Exception as e:
+        logging.error(f"Add recently viewed error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to add to recently viewed")
+
+@api_router.get("/recently-viewed/{customer_number}", response_model=List[CatalogProduct])
+async def get_recently_viewed(customer_number: str, limit: int = 10):
+    """Get customer's recently viewed products"""
+    try:
+        # Get recently viewed product IDs
+        recently_viewed = await db.recently_viewed.find(
+            {"customer_number": customer_number}
+        ).sort("viewed_at", -1).limit(limit).to_list(length=limit)
+        
+        if not recently_viewed:
+            return []
+        
+        # Get products
+        viewed_product_ids = [item["product_id"] for item in recently_viewed]
+        products = await db.products.find(
+            {"id": {"$in": viewed_product_ids}, "is_active": True}
+        ).to_list(length=None)
+        
+        # Sort products by recently viewed order
+        product_dict = {prod["id"]: prod for prod in products}
+        sorted_products = []
+        for item in recently_viewed:
+            if item["product_id"] in product_dict:
+                sorted_products.append(product_dict[item["product_id"]])
+        
+        return [CatalogProduct(**prod) for prod in sorted_products]
+        
+    except Exception as e:
+        logging.error(f"Get recently viewed error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to get recently viewed")
+
+@api_router.get("/favorites/check/{customer_number}/{product_id}")
+async def check_favorite(customer_number: str, product_id: str):
+    """Check if product is in customer favorites"""
+    try:
+        favorite = await db.favorites.find_one({
+            "customer_number": customer_number,
+            "product_id": product_id
+        })
+        
+        return {"is_favorite": favorite is not None}
+        
+    except Exception as e:
+        logging.error(f"Check favorite error: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to check favorite")
 
 # WebSocket endpoint
 @app.websocket("/ws")
