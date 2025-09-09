@@ -3203,22 +3203,14 @@ function App() {
                           </Alert>
                         )}
 
-                        {/* LiveKit Admin Streaming Component - WORKING */}
+                        {/* Daily.co Admin Streaming Component - STABLE */}
                         <div className="bg-black rounded-lg overflow-hidden" style={{ aspectRatio: '16/9' }}>
-                          <LiveKitRoom
-                            serverUrl={livekitUrl}
-                            token={livekitToken}
-                            connect={true}
-                            data-lk-theme="default"
-                            style={{ height: '100%', width: '100%' }}
-                            onConnected={handleLiveKitConnected}
-                            onDisconnected={handleLiveKitDisconnected}
-                            onError={handleLiveKitError}
-                          >
-                            <VideoConference />
-                            <RoomAudioRenderer />
-                            <ControlBar />
-                          </LiveKitRoom>
+                          <DailyVideoCall
+                            roomUrl={dailyRoomUrl}
+                            token={dailyToken}
+                            isAdmin={true}
+                            onLeave={stopDailyStreaming}
+                          />
                         </div>
                       </div>
                     ) : (
