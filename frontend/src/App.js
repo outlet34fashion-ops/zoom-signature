@@ -544,6 +544,7 @@ function App() {
         image_url: '',
         stock_quantity: null
       });
+      setProductMediaFiles([]);
       setShowCreateProduct(false);
       
       // Reload products
