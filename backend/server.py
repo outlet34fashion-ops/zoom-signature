@@ -294,8 +294,12 @@ class Customer(BaseModel):
 
 class CustomerCreate(BaseModel):
     customer_number: str
+    first_name: str = Field(..., description="Customer first name")
+    last_name: str = Field(..., description="Customer last name")
     email: str
-    name: str
+    company_name: str = Field(default="", description="Company name (optional)")
+    member_since: Optional[date] = Field(None, description="Member since date (optional)")
+    status: str = Field(default="Starter", description="Customer status (Starter/Business/Gold/Platinum)")
     profile_image: Optional[str] = None
     preferred_language: Optional[str] = "de"  # de, en, tr, fr
 
