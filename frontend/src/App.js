@@ -5649,10 +5649,10 @@ function App() {
               {/* Large Product Image */}
               <div className="mb-6">
                 <div className="w-full h-64 bg-gray-100 rounded-lg overflow-hidden">
-                  {selectedProduct.image_url ? (
+                  {selectedCatalogProduct.image_url ? (
                     <img
-                      src={selectedProduct.image_url}
-                      alt={selectedProduct.name}
+                      src={selectedCatalogProduct.image_url}
+                      alt={selectedCatalogProduct.name}
                       className="w-full h-full object-cover"
                     />
                   ) : (
