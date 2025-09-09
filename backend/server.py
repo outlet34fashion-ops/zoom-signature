@@ -540,9 +540,108 @@ async def get_stream_status():
     return {
         "is_live": True,
         "viewer_count": manager.viewer_count,
-        "stream_title": "Live Shopping Demo with Zoom",
+        "stream_title": "Live Shopping Demo with Daily.co",
         "stream_description": ticker_settings["text"]
     }
+
+# Daily.co Integration Endpoints
+@api_router.post("/daily/rooms", response_model=DailyRoomResponse)
+async def create_daily_room(room_request: DailyRoomRequest):
+    """Create a new Daily.co room for live streaming"""
+    try:
+        room_data = await daily_service.create_room(
+            room_name=room_request.room_name,
+            privacy=room_request.privacy,
+            max_participants=room_request.max_participants or 100,
+            properties=room_request.properties
+        )
+        
+        return DailyRoomResponse(**room_data)
+        
+    except Exception as e:
+        logging.error(f"Daily.co room creation error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post("/daily/meeting-tokens")
+async def create_daily_meeting_token(token_request: DailyTokenRequest):
+    """Generate a meeting token for participant authentication"""
+    try:
+        token_data = await daily_service.create_meeting_token(
+            room_name=token_request.room_name,
+            user_name=token_request.user_name,
+            is_owner=token_request.is_owner,
+            enable_screenshare=token_request.enable_screenshare,
+            enable_recording=token_request.enable_recording,
+            enable_live_streaming=token_request.enable_live_streaming
+        )
+        
+        return {
+            "token": token_data["token"],
+            "room_name": token_request.room_name,
+            "user_name": token_request.user_name,
+            "is_owner": token_request.is_owner,
+            "expires_in": 7200
+        }
+        
+    except Exception as e:
+        logging.error(f"Daily.co token creation error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/daily/rooms/{room_name}")
+async def get_daily_room_info(room_name: str):
+    """Get information about a Daily.co room"""
+    try:
+        room_info = await daily_service.get_room_info(room_name)
+        
+        if not room_info:
+            raise HTTPException(status_code=404, detail="Room not found")
+        
+        return room_info
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Daily.co room info error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/daily/rooms")
+async def list_daily_rooms():
+    """List all Daily.co rooms"""
+    try:
+        rooms = await daily_service.list_rooms()
+        return {"data": rooms}
+        
+    except Exception as e:
+        logging.error(f"Daily.co rooms list error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.delete("/daily/rooms/{room_name}")
+async def delete_daily_room(room_name: str):
+    """Delete a Daily.co room"""
+    try:
+        success = await daily_service.delete_room(room_name)
+        
+        if not success:
+            raise HTTPException(status_code=404, detail="Room not found or could not be deleted")
+        
+        return {"message": f"Room {room_name} deleted successfully"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Daily.co room deletion error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.get("/daily/config")
+async def get_daily_config():
+    """Get Daily.co configuration for client-side connection"""
+    try:
+        config = daily_service.get_daily_config()
+        return config
+        
+    except Exception as e:
+        logging.error(f"Daily.co config error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.post("/chat", response_model=ChatMessage)
 async def send_chat_message(message: ChatMessageCreate):
