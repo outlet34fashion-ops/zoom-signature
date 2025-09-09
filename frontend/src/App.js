@@ -3632,6 +3632,42 @@ function App() {
                       />
                     </div>
                     
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Kunde seit (optional)
+                        </label>
+                        <Input
+                          type="date"
+                          value={newCustomerData.member_since}
+                          onChange={(e) => setNewCustomerData(prev => ({
+                            ...prev,
+                            member_since: e.target.value
+                          }))}
+                          className="w-full"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Status
+                        </label>
+                        <select
+                          value={newCustomerData.status}
+                          onChange={(e) => setNewCustomerData(prev => ({
+                            ...prev,
+                            status: e.target.value
+                          }))}
+                          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="Starter">🥉 Starter</option>
+                          <option value="Business">💼 Business</option>
+                          <option value="Gold">🥇 Gold</option>
+                          <option value="Platinum">💎 Platinum</option>
+                        </select>
+                      </div>
+                    </div>
+                    
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         E-Mail *
