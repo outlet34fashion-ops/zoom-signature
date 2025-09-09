@@ -345,7 +345,7 @@ function App() {
 
   // Place catalog order
   const placeCatalogOrder = async () => {
-    if (!selectedProduct || !selectedProductSize || !isAuthenticated) return;
+    if (!selectedCatalogProduct || !selectedProductSize || !isAuthenticated) return;
     
     try {
       const customerNumber = currentCustomer?.customer_number || localStorage.getItem('customerNumber');
