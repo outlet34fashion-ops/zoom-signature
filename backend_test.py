@@ -9595,6 +9595,10 @@ TIMEZONE BUG ANALYSIS COMPLETE:
         # CRITICAL PRIORITY #0: NEW CATALOG FEATURES IMPLEMENTATION (Current Review Request)
         print("\n🛍️ CRITICAL PRIORITY #0: NEW CATALOG FEATURES IMPLEMENTATION...")
         new_catalog_features_success = self.test_new_catalog_features()
+        
+        # NEW: HIERARCHICAL CATEGORY SYSTEM TESTING (Current Review Request)
+        print("\n🏷️ NEW: HIERARCHICAL CATEGORY SYSTEM TESTING...")
+        hierarchical_category_success = self.test_hierarchical_category_system()
 
         # CRITICAL PRIORITY #1: CATALOG VISIBILITY BUG FIXES (Previous Review Request)
         print("\n🛍️ CRITICAL PRIORITY #1: CATALOG VISIBILITY BUG FIXES...")
