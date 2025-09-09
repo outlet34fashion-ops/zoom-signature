@@ -409,7 +409,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Daily.co API Integration"
+    - "Produktkatalog Backend API Implementation"
   stuck_tasks: []
   test_all: false
   test_priority: "critical_first"
