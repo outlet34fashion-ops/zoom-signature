@@ -337,9 +337,11 @@ class CatalogProductCreate(BaseModel):
     article_number: Optional[str] = None  # Optional for automatic generation
     name: str
     description: str = ""
+    material: str = ""  # Material description
     category_id: str
     price: float
     sizes: List[str] = []
+    colors: List[str] = []  # Available colors
     image_url: Optional[str] = None
     additional_images: List[str] = []
     stock_quantity: Optional[int] = None
