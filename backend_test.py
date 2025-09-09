@@ -8412,6 +8412,477 @@ TIMEZONE BUG ANALYSIS COMPLETE:
             self.log_test("CRITICAL - Catalog Visibility Bug Fixes", False, f"Exception: {str(e)}")
             return False
 
+    def test_new_catalog_features(self):
+        """Test the new catalog features implementation as per review request"""
+        print("\n🛍️ Testing NEW CATALOG FEATURES IMPLEMENTATION...")
+        print("  🎯 TESTING REQUIREMENTS FROM REVIEW REQUEST:")
+        print("    1. Enhanced Product Model with material and colors fields")
+        print("    2. Favorites System (add, remove, get, check)")
+        print("    3. Recently Viewed System (add, get with limit)")
+        print("    4. Enhanced Search (name, description, material, article_number)")
+        print("    5. Database Collections (favorites, recently_viewed)")
+        
+        # Test customer for favorites and recently viewed
+        test_customer = "10299"
+        
+        # Step 1: Test Enhanced Product Model
+        print("  📦 STEP 1: Testing Enhanced Product Model...")
+        
+        # First, get existing categories to use for product creation
+        try:
+            categories_response = requests.get(f"{self.api_url}/categories", timeout=10)
+            if categories_response.status_code == 200:
+                categories = categories_response.json()
+                if categories:
+                    category_id = categories[0]['id']
+                else:
+                    # Create a test category if none exist
+                    test_category = {
+                        "name": "Test Category",
+                        "description": "Test category for catalog features",
+                        "sort_order": 1
+                    }
+                    cat_response = requests.post(
+                        f"{self.api_url}/admin/categories",
+                        json=test_category,
+                        headers={'Content-Type': 'application/json'},
+                        timeout=10
+                    )
+                    if cat_response.status_code == 200:
+                        category_id = cat_response.json()['id']
+                    else:
+                        self.log_test("Enhanced Product Model - Category Setup", False, "Could not create test category")
+                        return False
+            else:
+                self.log_test("Enhanced Product Model - Category Fetch", False, f"Categories fetch failed: {categories_response.status_code}")
+                return False
+        except Exception as e:
+            self.log_test("Enhanced Product Model - Category Setup", False, str(e))
+            return False
+        
+        # Test product creation with material and colors fields
+        enhanced_product = {
+            "name": "Enhanced Test Product",
+            "description": "Test product with material and colors",
+            "material": "Baumwolle",  # Cotton in German
+            "category_id": category_id,
+            "price": 29.99,
+            "sizes": ["S", "M", "L"],
+            "colors": ["Schwarz", "Weiß"],  # Black, White in German
+            "is_active": True
+        }
+        
+        try:
+            response = requests.post(
+                f"{self.api_url}/admin/products",
+                json=enhanced_product,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            details = f"POST Status: {response.status_code}"
+            
+            if success:
+                product_data = response.json()
+                required_fields = ['id', 'name', 'material', 'colors', 'article_number']
+                has_all_fields = all(field in product_data for field in required_fields)
+                material_correct = product_data.get('material') == "Baumwolle"
+                colors_correct = product_data.get('colors') == ["Schwarz", "Weiß"]
+                has_article_number = product_data.get('article_number') is not None
+                
+                success = has_all_fields and material_correct and colors_correct and has_article_number
+                details += f", Has all fields: {has_all_fields}, Material: {material_correct}, Colors: {colors_correct}, Article number: {has_article_number}"
+                
+                if success:
+                    test_product_id = product_data['id']
+                    test_article_number = product_data['article_number']
+            
+            self.log_test("Enhanced Product Model - Creation with Material & Colors", success, details)
+            
+            if not success:
+                return False
+                
+        except Exception as e:
+            self.log_test("Enhanced Product Model - Creation", False, str(e))
+            return False
+        
+        # Test optional article_number generation
+        try:
+            product_without_article = {
+                "name": "Auto Article Number Product",
+                "description": "Test automatic article number generation",
+                "material": "Polyester",
+                "category_id": category_id,
+                "price": 19.99,
+                "sizes": ["OneSize"],
+                "colors": ["Blau"],
+                "is_active": True
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/admin/products",
+                json=product_without_article,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            details = f"POST Status: {response.status_code}"
+            
+            if success:
+                product_data = response.json()
+                has_auto_article = product_data.get('article_number') is not None and product_data.get('article_number') != ""
+                success = has_auto_article
+                details += f", Auto article number generated: {has_auto_article}, Article: {product_data.get('article_number')}"
+            
+            self.log_test("Enhanced Product Model - Auto Article Number Generation", success, details)
+            
+        except Exception as e:
+            self.log_test("Enhanced Product Model - Auto Article Number", False, str(e))
+        
+        # Step 2: Test Favorites System
+        print("  ❤️ STEP 2: Testing Favorites System...")
+        
+        # Test ADD favorite
+        try:
+            response = requests.post(
+                f"{self.api_url}/favorites/{test_customer}/{test_product_id}",
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            details = f"POST Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                success = data.get('success') == True
+                details += f", Success: {data.get('success')}, Message: {data.get('message', '')}"
+            
+            self.log_test("Favorites System - Add Favorite", success, details)
+            
+        except Exception as e:
+            self.log_test("Favorites System - Add Favorite", False, str(e))
+        
+        # Test CHECK if favorite
+        try:
+            response = requests.get(
+                f"{self.api_url}/favorites/check/{test_customer}/{test_product_id}",
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                is_favorite = data.get('is_favorite') == True
+                success = is_favorite
+                details += f", Is favorite: {is_favorite}"
+            
+            self.log_test("Favorites System - Check Favorite", success, details)
+            
+        except Exception as e:
+            self.log_test("Favorites System - Check Favorite", False, str(e))
+        
+        # Test GET customer favorites
+        try:
+            response = requests.get(
+                f"{self.api_url}/favorites/{test_customer}",
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                is_list = isinstance(data, list)
+                has_favorite = len(data) > 0
+                success = is_list and has_favorite
+                details += f", Is list: {is_list}, Has favorites: {has_favorite}, Count: {len(data)}"
+            
+            self.log_test("Favorites System - Get Customer Favorites", success, details)
+            
+        except Exception as e:
+            self.log_test("Favorites System - Get Favorites", False, str(e))
+        
+        # Test REMOVE favorite
+        try:
+            response = requests.delete(
+                f"{self.api_url}/favorites/{test_customer}/{test_product_id}",
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            details = f"DELETE Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                success = data.get('success') == True
+                details += f", Success: {data.get('success')}, Message: {data.get('message', '')}"
+            
+            self.log_test("Favorites System - Remove Favorite", success, details)
+            
+        except Exception as e:
+            self.log_test("Favorites System - Remove Favorite", False, str(e))
+        
+        # Step 3: Test Recently Viewed System
+        print("  👁️ STEP 3: Testing Recently Viewed System...")
+        
+        # Test ADD to recently viewed
+        try:
+            response = requests.post(
+                f"{self.api_url}/recently-viewed/{test_customer}/{test_product_id}",
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            details = f"POST Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                success = data.get('success') == True
+                details += f", Success: {data.get('success')}, Message: {data.get('message', '')}"
+            
+            self.log_test("Recently Viewed System - Add Recently Viewed", success, details)
+            
+        except Exception as e:
+            self.log_test("Recently Viewed System - Add Recently Viewed", False, str(e))
+        
+        # Test GET recently viewed with limit
+        try:
+            response = requests.get(
+                f"{self.api_url}/recently-viewed/{test_customer}?limit=10",
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                is_list = isinstance(data, list)
+                has_items = len(data) > 0
+                within_limit = len(data) <= 10
+                success = is_list and has_items and within_limit
+                details += f", Is list: {is_list}, Has items: {has_items}, Within limit: {within_limit}, Count: {len(data)}"
+            
+            self.log_test("Recently Viewed System - Get Recently Viewed", success, details)
+            
+        except Exception as e:
+            self.log_test("Recently Viewed System - Get Recently Viewed", False, str(e))
+        
+        # Step 4: Test Enhanced Search
+        print("  🔍 STEP 4: Testing Enhanced Search...")
+        
+        # Test search by material
+        try:
+            response = requests.get(
+                f"{self.api_url}/products?search=Baumwolle",
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                is_list = isinstance(data, list)
+                found_material_product = any(
+                    product.get('material', '').lower() == 'baumwolle' 
+                    for product in data
+                )
+                success = is_list and found_material_product
+                details += f", Is list: {is_list}, Found material product: {found_material_product}, Results: {len(data)}"
+            
+            self.log_test("Enhanced Search - Search by Material", success, details)
+            
+        except Exception as e:
+            self.log_test("Enhanced Search - Search by Material", False, str(e))
+        
+        # Test search by article number
+        try:
+            response = requests.get(
+                f"{self.api_url}/products?search={test_article_number}",
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                is_list = isinstance(data, list)
+                found_article_product = any(
+                    product.get('article_number') == test_article_number
+                    for product in data
+                )
+                success = is_list and found_article_product
+                details += f", Is list: {is_list}, Found article product: {found_article_product}, Results: {len(data)}"
+            
+            self.log_test("Enhanced Search - Search by Article Number", success, details)
+            
+        except Exception as e:
+            self.log_test("Enhanced Search - Search by Article Number", False, str(e))
+        
+        # Test search with category filtering
+        try:
+            response = requests.get(
+                f"{self.api_url}/products?search=Enhanced&category_id={category_id}",
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                is_list = isinstance(data, list)
+                all_in_category = all(
+                    product.get('category_id') == category_id
+                    for product in data
+                )
+                success = is_list and all_in_category
+                details += f", Is list: {is_list}, All in category: {all_in_category}, Results: {len(data)}"
+            
+            self.log_test("Enhanced Search - Search with Category Filter", success, details)
+            
+        except Exception as e:
+            self.log_test("Enhanced Search - Category Filter", False, str(e))
+        
+        # Step 5: Test Database Collections
+        print("  🗄️ STEP 5: Testing Database Collections...")
+        
+        # Test that favorites collection exists and works
+        try:
+            # Add a favorite to test collection
+            requests.post(
+                f"{self.api_url}/favorites/{test_customer}/{test_product_id}",
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            # Get favorites to verify collection works
+            response = requests.get(
+                f"{self.api_url}/favorites/{test_customer}",
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            details = f"Favorites collection test - Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                collection_works = isinstance(data, list)
+                success = collection_works
+                details += f", Collection works: {collection_works}"
+            
+            self.log_test("Database Collections - Favorites Collection", success, details)
+            
+        except Exception as e:
+            self.log_test("Database Collections - Favorites Collection", False, str(e))
+        
+        # Test that recently_viewed collection exists and works
+        try:
+            # Add to recently viewed to test collection
+            requests.post(
+                f"{self.api_url}/recently-viewed/{test_customer}/{test_product_id}",
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            # Get recently viewed to verify collection works
+            response = requests.get(
+                f"{self.api_url}/recently-viewed/{test_customer}",
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            details = f"Recently viewed collection test - Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                collection_works = isinstance(data, list)
+                success = collection_works
+                details += f", Collection works: {collection_works}"
+            
+            self.log_test("Database Collections - Recently Viewed Collection", success, details)
+            
+        except Exception as e:
+            self.log_test("Database Collections - Recently Viewed Collection", False, str(e))
+        
+        # Test data persistence and retrieval
+        try:
+            # Add multiple items to recently viewed to test limit functionality
+            test_products = []
+            for i in range(5):
+                # Create test products
+                test_prod = {
+                    "name": f"Test Product {i+1}",
+                    "description": f"Test product {i+1} for recently viewed",
+                    "material": "Test Material",
+                    "category_id": category_id,
+                    "price": 10.00 + i,
+                    "sizes": ["OneSize"],
+                    "colors": ["Test Color"],
+                    "is_active": True
+                }
+                
+                prod_response = requests.post(
+                    f"{self.api_url}/admin/products",
+                    json=test_prod,
+                    headers={'Content-Type': 'application/json'},
+                    timeout=10
+                )
+                
+                if prod_response.status_code == 200:
+                    test_products.append(prod_response.json()['id'])
+            
+            # Add all to recently viewed
+            for prod_id in test_products:
+                requests.post(
+                    f"{self.api_url}/recently-viewed/{test_customer}/{prod_id}",
+                    headers={'Content-Type': 'application/json'},
+                    timeout=10
+                )
+                time.sleep(0.1)  # Small delay to ensure different timestamps
+            
+            # Test limit functionality (should keep only 20 items max)
+            response = requests.get(
+                f"{self.api_url}/recently-viewed/{test_customer}?limit=3",
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            details = f"Data persistence test - Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                is_list = isinstance(data, list)
+                respects_limit = len(data) <= 3
+                has_data = len(data) > 0
+                success = is_list and respects_limit and has_data
+                details += f", Is list: {is_list}, Respects limit: {respects_limit}, Has data: {has_data}, Count: {len(data)}"
+            
+            self.log_test("Database Collections - Data Persistence & Retrieval", success, details)
+            
+        except Exception as e:
+            self.log_test("Database Collections - Data Persistence", False, str(e))
+        
+        print("  📊 NEW CATALOG FEATURES TESTING COMPLETED!")
+        
+        # Count catalog feature tests
+        catalog_tests = [r for r in self.test_results if any(keyword in r['name'] for keyword in ['Enhanced Product', 'Favorites System', 'Recently Viewed', 'Enhanced Search', 'Database Collections'])]
+        catalog_tests_recent = catalog_tests[-15:]  # Get recent catalog tests
+        catalog_success_count = sum(1 for test in catalog_tests_recent if test['success'])
+        
+        print(f"  🎯 Catalog Features Tests: {catalog_success_count}/{len(catalog_tests_recent)} passed ({(catalog_success_count/len(catalog_tests_recent))*100:.1f}%)")
+        
+        return catalog_success_count == len(catalog_tests_recent)
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("🚀 Starting Live Shopping App Backend API Tests")
