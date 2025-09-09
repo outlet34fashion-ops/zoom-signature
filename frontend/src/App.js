@@ -2684,109 +2684,35 @@ function App() {
               </div>
             </div>
 
-            {/* Embedded Live Stream Video - ENHANCED für alle Benutzer */}
+            {/* Embedded Live Stream Video - Daily.co Stable Connection */}
             <div className="bg-black rounded-xl overflow-hidden mb-4" style={{ aspectRatio: '16/9' }}>
-              {/* CRITICAL: LiveKit Integration - ENHANCED mit besserer Fehlerbehandlung */}
-              {streamingActive && livekitToken && livekitUrl ? (
-                <div className="w-full h-full">
-                  <LiveKitRoom
-                    serverUrl={livekitUrl}
-                    token={livekitToken}
-                    connect={true}
-                    data-lk-theme="default"
-                    style={{ height: '100%', width: '100%' }}
-                    onConnected={handleLiveKitConnected}
-                    onDisconnected={handleLiveKitDisconnected}
-                    onError={(error) => {
-                      console.error('❌ LiveKit Room Error:', error);
-                      handleLiveKitError(error);
-                      // ENHANCED: Better error handling for video conflicts
-                      const errorMessage = error.message || error.toString();
-                      if (errorMessage.includes('play()') || errorMessage.includes('load request')) {
-                        setLivekitError('Video-Wiedergabe-Konflikt. Bitte laden Sie die Seite neu.');
-                      } else if (errorMessage.includes('camera') || errorMessage.includes('NotAllowedError')) {
-                        setLivekitError('Kamera-Zugriff verweigert. Bitte erlauben Sie Kamera-Zugriff.');
-                      } else {
-                        setLivekitError(`Verbindungsfehler: ${errorMessage}`);
-                      }
+              {/* Daily.co Integration - Stable Low-Latency Streaming */}
+              {streamingActive && dailyToken && dailyRoomUrl ? (
+                <div className="w-full h-full relative">
+                  <DailyVideoCall
+                    roomUrl={dailyRoomUrl}
+                    token={dailyToken}
+                    isAdmin={isAdminAuthenticated}
+                    onLeave={() => {
+                      setStreamingActive(false);
+                      setDailyToken(null);
+                      setDailyRoomUrl(null);
                     }}
-                    options={{
-                      // ENHANCED: Better video handling to prevent conflicts
-                      videoCaptureDefaults: {
-                        resolution: { width: 1280, height: 720 }, // Reduced resolution for better compatibility
-                        frameRate: 24 // Reduced framerate for stability
-                      },
-                      audioCaptureDefaults: {
-                        echoCancellation: true,
-                        noiseSuppression: true,
-                        autoGainControl: true
-                      },
-                      publishDefaults: {
-                        videoSimulcastLayers: [
-                          { resolution: { width: 1280, height: 720 }, encoding: { maxBitrate: 2000000 } },
-                          { resolution: { width: 640, height: 360 }, encoding: { maxBitrate: 500000 } }
-                        ],
-                        audioPreset: {
-                          maxBitrate: 128000
-                        }
-                      },
-                      // CRITICAL: Video element management
-                      e2ee: undefined, // Disable E2EE for compatibility
-                      dynacast: true,
-                      adaptiveStream: true,
-                      // Prevent video conflicts
-                      autoPlayVideo: false, // Let LiveKit handle video playback
-                      autoPlayAudio: false  // Let LiveKit handle audio playback
-                    }}
-                    connectOptions={{
-                      // ENHANCED: Connection options for better stability
-                      autoSubscribe: true,
-                      maxRetries: 3,
-                      peerConnectionTimeout: 15000,
-                      // Prevent concurrent connection attempts
-                      publishOnly: isAdminAuthenticated ? undefined : false
-                    }}
-                  >
-                    <VideoConference 
-                      chatMessageFormatter={(message, participant) => {
-                        // German chat formatting
-                        return `${participant?.name || participant?.identity}: ${message}`;
-                      }}
-                    />
-                    <RoomAudioRenderer />
-                    <ControlBar 
-                      controls={{
-                        camera: isAdminAuthenticated, // Only admin can control camera
-                        microphone: isAdminAuthenticated, // Only admin can control microphone
-                        chat: true, // Everyone can chat
-                        leave: true, // Everyone can leave
-                        settings: false // Simplified settings
-                      }}
-                    />
-                  </LiveKitRoom>
+                  />
                   
-                  {/* ENHANCED: Connection Status Indicator */}
+                  {/* Connection Status Indicator */}
                   <div className="absolute top-2 right-2 z-10">
                     <div className={`flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-medium ${
-                      isLiveKitConnected 
+                      isDailyConnected 
                         ? 'bg-green-500 text-white' 
                         : 'bg-yellow-500 text-black'
                     }`}>
                       <div className={`w-2 h-2 rounded-full ${
-                        isLiveKitConnected ? 'bg-white animate-pulse' : 'bg-red-500'
+                        isDailyConnected ? 'bg-white animate-pulse' : 'bg-red-500'
                       }`}></div>
-                      {isLiveKitConnected ? '🔴 LIVE' : '🔄 Verbinde...'}
+                      {isDailyConnected ? 'Live' : 'Verbinde...'}
                     </div>
                   </div>
-                  
-                  {/* ENHANCED: Error Display */}
-                  {livekitError && (
-                    <div className="absolute bottom-2 left-2 right-2 z-10">
-                      <div className="bg-red-500/90 text-white px-3 py-2 rounded-lg text-sm">
-                        ⚠️ {livekitError}
-                      </div>
-                    </div>
-                  )}
                 </div>
               ) : (
                 /* ENHANCED: Warten auf Stream - Mit besserer User Experience */
