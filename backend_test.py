@@ -8883,6 +8883,326 @@ TIMEZONE BUG ANALYSIS COMPLETE:
         
         return catalog_success_count == len(catalog_tests_recent)
 
+    def test_extended_customer_system(self):
+        """Test the extended customer system with new fields as per review request"""
+        print("\n🆕 Testing Extended Customer System with New Fields...")
+        print("  🎯 TESTING REQUIREMENTS:")
+        print("    1. Enhanced Customer Model with first_name, last_name, company_name, member_since, status")
+        print("    2. Customer Status System (Starter/Business/Gold/Platinum)")
+        print("    3. Member Since Field (optional date)")
+        print("    4. Updated API Endpoints with new fields")
+        print("    5. Backward Compatibility with existing customer 10299")
+        
+        # Test data for extended customer system
+        timestamp = int(time.time())
+        
+        # Test customer with all new fields (as specified in review request)
+        max_customer = {
+            "customer_number": f"MAX{timestamp}",
+            "first_name": "Max",
+            "last_name": "Mustermann", 
+            "email": f"max.mustermann.{timestamp}@musterfirma.de",
+            "company_name": "Musterfirma GmbH",
+            "member_since": "2023-01-15",
+            "status": "Gold"
+        }
+        
+        # Test customer with minimal fields
+        minimal_customer = {
+            "customer_number": f"MIN{timestamp}",
+            "first_name": "Anna",
+            "last_name": "Schmidt",
+            "email": f"anna.schmidt.{timestamp}@example.com"
+        }
+        
+        try:
+            # TEST 1: Create customer with all new fields
+            print("  📝 TEST 1: Create customer with all new fields (Max Mustermann)...")
+            response = requests.post(
+                f"{self.api_url}/customers/register",
+                json=max_customer,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            details = f"POST Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                # Check all new fields are present and correct
+                required_fields = ['id', 'customer_number', 'first_name', 'last_name', 'email', 
+                                 'company_name', 'member_since', 'status', 'activation_status']
+                has_all_fields = all(field in data for field in required_fields)
+                
+                # Verify field values
+                correct_values = (
+                    data.get('first_name') == "Max" and
+                    data.get('last_name') == "Mustermann" and
+                    data.get('company_name') == "Musterfirma GmbH" and
+                    data.get('member_since') == "2023-01-15" and
+                    data.get('status') == "Gold" and
+                    data.get('activation_status') == "pending"
+                )
+                
+                # Check computed name property
+                computed_name = data.get('name')
+                name_correct = computed_name == "Max Mustermann"
+                
+                success = has_all_fields and correct_values and name_correct
+                details += f", All fields: {has_all_fields}, Values correct: {correct_values}, Name computed: {name_correct} ('{computed_name}')"
+                
+                if success:
+                    max_customer_data = data
+            
+            self.log_test("Extended Customer - All Fields Creation", success, details)
+            
+            # TEST 2: Create customer with minimal fields (should get defaults)
+            print("  📝 TEST 2: Create customer with minimal fields (Anna Schmidt)...")
+            response = requests.post(
+                f"{self.api_url}/customers/register",
+                json=minimal_customer,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            details = f"POST Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                # Check defaults are applied
+                default_status = data.get('status') == "Starter"
+                empty_company = data.get('company_name') == ""
+                null_member_since = data.get('member_since') is None
+                computed_name = data.get('name') == "Anna Schmidt"
+                
+                success = default_status and empty_company and null_member_since and computed_name
+                details += f", Default status: {default_status}, Empty company: {empty_company}, Null member_since: {null_member_since}, Name computed: {computed_name}"
+                
+                if success:
+                    minimal_customer_data = data
+            
+            self.log_test("Extended Customer - Minimal Fields with Defaults", success, details)
+            
+            # TEST 3: Test all valid status values
+            print("  📝 TEST 3: Test all valid status values...")
+            status_values = ["Starter", "Business", "Gold", "Platinum"]
+            status_tests_passed = 0
+            
+            for i, status in enumerate(status_values):
+                test_customer = {
+                    "customer_number": f"STATUS{timestamp}{i}",
+                    "first_name": "Test",
+                    "last_name": f"Status{status}",
+                    "email": f"test.status.{status.lower()}.{timestamp}@example.com",
+                    "status": status
+                }
+                
+                response = requests.post(
+                    f"{self.api_url}/customers/register",
+                    json=test_customer,
+                    headers={'Content-Type': 'application/json'},
+                    timeout=10
+                )
+                
+                if response.status_code == 200:
+                    data = response.json()
+                    if data.get('status') == status:
+                        status_tests_passed += 1
+                        self.log_test(f"Extended Customer - Status '{status}'", True, f"Status '{status}' accepted and stored correctly")
+                    else:
+                        self.log_test(f"Extended Customer - Status '{status}'", False, f"Status not stored correctly: expected '{status}', got '{data.get('status')}'")
+                else:
+                    self.log_test(f"Extended Customer - Status '{status}'", False, f"Request failed with status {response.status_code}")
+            
+            all_status_tests_passed = status_tests_passed == 4
+            
+            # TEST 4: Test admin customer creation with new fields
+            print("  📝 TEST 4: Test admin customer creation with new fields...")
+            admin_customer = {
+                "customer_number": f"ADMIN{timestamp}",
+                "first_name": "Admin",
+                "last_name": "Created",
+                "email": f"admin.created.{timestamp}@example.com",
+                "company_name": "Admin Company Ltd",
+                "member_since": "2024-01-01",
+                "status": "Platinum"
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/admin/customers/create",
+                json=admin_customer,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            details = f"POST Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                # Admin-created customers should be automatically active
+                is_active = data.get('activation_status') == 'active'
+                has_all_fields = all(field in data for field in ['first_name', 'last_name', 'company_name', 'member_since', 'status'])
+                correct_values = (
+                    data.get('status') == "Platinum" and
+                    data.get('company_name') == "Admin Company Ltd" and
+                    data.get('member_since') == "2024-01-01"
+                )
+                
+                success = is_active and has_all_fields and correct_values
+                details += f", Active: {is_active}, All fields: {has_all_fields}, Values correct: {correct_values}"
+                
+                if success:
+                    admin_customer_data = data
+            
+            self.log_test("Extended Customer - Admin Creation with New Fields", success, details)
+            
+            # TEST 5: Test customer status check returns all new fields
+            print("  📝 TEST 5: Test customer status check returns all new fields...")
+            if 'max_customer_data' in locals():
+                customer_number = max_customer_data['customer_number']
+                
+                response = requests.get(
+                    f"{self.api_url}/customers/check/{customer_number}",
+                    timeout=10
+                )
+                
+                success = response.status_code == 200
+                details = f"GET Status: {response.status_code}"
+                
+                if success:
+                    data = response.json()
+                    # Check all new fields are returned
+                    expected_fields = ['exists', 'customer_number', 'first_name', 'last_name', 'name', 
+                                     'email', 'company_name', 'member_since', 'status', 'activation_status']
+                    has_all_fields = all(field in data for field in expected_fields)
+                    
+                    # Verify field values match what we created
+                    values_match = (
+                        data.get('first_name') == "Max" and
+                        data.get('last_name') == "Mustermann" and
+                        data.get('company_name') == "Musterfirma GmbH" and
+                        data.get('member_since') == "2023-01-15" and
+                        data.get('status') == "Gold" and
+                        data.get('name') == "Max Mustermann"
+                    )
+                    
+                    success = has_all_fields and values_match
+                    details += f", All fields returned: {has_all_fields}, Values match: {values_match}"
+                
+                self.log_test("Extended Customer - Status Check Returns New Fields", success, details)
+            else:
+                self.log_test("Extended Customer - Status Check Returns New Fields", False, "Max customer not created successfully")
+            
+            # TEST 6: Test backward compatibility with existing customer 10299
+            print("  📝 TEST 6: Test backward compatibility with existing customer 10299...")
+            response = requests.get(
+                f"{self.api_url}/customers/check/10299",
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                # Customer 10299 should exist and work with extended data
+                exists = data.get('exists') == True
+                has_customer_number = 'customer_number' in data
+                has_new_fields = all(field in data for field in ['first_name', 'last_name', 'status', 'company_name', 'member_since'])
+                
+                # Check if old customer gets default values for new fields
+                if has_new_fields:
+                    has_defaults = (
+                        data.get('status') in ["Starter", "Business", "Gold", "Platinum"] and
+                        'company_name' in data and
+                        'member_since' in data
+                    )
+                else:
+                    has_defaults = False
+                
+                success = exists and has_customer_number and has_new_fields
+                details += f", Exists: {exists}, Has customer_number: {has_customer_number}, Has new fields: {has_new_fields}, Has defaults: {has_defaults}"
+            
+            self.log_test("Extended Customer - Backward Compatibility (10299)", success, details)
+            
+            # TEST 7: Test member_since date field handling
+            print("  📝 TEST 7: Test member_since date field handling...")
+            date_test_customer = {
+                "customer_number": f"DATE{timestamp}",
+                "first_name": "Date",
+                "last_name": "Test",
+                "email": f"date.test.{timestamp}@example.com",
+                "member_since": "2025-01-15"  # Future date
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/customers/register",
+                json=date_test_customer,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            details = f"POST Status: {response.status_code}"
+            
+            if success:
+                data = response.json()
+                date_stored = data.get('member_since') == "2025-01-15"
+                success = date_stored
+                details += f", Date stored correctly: {date_stored}"
+            
+            self.log_test("Extended Customer - Member Since Date Field", success, details)
+            
+            # TEST 8: Test customer authentication with extended data
+            print("  📝 TEST 8: Test customer authentication with extended data...")
+            if 'admin_customer_data' in locals():
+                # Admin customer should be active, so we can test authentication
+                customer_number = admin_customer_data['customer_number']
+                
+                response = requests.get(
+                    f"{self.api_url}/customers/check/{customer_number}",
+                    timeout=10
+                )
+                
+                success = response.status_code == 200
+                details = f"GET Status: {response.status_code}"
+                
+                if success:
+                    data = response.json()
+                    is_active = data.get('activation_status') == 'active'
+                    has_extended_data = all(field in data for field in ['first_name', 'last_name', 'company_name', 'status'])
+                    
+                    success = is_active and has_extended_data
+                    details += f", Active: {is_active}, Has extended data: {has_extended_data}"
+                
+                self.log_test("Extended Customer - Authentication with Extended Data", success, details)
+            else:
+                self.log_test("Extended Customer - Authentication with Extended Data", False, "Admin customer not created successfully")
+            
+            # Calculate success rate for extended customer tests
+            extended_tests = [r for r in self.test_results if 'Extended Customer' in r['name']]
+            extended_tests_recent = extended_tests[-8:]  # Get the last 8 extended customer tests
+            extended_success_count = sum(1 for test in extended_tests_recent if test['success'])
+            
+            print(f"  📊 Extended Customer System Tests: {extended_success_count}/{len(extended_tests_recent)} passed")
+            
+            # Summary
+            print(f"  ✅ EXTENDED CUSTOMER SYSTEM SUMMARY:")
+            print(f"    - Enhanced Customer Model: {'✅ WORKING' if extended_success_count >= 6 else '❌ ISSUES'}")
+            print(f"    - Customer Status System: {'✅ WORKING' if all_status_tests_passed else '❌ ISSUES'}")
+            print(f"    - Member Since Field: {'✅ WORKING' if extended_success_count >= 7 else '❌ ISSUES'}")
+            print(f"    - Updated API Endpoints: {'✅ WORKING' if extended_success_count >= 6 else '❌ ISSUES'}")
+            print(f"    - Backward Compatibility: {'✅ WORKING' if extended_success_count >= 6 else '❌ ISSUES'}")
+            
+            return extended_success_count >= 6
+            
+        except Exception as e:
+            self.log_test("Extended Customer System - Exception", False, str(e))
+            return False
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("🚀 Starting Live Shopping App Backend API Tests")
