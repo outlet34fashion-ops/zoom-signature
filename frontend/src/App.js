@@ -328,11 +328,26 @@ function App() {
       const response = await axios.get(`${API}/categories`);
       setCategories(response.data);
       
+      // Also load main categories separately
+      const mainCatResponse = await axios.get(`${API}/categories/main`);
+      setMainCategories(mainCatResponse.data);
+      
     } catch (error) {
       console.error('Error loading categories:', error);
       setCatalogError('Fehler beim Laden der Kategorien');
     } finally {
       setLoadingCatalog(false);
+    }
+  };
+
+  // Load subcategories for a main category
+  const loadSubCategories = async (mainCategoryId) => {
+    try {
+      const response = await axios.get(`${API}/categories/sub/${mainCategoryId}`);
+      setSubCategories(response.data);
+    } catch (error) {
+      console.error('Error loading subcategories:', error);
+      setSubCategories([]);
     }
   };
 
