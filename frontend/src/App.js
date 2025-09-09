@@ -6886,13 +6886,16 @@ function App() {
                     article_number: '',
                     name: '',
                     description: '',
+                    material: '',
                     category_id: '',
                     price: 0,
                     sizes: [],
+                    colors: [],
                     image_url: '',
                     stock_quantity: null
                   });
                   setProductMediaFiles([]);
+                  setCustomColor('');
                   setCatalogError('');
                 }}
                 className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors duration-200"
