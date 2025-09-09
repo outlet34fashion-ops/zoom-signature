@@ -5703,7 +5703,7 @@ function App() {
                 )}
 
                 {/* Order Form */}
-                {isAuthenticated && selectedProduct.stock_quantity !== 0 ? (
+                {isAuthenticated && selectedCatalogProduct.stock_quantity !== 0 ? (
                   <div className="bg-gray-50 rounded-lg p-4 space-y-4">
                     <h4 className="font-semibold text-gray-800">Bestellung aufgeben</h4>
                     
