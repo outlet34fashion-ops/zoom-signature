@@ -5476,7 +5476,7 @@ function App() {
                   onClick={() => {
                     setShowCatalog(false);
                     setSelectedCategory(null);
-                    setSelectedProduct(null);
+                    setSelectedCatalogProduct(null);
                     setShowProductDetail(false);
                   }}
                   className="bg-white/20 hover:bg-white/30 p-2 rounded-lg transition-colors duration-200"
