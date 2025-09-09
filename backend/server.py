@@ -239,6 +239,34 @@ class DailyRoomResponse(BaseModel):
     created_at: str
     config: Dict[str, Any]
 
+# LiveKit Models
+class LiveKitTokenRequest(BaseModel):
+    room_name: str
+    participant_name: Optional[str] = None
+    participant_type: str = "viewer"  # "publisher" or "viewer"
+    metadata: Optional[Dict[str, Any]] = None
+
+class LiveKitTokenResponse(BaseModel):
+    token: str
+    room_name: str
+    participant_identity: str
+    participant_type: str
+    livekit_url: str
+
+class LiveKitRoomRequest(BaseModel):
+    room_name: str
+    max_participants: Optional[int] = 100
+    empty_timeout: Optional[int] = 300  # seconds
+    metadata: Optional[Dict[str, Any]] = None
+
+class LiveKitRoomResponse(BaseModel):
+    room_name: str
+    sid: str
+    max_participants: int
+    num_participants: int
+    creation_time: int
+    status: str = "created"
+
 # Customer Management Models
 class Customer(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
