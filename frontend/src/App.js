@@ -5148,6 +5148,131 @@ function App() {
         />
       )}
       
+      {/* Customer Login Modal */}
+      {showLoginModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-md">
+            <CardContent className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+                  <img 
+                    src="/images/outlet34-logo-header.png" 
+                    alt="OUTLET34 Logo" 
+                    className="w-8 h-8 rounded-full mr-3"
+                  />
+                  Kunden Login
+                </h2>
+                <button
+                  onClick={() => setShowLoginModal(false)}
+                  className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+                >
+                  ×
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Kundennummer
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="z.B. 10299"
+                    value={customerId}
+                    onChange={(e) => setCustomerId(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  />
+                </div>
+                
+                <button
+                  onClick={async () => {
+                    if (customerId.trim()) {
+                      await loginAsCustomer();
+                      setShowLoginModal(false);
+                    } else {
+                      alert('Bitte geben Sie eine Kundennummer ein.');
+                    }
+                  }}
+                  className="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-200"
+                >
+                  🔑 Anmelden
+                </button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+      
+      {/* Admin Login Modal */}
+      {showAdminLoginModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-md">
+            <CardContent className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+                  <img 
+                    src="/images/outlet34-logo-header.png" 
+                    alt="OUTLET34 Logo" 
+                    className="w-8 h-8 rounded-full mr-3"
+                  />
+                  Admin Login
+                </h2>
+                <button
+                  onClick={() => setShowAdminLoginModal(false)}
+                  className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+                >
+                  ×
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Admin PIN
+                  </label>
+                  <input
+                    type="password"
+                    placeholder="••••"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        const pin = e.target.value;
+                        if (pin === '1924') {
+                          setIsAdminAuthenticated(true);
+                          setIsAdminView(true);
+                          setShowAdminLoginModal(false);
+                          alert('✅ Admin erfolgreich angemeldet!');
+                        } else {
+                          alert('❌ Falscher PIN!');
+                          e.target.value = '';
+                        }
+                      }
+                    }}
+                  />
+                </div>
+                
+                <button
+                  onClick={(e) => {
+                    const pin = e.target.parentNode.parentNode.querySelector('input').value;
+                    if (pin === '1924') {
+                      setIsAdminAuthenticated(true);
+                      setIsAdminView(true);
+                      setShowAdminLoginModal(false);
+                      alert('✅ Admin erfolgreich angemeldet!');
+                    } else {
+                      alert('❌ Falscher PIN!');
+                    }
+                  }}
+                  className="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-200"
+                >
+                  🔧 Admin Anmelden
+                </button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+      
       </div> {/* Close the padding div */}
     </div>
   );
