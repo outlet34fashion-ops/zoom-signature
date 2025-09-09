@@ -5630,7 +5630,7 @@ function App() {
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             {/* Header */}
             <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center">
-              <h3 className="text-xl font-bold text-gray-800">{selectedProduct.name}</h3>
+              <h3 className="text-xl font-bold text-gray-800">{selectedCatalogProduct.name}</h3>
               <button
                 onClick={() => {
                   setShowProductDetail(false);
