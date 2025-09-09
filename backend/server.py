@@ -332,7 +332,7 @@ class CatalogProduct(BaseModel):
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 class CatalogProductCreate(BaseModel):
-    article_number: str
+    article_number: Optional[str] = None  # Optional for automatic generation
     name: str
     description: str = ""
     category_id: str
