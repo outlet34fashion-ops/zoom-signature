@@ -974,9 +974,14 @@ async def check_customer_status(customer_number: str):
         return {
             "exists": True,
             "customer_number": customer["customer_number"],
-            "activation_status": customer["activation_status"],
-            "name": customer["name"],
+            "first_name": customer.get("first_name", ""),
+            "last_name": customer.get("last_name", ""),
+            "name": customer.get("name", f"{customer.get('first_name', '')} {customer.get('last_name', '')}".strip()),
             "email": customer["email"],
+            "company_name": customer.get("company_name", ""),
+            "member_since": customer.get("member_since"),
+            "status": customer.get("status", "Starter"),
+            "activation_status": customer["activation_status"],
             "profile_image": customer.get("profile_image", None),
             "preferred_language": customer.get("preferred_language", "de"),
             "message": f"Customer status: {customer['activation_status']}"
