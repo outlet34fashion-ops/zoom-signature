@@ -673,7 +673,8 @@ function App() {
         name: '',
         description: '',
         material: '',
-        category_id: '',
+        main_category_id: '',
+        sub_category_id: '',
         price: 0,
         sizes: [],
         colors: [],
@@ -682,6 +683,7 @@ function App() {
       });
       setProductMediaFiles([]);
       setCustomColor('');
+      setSubCategories([]);
       setShowCreateProduct(false);
       
       // Reload products
