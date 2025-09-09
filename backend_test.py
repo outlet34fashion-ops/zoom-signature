@@ -8082,8 +8082,12 @@ TIMEZONE BUG ANALYSIS COMPLETE:
         print(f"🔗 Testing against: {self.base_url}")
         print("=" * 60)
 
-        # CRITICAL PRIORITY #1: PRODUKTKATALOG BACKEND API IMPLEMENTATION (Current Review Request)
-        print("\n🛍️ CRITICAL PRIORITY #1: PRODUKTKATALOG BACKEND API IMPLEMENTATION...")
+        # CRITICAL PRIORITY #1: CATALOG VISIBILITY BUG INVESTIGATION (Current Review Request)
+        print("\n🚨 CRITICAL PRIORITY #1: CATALOG VISIBILITY BUG INVESTIGATION...")
+        catalog_bug_success = self.test_critical_catalog_bug_investigation()
+
+        # CRITICAL PRIORITY #2: PRODUKTKATALOG BACKEND API IMPLEMENTATION (Current Review Request)
+        print("\n🛍️ CRITICAL PRIORITY #2: PRODUKTKATALOG BACKEND API IMPLEMENTATION...")
         produktkatalog_success = self.test_produktkatalog_backend_api()
 
         # CRITICAL PRIORITY #2: LIVEKIT STREAMING SYSTEM DIAGNOSIS (Previous Review Request)
