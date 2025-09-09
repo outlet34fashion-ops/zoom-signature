@@ -1835,29 +1835,6 @@ function App() {
       console.error('❌ Failed to stop Daily.co streaming:', error);
     }
   };
-          audio: true
-        },
-        // Last resort: Any video/audio
-        {
-          video: true,
-          audio: true
-        }
-      ];
-      
-      let stream = null;
-      let lastError = null;
-      
-      for (const constraint of constraints) {
-        try {
-          console.log('🔄 Trying camera access with constraint:', constraint);
-          stream = await navigator.mediaDevices.getUserMedia(constraint);
-          console.log('✅ Camera access successful with constraint');
-          break;
-        } catch (err) {
-          console.warn('⚠️ Camera access failed with constraint:', err.message);
-          lastError = err;
-        }
-      }
       
       if (!stream) {
         throw lastError || new Error('Kamera-Zugriff verweigert');
