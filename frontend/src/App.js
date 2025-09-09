@@ -1901,9 +1901,18 @@ function App() {
           <div className="container mx-auto px-4 py-2">
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-3">
-                {/* WhatsApp Support Button links - größeres Logo für Kunden */}
+                {/* Logo and Navigation for Customers */}
                 {isAuthenticated && !isAdminView && (
                   <div className="flex items-center space-x-2">
+                    {/* OUTLET34 Logo in Header */}
+                    <img 
+                      src="/images/outlet34-logo-header.png" 
+                      alt="OUTLET34 Logo" 
+                      className="w-8 h-8 rounded-full border-2 border-white"
+                    />
+                    <span className="text-lg font-bold">OUTLET34</span>
+                    
+                    {/* WhatsApp Support Button */}
                     <a 
                       href="https://wa.me/4917621105848?text=Hallo%20OUTLET34%20Team,%20ich%20brauche%20Hilfe%20beim%20Live%20Shopping..." 
                       target="_blank" 
@@ -1913,7 +1922,7 @@ function App() {
                       <img 
                         src="/images/whatsapp-logo-dark.png" 
                         alt="WhatsApp Support" 
-                        className="w-8 h-8 mr-2 rounded"
+                        className="w-6 h-6 mr-1 rounded"
                       />
                       <span className="text-sm font-medium">Support</span>
                     </a>
