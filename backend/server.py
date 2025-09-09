@@ -15,6 +15,7 @@ import json
 import jwt
 import time
 import base64
+import shutil
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
