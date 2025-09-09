@@ -10,20 +10,10 @@ import { Badge } from './components/ui/badge';
 import { Heart, Bell, ShoppingCart, Send, Users, Clock, MessageCircle } from 'lucide-react';
 import ZoomLiveStream from './components/ZoomLiveStream';
 // REMOVED: SimpleLiveStream - was not working properly
-// CRITICAL: Import LiveKit components - WORKING IMPLEMENTATION
-import {
-  LiveKitRoom,
-  VideoConference,
-  RoomAudioRenderer,
-  ControlBar,
-  useTracks,
-  useRoomContext
-} from '@livekit/components-react';
-import '@livekit/components-styles';
+// Daily.co Video Streaming - STABLE LOW-LATENCY SOLUTION
+import DailyVideoCall from './components/streaming/DailyVideoCall';
 import StreamsList from './components/streaming/StreamsList';
-import LiveKitRoomManager from './components/streaming/LiveKitRoomManager';
 import SimpleVideoStreaming from './components/streaming/SimpleVideoStreaming';
-import livekitService from './services/livekitService';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
