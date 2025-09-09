@@ -5905,36 +5905,65 @@ function App() {
 
             {/* Category Navigation */}
             <div className="bg-gray-50 p-4 border-b">
-              <div className="flex space-x-2 overflow-x-auto pb-2">
-                <button
-                  onClick={() => {
-                    setSelectedCategory(null);
-                    loadCatalogProducts();
-                  }}
-                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-200 ${
-                    !selectedCategory
-                      ? 'bg-pink-600 text-white'
-                      : 'bg-white text-gray-700 hover:bg-pink-100'
-                  }`}
-                >
-                  Alle Kategorien
-                </button>
-                {categories.map((category) => (
+              <div className="space-y-3">
+                {/* All Categories Button */}
+                <div className="flex space-x-2">
                   <button
-                    key={category.id}
                     onClick={() => {
-                      setSelectedCategory(category);
-                      loadCatalogProducts(category.id);
+                      setSelectedCategory(null);
+                      loadCatalogProducts();
                     }}
                     className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-200 ${
-                      selectedCategory?.id === category.id
+                      !selectedCategory
                         ? 'bg-pink-600 text-white'
                         : 'bg-white text-gray-700 hover:bg-pink-100'
                     }`}
                   >
-                    {category.name}
+                    Alle Kategorien
                   </button>
-                ))}
+                </div>
+                
+                {/* Main Categories (Hauptkategorien - bold/black) */}
+                <div className="space-y-2">
+                  {mainCategories.map((mainCategory) => (
+                    <div key={mainCategory.id}>
+                      {/* Main Category Button */}
+                      <button
+                        onClick={() => {
+                          setSelectedCategory(mainCategory);
+                          loadCatalogProducts(mainCategory.id);
+                          // Load subcategories for this main category
+                          loadSubCategories(mainCategory.id);
+                        }}
+                        className={`w-full text-left px-4 py-2 rounded-lg font-bold text-sm transition-colors duration-200 flex items-center space-x-2 ${
+                          selectedCategory?.id === mainCategory.id
+                            ? 'bg-pink-600 text-white'
+                            : 'bg-white text-black hover:bg-pink-100'
+                        }`}
+                      >
+                        <span className="text-lg">{mainCategory.icon}</span>
+                        <span>{mainCategory.name}</span>
+                      </button>
+                      
+                      {/* Subcategories (shown when main category is selected) */}
+                      {selectedCategory?.id === mainCategory.id && subCategories.length > 0 && (
+                        <div className="ml-6 mt-2 space-y-1">
+                          {subCategories.map((subCategory) => (
+                            <button
+                              key={subCategory.id}
+                              onClick={() => {
+                                loadCatalogProducts(subCategory.id);
+                              }}
+                              className="block w-full text-left px-3 py-1 text-sm text-gray-600 hover:text-pink-600 hover:bg-pink-50 rounded transition-colors duration-200"
+                            >
+                              {subCategory.name}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
