@@ -2919,6 +2919,12 @@ async def startup_db_client():
             
         if "catalog_orders" not in collections:
             logging.info("Creating catalog_orders collection...")
+            
+        if "favorites" not in collections:
+            logging.info("Creating favorites collection...")
+            
+        if "recently_viewed" not in collections:
+            logging.info("Creating recently_viewed collection...")
         
         # Create default categories
         await create_default_categories()
