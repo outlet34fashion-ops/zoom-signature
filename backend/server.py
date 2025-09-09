@@ -208,34 +208,36 @@ class ICECandidate(BaseModel):
     sdpMLineIndex: int
     sdpMid: str
 
-# LiveKit Models
-class LiveKitTokenRequest(BaseModel):
+# Daily.co Models
+class DailyTokenRequest(BaseModel):
     room_name: str
-    participant_type: str = "viewer"  # "publisher" or "viewer"
-    participant_name: Optional[str] = None
-    metadata: Optional[Dict[str, Any]] = None
+    user_name: Optional[str] = None
+    is_owner: bool = False
+    enable_screenshare: bool = True
+    enable_recording: bool = False
+    enable_live_streaming: bool = True
 
-class LiveKitTokenResponse(BaseModel):
+class DailyTokenResponse(BaseModel):
     token: str
     room_name: str
-    participant_identity: str
-    participant_type: str
-    livekit_url: str
+    user_name: Optional[str] = None
+    is_owner: bool
     expires_in: int = 7200  # 2 hours
 
-class LiveKitRoomRequest(BaseModel):
-    room_name: str
-    max_participants: Optional[int] = 50
-    empty_timeout: Optional[int] = 300
-    metadata: Optional[Dict[str, Any]] = None
+class DailyRoomRequest(BaseModel):
+    room_name: Optional[str] = None
+    privacy: str = "public"
+    max_participants: Optional[int] = 100
+    properties: Optional[Dict[str, Any]] = None
 
-class LiveKitRoomResponse(BaseModel):
-    room_name: str
-    sid: str
-    max_participants: int
-    num_participants: int
-    creation_time: int
-    status: str = "active"
+class DailyRoomResponse(BaseModel):
+    id: str
+    name: str
+    api_created: bool
+    privacy: str
+    url: str
+    created_at: str
+    config: Dict[str, Any]
 
 # Customer Management Models
 class Customer(BaseModel):
