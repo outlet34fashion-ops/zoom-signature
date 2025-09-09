@@ -2340,8 +2340,26 @@ async def create_product(product: CatalogProductCreate):
         if not category:
             raise HTTPException(status_code=400, detail="Category not found")
         
+        # Auto-generate article number if not provided
+        article_number = product.article_number
+        if not article_number or article_number.strip() == "":
+            # Find the highest existing article number
+            existing_products = await db.products.find().to_list(length=None)
+            max_number = 0
+            
+            for existing_product in existing_products:
+                existing_article = existing_product.get("article_number", "")
+                # Try to extract number from article number
+                if existing_article.isdigit():
+                    max_number = max(max_number, int(existing_article))
+                elif existing_article.startswith("ART-") and existing_article[4:].isdigit():
+                    max_number = max(max_number, int(existing_article[4:]))
+            
+            # Generate new article number
+            article_number = str(max_number + 1)
+            
         # Check if article_number is unique
-        existing = await db.products.find_one({"article_number": product.article_number})
+        existing = await db.products.find_one({"article_number": article_number})
         if existing:
             raise HTTPException(status_code=400, detail="Article number already exists")
         
