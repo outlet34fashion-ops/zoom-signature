@@ -379,6 +379,19 @@ class CatalogOrderCreate(BaseModel):
     size: str
     quantity: int
 
+# Favorites and Recently Viewed Models
+class CustomerFavorite(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    customer_number: str
+    product_id: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
+class RecentlyViewed(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    customer_number: str
+    product_id: str
+    viewed_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
+
 # In-memory counter and settings for demo
 order_counter = 0
 ticker_settings = {
