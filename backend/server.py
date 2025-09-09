@@ -2550,6 +2550,38 @@ async def update_catalog_order_status(order_id: str, status: str):
 UPLOAD_DIR = ROOT_DIR / "uploads" / "products"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
+# Create default categories on startup
+async def create_default_categories():
+    """Create default categories if they don't exist"""
+    try:
+        # Check if categories already exist
+        existing_cats = await db.categories.find().to_list(length=None)
+        
+        if len(existing_cats) == 0:
+            default_categories = [
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Neu Eingestellt",
+                    "description": "Die neuesten Artikel in unserem Sortiment",
+                    "sort_order": 1,
+                    "created_at": datetime.now(timezone.utc),
+                    "updated_at": datetime.now(timezone.utc)
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "name": "Bestseller",
+                    "description": "Unsere beliebtesten Artikel",
+                    "sort_order": 2,
+                    "created_at": datetime.now(timezone.utc),
+                    "updated_at": datetime.now(timezone.utc)
+                }
+            ]
+            
+            await db.categories.insert_many(default_categories)
+            logging.info("Default categories created successfully")
+    except Exception as e:
+        logging.error(f"Error creating default categories: {str(e)}")
+
 @api_router.post("/upload/product-media")
 async def upload_product_media(files: List[UploadFile] = File(...)):
     """Upload multiple images/videos for products"""
