@@ -3696,7 +3696,7 @@ function App() {
                       variant="outline"
                       onClick={() => {
                         setShowCreateCustomer(false);
-                        setNewCustomerData({ customer_number: '', email: '', name: '' });
+                        setNewCustomerData({ customer_number: '', email: '', first_name: '', last_name: '', company_name: '', member_since: '', status: 'Starter' });
                         setCreateCustomerError('');
                       }}
                       className="flex-1"
