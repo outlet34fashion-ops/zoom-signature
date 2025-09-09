@@ -6741,6 +6741,101 @@ function App() {
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Verfügbare Farben
+                </label>
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {['Schwarz', 'Weiß', 'Blau', 'Rot', 'Beige'].map((color) => (
+                    <button
+                      key={color}
+                      type="button"
+                      onClick={() => {
+                        const colors = [...newProductData.colors];
+                        const index = colors.indexOf(color);
+                        if (index > -1) {
+                          colors.splice(index, 1);
+                        } else {
+                          colors.push(color);
+                        }
+                        setNewProductData({ ...newProductData, colors });
+                      }}
+                      className={`px-3 py-1 rounded-full text-sm font-medium transition-colors duration-200 flex items-center space-x-2 ${
+                        newProductData.colors.includes(color)
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      }`}
+                    >
+                      <div
+                        className="w-3 h-3 rounded-full border border-gray-400"
+                        style={{
+                          backgroundColor: color === 'Schwarz' ? '#000000' :
+                                         color === 'Weiß' ? '#FFFFFF' :
+                                         color === 'Blau' ? '#0066CC' :
+                                         color === 'Rot' ? '#CC0000' :
+                                         color === 'Beige' ? '#F5F5DC' : '#CCCCCC'
+                        }}
+                      />
+                      <span>{color}</span>
+                    </button>
+                  ))}
+                </div>
+                
+                {/* Manual Color Input */}
+                <div className="flex space-x-2 mb-2">
+                  <input
+                    type="text"
+                    value={customColor}
+                    onChange={(e) => setCustomColor(e.target.value)}
+                    className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Manuelle Farbe eingeben..."
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (customColor.trim() && !newProductData.colors.includes(customColor.trim())) {
+                        setNewProductData({ 
+                          ...newProductData, 
+                          colors: [...newProductData.colors, customColor.trim()] 
+                        });
+                        setCustomColor('');
+                      }
+                    }}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+                  >
+                    Hinzufügen
+                  </button>
+                </div>
+                
+                {/* Selected Colors Display */}
+                {newProductData.colors.length > 0 && (
+                  <div className="mb-2">
+                    <p className="text-xs text-gray-600 mb-1">Ausgewählte Farben:</p>
+                    <div className="flex flex-wrap gap-1">
+                      {newProductData.colors.map((color, index) => (
+                        <span 
+                          key={index} 
+                          className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full flex items-center space-x-1"
+                        >
+                          <span>{color}</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const colors = newProductData.colors.filter((_, i) => i !== index);
+                              setNewProductData({ ...newProductData, colors });
+                            }}
+                            className="text-blue-600 hover:text-blue-800"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <p className="text-xs text-gray-500">Wählen Sie vordefinierte Farben oder geben Sie eigene ein</p>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Verfügbare Größen
                 </label>
                 <div className="flex flex-wrap gap-2 mb-2">
