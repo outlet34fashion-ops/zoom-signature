@@ -126,10 +126,7 @@ class DailyService:
                 "properties": {
                     "room_name": room_name,
                     "exp": exp_time,
-                    "is_owner": is_owner,
-                    "enable_screenshare": enable_screenshare,
-                    "enable_recording": enable_recording,
-                    "enable_live_streaming": enable_live_streaming
+                    "is_owner": is_owner
                 }
             }
             
