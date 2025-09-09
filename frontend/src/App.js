@@ -356,17 +356,17 @@ function App() {
 
       const orderData = {
         customer_number: customerNumber,
-        product_id: selectedProduct.id,
+        product_id: selectedCatalogProduct.id,
         size: selectedProductSize,
         quantity: catalogOrderQuantity
       };
 
       const response = await axios.post(`${API}/catalog/orders`, orderData);
       
-      alert(`✅ Bestellung erfolgreich aufgegeben!\nArtikel: ${selectedProduct.name}\nGröße: ${selectedProductSize}\nAnzahl: ${catalogOrderQuantity}\nGesamtpreis: ${response.data.total_price.toFixed(2)} €`);
+      alert(`✅ Bestellung erfolgreich aufgegeben!\nArtikel: ${selectedCatalogProduct.name}\nGröße: ${selectedProductSize}\nAnzahl: ${catalogOrderQuantity}\nGesamtpreis: ${response.data.total_price.toFixed(2)} €`);
       
       // Reset order form
-      setSelectedProduct(null);
+      setSelectedCatalogProduct(null);
       setShowProductDetail(false);
       setSelectedProductSize('');
       setCatalogOrderQuantity(1);
