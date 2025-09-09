@@ -9204,6 +9204,388 @@ TIMEZONE BUG ANALYSIS COMPLETE:
             self.log_test("Extended Customer System - Exception", False, str(e))
             return False
 
+    def test_hierarchical_category_system(self):
+        """Test the new hierarchical category system implementation"""
+        print("\n🏷️ Testing Hierarchical Category System...")
+        
+        # Test 1: Verify default main categories exist
+        print("  📋 Test 1: Verify 5 main categories exist...")
+        try:
+            response = requests.get(f"{self.api_url}/categories/main", timeout=10)
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                main_categories = response.json()
+                expected_main_categories = ["Oberteile", "Hosen & Jeans", "Kleider & Röcke", "Jacken & Mäntel", "Accessoires"]
+                expected_icons = ["👕", "👖", "👗", "🧥", "🎒"]
+                
+                # Check count
+                has_five_categories = len(main_categories) == 5
+                
+                # Check names and icons
+                category_names = [cat.get('name') for cat in main_categories]
+                category_icons = [cat.get('icon') for cat in main_categories]
+                
+                has_correct_names = all(name in category_names for name in expected_main_categories)
+                has_correct_icons = all(icon in category_icons for icon in expected_icons)
+                
+                # Check is_main_category field
+                all_main_categories = all(cat.get('is_main_category') == True for cat in main_categories)
+                
+                success = has_five_categories and has_correct_names and has_correct_icons and all_main_categories
+                details += f", Count: {len(main_categories)}/5, Names correct: {has_correct_names}, Icons correct: {has_correct_icons}, All main: {all_main_categories}"
+                
+                if success:
+                    self.main_categories = main_categories  # Store for later tests
+            
+            self.log_test("Hierarchical Categories - Main Categories Verification", success, details)
+        except Exception as e:
+            self.log_test("Hierarchical Categories - Main Categories Verification", False, str(e))
+            return False
+        
+        # Test 2: Test subcategories for "Oberteile"
+        print("  👕 Test 2: Test subcategories for 'Oberteile'...")
+        try:
+            oberteile_category = next((cat for cat in self.main_categories if cat['name'] == 'Oberteile'), None)
+            if not oberteile_category:
+                self.log_test("Hierarchical Categories - Oberteile Subcategories", False, "Oberteile category not found")
+                return False
+            
+            response = requests.get(f"{self.api_url}/categories/sub/{oberteile_category['id']}", timeout=10)
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                subcategories = response.json()
+                expected_subcategories = ["T-Shirts", "Blusen / Hemden", "Pullover / Strick", "Sweatshirts / Hoodies"]
+                
+                subcategory_names = [sub.get('name') for sub in subcategories]
+                has_expected_subs = all(name in subcategory_names for name in expected_subcategories)
+                
+                # Check parent_category_id and is_main_category
+                correct_parent = all(sub.get('parent_category_id') == oberteile_category['id'] for sub in subcategories)
+                all_subcategories = all(sub.get('is_main_category') == False for sub in subcategories)
+                
+                success = has_expected_subs and correct_parent and all_subcategories
+                details += f", Subcategories: {len(subcategories)}, Expected subs: {has_expected_subs}, Correct parent: {correct_parent}, All subs: {all_subcategories}"
+                
+                if success:
+                    self.oberteile_subcategories = subcategories  # Store for later tests
+            
+            self.log_test("Hierarchical Categories - Oberteile Subcategories", success, details)
+        except Exception as e:
+            self.log_test("Hierarchical Categories - Oberteile Subcategories", False, str(e))
+            return False
+        
+        # Test 3: Test GET /api/categories (all categories with hierarchy info)
+        print("  📂 Test 3: Test all categories endpoint...")
+        try:
+            response = requests.get(f"{self.api_url}/categories", timeout=10)
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                all_categories = response.json()
+                
+                # Should have main categories + subcategories
+                main_count = len([cat for cat in all_categories if cat.get('is_main_category') == True])
+                sub_count = len([cat for cat in all_categories if cat.get('is_main_category') == False])
+                
+                has_main_categories = main_count == 5
+                has_subcategories = sub_count > 0  # Should have multiple subcategories
+                
+                # Check hierarchy structure
+                hierarchy_correct = True
+                for cat in all_categories:
+                    if cat.get('is_main_category') == False:
+                        # Subcategory should have parent_category_id
+                        if not cat.get('parent_category_id'):
+                            hierarchy_correct = False
+                            break
+                
+                success = has_main_categories and has_subcategories and hierarchy_correct
+                details += f", Total: {len(all_categories)}, Main: {main_count}/5, Subs: {sub_count}, Hierarchy correct: {hierarchy_correct}"
+            
+            self.log_test("Hierarchical Categories - All Categories Endpoint", success, details)
+        except Exception as e:
+            self.log_test("Hierarchical Categories - All Categories Endpoint", False, str(e))
+            return False
+        
+        # Test 4: Test product creation with main category only
+        print("  📦 Test 4: Test product creation with main category only...")
+        try:
+            oberteile_id = oberteile_category['id']
+            
+            product_data = {
+                "name": "Test Hierarchical Product - Main Only",
+                "description": "Test product with only main category",
+                "material": "Baumwolle",
+                "main_category_id": oberteile_id,
+                "price": 29.99,
+                "sizes": ["S", "M", "L"],
+                "colors": ["Schwarz", "Weiß"]
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/admin/products",
+                json=product_data,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            details = f"POST Status: {response.status_code}"
+            
+            if success:
+                created_product = response.json()
+                
+                # Verify required fields
+                has_main_category = created_product.get('main_category_id') == oberteile_id
+                has_no_subcategory = created_product.get('sub_category_id') is None
+                has_article_number = bool(created_product.get('article_number'))
+                has_material = created_product.get('material') == "Baumwolle"
+                has_colors = created_product.get('colors') == ["Schwarz", "Weiß"]
+                
+                success = has_main_category and has_no_subcategory and has_article_number and has_material and has_colors
+                details += f", Main category: {has_main_category}, No subcategory: {has_no_subcategory}, Article#: {has_article_number}, Material: {has_material}, Colors: {has_colors}"
+                
+                if success:
+                    self.test_product_main_only = created_product
+            
+            self.log_test("Hierarchical Categories - Product with Main Category Only", success, details)
+        except Exception as e:
+            self.log_test("Hierarchical Categories - Product with Main Category Only", False, str(e))
+            return False
+        
+        # Test 5: Test product creation with main + subcategory
+        print("  📦 Test 5: Test product creation with main + subcategory...")
+        try:
+            oberteile_id = oberteile_category['id']
+            tshirts_subcategory = next((sub for sub in self.oberteile_subcategories if sub['name'] == 'T-Shirts'), None)
+            
+            if not tshirts_subcategory:
+                self.log_test("Hierarchical Categories - Product with Main + Subcategory", False, "T-Shirts subcategory not found")
+                return False
+            
+            product_data = {
+                "name": "Test Hierarchical Product - Main + Sub",
+                "description": "Test product with main and subcategory",
+                "material": "Bio-Baumwolle",
+                "main_category_id": oberteile_id,
+                "sub_category_id": tshirts_subcategory['id'],
+                "price": 19.99,
+                "sizes": ["XS", "S", "M", "L", "XL"],
+                "colors": ["Rot", "Blau", "Grün"]
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/admin/products",
+                json=product_data,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            success = response.status_code == 200
+            details = f"POST Status: {response.status_code}"
+            
+            if success:
+                created_product = response.json()
+                
+                # Verify required fields
+                has_main_category = created_product.get('main_category_id') == oberteile_id
+                has_subcategory = created_product.get('sub_category_id') == tshirts_subcategory['id']
+                has_article_number = bool(created_product.get('article_number'))
+                has_material = created_product.get('material') == "Bio-Baumwolle"
+                has_colors = created_product.get('colors') == ["Rot", "Blau", "Grün"]
+                
+                success = has_main_category and has_subcategory and has_article_number and has_material and has_colors
+                details += f", Main category: {has_main_category}, Subcategory: {has_subcategory}, Article#: {has_article_number}, Material: {has_material}, Colors: {has_colors}"
+                
+                if success:
+                    self.test_product_main_sub = created_product
+            
+            self.log_test("Hierarchical Categories - Product with Main + Subcategory", success, details)
+        except Exception as e:
+            self.log_test("Hierarchical Categories - Product with Main + Subcategory", False, str(e))
+            return False
+        
+        # Test 6: Test validation - invalid main category
+        print("  ❌ Test 6: Test validation - invalid main category...")
+        try:
+            fake_main_category_id = str(uuid.uuid4())
+            
+            product_data = {
+                "name": "Test Invalid Main Category",
+                "description": "Should fail validation",
+                "material": "Test Material",
+                "main_category_id": fake_main_category_id,
+                "price": 15.99,
+                "sizes": ["M"],
+                "colors": ["Test Color"]
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/admin/products",
+                json=product_data,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            success = response.status_code == 400
+            details = f"POST Status: {response.status_code} (should be 400 for invalid main category)"
+            
+            if success:
+                error_data = response.json()
+                has_error_message = 'detail' in error_data and 'main category' in error_data['detail'].lower()
+                success = has_error_message
+                details += f", Has proper error: {has_error_message}"
+            
+            self.log_test("Hierarchical Categories - Invalid Main Category Validation", success, details)
+        except Exception as e:
+            self.log_test("Hierarchical Categories - Invalid Main Category Validation", False, str(e))
+            return False
+        
+        # Test 7: Test validation - subcategory not matching main category
+        print("  ❌ Test 7: Test validation - subcategory not matching main category...")
+        try:
+            oberteile_id = oberteile_category['id']
+            
+            # Get a subcategory from a different main category (e.g., from "Hosen & Jeans")
+            hosen_category = next((cat for cat in self.main_categories if cat['name'] == 'Hosen & Jeans'), None)
+            if not hosen_category:
+                self.log_test("Hierarchical Categories - Mismatched Subcategory Validation", False, "Hosen & Jeans category not found")
+                return False
+            
+            # Get subcategories for Hosen & Jeans
+            hosen_response = requests.get(f"{self.api_url}/categories/sub/{hosen_category['id']}", timeout=10)
+            if hosen_response.status_code != 200:
+                self.log_test("Hierarchical Categories - Mismatched Subcategory Validation", False, "Could not get Hosen subcategories")
+                return False
+            
+            hosen_subcategories = hosen_response.json()
+            jeans_subcategory = next((sub for sub in hosen_subcategories if sub['name'] == 'Jeans'), None)
+            
+            if not jeans_subcategory:
+                self.log_test("Hierarchical Categories - Mismatched Subcategory Validation", False, "Jeans subcategory not found")
+                return False
+            
+            # Try to create product with Oberteile main category but Jeans subcategory (should fail)
+            product_data = {
+                "name": "Test Mismatched Categories",
+                "description": "Should fail validation",
+                "material": "Test Material",
+                "main_category_id": oberteile_id,  # Oberteile
+                "sub_category_id": jeans_subcategory['id'],  # Jeans (belongs to Hosen & Jeans)
+                "price": 25.99,
+                "sizes": ["M"],
+                "colors": ["Test Color"]
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/admin/products",
+                json=product_data,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            success = response.status_code == 400
+            details = f"POST Status: {response.status_code} (should be 400 for mismatched subcategory)"
+            
+            if success:
+                error_data = response.json()
+                has_error_message = 'detail' in error_data and ('subcategory' in error_data['detail'].lower() or 'belong' in error_data['detail'].lower())
+                success = has_error_message
+                details += f", Has proper error: {has_error_message}"
+            
+            self.log_test("Hierarchical Categories - Mismatched Subcategory Validation", success, details)
+        except Exception as e:
+            self.log_test("Hierarchical Categories - Mismatched Subcategory Validation", False, str(e))
+            return False
+        
+        # Test 8: Test validation - using subcategory as main category
+        print("  ❌ Test 8: Test validation - using subcategory as main category...")
+        try:
+            tshirts_subcategory = next((sub for sub in self.oberteile_subcategories if sub['name'] == 'T-Shirts'), None)
+            
+            if not tshirts_subcategory:
+                self.log_test("Hierarchical Categories - Subcategory as Main Validation", False, "T-Shirts subcategory not found")
+                return False
+            
+            # Try to use T-Shirts (subcategory) as main_category_id (should fail)
+            product_data = {
+                "name": "Test Subcategory as Main",
+                "description": "Should fail validation",
+                "material": "Test Material",
+                "main_category_id": tshirts_subcategory['id'],  # This is a subcategory, not main category
+                "price": 20.99,
+                "sizes": ["M"],
+                "colors": ["Test Color"]
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/admin/products",
+                json=product_data,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            success = response.status_code == 400
+            details = f"POST Status: {response.status_code} (should be 400 for subcategory as main category)"
+            
+            if success:
+                error_data = response.json()
+                has_error_message = 'detail' in error_data and ('main category' in error_data['detail'].lower() or 'invalid' in error_data['detail'].lower())
+                success = has_error_message
+                details += f", Has proper error: {has_error_message}"
+            
+            self.log_test("Hierarchical Categories - Subcategory as Main Validation", success, details)
+        except Exception as e:
+            self.log_test("Hierarchical Categories - Subcategory as Main Validation", False, str(e))
+            return False
+        
+        # Test 9: Test backward compatibility with existing products
+        print("  🔄 Test 9: Test backward compatibility...")
+        try:
+            # Get all products to check backward compatibility
+            response = requests.get(f"{self.api_url}/products", timeout=10)
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                products = response.json()
+                
+                # Check that products have both category_id (backward compatibility) and main_category_id
+                backward_compatible = True
+                for product in products:
+                    if product.get('main_category_id') and not product.get('category_id'):
+                        backward_compatible = False
+                        break
+                
+                # Check that created test products are visible
+                test_products_visible = 0
+                for product in products:
+                    if product.get('name', '').startswith('Test Hierarchical Product'):
+                        test_products_visible += 1
+                
+                has_test_products = test_products_visible >= 2  # Should have at least our 2 test products
+                
+                success = backward_compatible and has_test_products
+                details += f", Backward compatible: {backward_compatible}, Test products visible: {test_products_visible}/2+"
+            
+            self.log_test("Hierarchical Categories - Backward Compatibility", success, details)
+        except Exception as e:
+            self.log_test("Hierarchical Categories - Backward Compatibility", False, str(e))
+            return False
+        
+        # Calculate success rate for hierarchical category tests
+        category_tests = [r for r in self.test_results if 'Hierarchical Categories' in r['name']]
+        category_tests_recent = category_tests[-9:]  # Get the last 9 hierarchical category tests
+        category_success_count = sum(1 for test in category_tests_recent if test['success'])
+        
+        print(f"  📊 Hierarchical Category Tests: {category_success_count}/{len(category_tests_recent)} passed")
+        
+        return category_success_count == len(category_tests_recent)
     def run_all_tests(self):
         """Run all backend API tests"""
         print("🚀 Starting Live Shopping App Backend API Tests")
