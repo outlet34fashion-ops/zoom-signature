@@ -497,6 +497,106 @@ function App() {
     }
   };
 
+  // Load recently viewed products
+  const loadRecentlyViewed = async (customerNumber) => {
+    try {
+      const response = await axios.get(`${API}/recently-viewed/${customerNumber}?limit=10`);
+      setRecentlyViewedProducts(response.data);
+    } catch (error) {
+      console.error('Error loading recently viewed:', error);
+    }
+  };
+
+  // Load favorite products
+  const loadFavoriteProducts = async (customerNumber) => {
+    try {
+      const response = await axios.get(`${API}/favorites/${customerNumber}`);
+      setFavoriteProducts(response.data);
+      
+      // Create favorite status map
+      const statusMap = {};
+      response.data.forEach(product => {
+        statusMap[product.id] = true;
+      });
+      setProductFavoriteStatus(statusMap);
+    } catch (error) {
+      console.error('Error loading favorites:', error);
+    }
+  };
+
+  // Add to recently viewed
+  const addToRecentlyViewed = async (productId) => {
+    if (!isAuthenticated || !currentCustomer?.customer_number) return;
+    
+    try {
+      await axios.post(`${API}/recently-viewed/${currentCustomer.customer_number}/${productId}`);
+    } catch (error) {
+      console.error('Error adding to recently viewed:', error);
+    }
+  };
+
+  // Toggle favorite
+  const toggleFavorite = async (productId) => {
+    if (!isAuthenticated || !currentCustomer?.customer_number) {
+      alert('Bitte melden Sie sich an, um Favoriten zu verwalten.');
+      return;
+    }
+    
+    try {
+      const isCurrentlyFavorite = productFavoriteStatus[productId];
+      
+      if (isCurrentlyFavorite) {
+        // Remove from favorites
+        await axios.delete(`${API}/favorites/${currentCustomer.customer_number}/${productId}`);
+        setProductFavoriteStatus(prev => ({ ...prev, [productId]: false }));
+        
+        // Remove from favorite products list
+        setFavoriteProducts(prev => prev.filter(p => p.id !== productId));
+      } else {
+        // Add to favorites
+        await axios.post(`${API}/favorites/${currentCustomer.customer_number}/${productId}`);
+        setProductFavoriteStatus(prev => ({ ...prev, [productId]: true }));
+        
+        // Reload favorites to get the product data
+        loadFavoriteProducts(currentCustomer.customer_number);
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+      alert('Fehler beim Ändern der Favoriten.');
+    }
+  };
+
+  // Search products
+  const searchProducts = async (query = searchQuery) => {
+    try {
+      setLoadingCatalog(true);
+      setCatalogError('');
+      
+      let url = `${API}/products`;
+      const params = new URLSearchParams();
+      
+      if (selectedCategory) {
+        params.append('category_id', selectedCategory.id);
+      }
+      if (query && query.trim()) {
+        params.append('search', query.trim());
+      }
+      
+      if (params.toString()) {
+        url += '?' + params.toString();
+      }
+      
+      const response = await axios.get(url);
+      setCatalogProducts(response.data);
+      
+    } catch (error) {
+      console.error('Error searching products:', error);
+      setCatalogError('Fehler bei der Suche');
+    } finally {
+      setLoadingCatalog(false);
+    }
+  };
+
   // Move media file up/down
   const moveMediaFile = (fileId, direction) => {
     setProductMediaFiles(prev => {
