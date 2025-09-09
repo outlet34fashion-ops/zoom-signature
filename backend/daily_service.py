@@ -124,18 +124,20 @@ class DailyService:
             # Set expiration time (default 2 hours)
             exp_time = exp or int((datetime.utcnow() + timedelta(hours=2)).timestamp())
             
-            # Build token properties
+            # Build token properties according to Daily.co API
             token_properties = {
-                "room_name": room_name,
-                "exp": exp_time,
-                "is_owner": is_owner,
-                "enable_screenshare": enable_screenshare,
-                "enable_recording": enable_recording,
-                "enable_live_streaming": enable_live_streaming
+                "properties": {
+                    "room_name": room_name,
+                    "exp": exp_time,
+                    "is_owner": is_owner,
+                    "enable_screenshare": enable_screenshare,
+                    "enable_recording": enable_recording,
+                    "enable_live_streaming": enable_live_streaming
+                }
             }
             
             if user_name:
-                token_properties["user_name"] = user_name
+                token_properties["properties"]["user_name"] = user_name
             
             async with httpx.AsyncClient() as client:
                 response = await client.post(
