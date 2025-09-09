@@ -60,11 +60,8 @@ class DailyService:
             room_data = {
                 "privacy": privacy,
                 "properties": {
-                    "max_participants": max_participants,
                     "enable_screenshare": True,
                     "enable_chat": True,
-                    "enable_knocking": False,
-                    "lang": "de",
                     **(properties or {})
                 }
             }
