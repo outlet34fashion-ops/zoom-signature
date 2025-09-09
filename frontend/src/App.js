@@ -1899,8 +1899,9 @@ function App() {
         </div>
       )}
       
-      {/* Fixed Header Navigation - For ALL Users */}
-      <header className={`fixed left-0 right-0 bg-pink-500 text-white z-40 shadow-lg ${tickerSettings.enabled && !isAdminView && isAuthenticated ? 'top-16' : 'top-0'}`}>
+      {/* Fixed Header Navigation - ONLY for authenticated users */}
+      {(isAuthenticated || isAdminView) && (
+        <header className={`fixed left-0 right-0 bg-pink-500 text-white z-40 shadow-lg ${tickerSettings.enabled && !isAdminView && isAuthenticated ? 'top-16' : 'top-0'}`}>
         {/* Header for NON-authenticated users */}
         {!isAuthenticated && !isAdminView && (
           <div className="container mx-auto px-4 py-2">
