@@ -4584,15 +4584,66 @@ function App() {
                   </div>
                   
                   {/* Customer Information */}
-                  <div className="text-center space-y-2">
+                  <div className="text-center space-y-3">
                     <div className="text-xl font-bold text-pink-600">
-                      {currentCustomer?.name || 'Kunde'} 
+                      {currentCustomer?.name || `${currentCustomer?.first_name || ''} ${currentCustomer?.last_name || ''}`.trim() || 'Kunde'} 
                     </div>
+                    
+                    {/* Company Name */}
+                    {currentCustomer?.company_name && (
+                      <div className="text-sm font-medium text-blue-600">
+                        🏢 {currentCustomer.company_name}
+                      </div>
+                    )}
+                    
                     <div className="text-sm text-gray-600">
                       #{getCustomerNumber()}
                     </div>
                     <div className="text-xs text-gray-500">
                       {currentCustomer?.email}
+                    </div>
+                    
+                    {/* Customer Status */}
+                    <div className="flex items-center justify-center space-x-2 bg-gray-50 rounded-lg py-3 px-4">
+                      <div className="text-center">
+                        <div className="text-2xl mb-1">
+                          {(() => {
+                            const status = currentCustomer?.status || 'Starter';
+                            switch(status) {
+                              case 'Starter': return '🥉';
+                              case 'Business': return '💼';
+                              case 'Gold': return '🥇';
+                              case 'Platinum': return '💎';
+                              default: return '🏆';
+                            }
+                          })()}
+                        </div>
+                        <div className="text-sm font-semibold text-gray-800">
+                          {currentCustomer?.status || 'Starter'}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          Status
+                        </div>
+                      </div>
+                      
+                      {/* Member Since */}
+                      <div className="border-l border-gray-300 pl-4">
+                        <div className="text-2xl mb-1">
+                          📅
+                        </div>
+                        <div className="text-sm font-semibold text-gray-800">
+                          {currentCustomer?.member_since 
+                            ? new Date(currentCustomer.member_since).toLocaleDateString('de-DE', {
+                                year: 'numeric',
+                                month: 'short'
+                              })
+                            : 'Neu'
+                          }
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          Mitglied seit
+                        </div>
+                      </div>
                     </div>
                   </div>
                   
