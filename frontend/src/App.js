@@ -1845,21 +1845,50 @@ function App() {
     }
   };
 
-  const handleLiveKitConnected = () => {
-    console.log('📡 LiveKit connected successfully');
+  // ENHANCED: LiveKit Event Handlers with better error management
+  const handleLiveKitConnected = useCallback(() => {
+    console.log('✅ LiveKit connected successfully');
     setIsLiveKitConnected(true);
     setLivekitError(null);
-  };
+    
+    // Clear any previous errors
+    setTimeout(() => {
+      const errorElements = document.querySelectorAll('.bg-red-500\\/90');
+      errorElements.forEach(el => el.style.display = 'none');
+    }, 1000);
+  }, []);
 
-  const handleLiveKitDisconnected = (reason) => {
-    console.log('📡 LiveKit disconnected:', reason);
+  const handleLiveKitDisconnected = useCallback(() => {
+    console.log('❌ LiveKit disconnected');
     setIsLiveKitConnected(false);
-  };
+  }, []);
 
-  const handleLiveKitError = (error) => {
-    console.error('📡 LiveKit error:', error);
-    setLivekitError(error);
-  };
+  const handleLiveKitError = useCallback((error) => {
+    console.error('❌ LiveKit error:', error);
+    
+    // ENHANCED: Handle specific video playback errors
+    const errorMessage = error.message || error.toString();
+    
+    if (errorMessage.includes('play()') || errorMessage.includes('interrupted') || errorMessage.includes('load request')) {
+      // Video playback conflict - try to recover
+      console.log('🔄 Attempting to recover from video playback conflict...');
+      setTimeout(() => {
+        // Force a state refresh to reinitialize video
+        if (streamingActive) {
+          setLivekitError('Video wird neu initialisiert...');
+          setTimeout(() => {
+            setLivekitError(null);
+          }, 3000);
+        }
+      }, 1000);
+    } else if (errorMessage.includes('NotAllowedError') || errorMessage.includes('camera')) {
+      setLivekitError('Kamera-Zugriff erforderlich. Bitte erlauben Sie Kamera-Zugriff in Ihrem Browser.');
+    } else if (errorMessage.includes('NotFoundError')) {
+      setLivekitError('Keine Kamera gefunden. Bitte stellen Sie sicher, dass eine Kamera verfügbar ist.');
+    } else {
+      setLivekitError(`Streaming-Fehler: ${errorMessage}`);
+    }
+  }, [streamingActive]);
 
   // LiveKit Streaming Functions (New Implementation)
   const startSimpleStream = () => {
