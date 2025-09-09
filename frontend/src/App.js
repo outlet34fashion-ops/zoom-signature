@@ -1895,9 +1895,48 @@ function App() {
         </div>
       )}
       
-      {/* Fixed Header Navigation - MOVED TO TOP */}
-      {(isAuthenticated || isAdminView) && (
-        <header className={`fixed left-0 right-0 bg-pink-500 text-white z-40 shadow-lg ${tickerSettings.enabled && !isAdminView ? 'top-16' : 'top-0'}`}>
+      {/* Fixed Header Navigation - For ALL Users */}
+      <header className={`fixed left-0 right-0 bg-pink-500 text-white z-40 shadow-lg ${tickerSettings.enabled && !isAdminView && isAuthenticated ? 'top-16' : 'top-0'}`}>
+        {/* Header for NON-authenticated users */}
+        {!isAuthenticated && !isAdminView && (
+          <div className="container mx-auto px-4 py-2">
+            <div className="flex justify-between items-center">
+              <div className="flex items-center space-x-3">
+                {/* OUTLET34 Logo and Brand */}
+                <img 
+                  src="/images/outlet34-logo-header.png" 
+                  alt="OUTLET34 Logo" 
+                  className="w-8 h-8 rounded-full border-2 border-white"
+                />
+                <span className="text-lg font-bold">OUTLET34</span>
+                <span className="text-sm">Live Shopping</span>
+              </div>
+              
+              <div className="flex items-center space-x-3">
+                {/* Customer Login Button */}
+                <button 
+                  onClick={() => setShowLoginModal(true)}
+                  className="inline-flex items-center px-4 py-2 bg-white text-pink-500 hover:bg-gray-100 rounded-lg transition-colors duration-200 font-medium"
+                >
+                  🔑
+                  <span className="ml-1">Kunden Login</span>
+                </button>
+                
+                {/* Admin Login Button */}
+                <button 
+                  onClick={() => setShowAdminLoginModal(true)}
+                  className="inline-flex items-center px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white rounded-lg transition-colors duration-200 font-medium"
+                >
+                  🔧
+                  <span className="ml-1">Admin Login</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* Header for authenticated users */}
+        {(isAuthenticated || isAdminView) && (
           <div className="container mx-auto px-4 py-2">
             <div className="flex justify-between items-center">
               <div className="flex items-center space-x-3">
