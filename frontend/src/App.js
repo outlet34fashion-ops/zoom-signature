@@ -4866,7 +4866,7 @@ function App() {
                     </div>
                     {isAdminAuthenticated && (
                       <Button 
-                        onClick={stopLiveKitStreaming}
+                        onClick={stopDailyStreaming}
                         variant="destructive"
                         size="sm"
                       >
