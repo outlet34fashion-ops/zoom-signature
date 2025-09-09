@@ -2315,14 +2315,28 @@ async def delete_category(category_id: str):
 
 # Products - Public Endpoints
 @api_router.get("/products", response_model=List[CatalogProduct])
-async def get_products(category_id: Optional[str] = None, active_only: bool = True):
-    """Get all products (public) - optionally filtered by category"""
+async def get_products(
+    category_id: Optional[str] = None, 
+    search: Optional[str] = None,
+    active_only: bool = True
+):
+    """Get all products (public) - optionally filtered by category and search"""
     try:
         query = {}
         if category_id:
             query["category_id"] = category_id
         if active_only:
             query["is_active"] = True
+        
+        # Add search functionality
+        if search:
+            search_regex = {"$regex": search, "$options": "i"}
+            query["$or"] = [
+                {"name": search_regex},
+                {"description": search_regex},
+                {"material": search_regex},
+                {"article_number": search_regex}
+            ]
             
         products = await db.products.find(query).sort("created_at", -1).to_list(length=None)
         return [CatalogProduct(**prod) for prod in products]
