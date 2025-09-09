@@ -2182,7 +2182,7 @@ function App() {
             </div>
             
             {/* LIVE STREAM PREVIEW FOR GUESTS */}
-            {!isAuthenticated && !isAdminAuthenticated && streamingActive && livekitToken && livekitUrl && (
+            {!isAuthenticated && !isAdminAuthenticated && streamingActive && dailyToken && dailyRoomUrl && (
               <div className="absolute top-20 left-1/2 transform -translate-x-1/2 w-full max-w-4xl px-4 z-10">
                 <div className="bg-black/80 backdrop-blur-md rounded-2xl overflow-hidden border border-white/20 shadow-2xl">
                   <div className="bg-gradient-to-r from-red-600 to-pink-600 px-4 py-2">
@@ -2192,19 +2192,16 @@ function App() {
                     </div>
                   </div>
                   <div className="aspect-video">
-                    <LiveKitRoom
-                      serverUrl={livekitUrl}
-                      token={livekitToken}
-                      connect={true}
-                      data-lk-theme="default"
-                      style={{ height: '100%', width: '100%' }}
-                      onConnected={handleLiveKitConnected}
-                      onDisconnected={handleLiveKitDisconnected}
-                      onError={handleLiveKitError}
-                    >
-                      <VideoConference />
-                      <RoomAudioRenderer />
-                    </LiveKitRoom>
+                    <DailyVideoCall
+                      roomUrl={dailyRoomUrl}
+                      token={dailyToken}
+                      isAdmin={false}
+                      onLeave={() => {
+                        setStreamingActive(false);
+                        setDailyToken(null);
+                        setDailyRoomUrl(null);
+                      }}
+                    />
                   </div>
                   <div className="p-4 text-center">
                     <p className="text-white/80 text-sm mb-3">
