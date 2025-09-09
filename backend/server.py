@@ -349,9 +349,11 @@ class CatalogProductCreate(BaseModel):
 class CatalogProductUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
+    material: Optional[str] = None
     category_id: Optional[str] = None
     price: Optional[float] = None
     sizes: Optional[List[str]] = None
+    colors: Optional[List[str]] = None
     image_url: Optional[str] = None
     additional_images: Optional[List[str]] = None
     stock_quantity: Optional[int] = None
