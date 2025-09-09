@@ -5562,7 +5562,7 @@ function App() {
                     <div
                       key={product.id}
                       onClick={() => {
-                        setSelectedProduct(product);
+                        setSelectedCatalogProduct(product);
                         setShowProductDetail(true);
                         setSelectedProductSize(product.sizes?.[0] || 'OneSize');
                       }}
