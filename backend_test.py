@@ -9686,20 +9686,20 @@ TIMEZONE BUG ANALYSIS COMPLETE:
             # STEP 1: Get or create a test category for products
             print("  📂 STEP 1: Setting up test category...")
             
-            # Get existing categories
-            categories_response = requests.get(f"{self.api_url}/categories", timeout=10)
+            # Get main categories (required for hierarchical system)
+            categories_response = requests.get(f"{self.api_url}/categories/main", timeout=10)
             if categories_response.status_code != 200:
-                self.log_test("Material Selection - Category Setup", False, f"Failed to get categories: {categories_response.status_code}")
+                self.log_test("Material Selection - Category Setup", False, f"Failed to get main categories: {categories_response.status_code}")
                 return False
             
             categories = categories_response.json()
             test_category_id = categories[0]["id"] if categories else None
             
             if not test_category_id:
-                self.log_test("Material Selection - Category Setup", False, "No categories available for testing")
+                self.log_test("Material Selection - Category Setup", False, "No main categories available for testing")
                 return False
             
-            self.log_test("Material Selection - Category Setup", True, f"Using category ID: {test_category_id}")
+            self.log_test("Material Selection - Category Setup", True, f"Using main category ID: {test_category_id}")
             
             # STEP 2: Test product creation with "Baumwolle" material
             print("  🧵 STEP 2: Creating product with 'Baumwolle' material...")
