@@ -692,6 +692,8 @@ function App() {
     if (files.length > 0) {
       uploadMediaFiles(files);
     }
+    // Reset the input so the same file can be selected again
+    e.target.value = '';
   };
 
   // Remove media file
