@@ -9999,6 +9999,10 @@ TIMEZONE BUG ANALYSIS COMPLETE:
         print("\n🏷️ NEW: HIERARCHICAL CATEGORY SYSTEM TESTING...")
         hierarchical_category_success = self.test_hierarchical_category_system()
 
+        # MATERIAL SELECTION FEATURE TEST (Review Request)
+        print("\n🧵 MATERIAL SELECTION FEATURE TESTING...")
+        material_selection_success = self.test_material_selection_feature()
+
         # CRITICAL PRIORITY #1: CATALOG VISIBILITY BUG FIXES (Previous Review Request)
         print("\n🛍️ CRITICAL PRIORITY #1: CATALOG VISIBILITY BUG FIXES...")
         catalog_fixes_success = self.test_catalog_visibility_bug_fixes()
