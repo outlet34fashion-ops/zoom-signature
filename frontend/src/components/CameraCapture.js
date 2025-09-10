@@ -91,15 +91,39 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
       
       if (videoRef.current) {
         videoRef.current.srcObject = newStream;
-        videoRef.current.onloadedmetadata = () => {
-          const videoWidth = videoRef.current.videoWidth;
-          const videoHeight = videoRef.current.videoHeight;
-          console.log('📷 Camera ready! Resolution:', videoWidth, 'x', videoHeight);
-          console.log('📷 Video tracks:', newStream.getVideoTracks().map(track => ({
-            label: track.label,
-            settings: track.getSettings()
-          })));
-          setIsCameraReady(true);
+        
+        // Ensure video plays and set ready state
+        videoRef.current.onloadedmetadata = async () => {
+          try {
+            // Force play the video
+            await videoRef.current.play();
+            const videoWidth = videoRef.current.videoWidth;
+            const videoHeight = videoRef.current.videoHeight;
+            console.log('📷 Camera ready! Resolution:', videoWidth, 'x', videoHeight);
+            console.log('📷 Video tracks:', newStream.getVideoTracks().map(track => ({
+              label: track.label,
+              settings: track.getSettings()
+            })));
+            setIsCameraReady(true);
+          } catch (playError) {
+            console.warn('⚠️ Video autoplay failed (browser restriction):', playError.message);
+            // Still set ready even if autoplay fails - user can manually start
+            setIsCameraReady(true);
+          }
+        };
+
+        // Additional event listeners for debugging
+        videoRef.current.oncanplay = () => {
+          console.log('📷 Video can play');
+        };
+
+        videoRef.current.onplaying = () => {
+          console.log('📷 Video is playing');
+        };
+
+        videoRef.current.onerror = (error) => {
+          console.error('📷 Video error:', error);
+          setCameraError('Video-Wiedergabe fehlgeschlagen');
         };
       }
     } catch (error) {
