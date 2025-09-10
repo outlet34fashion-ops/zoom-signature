@@ -2297,35 +2297,69 @@ async def send_reminder_notifications():
 # ==============================================
 
 # Categories - Public Endpoints
-@api_router.get("/categories", response_model=List[Category])
+@api_router.get("/categories", response_model=List[CategoryWithCount])
 async def get_categories():
-    """Get all categories (public)"""
+    """Get all categories with product counts (public)"""
     try:
         categories = await db.categories.find().sort("sort_order", 1).to_list(length=None)
-        return [Category(**cat) for cat in categories]
+        
+        # Add product counts to each category
+        categories_with_counts = []
+        for cat in categories:
+            # Count products in this category (main category or subcategory)
+            if cat.get("is_main_category", False):
+                # For main categories, count products that have this as main_category_id
+                product_count = await db.products.count_documents({"main_category_id": cat["id"]})
+            else:
+                # For subcategories, count products that have this as sub_category_id
+                product_count = await db.products.count_documents({"sub_category_id": cat["id"]})
+            
+            cat_with_count = CategoryWithCount(**cat)
+            cat_with_count.product_count = product_count
+            categories_with_counts.append(cat_with_count)
+        
+        return categories_with_counts
     except Exception as e:
         logging.error(f"Error getting categories: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to get categories")
 
-@api_router.get("/categories/main", response_model=List[Category])
+@api_router.get("/categories/main", response_model=List[CategoryWithCount])
 async def get_main_categories():
-    """Get only main categories (Hauptkategorien)"""
+    """Get only main categories with product counts (Hauptkategorien)"""
     try:
         categories = await db.categories.find({"is_main_category": True}).sort("sort_order", 1).to_list(length=None)
-        return [Category(**cat) for cat in categories]
+        
+        # Add product counts to each main category
+        categories_with_counts = []
+        for cat in categories:
+            product_count = await db.products.count_documents({"main_category_id": cat["id"]})
+            cat_with_count = CategoryWithCount(**cat)
+            cat_with_count.product_count = product_count
+            categories_with_counts.append(cat_with_count)
+        
+        return categories_with_counts
     except Exception as e:
         logging.error(f"Error getting main categories: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to get main categories")
 
-@api_router.get("/categories/sub/{parent_id}", response_model=List[Category])
+@api_router.get("/categories/sub/{parent_id}", response_model=List[CategoryWithCount])
 async def get_subcategories(parent_id: str):
-    """Get subcategories for a main category"""
+    """Get subcategories for a main category with product counts"""
     try:
         categories = await db.categories.find({
             "parent_category_id": parent_id,
             "is_main_category": False
         }).sort("sort_order", 1).to_list(length=None)
-        return [Category(**cat) for cat in categories]
+        
+        # Add product counts to each subcategory
+        categories_with_counts = []
+        for cat in categories:
+            product_count = await db.products.count_documents({"sub_category_id": cat["id"]})
+            cat_with_count = CategoryWithCount(**cat)
+            cat_with_count.product_count = product_count
+            categories_with_counts.append(cat_with_count)
+        
+        return categories_with_counts
     except Exception as e:
         logging.error(f"Error getting subcategories: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to get subcategories")
