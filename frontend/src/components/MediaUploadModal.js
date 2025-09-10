@@ -41,10 +41,10 @@ const MediaUploadModal = ({ isOpen, onClose, onCameraSelect, onFileSelect }) => 
             <div className="text-4xl">📷</div>
             <div className="text-left flex-1">
               <h4 className="text-lg font-semibold text-gray-800 group-hover:text-blue-600">
-                Kamera
+                Foto aufnehmen
               </h4>
               <p className="text-sm text-gray-600">
-                Foto direkt aufnehmen
+                Kamera verwenden für direkte Aufnahme
               </p>
             </div>
             <div className="text-blue-400 group-hover:text-blue-600 text-xl">→</div>
@@ -55,10 +55,10 @@ const MediaUploadModal = ({ isOpen, onClose, onCameraSelect, onFileSelect }) => 
             onClick={handleFileSelect}
             className="w-full flex items-center space-x-4 p-4 border-2 border-gray-200 rounded-lg hover:border-green-400 hover:bg-green-50 transition-all duration-100 group active:scale-95"
           >
-            <div className="text-4xl">🖼️</div>
+            <div className="text-4xl">📁</div>
             <div className="text-left flex-1">
               <h4 className="text-lg font-semibold text-gray-800 group-hover:text-green-600">
-                Foto- und Videomediathek
+                Datei einfügen
               </h4>
               <p className="text-sm text-gray-600">
                 Dateien vom Gerät auswählen
@@ -68,10 +68,10 @@ const MediaUploadModal = ({ isOpen, onClose, onCameraSelect, onFileSelect }) => 
           </button>
         </div>
 
-        {/* Quick Action Hint */}
-        <div className="px-6 pb-4">
-          <p className="text-xs text-gray-500 text-center">
-            Schnell zwischen den Optionen wechseln
+        {/* Instructions */}
+        <div className="px-6 pb-4 border-t border-gray-100">
+          <p className="text-xs text-gray-500 text-center mt-3">
+            📱 Smartphone & 💻 Desktop kompatibel
           </p>
         </div>
       </div>
