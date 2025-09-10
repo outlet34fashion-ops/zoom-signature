@@ -230,7 +230,7 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
               {/* Capture Button */}
               <button
                 onClick={capturePhoto}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-full text-lg font-semibold transition-colors duration-200 flex items-center space-x-2 shadow-lg"
+                className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-full text-lg font-semibold transition-all duration-200 flex items-center space-x-2 shadow-lg active:scale-95"
               >
                 <span className="text-2xl">📸</span>
                 <span>Foto aufnehmen</span>
@@ -244,6 +244,13 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
               >
                 <span className="text-xl">✕</span>
               </button>
+            </div>
+            
+            {/* Instructions */}
+            <div className="mt-3 text-center">
+              <p className="text-sm text-gray-600">
+                📷 Tippen Sie auf "Foto aufnehmen" um ein Bild zu erstellen
+              </p>
             </div>
           </div>
         )}
