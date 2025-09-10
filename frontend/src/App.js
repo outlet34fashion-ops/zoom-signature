@@ -7395,6 +7395,14 @@ function App() {
       )}
       
       </div> {/* Close the padding div */}
+      
+      {/* Color Selection Modal */}
+      <ColorModal 
+        isOpen={showColorModal}
+        onClose={() => setShowColorModal(false)}
+        selectedColors={newProductData.colors}
+        onColorChange={(colors) => setNewProductData({ ...newProductData, colors })}
+      />
     </div>
   );
 }
