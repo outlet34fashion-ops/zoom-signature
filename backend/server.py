@@ -332,6 +332,19 @@ class Category(BaseModel):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
+class CategoryWithCount(BaseModel):
+    id: str
+    name: str
+    description: Optional[str] = None
+    icon: Optional[str] = None
+    parent_category_id: Optional[str] = None
+    is_main_category: bool = False
+    sort_order: int = 0
+    is_active: bool = True
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+    product_count: int = 0
+
 class CategoryCreate(BaseModel):
     name: str
     description: str = ""
