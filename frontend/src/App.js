@@ -17,6 +17,8 @@ import SimpleVideoStreaming from './components/streaming/SimpleVideoStreaming';
 import ColorModal, { getColorValue } from './components/ColorModal';
 import MaterialModal from './components/MaterialModal';
 import SizeModal from './components/SizeModal';
+import CameraCapture from './components/CameraCapture';
+import MediaUploadModal from './components/MediaUploadModal';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
