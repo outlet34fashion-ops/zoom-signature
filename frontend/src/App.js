@@ -485,16 +485,6 @@ function App() {
     }
   };
 
-  // Enhanced file input handler with reset
-  const handleFileInput = (e) => {
-    const files = Array.from(e.target.files);
-    if (files.length > 0) {
-      uploadMediaFiles(files);
-    }
-    // Reset the input so the same file can be selected again
-    e.target.value = '';
-  };
-
   // ==============================================
   // PRODUKTKATALOG FUNCTIONS
   // ==============================================
