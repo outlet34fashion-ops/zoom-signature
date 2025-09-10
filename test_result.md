@@ -490,11 +490,11 @@ metadata:
 
   - task: "WhatsApp-Style Camera Integration for Product Creation - BUG FIXES"
     implemented: true
-    working: true
+    working: false
     file: "/app/frontend/src/components/MediaUploadModal.js, /app/frontend/src/components/CameraCapture.js, /app/frontend/src/App.js"
-    stuck_count: 0
+    stuck_count: 1
     priority: "critical"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: false
         agent: "user"
