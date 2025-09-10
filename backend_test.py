@@ -10167,6 +10167,230 @@ TIMEZONE BUG ANALYSIS COMPLETE:
             self.log_test("Material Selection - Verification Exception", False, str(e))
             return False
 
+    def test_category_product_count_functionality(self):
+        """Test the new Category Product Count functionality"""
+        print("\n📊 Testing Category Product Count Functionality...")
+        
+        try:
+            # Test 1: GET /api/categories (should return categories with product_count)
+            print("  📋 Test 1: GET /api/categories with product counts...")
+            response = requests.get(f"{self.api_url}/categories", timeout=10)
+            
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                categories = response.json()
+                success = isinstance(categories, list)
+                details += f", Categories count: {len(categories)}"
+                
+                if success and len(categories) > 0:
+                    # Check if categories have product_count field
+                    first_category = categories[0]
+                    has_product_count = 'product_count' in first_category
+                    has_required_fields = all(field in first_category for field in ['id', 'name', 'product_count'])
+                    success = has_product_count and has_required_fields
+                    details += f", Has product_count: {has_product_count}, Has required fields: {has_required_fields}"
+                    
+                    if success:
+                        # Verify product_count is a number
+                        product_count_valid = isinstance(first_category['product_count'], int) and first_category['product_count'] >= 0
+                        success = product_count_valid
+                        details += f", Product count valid: {product_count_valid} (count: {first_category['product_count']})"
+            
+            self.log_test("Category Product Count - GET /api/categories", success, details)
+            
+            # Test 2: GET /api/categories/main (should return main categories with product counts)
+            print("  🏷️ Test 2: GET /api/categories/main with product counts...")
+            response = requests.get(f"{self.api_url}/categories/main", timeout=10)
+            
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            main_categories = []
+            if success:
+                main_categories = response.json()
+                success = isinstance(main_categories, list)
+                details += f", Main categories count: {len(main_categories)}"
+                
+                if success and len(main_categories) > 0:
+                    # Check if main categories have product_count field and is_main_category = True
+                    first_main_cat = main_categories[0]
+                    has_product_count = 'product_count' in first_main_cat
+                    is_main_category = first_main_cat.get('is_main_category', False)
+                    has_required_fields = all(field in first_main_cat for field in ['id', 'name', 'product_count', 'is_main_category'])
+                    success = has_product_count and is_main_category and has_required_fields
+                    details += f", Has product_count: {has_product_count}, Is main category: {is_main_category}, Has required fields: {has_required_fields}"
+            
+            self.log_test("Category Product Count - GET /api/categories/main", success, details)
+            
+            # Test 3: GET /api/categories/sub/{parent_id} (test with first main category if available)
+            if main_categories:
+                print("  📂 Test 3: GET /api/categories/sub/{parent_id} with product counts...")
+                parent_id = main_categories[0]['id']
+                response = requests.get(f"{self.api_url}/categories/sub/{parent_id}", timeout=10)
+                
+                success = response.status_code == 200
+                details = f"Status: {response.status_code}, Parent ID: {parent_id}"
+                
+                if success:
+                    subcategories = response.json()
+                    success = isinstance(subcategories, list)
+                    details += f", Subcategories count: {len(subcategories)}"
+                    
+                    if success and len(subcategories) > 0:
+                        # Check if subcategories have product_count field and is_main_category = False
+                        first_subcat = subcategories[0]
+                        has_product_count = 'product_count' in first_subcat
+                        is_not_main_category = not first_subcat.get('is_main_category', True)
+                        has_parent_id = first_subcat.get('parent_category_id') == parent_id
+                        has_required_fields = all(field in first_subcat for field in ['id', 'name', 'product_count'])
+                        success = has_product_count and is_not_main_category and has_parent_id and has_required_fields
+                        details += f", Has product_count: {has_product_count}, Is subcategory: {is_not_main_category}, Has parent ID: {has_parent_id}"
+                    elif success:
+                        # No subcategories found is also valid
+                        details += " (No subcategories found - valid result)"
+                
+                self.log_test("Category Product Count - GET /api/categories/sub/{parent_id}", success, details)
+            else:
+                self.log_test("Category Product Count - GET /api/categories/sub/{parent_id}", False, "No main categories available for testing")
+            
+            # Test 4: GET /api/categories/stats (should return total_products and hierarchical structure)
+            print("  📈 Test 4: GET /api/categories/stats with total products and hierarchy...")
+            response = requests.get(f"{self.api_url}/categories/stats", timeout=10)
+            
+            success = response.status_code == 200
+            details = f"Status: {response.status_code}"
+            
+            if success:
+                stats = response.json()
+                has_total_products = 'total_products' in stats
+                has_main_categories = 'main_categories' in stats
+                success = has_total_products and has_main_categories
+                details += f", Has total_products: {has_total_products}, Has main_categories: {has_main_categories}"
+                
+                if success:
+                    total_products = stats['total_products']
+                    main_categories_stats = stats['main_categories']
+                    
+                    # Verify total_products is a number
+                    total_products_valid = isinstance(total_products, int) and total_products >= 0
+                    main_categories_valid = isinstance(main_categories_stats, list)
+                    success = total_products_valid and main_categories_valid
+                    details += f", Total products valid: {total_products_valid} (count: {total_products}), Main categories valid: {main_categories_valid}"
+                    
+                    if success and len(main_categories_stats) > 0:
+                        # Check if main categories have subcategories field
+                        first_main_stat = main_categories_stats[0]
+                        has_subcategories = 'subcategories' in first_main_stat
+                        has_product_count = 'product_count' in first_main_stat
+                        success = has_subcategories and has_product_count
+                        details += f", Has subcategories: {has_subcategories}, Has product_count: {has_product_count}"
+                        
+                        if success:
+                            subcategories_list = first_main_stat['subcategories']
+                            subcategories_valid = isinstance(subcategories_list, list)
+                            success = subcategories_valid
+                            details += f", Subcategories list valid: {subcategories_valid} (count: {len(subcategories_list)})"
+            
+            self.log_test("Category Product Count - GET /api/categories/stats", success, details)
+            
+            # Test 5: Verify product counting logic by creating test data
+            print("  🧪 Test 5: Verify product counting logic with test data...")
+            
+            # First, let's check if we have any existing products and categories
+            products_response = requests.get(f"{self.api_url}/products", timeout=10)
+            categories_response = requests.get(f"{self.api_url}/categories", timeout=10)
+            
+            if products_response.status_code == 200 and categories_response.status_code == 200:
+                existing_products = products_response.json()
+                existing_categories = categories_response.json()
+                
+                # Calculate expected counts
+                category_counts = {}
+                for category in existing_categories:
+                    cat_id = category['id']
+                    is_main = category.get('is_main_category', False)
+                    
+                    if is_main:
+                        # Count products where main_category_id matches
+                        expected_count = sum(1 for p in existing_products if p.get('main_category_id') == cat_id)
+                    else:
+                        # Count products where sub_category_id matches
+                        expected_count = sum(1 for p in existing_products if p.get('sub_category_id') == cat_id)
+                    
+                    category_counts[cat_id] = expected_count
+                
+                # Verify the counts match what the API returns
+                counts_match = True
+                mismatched_categories = []
+                
+                for category in existing_categories:
+                    cat_id = category['id']
+                    api_count = category.get('product_count', -1)
+                    expected_count = category_counts.get(cat_id, 0)
+                    
+                    if api_count != expected_count:
+                        counts_match = False
+                        mismatched_categories.append(f"{category['name']}: API={api_count}, Expected={expected_count}")
+                
+                if counts_match:
+                    self.log_test("Category Product Count - Logic Verification", True, f"All category product counts match expected values. Total categories verified: {len(existing_categories)}")
+                else:
+                    self.log_test("Category Product Count - Logic Verification", False, f"Product count mismatches found: {', '.join(mismatched_categories[:3])}")
+            else:
+                self.log_test("Category Product Count - Logic Verification", False, "Could not retrieve products or categories for verification")
+            
+            # Test 6: Test with hierarchical category structure
+            print("  🌳 Test 6: Test hierarchical category structure...")
+            
+            # Get stats again to test hierarchical structure
+            stats_response = requests.get(f"{self.api_url}/categories/stats", timeout=10)
+            
+            if stats_response.status_code == 200:
+                stats_data = stats_response.json()
+                main_cats = stats_data.get('main_categories', [])
+                
+                hierarchy_valid = True
+                hierarchy_details = []
+                
+                for main_cat in main_cats:
+                    main_name = main_cat.get('name', 'Unknown')
+                    main_count = main_cat.get('product_count', 0)
+                    subcats = main_cat.get('subcategories', [])
+                    
+                    # Verify each subcategory has proper structure
+                    for subcat in subcats:
+                        if not all(field in subcat for field in ['id', 'name', 'product_count']):
+                            hierarchy_valid = False
+                            hierarchy_details.append(f"Subcategory missing fields in {main_name}")
+                        
+                        if subcat.get('parent_category_id') != main_cat.get('id'):
+                            hierarchy_valid = False
+                            hierarchy_details.append(f"Subcategory parent_id mismatch in {main_name}")
+                    
+                    hierarchy_details.append(f"{main_name}: {main_count} products, {len(subcats)} subcategories")
+                
+                if hierarchy_valid:
+                    self.log_test("Category Product Count - Hierarchical Structure", True, f"Hierarchical structure valid. {'; '.join(hierarchy_details[:3])}")
+                else:
+                    self.log_test("Category Product Count - Hierarchical Structure", False, f"Hierarchical structure issues: {'; '.join(hierarchy_details[:3])}")
+            else:
+                self.log_test("Category Product Count - Hierarchical Structure", False, "Could not retrieve category stats for hierarchy test")
+            
+            # Calculate success rate for category product count tests
+            category_tests = [r for r in self.test_results if 'Category Product Count' in r['name']]
+            category_tests_recent = category_tests[-6:]  # Get the last 6 category tests
+            category_success_count = sum(1 for test in category_tests_recent if test['success'])
+            
+            print(f"  📊 Category Product Count Tests: {category_success_count}/{len(category_tests_recent)} passed")
+            
+            return category_success_count == len(category_tests_recent)
+            
+        except Exception as e:
+            self.log_test("Category Product Count - Exception", False, str(e))
+            return False
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("🚀 Starting Live Shopping App Backend API Tests")
