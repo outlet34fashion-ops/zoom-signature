@@ -196,6 +196,8 @@ function App() {
   const [showColorModal, setShowColorModal] = useState(false);
   const [showMaterialModal, setShowMaterialModal] = useState(false);
   const [showSizeModal, setShowSizeModal] = useState(false);
+  const [showMediaUploadModal, setShowMediaUploadModal] = useState(false);
+  const [showCameraCapture, setShowCameraCapture] = useState(false);
   
   // Media Upload States
   const [productMediaFiles, setProductMediaFiles] = useState([]);
