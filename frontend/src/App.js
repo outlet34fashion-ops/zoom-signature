@@ -7440,6 +7440,21 @@ function App() {
         selectedSizes={newProductData.sizes}
         onSizeChange={(sizes) => setNewProductData({ ...newProductData, sizes })}
       />
+      
+      {/* Media Upload Modal */}
+      <MediaUploadModal 
+        isOpen={showMediaUploadModal}
+        onClose={() => setShowMediaUploadModal(false)}
+        onCameraSelect={() => setShowCameraCapture(true)}
+        onFileSelect={handleFileSelection}
+      />
+      
+      {/* Camera Capture Modal */}
+      <CameraCapture 
+        isOpen={showCameraCapture}
+        onClose={() => setShowCameraCapture(false)}
+        onCapture={handleCameraCapture}
+      />
     </div>
   );
 }
