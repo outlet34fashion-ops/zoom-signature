@@ -490,6 +490,7 @@ function App() {
   // Load subcategories for a main category
   const loadSubCategories = async (mainCategoryId) => {
     try {
+      // Load subcategories with product counts
       const response = await axios.get(`${API}/categories/sub/${mainCategoryId}`);
       setSubCategories(response.data);
     } catch (error) {
