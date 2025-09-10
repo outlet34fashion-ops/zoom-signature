@@ -130,7 +130,7 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
     setIsCameraReady(false);
   }, [stream]);
 
-  const capturePhoto = () => {
+  const capturePhoto = async () => {
     if (!videoRef.current || !canvasRef.current || !isCameraReady) {
       alert('❌ Kamera ist nicht bereit. Bitte warten Sie, bis die Kamera geladen ist.');
       return;
@@ -141,33 +141,55 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
       const canvas = canvasRef.current;
       const context = canvas.getContext('2d');
 
-      // Set canvas dimensions to match video
-      canvas.width = video.videoWidth || 1920;
-      canvas.height = video.videoHeight || 1080;
+      // Set canvas dimensions to match video (with fallbacks)
+      const videoWidth = video.videoWidth || 1280;
+      const videoHeight = video.videoHeight || 720;
+      
+      canvas.width = videoWidth;
+      canvas.height = videoHeight;
+
+      console.log('📸 Capturing photo:', videoWidth, 'x', videoHeight);
 
       // Draw the video frame to canvas
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-      // Convert to blob with higher quality
-      canvas.toBlob((blob) => {
-        if (blob) {
-          // Create a File object from the blob
-          const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-          const file = new File([blob], `camera-photo-${timestamp}.jpg`, {
-            type: 'image/jpeg',
-            lastModified: Date.now()
-          });
-          
-          console.log('📷 Photo captured:', file.name, file.size, 'bytes');
-          onCapture(file);
-          handleClose();
-        } else {
-          alert('❌ Fehler beim Erfassen des Fotos. Bitte versuchen Sie es erneut.');
-        }
-      }, 'image/jpeg', 0.95); // Higher quality
+      // Convert to blob with error handling
+      const capturePromise = new Promise((resolve, reject) => {
+        canvas.toBlob((blob) => {
+          if (blob && blob.size > 0) {
+            resolve(blob);
+          } else {
+            reject(new Error('Foto-Erstellung fehlgeschlagen'));
+          }
+        }, 'image/jpeg', 0.92); // High quality
+      });
+
+      const blob = await capturePromise;
+      
+      // Create a File object from the blob
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const file = new File([blob], `camera-photo-${timestamp}.jpg`, {
+        type: 'image/jpeg',
+        lastModified: Date.now()
+      });
+      
+      console.log('✅ Photo captured successfully:', file.name, file.size, 'bytes');
+      
+      // Show immediate feedback
+      const captureButton = document.querySelector('[data-capture-button]');
+      if (captureButton) {
+        const originalText = captureButton.innerHTML;
+        captureButton.innerHTML = '<span class="text-2xl">✅</span><span>Foto erfasst!</span>';
+        setTimeout(() => {
+          captureButton.innerHTML = originalText;
+        }, 1000);
+      }
+      
+      onCapture(file);
+      handleClose();
 
     } catch (error) {
-      console.error('Error capturing photo:', error);
+      console.error('🚨 Photo capture error:', error);
       alert('❌ Fehler beim Aufnehmen des Fotos. Bitte versuchen Sie es erneut.');
     }
   };
