@@ -2364,7 +2364,48 @@ async def get_subcategories(parent_id: str):
         logging.error(f"Error getting subcategories: {str(e)}")
         raise HTTPException(status_code=500, detail="Failed to get subcategories")
 
-@api_router.get("/categories/{category_id}", response_model=Category)
+@api_router.get("/categories/stats")
+async def get_category_stats():
+    """Get category statistics including total product count"""
+    try:
+        # Get total product count
+        total_products = await db.products.count_documents({})
+        
+        # Get main categories with product counts
+        main_categories = await db.categories.find({"is_main_category": True}).sort("sort_order", 1).to_list(length=None)
+        main_categories_with_counts = []
+        
+        for cat in main_categories:
+            product_count = await db.products.count_documents({"main_category_id": cat["id"]})
+            cat_with_count = CategoryWithCount(**cat)
+            cat_with_count.product_count = product_count
+            
+            # Get subcategories for this main category
+            subcategories = await db.categories.find({
+                "parent_category_id": cat["id"],
+                "is_main_category": False
+            }).sort("sort_order", 1).to_list(length=None)
+            
+            subcategories_with_counts = []
+            for subcat in subcategories:
+                subcat_product_count = await db.products.count_documents({"sub_category_id": subcat["id"]})
+                subcat_with_count = CategoryWithCount(**subcat)
+                subcat_with_count.product_count = subcat_product_count
+                subcategories_with_counts.append(subcat_with_count)
+            
+            # Add subcategories to the response
+            cat_with_count_dict = cat_with_count.dict()
+            cat_with_count_dict["subcategories"] = subcategories_with_counts
+            main_categories_with_counts.append(cat_with_count_dict)
+        
+        return {
+            "total_products": total_products,
+            "main_categories": main_categories_with_counts
+        }
+    except Exception as e:
+        logging.error(f"Error getting category stats: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to get category statistics")
+
 async def get_category(category_id: str):
     """Get category by ID (public)"""
     try:
