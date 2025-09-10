@@ -463,18 +463,17 @@ function App() {
   };
 
   // Handle camera photo capture
-  const handleCameraCapture = (file) => {
-    // Add the captured photo to uploaded media
-    const newMedia = {
-      file: file,
-      preview: URL.createObjectURL(file),
-      type: file.type.startsWith('image/') ? 'image' : 'video'
-    };
-    
-    setNewProductData(prev => ({
-      ...prev,
-      media: [...prev.media, newMedia]
-    }));
+  const handleCameraCapture = async (file) => {
+    try {
+      // Upload the captured photo immediately
+      await uploadMediaFiles([file]);
+      
+      // Show success message
+      alert('📷 Foto erfolgreich aufgenommen und hochgeladen!');
+    } catch (error) {
+      console.error('Error uploading captured photo:', error);
+      alert('❌ Fehler beim Hochladen des Fotos. Bitte versuchen Sie es erneut.');
+    }
   };
 
   // Handle file selection from gallery
