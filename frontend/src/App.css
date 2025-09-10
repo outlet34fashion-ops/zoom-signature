@@ -17,6 +17,35 @@ body {
   min-height: 100vh;
 }
 
+/* Fast Modal Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0); 
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.15s ease-out;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.15s ease-out;
+}
+
+.App {
+  min-height: 100vh;
+}
+
 /* Professional Live Video Stream Styling */
 .live-video-display {
   position: relative;
