@@ -471,9 +471,13 @@ function App() {
       const response = await axios.get(`${API}/categories`);
       setCategories(response.data);
       
-      // Also load main categories separately
+      // Load main categories with product counts
       const mainCatResponse = await axios.get(`${API}/categories/main`);
       setMainCategories(mainCatResponse.data);
+      
+      // Load category statistics for total product count
+      const statsResponse = await axios.get(`${API}/categories/stats`);
+      setTotalProductCount(statsResponse.data.total_products);
       
     } catch (error) {
       console.error('Error loading categories:', error);
