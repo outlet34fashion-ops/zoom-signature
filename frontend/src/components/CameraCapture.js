@@ -283,6 +283,7 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
               {/* Capture Button */}
               <button
                 onClick={capturePhoto}
+                data-capture-button="true"
                 className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-full text-lg font-semibold transition-all duration-200 flex items-center space-x-2 shadow-lg active:scale-95"
               >
                 <span className="text-2xl">📸</span>
