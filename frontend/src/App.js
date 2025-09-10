@@ -462,6 +462,30 @@ function App() {
     }
   };
 
+  // Handle camera photo capture
+  const handleCameraCapture = (file) => {
+    // Add the captured photo to uploaded media
+    const newMedia = {
+      file: file,
+      preview: URL.createObjectURL(file),
+      type: file.type.startsWith('image/') ? 'image' : 'video'
+    };
+    
+    setNewProductData(prev => ({
+      ...prev,
+      media: [...prev.media, newMedia]
+    }));
+  };
+
+  // Handle file selection from gallery
+  const handleFileSelection = () => {
+    // Trigger the existing file input
+    const fileInput = document.getElementById('media-upload');
+    if (fileInput) {
+      fileInput.click();
+    }
+  };
+
   // ==============================================
   // PRODUKTKATALOG FUNCTIONS
   // ==============================================
