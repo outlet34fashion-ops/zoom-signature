@@ -10401,6 +10401,10 @@ TIMEZONE BUG ANALYSIS COMPLETE:
         print("\n🧵 PRIORITY #1: MATERIAL SELECTION FEATURE VERIFICATION...")
         material_verification_success = self.test_material_selection_verification()
 
+        # NEW: CATEGORY PRODUCT COUNT FUNCTIONALITY TESTING (Current Review Request)
+        print("\n📊 NEW: CATEGORY PRODUCT COUNT FUNCTIONALITY TESTING...")
+        category_count_success = self.test_category_product_count_functionality()
+
         # CRITICAL PRIORITY #0: NEW CATALOG FEATURES IMPLEMENTATION (Current Review Request)
         print("\n🛍️ CRITICAL PRIORITY #0: NEW CATALOG FEATURES IMPLEMENTATION...")
         new_catalog_features_success = self.test_new_catalog_features()
