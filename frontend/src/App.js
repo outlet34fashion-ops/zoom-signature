@@ -6116,9 +6116,12 @@ function App() {
                               onClick={() => {
                                 loadCatalogProducts(subCategory.id);
                               }}
-                              className="block w-full text-left px-3 py-1 text-sm text-gray-600 hover:text-pink-600 hover:bg-pink-50 rounded transition-colors duration-200"
+                              className="flex w-full text-left px-3 py-1 text-sm text-gray-600 hover:text-pink-600 hover:bg-pink-50 rounded transition-colors duration-200 items-center justify-between"
                             >
-                              {subCategory.name}
+                              <span>{subCategory.name}</span>
+                              <span className="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded-full ml-2">
+                                {subCategory.product_count || 0}
+                              </span>
                             </button>
                           ))}
                         </div>
