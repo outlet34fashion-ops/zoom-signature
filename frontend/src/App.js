@@ -7178,32 +7178,43 @@ function App() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Verfügbare Größen
                 </label>
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {['OneSize', 'AA60', 'AA65', 'AA70', 'AA75', 'oversize', 'XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'].map((size) => (
-                    <button
-                      key={size}
-                      type="button"
-                      onClick={() => {
-                        const sizes = [...newProductData.sizes];
-                        const index = sizes.indexOf(size);
-                        if (index > -1) {
-                          sizes.splice(index, 1);
-                        } else {
-                          sizes.push(size);
-                        }
-                        setNewProductData({ ...newProductData, sizes });
-                      }}
-                      className={`px-3 py-1 rounded-full text-sm font-medium transition-colors duration-200 ${
-                        newProductData.sizes.includes(size)
-                          ? 'bg-green-600 text-white'
-                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                      }`}
-                    >
-                      {size}
-                    </button>
-                  ))}
-                </div>
-                <p className="text-xs text-gray-500">Klicken Sie auf die Größen, um sie auszuwählen</p>
+                
+                {/* Size Selection Button */}
+                <button
+                  type="button"
+                  onClick={() => setShowSizeModal(true)}
+                  className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg"
+                >
+                  <span className="text-2xl">📏</span>
+                  <span className="font-medium">Größen-Übersicht öffnen ({newProductData.sizes.length} Größen gewählt)</span>
+                </button>
+                
+                {/* Selected Sizes Display */}
+                {newProductData.sizes.length > 0 && (
+                  <div className="mt-4">
+                    <h5 className="font-medium text-blue-800 mb-2">Gewählte Größen:</h5>
+                    <div className="flex flex-wrap gap-2">
+                      {newProductData.sizes.map((size, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center space-x-2 bg-blue-50 border border-blue-200 rounded-full px-3 py-1 text-sm"
+                        >
+                          <span className="text-blue-700 font-medium">{size}</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updatedSizes = newProductData.sizes.filter((_, i) => i !== index);
+                              setNewProductData({ ...newProductData, sizes: updatedSizes });
+                            }}
+                            className="text-blue-500 hover:text-blue-700 ml-1 font-bold"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
               
 
