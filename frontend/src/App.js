@@ -6879,19 +6879,44 @@ function App() {
                   📸 Bilder und Videos hinzufügen
                 </h4>
                 
-                {/* Upload Button - WhatsApp Style */}
-                <div className="text-center">
-                  <button
-                    type="button"
-                    onClick={() => setShowMediaUploadModal(true)}
-                    className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-4 rounded-lg transition-all duration-200 flex items-center justify-center space-x-3 shadow-lg"
+                {/* Upload Area - Combined Drag & Drop + Modal Options */}
+                <div className="space-y-4">
+                  {/* Primary Upload Button - WhatsApp Style */}
+                  <div className="text-center">
+                    <button
+                      type="button"
+                      onClick={() => setShowMediaUploadModal(true)}
+                      className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-4 rounded-lg transition-all duration-200 flex items-center justify-center space-x-3 shadow-lg"
+                    >
+                      <span className="text-2xl">📷</span>
+                      <span className="text-lg font-medium">Fotos & Videos hinzufügen</span>
+                    </button>
+                    <p className="text-sm text-gray-500 mt-2">
+                      Kamera verwenden oder aus Mediathek auswählen
+                    </p>
+                  </div>
+
+                  {/* Drag & Drop Area */}
+                  <div
+                    className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors duration-200 ${
+                      dragOver 
+                        ? 'border-green-400 bg-green-50' 
+                        : 'border-gray-300 hover:border-gray-400'
+                    }`}
+                    onDrop={handleFileDrop}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
                   >
-                    <span className="text-2xl">📷</span>
-                    <span className="text-lg font-medium">Fotos & Videos hinzufügen</span>
-                  </button>
-                  <p className="text-sm text-gray-500 mt-2">
-                    Kamera verwenden oder aus Mediathek auswählen
-                  </p>
+                    <div className="text-gray-500">
+                      <span className="text-3xl mb-2 block">📁</span>
+                      <p className="text-sm">
+                        <strong>Dateien hierher ziehen</strong> oder oben auf Button klicken
+                      </p>
+                      <p className="text-xs mt-1 text-gray-400">
+                        Unterstützt: JPG, PNG, GIF, MP4, MOV
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Hidden file input for gallery selection */}
