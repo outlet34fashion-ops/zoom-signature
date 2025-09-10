@@ -232,12 +232,15 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
 
   useEffect(() => {
     if (isOpen) {
+      console.log('🎥 Camera modal opened, starting camera...');
       startCamera();
     } else {
+      console.log('🎥 Camera modal closed, stopping camera...');
       stopCamera();
     }
 
     return () => {
+      console.log('🎥 Camera component cleanup');
       stopCamera();
     };
   }, [isOpen, startCamera, stopCamera]);
