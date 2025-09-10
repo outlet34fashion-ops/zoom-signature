@@ -6872,57 +6872,36 @@ function App() {
               <h3 className="text-xl font-bold text-gray-800">Neues Produkt erstellen</h3>
             </div>
             <div className="p-6 space-y-4">
-              {/* Media Upload Section - Ganz oben */}
+              {/* Media Upload Section - WhatsApp Style */}
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50">
                 <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                   📸 Bilder und Videos hinzufügen
                 </h4>
                 
-                {/* Drag & Drop Area */}
-                <div
-                  className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors duration-200 ${
-                    dragOver 
-                      ? 'border-green-400 bg-green-50' 
-                      : 'border-gray-300 hover:border-gray-400'
-                  }`}
-                  onDragOver={(e) => {
-                    e.preventDefault();
-                    setDragOver(true);
-                  }}
-                  onDragLeave={(e) => {
-                    e.preventDefault();
-                    setDragOver(false);
-                  }}
-                  onDrop={handleFileDrop}
-                >
-                  <div className="space-y-4">
-                    <div className="text-6xl text-gray-400">
-                      📁
-                    </div>
-                    <div>
-                      <p className="text-lg font-medium text-gray-700">
-                        Dateien hier hineinziehen oder klicken zum Auswählen
-                      </p>
-                      <p className="text-sm text-gray-500 mt-1">
-                        Unterstützt: Bilder (JPG, PNG, GIF) und Videos (MP4, MOV, AVI)
-                      </p>
-                    </div>
-                    <input
-                      type="file"
-                      multiple
-                      accept="image/*,video/*"
-                      onChange={handleFileInput}
-                      className="hidden"
-                      id="media-upload"
-                    />
-                    <label
-                      htmlFor="media-upload"
-                      className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg cursor-pointer transition-colors duration-200"
-                    >
-                      Dateien auswählen
-                    </label>
-                  </div>
+                {/* Upload Button - WhatsApp Style */}
+                <div className="text-center">
+                  <button
+                    type="button"
+                    onClick={() => setShowMediaUploadModal(true)}
+                    className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-4 rounded-lg transition-all duration-200 flex items-center justify-center space-x-3 shadow-lg"
+                  >
+                    <span className="text-2xl">📷</span>
+                    <span className="text-lg font-medium">Fotos & Videos hinzufügen</span>
+                  </button>
+                  <p className="text-sm text-gray-500 mt-2">
+                    Kamera verwenden oder aus Mediathek auswählen
+                  </p>
                 </div>
+
+                {/* Hidden file input for gallery selection */}
+                <input
+                  id="media-upload"
+                  type="file"
+                  multiple
+                  accept="image/*,video/*"
+                  onChange={handleFileInput}
+                  className="hidden"
+                />
 
                 {/* Uploaded Files Preview */}
                 {productMediaFiles.length > 0 && (
