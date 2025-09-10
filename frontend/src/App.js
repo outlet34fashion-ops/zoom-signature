@@ -7191,31 +7191,6 @@ function App() {
                   </div>
                 )}
               </div>
-                  <div className="mb-2">
-                    <p className="text-xs text-gray-600 mb-1">Ausgewählte Farben:</p>
-                    <div className="flex flex-wrap gap-1">
-                      {newProductData.colors.map((color, index) => (
-                        <span 
-                          key={index} 
-                          className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full flex items-center space-x-1"
-                        >
-                          <span>{color}</span>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const colors = newProductData.colors.filter((_, i) => i !== index);
-                              setNewProductData({ ...newProductData, colors });
-                            }}
-                            className="text-blue-600 hover:text-blue-800"
-                          >
-                            ×
-                          </button>
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
