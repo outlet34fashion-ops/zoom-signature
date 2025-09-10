@@ -7078,7 +7078,6 @@ function App() {
                     </div>
                   </div>
                 )}
-                <p className="text-xs text-gray-500">Wählen Sie vordefinierte Farben oder geben Sie eigene ein</p>
               </div>
               
               <div>
