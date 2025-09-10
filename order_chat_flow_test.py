@@ -14,7 +14,7 @@ import time
 from datetime import datetime
 
 class OrderChatFlowTester:
-    def __init__(self, base_url="https://liveshop-daily.preview.emergentagent.com"):
+    def __init__(self, base_url="https://streamstore-1.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.test_results = []
