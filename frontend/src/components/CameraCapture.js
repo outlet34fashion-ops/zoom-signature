@@ -259,7 +259,7 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
         </div>
 
         {/* Camera View */}
-        <div className="relative bg-black flex items-center justify-center" style={{ minHeight: '400px' }}>
+        <div className="relative bg-black flex items-center justify-center" style={{ minHeight: '400px', maxHeight: '500px' }}>
           {cameraError ? (
             <div className="text-center p-8">
               <div className="text-6xl text-red-500 mb-4">📷</div>
@@ -278,13 +278,22 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
                 autoPlay
                 playsInline
                 muted
-                className={`max-w-full max-h-full ${isCameraReady ? 'block' : 'hidden'}`}
-                style={{ transform: facingMode === 'user' ? 'scaleX(-1)' : 'none' }}
+                className={`w-full h-full object-cover ${isCameraReady ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`}
+                style={{ 
+                  transform: facingMode === 'user' ? 'scaleX(-1)' : 'none',
+                  minHeight: '400px',
+                  maxHeight: '500px'
+                }}
               />
               {!isCameraReady && (
-                <div className="text-center text-white">
-                  <div className="text-6xl mb-4">📷</div>
-                  <p className="text-lg">Kamera wird geladen...</p>
+                <div className="absolute inset-0 flex items-center justify-center text-center text-white bg-black bg-opacity-50">
+                  <div>
+                    <div className="text-6xl mb-4">📷</div>
+                    <p className="text-lg">Kamera wird geladen...</p>
+                    <div className="mt-4">
+                      <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                    </div>
+                  </div>
                 </div>
               )}
             </>
