@@ -192,6 +192,7 @@ function App() {
   const [customColor, setCustomColor] = useState('');
   const [showColorModal, setShowColorModal] = useState(false);
   const [showMaterialModal, setShowMaterialModal] = useState(false);
+  const [showSizeModal, setShowSizeModal] = useState(false);
   
   // Media Upload States
   const [productMediaFiles, setProductMediaFiles] = useState([]);
