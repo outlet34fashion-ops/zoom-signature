@@ -6088,14 +6088,23 @@ function App() {
                           // Load subcategories for this main category
                           loadSubCategories(mainCategory.id);
                         }}
-                        className={`w-full text-left px-4 py-2 rounded-lg font-bold text-sm transition-colors duration-200 flex items-center space-x-2 ${
+                        className={`w-full text-left px-4 py-2 rounded-lg font-bold text-sm transition-colors duration-200 flex items-center justify-between ${
                           selectedCategory?.id === mainCategory.id
                             ? 'bg-pink-600 text-white'
                             : 'bg-white text-black hover:bg-pink-100'
                         }`}
                       >
-                        <span className="text-lg">{mainCategory.icon}</span>
-                        <span>{mainCategory.name}</span>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-lg">{mainCategory.icon}</span>
+                          <span>{mainCategory.name}</span>
+                        </div>
+                        <span className={`text-xs px-2 py-1 rounded-full ${
+                          selectedCategory?.id === mainCategory.id
+                            ? 'bg-white bg-opacity-20 text-white'
+                            : 'bg-gray-100 text-gray-600'
+                        }`}>
+                          {mainCategory.product_count || 0}
+                        </span>
                       </button>
                       
                       {/* Subcategories (shown when main category is selected) */}
