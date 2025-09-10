@@ -7404,6 +7404,14 @@ function App() {
         selectedMaterial={newProductData.material}
         onMaterialChange={(material) => setNewProductData({ ...newProductData, material })}
       />
+      
+      {/* Size Selection Modal */}
+      <SizeModal 
+        isOpen={showSizeModal}
+        onClose={() => setShowSizeModal(false)}
+        selectedSizes={newProductData.sizes}
+        onSizeChange={(sizes) => setNewProductData({ ...newProductData, sizes })}
+      />
     </div>
   );
 }
