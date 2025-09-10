@@ -496,6 +496,9 @@ metadata:
     priority: "critical"
     needs_retesting: true
     status_history:
+      - working: false
+        agent: "user"
+        comment: "USER REPORTED CRITICAL BUGS: 1) 'foto aufnahmahme nicht möglich' (photo capture not possible) - Camera functionality is not working properly, 2) 'Umschalt muss schnell gehen wenn man Dateien auswählen möchte' (switching must be quick when you want to select files) - The switching between camera and file selection needs to be faster/smoother."
       - working: "NA"
         agent: "main"
         comment: "IMPLEMENTING: New WhatsApp-style Camera Integration functionality. Requirements: 1) MediaUploadModal with two options - 'Kamera' and 'Foto- und Videomediathek', 2) CameraCapture Component with full camera interface, front/back camera switching, live preview, and photo capture, 3) WhatsApp-style green gradient button replacing drag-and-drop area, 4) Integrated workflow where camera captures are automatically added to product media."
