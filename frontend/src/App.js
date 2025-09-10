@@ -676,6 +676,18 @@ function App() {
     }
   };
 
+  // Handle drag over
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setDragOver(true);
+  };
+
+  // Handle drag leave
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setDragOver(false);
+  };
+
   // Handle file input
   const handleFileInput = (e) => {
     const files = Array.from(e.target.files);
