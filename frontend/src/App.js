@@ -7060,56 +7060,34 @@ function App() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Verfügbare Materialien
                 </label>
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {[
-                    'Acryl',
-                    'Baumwolle', 
-                    'Baumwolle/Elasthan',
-                    'Baumwolle/Polyester',
-                    'Elasthan / Spandex (Stretch)',
-                    'Kaschmir',
-                    'Leinen',
-                    'Modal',
-                    'Polyester',
-                    'Seide',
-                    'Viskose',
-                    'Viskose/Polyester',
-                    'Wolle'
-                  ].map((material) => (
-                    <button
-                      key={material}
-                      type="button"
-                      onClick={() => {
-                        setNewProductData({ ...newProductData, material: material });
-                      }}
-                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
-                        newProductData.material === material
-                          ? 'bg-green-600 text-white'
-                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                      }`}
-                    >
-                      {material}
-                    </button>
-                  ))}
-                </div>
                 
-                {/* Manual Material Input */}
-                <div className="flex space-x-2 mb-2">
-                  <input
-                    type="text"
-                    value={newProductData.material}
-                    onChange={(e) => setNewProductData({ ...newProductData, material: e.target.value })}
-                    className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="Manuelle Material eingeben..."
-                  />
-                </div>
+                {/* Material Selection Button */}
+                <button
+                  type="button"
+                  onClick={() => setShowMaterialModal(true)}
+                  className="w-full bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg"
+                >
+                  <span className="text-2xl">🧵</span>
+                  <span className="font-medium">Material-Übersicht öffnen {newProductData.material ? `(${newProductData.material})` : '(Kein Material gewählt)'}</span>
+                </button>
                 
-                {/* Wählen Sie vordefinierte Farben oder geben Sie eigene ein */}
+                {/* Selected Material Display */}
                 {newProductData.material && (
-                  <div className="mt-2">
-                    <p className="text-sm text-gray-600">
-                      <strong>Gewähltes Material:</strong> {newProductData.material}
-                    </p>
+                  <div className="mt-4">
+                    <div className="flex items-center space-x-2 bg-green-50 border border-green-200 rounded-lg px-4 py-3">
+                      <span className="text-2xl">🧵</span>
+                      <div>
+                        <h5 className="font-medium text-green-800">Gewähltes Material:</h5>
+                        <p className="text-green-700 text-sm">{newProductData.material}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setNewProductData({ ...newProductData, material: '' })}
+                        className="ml-auto text-green-600 hover:text-green-800 font-bold text-lg"
+                      >
+                        ×
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
