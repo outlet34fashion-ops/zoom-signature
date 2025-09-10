@@ -169,6 +169,7 @@ function App() {
   const [showCreateProduct, setShowCreateProduct] = useState(false);
   const [mainCategories, setMainCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
+  const [totalProductCount, setTotalProductCount] = useState(0);
   const [newCategoryData, setNewCategoryData] = useState({
     name: '',
     description: '',
