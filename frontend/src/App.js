@@ -7419,6 +7419,8 @@ function App() {
         </div>
       )}
       
+      </div> {/* Close the padding div */}
+      
       {/* Color Selection Modal */}
       <ColorModal 
         isOpen={showColorModal}
@@ -7426,8 +7428,6 @@ function App() {
         selectedColors={newProductData.colors}
         onColorChange={(colors) => setNewProductData({ ...newProductData, colors })}
       />
-      
-      </div> {/* Close the padding div */}
     </div>
   );
 }
