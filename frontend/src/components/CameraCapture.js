@@ -51,33 +51,45 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
   }, [stream]);
 
   const capturePhoto = () => {
-    if (!videoRef.current || !canvasRef.current || !isCameraReady) return;
+    if (!videoRef.current || !canvasRef.current || !isCameraReady) {
+      alert('❌ Kamera ist nicht bereit. Bitte warten Sie, bis die Kamera geladen ist.');
+      return;
+    }
 
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    const context = canvas.getContext('2d');
+    try {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      const context = canvas.getContext('2d');
 
-    // Set canvas dimensions to match video
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+      // Set canvas dimensions to match video
+      canvas.width = video.videoWidth || 1920;
+      canvas.height = video.videoHeight || 1080;
 
-    // Draw the video frame to canvas
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      // Draw the video frame to canvas
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    // Convert to blob
-    canvas.toBlob((blob) => {
-      if (blob) {
-        // Create a File object from the blob
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const file = new File([blob], `camera-photo-${timestamp}.jpg`, {
-          type: 'image/jpeg',
-          lastModified: Date.now()
-        });
-        
-        onCapture(file);
-        handleClose();
-      }
-    }, 'image/jpeg', 0.9);
+      // Convert to blob with higher quality
+      canvas.toBlob((blob) => {
+        if (blob) {
+          // Create a File object from the blob
+          const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+          const file = new File([blob], `camera-photo-${timestamp}.jpg`, {
+            type: 'image/jpeg',
+            lastModified: Date.now()
+          });
+          
+          console.log('📷 Photo captured:', file.name, file.size, 'bytes');
+          onCapture(file);
+          handleClose();
+        } else {
+          alert('❌ Fehler beim Erfassen des Fotos. Bitte versuchen Sie es erneut.');
+        }
+      }, 'image/jpeg', 0.95); // Higher quality
+
+    } catch (error) {
+      console.error('Error capturing photo:', error);
+      alert('❌ Fehler beim Aufnehmen des Fotos. Bitte versuchen Sie es erneut.');
+    }
   };
 
   const switchCamera = () => {
