@@ -14,6 +14,7 @@ import ZoomLiveStream from './components/ZoomLiveStream';
 import DailyVideoCall from './components/streaming/DailyVideoCall';
 import StreamsList from './components/streaming/StreamsList';
 import SimpleVideoStreaming from './components/streaming/SimpleVideoStreaming';
+import { colorPalette, getColorValue } from '../color_functions';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
