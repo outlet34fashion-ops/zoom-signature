@@ -7383,6 +7383,14 @@ function App() {
         selectedColors={newProductData.colors}
         onColorChange={(colors) => setNewProductData({ ...newProductData, colors })}
       />
+      
+      {/* Material Selection Modal */}
+      <MaterialModal 
+        isOpen={showMaterialModal}
+        onClose={() => setShowMaterialModal(false)}
+        selectedMaterial={newProductData.material}
+        onMaterialChange={(material) => setNewProductData({ ...newProductData, material })}
+      />
     </div>
   );
 }
