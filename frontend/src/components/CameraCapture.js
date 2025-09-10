@@ -18,27 +18,76 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
         stream.getTracks().forEach(track => track.stop());
       }
 
-      const constraints = {
-        video: {
-          facingMode: facingMode,
-          width: { ideal: 1920 },
-          height: { ideal: 1080 }
+      // Try different constraint configurations for better compatibility
+      const constraints = [
+        // First try: specific facing mode
+        {
+          video: {
+            facingMode: facingMode,
+            width: { ideal: 1920, max: 1920 },
+            height: { ideal: 1080, max: 1080 }
+          },
+          audio: false
         },
-        audio: false
-      };
+        // Fallback: any camera
+        {
+          video: {
+            width: { ideal: 1920, max: 1920 },
+            height: { ideal: 1080, max: 1080 }
+          },
+          audio: false
+        },
+        // Final fallback: basic constraints
+        {
+          video: true,
+          audio: false
+        }
+      ];
 
-      const newStream = await navigator.mediaDevices.getUserMedia(constraints);
+      let newStream = null;
+      let lastError = null;
+
+      for (const constraint of constraints) {
+        try {
+          console.log('📷 Attempting camera access with constraints:', constraint);
+          newStream = await navigator.mediaDevices.getUserMedia(constraint);
+          console.log('✅ Camera access successful');
+          break;
+        } catch (error) {
+          console.log('❌ Camera constraint failed:', error.message);
+          lastError = error;
+        }
+      }
+
+      if (!newStream) {
+        throw lastError || new Error('Kamerazugriff fehlgeschlagen');
+      }
+
       setStream(newStream);
       
       if (videoRef.current) {
         videoRef.current.srcObject = newStream;
         videoRef.current.onloadedmetadata = () => {
+          console.log('📷 Camera ready, video dimensions:', 
+            videoRef.current.videoWidth, 'x', videoRef.current.videoHeight);
           setIsCameraReady(true);
         };
       }
     } catch (error) {
       console.error('Camera access error:', error);
-      setCameraError('Kamerazugriff fehlgeschlagen. Bitte erlauben Sie den Kamerazugriff in Ihrem Browser.');
+      let errorMessage = 'Kamerazugriff fehlgeschlagen. ';
+      
+      if (error.name === 'NotAllowedError') {
+        errorMessage += 'Bitte erlauben Sie den Kamerazugriff in Ihrem Browser.';
+      } else if (error.name === 'NotFoundError') {
+        errorMessage += 'Keine Kamera gefunden. Bitte stellen Sie sicher, dass eine Kamera angeschlossen ist.';
+      } else if (error.name === 'NotReadableError') {
+        errorMessage += 'Kamera wird bereits von einer anderen Anwendung verwendet.';
+      } else {
+        errorMessage += `Fehler: ${error.message}`;
+      }
+      
+      setCameraError(errorMessage);
     }
   }, [facingMode, stream]);
 
