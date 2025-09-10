@@ -187,6 +187,7 @@ function App() {
   });
   
   const [customColor, setCustomColor] = useState('');
+  const [showColorModal, setShowColorModal] = useState(false);
   
   // Media Upload States
   const [productMediaFiles, setProductMediaFiles] = useState([]);
