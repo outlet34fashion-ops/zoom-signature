@@ -19,17 +19,17 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
       }
 
       // Try different constraint configurations for better compatibility
-      const constraints = [
-        // First try: specific facing mode
+      const constraintSets = [
+        // Mobile-optimized constraints (try first on mobile)
         {
           video: {
             facingMode: facingMode,
-            width: { ideal: 1920, max: 1920 },
-            height: { ideal: 1080, max: 1080 }
+            width: { ideal: 1280, max: 1920 },
+            height: { ideal: 720, max: 1080 }
           },
           audio: false
         },
-        // Fallback: any camera
+        // Desktop-optimized constraints
         {
           video: {
             width: { ideal: 1920, max: 1920 },
@@ -37,7 +37,25 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
           },
           audio: false
         },
-        // Final fallback: basic constraints
+        // Basic mobile constraints
+        {
+          video: {
+            facingMode: 'environment', // Back camera first
+            width: { min: 640, ideal: 1280 },
+            height: { min: 480, ideal: 720 }
+          },
+          audio: false
+        },
+        // Front camera fallback
+        {
+          video: {
+            facingMode: 'user', // Front camera
+            width: { min: 640, ideal: 1280 },
+            height: { min: 480, ideal: 720 }
+          },
+          audio: false
+        },
+        // Final basic fallback
         {
           video: true,
           audio: false
@@ -47,20 +65,26 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
       let newStream = null;
       let lastError = null;
 
-      for (const constraint of constraints) {
+      console.log('📱 Detecting device type for camera optimization...');
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      console.log('📱 Device type:', isMobile ? 'Mobile' : 'Desktop');
+
+      for (let i = 0; i < constraintSets.length; i++) {
+        const constraint = constraintSets[i];
         try {
-          console.log('📷 Attempting camera access with constraints:', constraint);
+          console.log(`📷 Attempt ${i + 1}/${constraintSets.length} - Testing constraints:`, constraint);
           newStream = await navigator.mediaDevices.getUserMedia(constraint);
-          console.log('✅ Camera access successful');
+          console.log('✅ Camera access successful with constraint set', i + 1);
           break;
         } catch (error) {
-          console.log('❌ Camera constraint failed:', error.message);
+          console.log(`❌ Constraint set ${i + 1} failed:`, error.name, error.message);
           lastError = error;
+          // Continue to next constraint set
         }
       }
 
       if (!newStream) {
-        throw lastError || new Error('Kamerazugriff fehlgeschlagen');
+        throw lastError || new Error('Alle Kamera-Konfigurationen fehlgeschlagen');
       }
 
       setStream(newStream);
@@ -68,21 +92,28 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
       if (videoRef.current) {
         videoRef.current.srcObject = newStream;
         videoRef.current.onloadedmetadata = () => {
-          console.log('📷 Camera ready, video dimensions:', 
-            videoRef.current.videoWidth, 'x', videoRef.current.videoHeight);
+          const videoWidth = videoRef.current.videoWidth;
+          const videoHeight = videoRef.current.videoHeight;
+          console.log('📷 Camera ready! Resolution:', videoWidth, 'x', videoHeight);
+          console.log('📷 Video tracks:', newStream.getVideoTracks().map(track => ({
+            label: track.label,
+            settings: track.getSettings()
+          })));
           setIsCameraReady(true);
         };
       }
     } catch (error) {
-      console.error('Camera access error:', error);
+      console.error('🚨 Camera access error:', error);
       let errorMessage = 'Kamerazugriff fehlgeschlagen. ';
       
       if (error.name === 'NotAllowedError') {
         errorMessage += 'Bitte erlauben Sie den Kamerazugriff in Ihrem Browser.';
       } else if (error.name === 'NotFoundError') {
-        errorMessage += 'Keine Kamera gefunden. Bitte stellen Sie sicher, dass eine Kamera angeschlossen ist.';
+        errorMessage += 'Keine Kamera gefunden. Bitte stellen Sie sicher, dass eine Kamera verfügbar ist.';
       } else if (error.name === 'NotReadableError') {
-        errorMessage += 'Kamera wird bereits von einer anderen Anwendung verwendet.';
+        errorMessage += 'Kamera wird bereits verwendet. Bitte schließen Sie andere Apps, die die Kamera nutzen.';
+      } else if (error.name === 'OverconstrainedError') {
+        errorMessage += 'Kamera unterstützt die angeforderte Auflösung nicht.';
       } else {
         errorMessage += `Fehler: ${error.message}`;
       }
