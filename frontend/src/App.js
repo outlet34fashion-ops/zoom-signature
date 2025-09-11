@@ -695,6 +695,20 @@ function App() {
     }
   };
 
+  // Login as Customer
+  const loginAsCustomer = async () => {
+    try {
+      setIsAuthenticated(true);
+      // Set basic customer data
+      setCurrentCustomer({ customer_number: customerId });
+      localStorage.setItem('customerNumber', customerId);
+      console.log('Customer logged in:', customerId);
+    } catch (error) {
+      console.error('Error logging in customer:', error);
+      alert('Fehler beim Anmelden');
+    }
+  };
+
   // Upload Media Files
   const uploadMediaFiles = async (files) => {
     try {
