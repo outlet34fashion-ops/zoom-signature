@@ -136,6 +136,12 @@ function App() {
   const [dailyError, setDailyError] = useState(null);
   const [streamingActive, setStreamingActive] = useState(false);
 
+  // LiveKit Streaming States
+  const [currentRoomName, setCurrentRoomName] = useState(null);
+  const [livekitToken, setLivekitToken] = useState(null);
+  const [livekitUrl, setLivekitUrl] = useState(null);
+  const [livekitError, setLivekitError] = useState(null);
+
   // Live Shopping Calendar States
   const [events, setEvents] = useState([]);
   const [showCreateEvent, setShowCreateEvent] = useState(false);
