@@ -41,7 +41,7 @@ function App() {
   const [manualPrice, setManualPrice] = useState(''); // For manual price input
   const [quantity, setQuantity] = useState(1);
   const [showMobileChat, setShowMobileChat] = useState(false);
-  const [customerId] = useState(() => `customer_${Math.random().toString(36).substr(2, 9)}`);
+  const [customerId, setCustomerId] = useState(() => `customer_${Math.random().toString(36).substr(2, 9)}`);
   const [isAdminView, setIsAdminView] = useState(false);
   const [adminStats, setAdminStats] = useState({ 
     total_orders: 0, 
