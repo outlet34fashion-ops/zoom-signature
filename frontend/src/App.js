@@ -4155,17 +4155,7 @@ function App() {
                   </div>
 
                   {/* Management Buttons */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <button
-                      onClick={() => {
-                        setShowCreateCategory(true);
-                        setCatalogError('');
-                      }}
-                      className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center space-x-2"
-                    >
-                      <span>➕</span>
-                      <span>Neue Kategorie erstellen</span>
-                    </button>
+                  <div className="grid grid-cols-1 gap-4 mb-6">
                     <button
                       onClick={() => {
                         setShowCreateProduct(true);
@@ -4178,6 +4168,55 @@ function App() {
                       <span>➕</span>
                       <span>Neues Produkt erstellen</span>
                     </button>
+                  </div>
+
+                  {/* Editable Categories Section */}
+                  <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                    <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                      <span className="mr-2">🏷️</span>
+                      Kategorien verwalten
+                    </h4>
+                    
+                    {/* Load categories first if not loaded */}
+                    {categories.length === 0 ? (
+                      <div className="text-center py-4">
+                        <button
+                          onClick={loadCategories}
+                          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
+                        >
+                          Kategorien laden
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {categories.map((category, index) => (
+                          <CategoryEditItem 
+                            key={category.id || index}
+                            category={category}
+                            onUpdate={(updatedCategory) => updateCategory(updatedCategory)}
+                            onDelete={(categoryId) => deleteCategory(categoryId)}
+                          />
+                        ))}
+                        
+                        {/* Add new category inline */}
+                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+                          <input
+                            type="text"
+                            placeholder="Neue Kategorie hinzufügen..."
+                            className="w-full border-0 bg-transparent text-gray-600 placeholder-gray-400 focus:outline-none"
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter' && e.target.value.trim()) {
+                                createCategoryInline(e.target.value.trim());
+                                e.target.value = '';
+                              }
+                            }}
+                          />
+                          <div className="text-sm text-gray-500 mt-1">
+                            Enter drücken zum Hinzufügen
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   {/* Load Data Button */}
