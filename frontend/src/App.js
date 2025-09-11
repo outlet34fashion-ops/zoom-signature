@@ -7596,4 +7596,94 @@ function App() {
   );
 }
 
+// Category Edit Item Component
+const CategoryEditItem = ({ category, onUpdate, onDelete }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedName, setEditedName] = useState(category.name || '');
+  const [editedDescription, setEditedDescription] = useState(category.description || '');
+
+  const handleSave = () => {
+    if (editedName.trim()) {
+      onUpdate({
+        ...category,
+        name: editedName.trim(),
+        description: editedDescription.trim()
+      });
+      setIsEditing(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setEditedName(category.name || '');
+    setEditedDescription(category.description || '');
+    setIsEditing(false);
+  };
+
+  return (
+    <div className="bg-white border border-gray-200 rounded-lg p-3">
+      {isEditing ? (
+        <div className="space-y-2">
+          <input
+            type="text"
+            value={editedName}
+            onChange={(e) => setEditedName(e.target.value)}
+            className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
+            placeholder="Kategorie-Name"
+            autoFocus
+          />
+          <input
+            type="text"
+            value={editedDescription}
+            onChange={(e) => setEditedDescription(e.target.value)}
+            className="w-full border border-gray-300 rounded px-2 py-1 text-sm"
+            placeholder="Beschreibung (optional)"
+          />
+          <div className="flex justify-end space-x-2">
+            <button
+              onClick={handleCancel}
+              className="px-2 py-1 text-xs text-gray-600 hover:text-gray-800"
+            >
+              Abbrechen
+            </button>
+            <button
+              onClick={handleSave}
+              className="px-2 py-1 text-xs bg-blue-600 text-white hover:bg-blue-700 rounded"
+            >
+              Speichern
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="flex items-center justify-between">
+          <div className="flex-1">
+            <div className="font-medium text-gray-800">{category.name}</div>
+            {category.description && (
+              <div className="text-sm text-gray-600">{category.description}</div>
+            )}
+            {category.product_count !== undefined && (
+              <div className="text-xs text-gray-500">{category.product_count} Produkte</div>
+            )}
+          </div>
+          <div className="flex space-x-1 ml-2">
+            <button
+              onClick={() => setIsEditing(true)}
+              className="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded"
+              title="Bearbeiten"
+            >
+              ✏️
+            </button>
+            <button
+              onClick={() => onDelete(category.id)}
+              className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded"
+              title="Löschen"
+            >
+              🗑️
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default App;
