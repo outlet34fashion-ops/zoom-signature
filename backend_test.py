@@ -11946,12 +11946,12 @@ TIMEZONE BUG ANALYSIS COMPLETE:
 def main():
     tester = LiveShoppingAPITester()
     
-    # Run hierarchical category system tests as specified in review request
-    print("🚨 STARTING HIERARCHICAL CATEGORY SYSTEM TESTING")
-    print("Focus: Test new hierarchical category system implementation")
+    # Run category creation API tests as specified in German review request
+    print("🚨 STARTING CATEGORY CREATION API TESTING (German Review Request)")
+    print("Focus: Test backend API for category creation")
     print("=" * 80)
     
-    success = tester.test_hierarchical_category_system()
+    success = tester.test_category_creation_api()
     
     # Print final summary
     print("\n" + "=" * 80)
@@ -11962,15 +11962,13 @@ def main():
     print(f"Success Rate: {(tester.tests_passed/tester.tests_run*100):.1f}%")
     
     if success:
-        print("\n🎉 ALL HIERARCHICAL CATEGORY SYSTEM TESTS PASSED!")
-        print("✅ Enhanced Category Model working")
-        print("✅ Default Hierarchical Categories created")
-        print("✅ New Category API Endpoints working")
-        print("✅ Enhanced Product Model working")
-        print("✅ Product Creation with Category Hierarchy working")
-        print("✅ Category validation working")
-        print("✅ Backward compatibility working")
-        print("Backend hierarchical category system is working correctly.")
+        print("\n🎉 ALL CATEGORY CREATION API TESTS PASSED!")
+        print("✅ Main category creation working")
+        print("✅ Subcategory creation working")
+        print("✅ Category retrieval working")
+        print("✅ Field validation working")
+        print("✅ Error handling working")
+        print("Backend category creation API is working correctly.")
     else:
         failed_count = tester.tests_run - tester.tests_passed
         print(f"\n⚠️  {failed_count} test(s) failed. Please check the details above.")
