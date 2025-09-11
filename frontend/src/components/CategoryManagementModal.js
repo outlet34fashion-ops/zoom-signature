@@ -189,10 +189,10 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" style={{ zIndex: 9999 }}>
+      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden relative z-10">
         {/* Header */}
-        <div className="p-6 border-b bg-gradient-to-r from-blue-50 to-blue-100">
+        <div className="p-6 border-b bg-gradient-to-r from-blue-50 to-blue-100 relative z-10">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-3">
               <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
@@ -205,7 +205,8 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
             </div>
             <button
               onClick={onClose}
-              className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+              className="text-gray-500 hover:text-gray-700 text-2xl font-bold relative z-20"
+              style={{ pointerEvents: 'auto' }}
             >
               ×
             </button>
