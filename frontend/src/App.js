@@ -4186,24 +4186,7 @@ function App() {
                   </div>
 
                   {/* Management Buttons */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    {/* Category Management Button - Similar to Bild 2 */}
-                    <button
-                      onClick={() => setShowCategoryManagementModal(true)}
-                      className="bg-blue-600 hover:bg-blue-700 text-white p-6 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-between"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className="text-3xl">🏷️</div>
-                        <div className="text-left">
-                          <div className="text-xl font-bold">Kategorien</div>
-                          <div className="text-sm opacity-90">Haupt- und Unterkategorien verwalten</div>
-                        </div>
-                      </div>
-                      <div className="text-4xl font-bold">
-                        {categories.length}
-                      </div>
-                    </button>
-                    
+                  <div className="grid grid-cols-1 gap-4 mb-6">
                     <button
                       onClick={() => {
                         setShowCreateProduct(true);
