@@ -4058,6 +4058,13 @@ function App() {
                       <div className="bg-gray-50 rounded-lg p-4">
                         <h3 className="text-lg font-semibold mb-3 text-gray-800">🎥LiveKit Professional Streaming</h3>
                         <div className="text-center space-y-3">
+                          <div className="bg-yellow-100 border border-yellow-300 rounded-lg p-4">
+                            <p className="text-yellow-800">
+                              ⚠️ LiveKit Streaming temporär deaktiviert
+                            </p>
+                          </div>
+                          {/* Temporarily disabled LiveKit code */}
+                          {/*
                           <Button 
                             onClick={async () => {
                               try {
@@ -4098,6 +4105,7 @@ function App() {
                           >
                             🔴 SOFORT LIVE gehen
                           </Button>
+                          */}
                           <div className="text-sm text-gray-600">
                             HD-Qualität • Multi-Viewer • Stabil • FUNKTIONIERT GARANTIERT
                           </div>
