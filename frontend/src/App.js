@@ -7598,9 +7598,9 @@ function App() {
 
 // Category Edit Item Component
 const CategoryEditItem = ({ category, onUpdate, onDelete }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedName, setEditedName] = useState(category.name || '');
-  const [editedDescription, setEditedDescription] = useState(category.description || '');
+  const [isEditing, setIsEditing] = React.useState(false);
+  const [editedName, setEditedName] = React.useState(category.name || '');
+  const [editedDescription, setEditedDescription] = React.useState(category.description || '');
 
   const handleSave = () => {
     if (editedName.trim()) {
