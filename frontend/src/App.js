@@ -7463,6 +7463,16 @@ function App() {
       
       </div> {/* Close the padding div */}
       
+      {/* Category Management Modal */}
+      <CategoryManagementModal 
+        isOpen={showCategoryManagementModal}
+        onClose={() => setShowCategoryManagementModal(false)}
+        onUpdate={() => {
+          loadCategories();
+          loadCatalogProducts();
+        }}
+      />
+      
       {/* Color Selection Modal */}
       <ColorModal 
         isOpen={showColorModal}
