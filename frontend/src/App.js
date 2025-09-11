@@ -630,6 +630,65 @@ function App() {
     }
   };
 
+  // Create Category Inline
+  const createCategoryInline = async (name) => {
+    try {
+      setCatalogError('');
+      
+      const categoryData = {
+        name: name,
+        description: '',
+        image_url: '',
+        sort_order: categories.length
+      };
+      
+      await axios.post(`${API}/admin/categories`, categoryData);
+      
+      // Reload categories
+      await loadCategories();
+      
+    } catch (error) {
+      console.error('Error creating category:', error);
+      setCatalogError('Fehler beim Erstellen der Kategorie: ' + name);
+    }
+  };
+
+  // Update Category
+  const updateCategory = async (updatedCategory) => {
+    try {
+      setCatalogError('');
+      
+      await axios.put(`${API}/admin/categories/${updatedCategory.id}`, updatedCategory);
+      
+      // Reload categories
+      await loadCategories();
+      
+    } catch (error) {
+      console.error('Error updating category:', error);
+      setCatalogError('Fehler beim Aktualisieren der Kategorie');
+    }
+  };
+
+  // Delete Category
+  const deleteCategory = async (categoryId) => {
+    if (!window.confirm('Sind Sie sicher, dass Sie diese Kategorie löschen möchten?')) {
+      return;
+    }
+    
+    try {
+      setCatalogError('');
+      
+      await axios.delete(`${API}/admin/categories/${categoryId}`);
+      
+      // Reload categories
+      await loadCategories();
+      
+    } catch (error) {
+      console.error('Error deleting category:', error);
+      setCatalogError('Fehler beim Löschen der Kategorie');
+    }
+  };
+
   // Upload Media Files
   const uploadMediaFiles = async (files) => {
     try {
