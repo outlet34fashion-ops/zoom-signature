@@ -99,8 +99,8 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
         description: '',
         image_url: '',
         sort_order: subCategories.length,
-        parent_id: selectedMainCategory.id,
-        is_main: false
+        parent_category_id: selectedMainCategory.id,
+        is_main_category: false
       };
       
       await axios.post(`${API}/admin/categories`, categoryData);
