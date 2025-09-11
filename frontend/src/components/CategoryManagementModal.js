@@ -71,7 +71,7 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
         description: '',
         image_url: '',
         sort_order: mainCategories.length,
-        is_main: true
+        is_main_category: true
       };
       
       await axios.post(`${API}/admin/categories`, categoryData);
