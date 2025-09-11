@@ -19,6 +19,7 @@ import MaterialModal from './components/MaterialModal';
 import SizeModal from './components/SizeModal';
 import CameraCapture from './components/CameraCapture';
 import MediaUploadModal from './components/MediaUploadModal';
+import livekitService from './services/livekitService';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
