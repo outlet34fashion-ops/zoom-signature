@@ -237,9 +237,14 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                   }}
                 />
                 <button
-                  onClick={createMainCategory}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    createMainCategory();
+                  }}
                   disabled={!newMainCategory.trim() || loading}
-                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-3 py-2 rounded text-sm"
+                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-3 py-2 rounded text-sm relative z-10 cursor-pointer"
+                  style={{ pointerEvents: 'auto' }}
                 >
                   ➕
                 </button>
