@@ -10907,6 +10907,7 @@ TIMEZONE BUG ANALYSIS COMPLETE:
 
         # Critical functionality check
         critical_tests = [
+            ("🏷️ CATEGORY CREATION API (German Review)", category_creation_success),
             ("🛍️ NEW CATALOG FEATURES (Current Review)", new_catalog_features_success),
             ("🛍️ PRODUKTKATALOG BACKEND API (Previous Review)", produktkatalog_success),
             ("💬 CHAT REAL-TIME FUNCTIONALITY (German Review)", chat_realtime_success),
