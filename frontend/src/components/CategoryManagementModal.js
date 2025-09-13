@@ -97,8 +97,11 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
       console.log('📋 Category data:', categoryData);
       console.log('🔗 API URL:', `${API}/admin/categories`);
       
+      console.log('🌐 Making API request to:', `${API}/admin/categories`);
       const response = await axios.post(`${API}/admin/categories`, categoryData);
       console.log('✅ API Response:', response.data);
+      console.log('✅ Response status:', response.status);
+      console.log('✅ Response headers:', response.headers);
       
       // Success feedback
       alert(`✅ Hauptkategorie "${newMainCategory.trim()}" erfolgreich erstellt!`);
