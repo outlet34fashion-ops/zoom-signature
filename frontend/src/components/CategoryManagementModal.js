@@ -208,7 +208,12 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
     setEditingDescription('');
   };
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    console.log('🟦 CategoryManagementModal: Modal is closed (isOpen = false)');
+    return null;
+  }
+
+  console.log('🟦 CategoryManagementModal: Rendering modal (isOpen = true)');
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" style={{ zIndex: 9999 }}>
