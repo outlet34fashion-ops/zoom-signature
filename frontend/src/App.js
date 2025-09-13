@@ -7108,6 +7108,54 @@ function App() {
                 )}
               </div>
               
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Material-Eigenschaften (optional)
+                </label>
+                
+                {/* Material Properties Selection Button */}
+                <button
+                  type="button"
+                  onClick={() => setShowMaterialPropertiesModal(true)}
+                  className="w-full bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg"
+                >
+                  <span className="text-2xl">🏷️</span>
+                  <span className="font-medium">Material-Eigenschaften wählen {newProductData.material_properties.length > 0 ? `(${newProductData.material_properties.length} gewählt)` : '(Keine Eigenschaften gewählt)'}</span>
+                </button>
+                
+                {/* Selected Properties Display */}
+                {newProductData.material_properties.length > 0 && (
+                  <div className="mt-4">
+                    <div className="bg-purple-50 border border-purple-200 rounded-lg px-4 py-3">
+                      <h5 className="font-medium text-purple-800 mb-2 flex items-center space-x-2">
+                        <span className="text-2xl">🏷️</span>
+                        <span>Gewählte Eigenschaften:</span>
+                      </h5>
+                      <div className="flex flex-wrap gap-2">
+                        {newProductData.material_properties.map((property, index) => (
+                          <div
+                            key={index}
+                            className="bg-white border border-purple-300 rounded-full px-3 py-1 text-sm text-purple-700 flex items-center space-x-2"
+                          >
+                            <span>{property}</span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const updatedProperties = newProductData.material_properties.filter((_, i) => i !== index);
+                                setNewProductData({ ...newProductData, material_properties: updatedProperties });
+                              }}
+                              className="text-purple-500 hover:text-purple-700 font-bold text-sm"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
