@@ -60,11 +60,16 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
   };
 
   const createMainCategory = async () => {
-    if (!newMainCategory.trim()) return;
+    console.log('🔵 createMainCategory called:', newMainCategory);
+    if (!newMainCategory.trim()) {
+      console.log('❌ No category name provided');
+      return;
+    }
     
     try {
       setLoading(true);
       setError('');
+      console.log('📤 Sending API request...');
       
       const categoryData = {
         name: newMainCategory.trim(),
@@ -74,14 +79,19 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
         is_main_category: true
       };
       
-      await axios.post(`${API}/admin/categories`, categoryData);
+      console.log('📋 Category data:', categoryData);
+      console.log('🔗 API URL:', `${API}/admin/categories`);
+      
+      const response = await axios.post(`${API}/admin/categories`, categoryData);
+      console.log('✅ API Response:', response.data);
+      
       setNewMainCategory('');
       await loadCategories();
       if (onUpdate) onUpdate();
       
     } catch (error) {
-      console.error('Error creating main category:', error);
-      setError('Fehler beim Erstellen der Hauptkategorie');
+      console.error('❌ Error creating main category:', error);
+      setError('Fehler beim Erstellen der Hauptkategorie: ' + error.message);
     } finally {
       setLoading(false);
     }
