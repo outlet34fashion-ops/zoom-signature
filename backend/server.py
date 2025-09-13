@@ -388,6 +388,7 @@ class CatalogProductCreate(BaseModel):
     name: str
     description: str = ""
     material: str = ""  # Material description
+    material_properties: List[str] = []  # Material properties like "Teddy", "Fleece", etc.
     main_category_id: str  # Main category (required) - Hauptkategorie Pflicht
     sub_category_id: Optional[str] = None  # Sub category (optional) - Unterkategorie optional
     price: float
