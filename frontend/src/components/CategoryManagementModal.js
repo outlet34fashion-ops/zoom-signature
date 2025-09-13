@@ -475,6 +475,7 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
               <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
                 <span className="mr-2">📁</span>
                 Hauptkategorien ({mainCategories.length})
+                {console.log('🎨 Rendering main categories list:', mainCategories.length, 'items')}
               </h3>
               
               {/* New Main Category */}
