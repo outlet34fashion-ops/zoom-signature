@@ -437,8 +437,10 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                 />
                 <button
                   onClick={(e) => {
+                    console.log('🔵 BUTTON CLICK EVENT TRIGGERED!');
                     e.preventDefault();
                     e.stopPropagation();
+                    console.log('🔍 Event object:', e);
                     console.log('🔵 Main category button clicked!');
                     console.log('🔍 Button state:', {
                       newMainCategory,
@@ -446,6 +448,18 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                       disabled: !newMainCategory.trim() || loading,
                       loading
                     });
+                    
+                    if (!newMainCategory.trim()) {
+                      console.log('❌ Button disabled - no text entered');
+                      return;
+                    }
+                    
+                    if (loading) {
+                      console.log('❌ Button disabled - loading in progress');
+                      return;
+                    }
+                    
+                    console.log('✅ Calling createMainCategory...');
                     createMainCategory();
                   }}
                   disabled={!newMainCategory.trim() || loading}
@@ -455,7 +469,18 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                       : 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer'
                   }`}
                   type="button"
-                  style={{ pointerEvents: 'auto', zIndex: 10 }}
+                  style={{ 
+                    pointerEvents: 'auto', 
+                    zIndex: 50,
+                    position: 'relative',
+                    isolation: 'isolate'
+                  }}
+                  onMouseDown={(e) => {
+                    console.log('🔵 MOUSEDOWN EVENT on main category button');
+                  }}
+                  onMouseUp={(e) => {
+                    console.log('🔵 MOUSEUP EVENT on main category button');
+                  }}
                 >
                   {loading ? '⏳' : '➕'}
                 </button>
