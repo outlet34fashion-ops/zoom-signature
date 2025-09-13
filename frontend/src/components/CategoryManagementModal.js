@@ -290,11 +290,16 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                 <input
                   type="text"
                   value={newMainCategory}
-                  onChange={(e) => setNewMainCategory(e.target.value)}
+                  onChange={(e) => {
+                    console.log('🔍 Main category input change:', e.target.value);
+                    setNewMainCategory(e.target.value);
+                  }}
                   placeholder="Neue Hauptkategorie..."
                   className="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   onKeyPress={(e) => {
+                    console.log('🔍 Main category key pressed:', e.key);
                     if (e.key === 'Enter') {
+                      console.log('🔍 Enter pressed - calling createMainCategory');
                       createMainCategory();
                     }
                   }}
