@@ -35,35 +35,7 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
     }
   }, [isOpen]);
 
-  // Alternative click handler setup for buttons that might have z-index issues
-  useEffect(() => {
-    if (isOpen) {
-      const handleAlternativeClick = (e) => {
-        console.log('🔧 Alternative click handler triggered', e.target);
-        
-        // Check if clicked element is a plus button or its parent
-        const isMainPlusButton = e.target.closest('[data-main-category-button]');
-        const isSubPlusButton = e.target.closest('[data-sub-category-button]');
-        
-        if (isMainPlusButton && newMainCategory.trim() && !loading) {
-          console.log('🔧 Alternative main category creation triggered');
-          e.preventDefault();
-          e.stopPropagation();
-          createMainCategory();
-        } else if (isSubPlusButton && newSubCategory.trim() && selectedMainCategory && !loading) {
-          console.log('🔧 Alternative subcategory creation triggered');
-          e.preventDefault();
-          e.stopPropagation();
-          createSubCategory();
-        }
-      };
-
-      document.addEventListener('click', handleAlternativeClick, true);
-      return () => {
-        document.removeEventListener('click', handleAlternativeClick, true);
-      };
-    }
-  }, [isOpen, newMainCategory, newSubCategory, selectedMainCategory, loading]);
+  // Simplified approach - no complex alternative handlers needed
 
   const loadCategories = async () => {
     try {
