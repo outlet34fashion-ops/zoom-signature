@@ -192,6 +192,7 @@ function App() {
     name: '',
     description: '',
     material: '',
+    material_properties: [],
     main_category_id: '',
     sub_category_id: '',
     price: 0,
