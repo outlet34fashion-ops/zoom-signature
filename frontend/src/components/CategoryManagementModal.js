@@ -97,11 +97,34 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
       console.log('📋 Category data:', categoryData);
       console.log('🔗 API URL:', `${API}/admin/categories`);
       
-      console.log('🌐 Making API request to:', `${API}/admin/categories`);
-      const response = await axios.post(`${API}/admin/categories`, categoryData);
+      // Try multiple API endpoints for maximum compatibility
+      let response;
+      const endpoints = [
+        `${API}/admin/categories`,
+        '/api/admin/categories',  // Relative URL fallback
+        `${window.location.origin}/api/admin/categories`  // Same-origin fallback
+      ];
+      
+      let lastError;
+      for (const endpoint of endpoints) {
+        try {
+          console.log('🌐 Trying API endpoint:', endpoint);
+          response = await axios.post(endpoint, categoryData);
+          console.log('✅ Success with endpoint:', endpoint);
+          break;
+        } catch (endpointError) {
+          console.log('❌ Failed with endpoint:', endpoint, endpointError.message);
+          lastError = endpointError;
+          continue;
+        }
+      }
+      
+      if (!response) {
+        throw lastError || new Error('All API endpoints failed');
+      }
+      
       console.log('✅ API Response:', response.data);
       console.log('✅ Response status:', response.status);
-      console.log('✅ Response headers:', response.headers);
       
       // Success feedback
       alert(`✅ Hauptkategorie "${newMainCategory.trim()}" erfolgreich erstellt!`);
@@ -112,6 +135,13 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
       
     } catch (error) {
       console.error('❌ Error creating main category:', error);
+      console.error('❌ Full error object:', {
+        message: error.message,
+        response: error.response,
+        request: error.request,
+        config: error.config
+      });
+      
       const errorMessage = error.response?.data?.detail || error.message || 'Unbekannter Fehler';
       setError('Fehler beim Erstellen der Hauptkategorie: ' + errorMessage);
       alert('❌ Fehler beim Erstellen der Hauptkategorie: ' + errorMessage);
