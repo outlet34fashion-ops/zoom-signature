@@ -367,8 +367,23 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
   console.log('🟦 CategoryManagementModal: Rendering modal (isOpen = true)');
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" style={{ zIndex: 9999 }}>
-      <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden relative z-10">
+    <div 
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" 
+      style={{ zIndex: 9999 }}
+      onClick={(e) => {
+        // Only close modal if clicking on the overlay itself, not on the modal content
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div 
+        className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden relative z-10"
+        onClick={(e) => {
+          // Prevent modal content clicks from bubbling up to the overlay
+          e.stopPropagation();
+        }}
+      >
         {/* Header */}
         <div className="p-6 border-b bg-gradient-to-r from-blue-50 to-blue-100 relative z-10">
           <div className="flex justify-between items-center">
