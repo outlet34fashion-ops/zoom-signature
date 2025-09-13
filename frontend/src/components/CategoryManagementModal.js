@@ -417,11 +417,16 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                   <input
                     type="text"
                     value={newSubCategory}
-                    onChange={(e) => setNewSubCategory(e.target.value)}
+                    onChange={(e) => {
+                      console.log('🔍 Sub category input change:', e.target.value);
+                      setNewSubCategory(e.target.value);
+                    }}
                     placeholder="Neue Unterkategorie..."
                     className="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
                     onKeyPress={(e) => {
+                      console.log('🔍 Sub category key pressed:', e.key);
                       if (e.key === 'Enter') {
+                        console.log('🔍 Enter pressed - calling createSubCategory');
                         createSubCategory();
                       }
                     }}
