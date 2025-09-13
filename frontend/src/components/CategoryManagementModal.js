@@ -190,11 +190,34 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
       console.log('📋 Subcategory data:', categoryData);
       console.log('🔗 API URL:', `${API}/admin/categories`);
       
-      console.log('🌐 Making subcategory API request to:', `${API}/admin/categories`);
-      const response = await axios.post(`${API}/admin/categories`, categoryData);
+      // Try multiple API endpoints for maximum compatibility
+      let response;
+      const endpoints = [
+        `${API}/admin/categories`,
+        '/api/admin/categories',  // Relative URL fallback
+        `${window.location.origin}/api/admin/categories`  // Same-origin fallback
+      ];
+      
+      let lastError;
+      for (const endpoint of endpoints) {
+        try {
+          console.log('🌐 Trying subcategory API endpoint:', endpoint);
+          response = await axios.post(endpoint, categoryData);
+          console.log('✅ Success with subcategory endpoint:', endpoint);
+          break;
+        } catch (endpointError) {
+          console.log('❌ Failed with subcategory endpoint:', endpoint, endpointError.message);
+          lastError = endpointError;
+          continue;
+        }
+      }
+      
+      if (!response) {
+        throw lastError || new Error('All subcategory API endpoints failed');
+      }
+      
       console.log('✅ Subcategory API Response:', response.data);
       console.log('✅ Response status:', response.status);
-      console.log('✅ Response headers:', response.headers);
       
       // Success feedback
       alert(`✅ Unterkategorie "${newSubCategory.trim()}" erfolgreich erstellt!`);
@@ -205,6 +228,13 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
       
     } catch (error) {
       console.error('❌ Error creating subcategory:', error);
+      console.error('❌ Full subcategory error object:', {
+        message: error.message,
+        response: error.response,
+        request: error.request,
+        config: error.config
+      });
+      
       const errorMessage = error.response?.data?.detail || error.message || 'Unbekannter Fehler';
       setError('Fehler beim Erstellen der Unterkategorie: ' + errorMessage);
       alert('❌ Fehler beim Erstellen der Unterkategorie: ' + errorMessage);
