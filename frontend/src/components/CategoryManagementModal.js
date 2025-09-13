@@ -114,13 +114,28 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
   };
 
   const createSubCategory = async () => {
-    console.log('🟢 createSubCategory called:', newSubCategory);
-    if (!newSubCategory.trim() || !selectedMainCategory) {
-      console.log('❌ Missing subcategory name or main category:', { newSubCategory, selectedMainCategory });
+    console.log('🟢 createSubCategory called with:', { 
+      newSubCategory, 
+      trimmed: newSubCategory.trim(), 
+      length: newSubCategory.trim().length,
+      selectedMainCategory,
+      loading 
+    });
+    
+    if (!newSubCategory.trim()) {
+      console.log('❌ No subcategory name provided - input is empty');
+      alert('Bitte geben Sie einen Unterkategorienamen ein.');
+      return;
+    }
+    
+    if (!selectedMainCategory) {
+      console.log('❌ No main category selected');
+      alert('Bitte wählen Sie zuerst eine Hauptkategorie aus.');
       return;
     }
     
     try {
+      console.log('🔄 Setting loading to true...');
       setLoading(true);
       setError('');
       console.log('📤 Sending subcategory API request...');
@@ -140,14 +155,20 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
       const response = await axios.post(`${API}/admin/categories`, categoryData);
       console.log('✅ Subcategory API Response:', response.data);
       
+      // Success feedback
+      alert(`✅ Unterkategorie "${newSubCategory.trim()}" erfolgreich erstellt!`);
+      
       setNewSubCategory('');
       await loadSubCategories(selectedMainCategory.id);
       if (onUpdate) onUpdate();
       
     } catch (error) {
       console.error('❌ Error creating subcategory:', error);
-      setError('Fehler beim Erstellen der Unterkategorie: ' + error.message);
+      const errorMessage = error.response?.data?.detail || error.message || 'Unbekannter Fehler';
+      setError('Fehler beim Erstellen der Unterkategorie: ' + errorMessage);
+      alert('❌ Fehler beim Erstellen der Unterkategorie: ' + errorMessage);
     } finally {
+      console.log('🔄 Setting loading to false...');
       setLoading(false);
     }
   };
