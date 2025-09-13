@@ -602,8 +602,10 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                   />
                   <button
                     onClick={(e) => {
+                      console.log('🟢 SUBCATEGORY BUTTON CLICK EVENT TRIGGERED!');
                       e.preventDefault();
                       e.stopPropagation();
+                      console.log('🔍 Event object:', e);
                       console.log('🟢 Subcategory button clicked!');
                       console.log('🔍 Button state:', {
                         newSubCategory,
@@ -612,6 +614,23 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                         disabled: !newSubCategory.trim() || loading,
                         loading
                       });
+                      
+                      if (!newSubCategory.trim()) {
+                        console.log('❌ Subcategory button disabled - no text entered');
+                        return;
+                      }
+                      
+                      if (loading) {
+                        console.log('❌ Subcategory button disabled - loading in progress');
+                        return;
+                      }
+                      
+                      if (!selectedMainCategory) {
+                        console.log('❌ Subcategory button disabled - no main category selected');
+                        return;
+                      }
+                      
+                      console.log('✅ Calling createSubCategory...');
                       createSubCategory();
                     }}
                     disabled={!newSubCategory.trim() || loading}
@@ -621,7 +640,18 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                         : 'bg-green-600 hover:bg-green-700 text-white cursor-pointer'
                     }`}
                     type="button"
-                    style={{ pointerEvents: 'auto', zIndex: 10 }}
+                    style={{ 
+                      pointerEvents: 'auto', 
+                      zIndex: 50,
+                      position: 'relative',
+                      isolation: 'isolate'
+                    }}
+                    onMouseDown={(e) => {
+                      console.log('🟢 MOUSEDOWN EVENT on subcategory button');
+                    }}
+                    onMouseUp={(e) => {
+                      console.log('🟢 MOUSEUP EVENT on subcategory button');
+                    }}
                   >
                     {loading ? '⏳' : '➕'}
                   </button>
