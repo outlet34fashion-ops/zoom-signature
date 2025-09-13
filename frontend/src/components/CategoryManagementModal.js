@@ -462,100 +462,31 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                     console.log('🔍 Main category key pressed:', e.key);
                     if (e.key === 'Enter') {
                       console.log('🔍 Enter pressed - calling createMainCategory');
-                      createMainCategory();
+                      if (newMainCategory.trim() && !loading) {
+                        createMainCategory();
+                      }
                     }
                   }}
                 />
                 <button
-                  onClick={(e) => {
-                    console.log('🔵 BUTTON CLICK EVENT TRIGGERED!');
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('🔍 Event object:', e);
-                    console.log('🔵 Main category button clicked!');
-                    console.log('🔍 Button state:', {
-                      newMainCategory,
-                      trimmed: newMainCategory.trim(),
-                      disabled: !newMainCategory.trim() || loading,
-                      loading
-                    });
-                    
-                    if (!newMainCategory.trim()) {
-                      console.log('❌ Button disabled - no text entered');
-                      alert('Bitte geben Sie einen Kategorienamen ein.');
-                      return;
-                    }
-                    
-                    if (loading) {
-                      console.log('❌ Button disabled - loading in progress');
-                      return;
-                    }
-                    
-                    console.log('✅ Calling createMainCategory...');
-                    createMainCategory();
-                  }}
-                  onMouseDown={(e) => {
-                    console.log('🔵 MOUSEDOWN EVENT on main category button');
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }}
-                  onMouseUp={(e) => {
-                    console.log('🔵 MOUSEUP EVENT on main category button');
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }}
-                  onTouchStart={(e) => {
-                    console.log('🔵 TOUCHSTART EVENT on main category button');
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }}
-                  disabled={!newMainCategory.trim() || loading}
-                  className={`px-4 py-2 rounded text-sm font-semibold min-w-[40px] flex items-center justify-center transition-colors ${
-                    !newMainCategory.trim() || loading
-                      ? 'bg-gray-400 cursor-not-allowed text-white'
-                      : 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer'
-                  }`}
-                  type="button"
-                  style={{ 
-                    pointerEvents: 'auto !important', 
-                    zIndex: '10003 !important',
-                    position: 'relative',
-                    isolation: 'isolate',
-                    touchAction: 'manipulation'
-                  }}
-                  tabIndex="0"
-                  role="button"
-                  aria-label="Hauptkategorie hinzufügen"
-                  data-main-category-button="true"
-                >
-                  {loading ? '⏳' : '➕'}
-                </button>
-                {/* Backup text button - Alternative solution if plus button fails */}
-                <button
-                  onClick={(e) => {
-                    console.log('🔵 BACKUP BUTTON CLICKED!');
-                    e.preventDefault();
-                    e.stopPropagation();
+                  onClick={() => {
+                    console.log('🔵 CREATE BUTTON CLICKED - Main Category');
                     if (newMainCategory.trim() && !loading) {
+                      console.log('✅ Creating main category:', newMainCategory.trim());
                       createMainCategory();
-                    } else {
+                    } else if (!newMainCategory.trim()) {
                       alert('Bitte geben Sie einen Kategorienamen ein.');
                     }
                   }}
                   disabled={!newMainCategory.trim() || loading}
-                  className={`px-3 py-2 rounded text-xs font-semibold transition-colors ${
+                  className={`px-4 py-2 rounded text-sm font-semibold transition-all duration-200 ${
                     !newMainCategory.trim() || loading
-                      ? 'bg-gray-300 cursor-not-allowed text-gray-600'
-                      : 'bg-blue-500 hover:bg-blue-600 text-white cursor-pointer'
+                      ? 'bg-gray-300 cursor-not-allowed text-gray-500 border border-gray-300'
+                      : 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer border border-blue-600 hover:border-blue-700 shadow-sm hover:shadow-md'
                   }`}
                   type="button"
-                  style={{ 
-                    pointerEvents: 'auto !important', 
-                    zIndex: '10003 !important',
-                    position: 'relative'
-                  }}
                 >
-                  Erstellen
+                  {loading ? 'Erstelle...' : 'Erstellen'}
                 </button>
               </div>
             </div>
