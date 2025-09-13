@@ -378,7 +378,8 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
       }}
     >
       <div 
-        className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden relative z-10"
+        className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden relative"
+        style={{ zIndex: '10002 !important' }}
         onClick={(e) => {
           // Prevent modal content clicks from bubbling up to the overlay
           e.stopPropagation();
