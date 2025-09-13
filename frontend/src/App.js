@@ -16,6 +16,7 @@ import StreamsList from './components/streaming/StreamsList';
 import SimpleVideoStreaming from './components/streaming/SimpleVideoStreaming';
 import ColorModal, { getColorValue } from './components/ColorModal';
 import MaterialModal from './components/MaterialModal';
+import MaterialPropertiesModal from './components/MaterialPropertiesModal';
 import SizeModal from './components/SizeModal';
 import CameraCapture from './components/CameraCapture';
 import MediaUploadModal from './components/MediaUploadModal';
