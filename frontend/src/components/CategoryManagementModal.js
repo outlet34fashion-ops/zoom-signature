@@ -452,6 +452,7 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                     
                     if (!newMainCategory.trim()) {
                       console.log('❌ Button disabled - no text entered');
+                      alert('Bitte geben Sie einen Kategorienamen ein.');
                       return;
                     }
                     
@@ -463,6 +464,21 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                     console.log('✅ Calling createMainCategory...');
                     createMainCategory();
                   }}
+                  onMouseDown={(e) => {
+                    console.log('🔵 MOUSEDOWN EVENT on main category button');
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  onMouseUp={(e) => {
+                    console.log('🔵 MOUSEUP EVENT on main category button');
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  onTouchStart={(e) => {
+                    console.log('🔵 TOUCHSTART EVENT on main category button');
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
                   disabled={!newMainCategory.trim() || loading}
                   className={`px-4 py-2 rounded text-sm font-semibold min-w-[40px] flex items-center justify-center transition-colors ${
                     !newMainCategory.trim() || loading
@@ -471,17 +487,15 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                   }`}
                   type="button"
                   style={{ 
-                    pointerEvents: 'auto', 
+                    pointerEvents: 'auto !important', 
                     zIndex: '10003 !important',
                     position: 'relative',
-                    isolation: 'isolate'
+                    isolation: 'isolate',
+                    touchAction: 'manipulation'
                   }}
-                  onMouseDown={(e) => {
-                    console.log('🔵 MOUSEDOWN EVENT on main category button');
-                  }}
-                  onMouseUp={(e) => {
-                    console.log('🔵 MOUSEUP EVENT on main category button');
-                  }}
+                  tabIndex="0"
+                  role="button"
+                  aria-label="Hauptkategorie hinzufügen"
                 >
                   {loading ? '⏳' : '➕'}
                 </button>
