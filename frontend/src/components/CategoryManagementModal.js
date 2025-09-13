@@ -530,6 +530,33 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                 >
                   {loading ? '⏳' : '➕'}
                 </button>
+                {/* Backup text button - Alternative solution if plus button fails */}
+                <button
+                  onClick={(e) => {
+                    console.log('🔵 BACKUP BUTTON CLICKED!');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (newMainCategory.trim() && !loading) {
+                      createMainCategory();
+                    } else {
+                      alert('Bitte geben Sie einen Kategorienamen ein.');
+                    }
+                  }}
+                  disabled={!newMainCategory.trim() || loading}
+                  className={`px-3 py-2 rounded text-xs font-semibold transition-colors ${
+                    !newMainCategory.trim() || loading
+                      ? 'bg-gray-300 cursor-not-allowed text-gray-600'
+                      : 'bg-blue-500 hover:bg-blue-600 text-white cursor-pointer'
+                  }`}
+                  type="button"
+                  style={{ 
+                    pointerEvents: 'auto !important', 
+                    zIndex: '10003 !important',
+                    position: 'relative'
+                  }}
+                >
+                  Erstellen
+                </button>
               </div>
             </div>
 
