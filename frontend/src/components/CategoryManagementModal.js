@@ -632,6 +632,7 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                       
                       if (!newSubCategory.trim()) {
                         console.log('❌ Subcategory button disabled - no text entered');
+                        alert('Bitte geben Sie einen Unterkategorienamen ein.');
                         return;
                       }
                       
@@ -642,11 +643,27 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                       
                       if (!selectedMainCategory) {
                         console.log('❌ Subcategory button disabled - no main category selected');
+                        alert('Bitte wählen Sie zuerst eine Hauptkategorie aus.');
                         return;
                       }
                       
                       console.log('✅ Calling createSubCategory...');
                       createSubCategory();
+                    }}
+                    onMouseDown={(e) => {
+                      console.log('🟢 MOUSEDOWN EVENT on subcategory button');
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    onMouseUp={(e) => {
+                      console.log('🟢 MOUSEUP EVENT on subcategory button');
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    onTouchStart={(e) => {
+                      console.log('🟢 TOUCHSTART EVENT on subcategory button');
+                      e.preventDefault();
+                      e.stopPropagation();
                     }}
                     disabled={!newSubCategory.trim() || loading}
                     className={`px-4 py-2 rounded text-sm font-semibold min-w-[40px] flex items-center justify-center transition-colors ${
@@ -656,17 +673,15 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                     }`}
                     type="button"
                     style={{ 
-                      pointerEvents: 'auto', 
+                      pointerEvents: 'auto !important', 
                       zIndex: '10003 !important',
                       position: 'relative',
-                      isolation: 'isolate'
+                      isolation: 'isolate',
+                      touchAction: 'manipulation'
                     }}
-                    onMouseDown={(e) => {
-                      console.log('🟢 MOUSEDOWN EVENT on subcategory button');
-                    }}
-                    onMouseUp={(e) => {
-                      console.log('🟢 MOUSEUP EVENT on subcategory button');
-                    }}
+                    tabIndex="0"
+                    role="button"
+                    aria-label="Unterkategorie hinzufügen"
                   >
                     {loading ? '⏳' : '➕'}
                   </button>
