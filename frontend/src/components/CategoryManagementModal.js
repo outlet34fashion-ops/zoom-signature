@@ -62,13 +62,21 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
   };
 
   const createMainCategory = async () => {
-    console.log('🔵 createMainCategory called:', newMainCategory);
+    console.log('🔵 createMainCategory called with:', { 
+      newMainCategory, 
+      trimmed: newMainCategory.trim(), 
+      length: newMainCategory.trim().length,
+      loading 
+    });
+    
     if (!newMainCategory.trim()) {
-      console.log('❌ No category name provided');
+      console.log('❌ No category name provided - input is empty');
+      alert('Bitte geben Sie einen Kategorienamen ein.');
       return;
     }
     
     try {
+      console.log('🔄 Setting loading to true...');
       setLoading(true);
       setError('');
       console.log('📤 Sending API request...');
@@ -87,14 +95,20 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
       const response = await axios.post(`${API}/admin/categories`, categoryData);
       console.log('✅ API Response:', response.data);
       
+      // Success feedback
+      alert(`✅ Hauptkategorie "${newMainCategory.trim()}" erfolgreich erstellt!`);
+      
       setNewMainCategory('');
       await loadCategories();
       if (onUpdate) onUpdate();
       
     } catch (error) {
       console.error('❌ Error creating main category:', error);
-      setError('Fehler beim Erstellen der Hauptkategorie: ' + error.message);
+      const errorMessage = error.response?.data?.detail || error.message || 'Unbekannter Fehler';
+      setError('Fehler beim Erstellen der Hauptkategorie: ' + errorMessage);
+      alert('❌ Fehler beim Erstellen der Hauptkategorie: ' + errorMessage);
     } finally {
+      console.log('🔄 Setting loading to false...');
       setLoading(false);
     }
   };
