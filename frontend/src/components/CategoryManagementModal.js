@@ -19,6 +19,10 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
+  // New category states - MUST be declared before useEffect that uses them
+  const [newMainCategory, setNewMainCategory] = useState('');
+  const [newSubCategory, setNewSubCategory] = useState('');
+  
   // Debug state for button troubleshooting
   useEffect(() => {
     console.log('🔍 CategoryManagementModal State Debug:', {
@@ -34,10 +38,6 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
       subButtonDisabled: !newSubCategory.trim() || !selectedMainCategory || loading
     });
   }, [loading, newMainCategory, newSubCategory, selectedMainCategory]);
-  
-  // New category states
-  const [newMainCategory, setNewMainCategory] = useState('');
-  const [newSubCategory, setNewSubCategory] = useState('');
   
   // Edit states
   const [editingCategory, setEditingCategory] = useState(null);
