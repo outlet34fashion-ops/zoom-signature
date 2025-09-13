@@ -744,6 +744,35 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                   >
                     {loading ? '⏳' : '➕'}
                   </button>
+                  {/* Backup text button - Alternative solution if plus button fails */}
+                  <button
+                    onClick={(e) => {
+                      console.log('🟢 BACKUP SUBCATEGORY BUTTON CLICKED!');
+                      e.preventDefault();
+                      e.stopPropagation();
+                      if (newSubCategory.trim() && selectedMainCategory && !loading) {
+                        createSubCategory();
+                      } else if (!selectedMainCategory) {
+                        alert('Bitte wählen Sie zuerst eine Hauptkategorie aus.');
+                      } else {
+                        alert('Bitte geben Sie einen Unterkategorienamen ein.');
+                      }
+                    }}
+                    disabled={!newSubCategory.trim() || !selectedMainCategory || loading}
+                    className={`px-3 py-2 rounded text-xs font-semibold transition-colors ${
+                      !newSubCategory.trim() || !selectedMainCategory || loading
+                        ? 'bg-gray-300 cursor-not-allowed text-gray-600'
+                        : 'bg-green-500 hover:bg-green-600 text-white cursor-pointer'
+                    }`}
+                    type="button"
+                    style={{ 
+                      pointerEvents: 'auto !important', 
+                      zIndex: '10003 !important',
+                      position: 'relative'
+                    }}
+                  >
+                    Erstellen
+                  </button>
                 </div>
 
                 {/* Sub Categories List */}
