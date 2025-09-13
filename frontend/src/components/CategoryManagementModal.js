@@ -258,16 +258,15 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                   }}
                 />
                 <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
+                  onClick={() => {
+                    console.log('🔵 Main category button clicked!');
                     createMainCategory();
                   }}
                   disabled={!newMainCategory.trim() || loading}
-                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-3 py-2 rounded text-sm relative z-10 cursor-pointer"
-                  style={{ pointerEvents: 'auto' }}
+                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-4 py-2 rounded text-sm font-semibold min-w-[40px] flex items-center justify-center"
+                  type="button"
                 >
-                  ➕
+                  {loading ? '...' : '➕'}
                 </button>
               </div>
             </div>
