@@ -160,8 +160,11 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
       console.log('📋 Subcategory data:', categoryData);
       console.log('🔗 API URL:', `${API}/admin/categories`);
       
+      console.log('🌐 Making subcategory API request to:', `${API}/admin/categories`);
       const response = await axios.post(`${API}/admin/categories`, categoryData);
       console.log('✅ Subcategory API Response:', response.data);
+      console.log('✅ Response status:', response.status);
+      console.log('✅ Response headers:', response.headers);
       
       // Success feedback
       alert(`✅ Unterkategorie "${newSubCategory.trim()}" erfolgreich erstellt!`);
