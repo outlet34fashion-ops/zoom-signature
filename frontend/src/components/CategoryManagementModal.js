@@ -111,8 +111,12 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
       }
       
       if (mainResponse) {
+        console.log('📋 Setting main categories:', mainResponse.data.length, 'items');
+        console.log('📋 Main categories data:', mainResponse.data.slice(0, 3).map(c => ({ id: c.id, name: c.name })));
         setMainCategories(mainResponse.data);
-        console.log('📋 Main categories loaded:', mainResponse.data.length, 'items');
+        console.log('📋 Main categories state updated');
+      } else {
+        console.log('❌ No response from main categories endpoint');
       }
       
     } catch (error) {
