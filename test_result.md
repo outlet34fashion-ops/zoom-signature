@@ -244,11 +244,11 @@ backend:
 frontend:
   - task: "Material Properties Modal Testing"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/frontend/src/components/MaterialPropertiesModal.js, /app/frontend/src/App.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "user"
