@@ -7072,90 +7072,7 @@ function App() {
                 />
               </div>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Verfügbare Materialien
-                </label>
-                
-                {/* Material Selection Button */}
-                <button
-                  type="button"
-                  onClick={() => setShowMaterialModal(true)}
-                  className="w-full bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg"
-                >
-                  <span className="text-2xl">🧵</span>
-                  <span className="font-medium">Material-Übersicht öffnen {newProductData.material ? `(${newProductData.material})` : '(Kein Material gewählt)'}</span>
-                </button>
-                
-                {/* Selected Material Display */}
-                {newProductData.material && (
-                  <div className="mt-4">
-                    <div className="flex items-center space-x-2 bg-green-50 border border-green-200 rounded-lg px-4 py-3">
-                      <span className="text-2xl">🧵</span>
-                      <div>
-                        <h5 className="font-medium text-green-800">Gewähltes Material:</h5>
-                        <p className="text-green-700 text-sm">{newProductData.material}</p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setNewProductData({ ...newProductData, material: '' })}
-                        className="ml-auto text-green-600 hover:text-green-800 font-bold text-lg"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Material-Eigenschaften (optional)
-                </label>
-                
-                {/* Material Properties Selection Button */}
-                <button
-                  type="button"
-                  onClick={() => setShowMaterialPropertiesModal(true)}
-                  className="w-full bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg"
-                >
-                  <span className="text-2xl">🏷️</span>
-                  <span className="font-medium">Material-Eigenschaften wählen {newProductData.material_properties.length > 0 ? `(${newProductData.material_properties.length} gewählt)` : '(Keine Eigenschaften gewählt)'}</span>
-                </button>
-                
-                {/* Selected Properties Display */}
-                {newProductData.material_properties.length > 0 && (
-                  <div className="mt-4">
-                    <div className="bg-purple-50 border border-purple-200 rounded-lg px-4 py-3">
-                      <h5 className="font-medium text-purple-800 mb-2 flex items-center space-x-2">
-                        <span className="text-2xl">🏷️</span>
-                        <span>Gewählte Eigenschaften:</span>
-                      </h5>
-                      <div className="flex flex-wrap gap-2">
-                        {newProductData.material_properties.map((property, index) => (
-                          <div
-                            key={index}
-                            className="bg-white border border-purple-300 rounded-full px-3 py-1 text-sm text-purple-700 flex items-center space-x-2"
-                          >
-                            <span>{property}</span>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const updatedProperties = newProductData.material_properties.filter((_, i) => i !== index);
-                                setNewProductData({ ...newProductData, material_properties: updatedProperties });
-                              }}
-                              className="text-purple-500 hover:text-purple-700 font-bold text-sm"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-              
+              {/* 1. Price and Stock - First Position */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -7187,9 +7104,54 @@ function App() {
                 </div>
               </div>
               
+              {/* 2. Sizes Overview - Second Position (Mandatory) */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Verfügbare Farben
+                  Verfügbare Größen *
+                </label>
+                
+                {/* Size Selection Button */}
+                <button
+                  type="button"
+                  onClick={() => setShowSizeModal(true)}
+                  className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg"
+                >
+                  <span className="text-2xl">📏</span>
+                  <span className="font-medium">Größen-Übersicht öffnen ({newProductData.sizes.length} Größen gewählt)</span>
+                </button>
+                
+                {/* Selected Sizes Display */}
+                {newProductData.sizes.length > 0 && (
+                  <div className="mt-4">
+                    <h5 className="font-medium text-blue-800 mb-2">Gewählte Größen:</h5>
+                    <div className="flex flex-wrap gap-2">
+                      {newProductData.sizes.map((size, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center space-x-2 bg-blue-50 border border-blue-200 rounded-full px-3 py-1 text-sm"
+                        >
+                          <span className="text-blue-700 font-medium">{size}</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updatedSizes = newProductData.sizes.filter((_, i) => i !== index);
+                              setNewProductData({ ...newProductData, sizes: updatedSizes });
+                            }}
+                            className="text-blue-500 hover:text-blue-700 ml-1 font-bold"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {/* 3. Color Chart - Third Position (Mandatory) */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Verfügbare Farben *
                 </label>
                 
                 {/* Color Selection Button */}
@@ -7236,44 +7198,87 @@ function App() {
                 )}
               </div>
               
+              {/* 4. Material Overview - Fourth Position (Optional) */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Verfügbare Größen
+                  Verfügbare Materialien (optional)
                 </label>
                 
-                {/* Size Selection Button */}
+                {/* Material Selection Button */}
                 <button
                   type="button"
-                  onClick={() => setShowSizeModal(true)}
-                  className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg"
+                  onClick={() => setShowMaterialModal(true)}
+                  className="w-full bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg"
                 >
-                  <span className="text-2xl">📏</span>
-                  <span className="font-medium">Größen-Übersicht öffnen ({newProductData.sizes.length} Größen gewählt)</span>
+                  <span className="text-2xl">🧵</span>
+                  <span className="font-medium">Material-Übersicht öffnen {newProductData.material ? `(${newProductData.material})` : '(Kein Material gewählt)'}</span>
                 </button>
                 
-                {/* Selected Sizes Display */}
-                {newProductData.sizes.length > 0 && (
+                {/* Selected Material Display */}
+                {newProductData.material && (
                   <div className="mt-4">
-                    <h5 className="font-medium text-blue-800 mb-2">Gewählte Größen:</h5>
-                    <div className="flex flex-wrap gap-2">
-                      {newProductData.sizes.map((size, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center space-x-2 bg-blue-50 border border-blue-200 rounded-full px-3 py-1 text-sm"
-                        >
-                          <span className="text-blue-700 font-medium">{size}</span>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const updatedSizes = newProductData.sizes.filter((_, i) => i !== index);
-                              setNewProductData({ ...newProductData, sizes: updatedSizes });
-                            }}
-                            className="text-blue-500 hover:text-blue-700 ml-1 font-bold"
+                    <div className="flex items-center space-x-2 bg-green-50 border border-green-200 rounded-lg px-4 py-3">
+                      <span className="text-2xl">🧵</span>
+                      <div>
+                        <h5 className="font-medium text-green-800">Gewähltes Material:</h5>
+                        <p className="text-green-700 text-sm">{newProductData.material}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setNewProductData({ ...newProductData, material: '' })}
+                        className="ml-auto text-green-600 hover:text-green-800 font-bold text-lg"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {/* 5. Material Properties - Fifth Position (Mandatory) */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Material-Eigenschaften *
+                </label>
+                
+                {/* Material Properties Selection Button */}
+                <button
+                  type="button"
+                  onClick={() => setShowMaterialPropertiesModal(true)}
+                  className="w-full bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg"
+                >
+                  <span className="text-2xl">🏷️</span>
+                  <span className="font-medium">Material-Eigenschaften wählen {newProductData.material_properties.length > 0 ? `(${newProductData.material_properties.length} gewählt)` : '(Keine Eigenschaften gewählt)'}</span>
+                </button>
+                
+                {/* Selected Properties Display */}
+                {newProductData.material_properties.length > 0 && (
+                  <div className="mt-4">
+                    <div className="bg-purple-50 border border-purple-200 rounded-lg px-4 py-3">
+                      <h5 className="font-medium text-purple-800 mb-2 flex items-center space-x-2">
+                        <span className="text-2xl">🏷️</span>
+                        <span>Gewählte Eigenschaften:</span>
+                      </h5>
+                      <div className="flex flex-wrap gap-2">
+                        {newProductData.material_properties.map((property, index) => (
+                          <div
+                            key={index}
+                            className="bg-white border border-purple-300 rounded-full px-3 py-1 text-sm text-purple-700 flex items-center space-x-2"
                           >
-                            ×
-                          </button>
-                        </div>
-                      ))}
+                            <span>{property}</span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const updatedProperties = newProductData.material_properties.filter((_, i) => i !== index);
+                                setNewProductData({ ...newProductData, material_properties: updatedProperties });
+                              }}
+                              className="text-purple-500 hover:text-purple-700 font-bold text-sm"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}
