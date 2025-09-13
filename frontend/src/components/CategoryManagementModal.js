@@ -330,8 +330,14 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
       setError('Fehler beim Erstellen der Unterkategorie: ' + errorMessage);
       alert('❌ Fehler beim Erstellen der Unterkategorie: ' + errorMessage);
     } finally {
+      clearTimeout(loadingTimeout);
       console.log('🔄 Setting loading to false...');
       setLoading(false);
+      
+      // Force re-render to ensure button state updates
+      setTimeout(() => {
+        console.log('🔄 Post-loading state check:', { loading, newSubCategory, selectedMainCategory });
+      }, 100);
     }
   };
 
