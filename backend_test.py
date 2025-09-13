@@ -10717,6 +10717,335 @@ TIMEZONE BUG ANALYSIS COMPLETE:
             print(f"    ⚠️  SOME CATEGORY CREATION TESTS FAILED - NEEDS ATTENTION")
             return False
 
+    def test_category_management_modal_apis(self):
+        """CRITICAL: Comprehensive testing of CategoryManagementModal Backend APIs as per German review request"""
+        print("\n🏷️ CRITICAL BACKEND API VERIFICATION FOR CATEGORYMANAGEMENTMODAL")
+        print("  🎯 GERMAN REVIEW REQUEST REQUIREMENTS:")
+        print("    1. Category Creation API Test (POST /api/admin/categories for main and subcategories)")
+        print("    2. Category Loading API Test (GET /api/categories, /api/categories/main, /api/categories/sub/{id})")
+        print("    3. CORS and Networking Test")
+        print("    4. Error Response Analysis")
+        print("    5. API Endpoint Availability")
+        
+        # Test data with realistic German category names
+        main_category_data = {
+            "name": "Test Hauptkategorie Backend",
+            "description": "Backend API Test Hauptkategorie",
+            "icon": "🏷️",
+            "is_main_category": True,
+            "sort_order": 99
+        }
+        
+        subcategory_data = {
+            "name": "Test Unterkategorie Backend",
+            "description": "Backend API Test Unterkategorie",
+            "icon": "📦",
+            "is_main_category": False,
+            "sort_order": 1
+        }
+        
+        created_main_category = None
+        created_subcategory = None
+        
+        try:
+            # TEST 1: Category Creation API Test - Main Category
+            print("  📝 TEST 1: Category Creation API - Main Category...")
+            response = requests.post(
+                f"{self.api_url}/admin/categories",
+                json=main_category_data,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            main_creation_success = response.status_code == 200
+            main_details = f"POST Status: {response.status_code}"
+            
+            if main_creation_success:
+                created_main_category = response.json()
+                required_fields = ['id', 'name', 'description', 'is_main_category', 'sort_order']
+                has_all_fields = all(field in created_main_category for field in required_fields)
+                correct_data = (created_main_category.get('name') == main_category_data['name'] and
+                              created_main_category.get('is_main_category') == True)
+                main_creation_success = has_all_fields and correct_data
+                main_details += f", Has all fields: {has_all_fields}, Data correct: {correct_data}, ID: {created_main_category.get('id')}"
+            
+            self.log_test("CRITICAL - Main Category Creation API", main_creation_success, main_details)
+            
+            # TEST 2: Category Creation API Test - Subcategory
+            print("  📝 TEST 2: Category Creation API - Subcategory...")
+            if created_main_category:
+                subcategory_data['parent_category_id'] = created_main_category['id']
+                
+                response = requests.post(
+                    f"{self.api_url}/admin/categories",
+                    json=subcategory_data,
+                    headers={'Content-Type': 'application/json'},
+                    timeout=10
+                )
+                
+                sub_creation_success = response.status_code == 200
+                sub_details = f"POST Status: {response.status_code}"
+                
+                if sub_creation_success:
+                    created_subcategory = response.json()
+                    required_fields = ['id', 'name', 'description', 'is_main_category', 'parent_category_id', 'sort_order']
+                    has_all_fields = all(field in created_subcategory for field in required_fields)
+                    correct_data = (created_subcategory.get('name') == subcategory_data['name'] and
+                                  created_subcategory.get('is_main_category') == False and
+                                  created_subcategory.get('parent_category_id') == created_main_category['id'])
+                    sub_creation_success = has_all_fields and correct_data
+                    sub_details += f", Has all fields: {has_all_fields}, Data correct: {correct_data}, Parent ID: {created_subcategory.get('parent_category_id')}"
+                
+                self.log_test("CRITICAL - Subcategory Creation API", sub_creation_success, sub_details)
+            else:
+                self.log_test("CRITICAL - Subcategory Creation API", False, "Skipped - main category creation failed")
+                sub_creation_success = False
+            
+            # TEST 3: Category Loading API Test - All Categories
+            print("  📥 TEST 3: Category Loading API - All Categories...")
+            response = requests.get(f"{self.api_url}/categories", timeout=10)
+            
+            all_categories_success = response.status_code == 200
+            all_details = f"GET Status: {response.status_code}"
+            
+            if all_categories_success:
+                all_categories = response.json()
+                is_list = isinstance(all_categories, list)
+                has_categories = len(all_categories) > 0
+                
+                # Check if our created categories are in the list
+                main_found = any(cat.get('id') == created_main_category.get('id') for cat in all_categories) if created_main_category else False
+                sub_found = any(cat.get('id') == created_subcategory.get('id') for cat in all_categories) if created_subcategory else False
+                
+                all_categories_success = is_list and has_categories
+                all_details += f", Is list: {is_list}, Count: {len(all_categories)}, Main found: {main_found}, Sub found: {sub_found}"
+            
+            self.log_test("CRITICAL - All Categories Loading API", all_categories_success, all_details)
+            
+            # TEST 4: Category Loading API Test - Main Categories Only
+            print("  📥 TEST 4: Category Loading API - Main Categories Only...")
+            response = requests.get(f"{self.api_url}/categories/main", timeout=10)
+            
+            main_categories_success = response.status_code == 200
+            main_cat_details = f"GET Status: {response.status_code}"
+            
+            if main_categories_success:
+                main_categories = response.json()
+                is_list = isinstance(main_categories, list)
+                has_categories = len(main_categories) > 0
+                
+                # Check that all returned categories are main categories
+                all_main = all(cat.get('is_main_category') == True for cat in main_categories) if main_categories else True
+                
+                # Check if our created main category is in the list
+                main_found = any(cat.get('id') == created_main_category.get('id') for cat in main_categories) if created_main_category else False
+                
+                main_categories_success = is_list and has_categories and all_main
+                main_cat_details += f", Is list: {is_list}, Count: {len(main_categories)}, All main: {all_main}, Our main found: {main_found}"
+            
+            self.log_test("CRITICAL - Main Categories Loading API", main_categories_success, main_cat_details)
+            
+            # TEST 5: Category Loading API Test - Subcategories by Main Category ID
+            print("  📥 TEST 5: Category Loading API - Subcategories by Main Category ID...")
+            if created_main_category:
+                main_category_id = created_main_category['id']
+                response = requests.get(f"{self.api_url}/categories/sub/{main_category_id}", timeout=10)
+                
+                sub_categories_success = response.status_code == 200
+                sub_cat_details = f"GET Status: {response.status_code}"
+                
+                if sub_categories_success:
+                    sub_categories = response.json()
+                    is_list = isinstance(sub_categories, list)
+                    
+                    # Check that all returned categories are subcategories with correct parent
+                    all_sub = all(cat.get('is_main_category') == False and 
+                                cat.get('parent_category_id') == main_category_id 
+                                for cat in sub_categories) if sub_categories else True
+                    
+                    # Check if our created subcategory is in the list
+                    sub_found = any(cat.get('id') == created_subcategory.get('id') for cat in sub_categories) if created_subcategory else False
+                    
+                    sub_categories_success = is_list and all_sub
+                    sub_cat_details += f", Is list: {is_list}, Count: {len(sub_categories)}, All subcategories: {all_sub}, Our sub found: {sub_found}"
+                
+                self.log_test("CRITICAL - Subcategories Loading API", sub_categories_success, sub_cat_details)
+            else:
+                self.log_test("CRITICAL - Subcategories Loading API", False, "Skipped - main category creation failed")
+                sub_categories_success = False
+            
+            # TEST 6: CORS and Networking Test
+            print("  🌐 TEST 6: CORS and Networking Test...")
+            
+            # Test CORS headers on category endpoints
+            cors_headers = {
+                'Origin': 'https://liveshop-admin.preview.emergentagent.com',
+                'Access-Control-Request-Method': 'POST',
+                'Access-Control-Request-Headers': 'Content-Type'
+            }
+            
+            # Test OPTIONS request for CORS preflight
+            options_response = requests.options(
+                f"{self.api_url}/admin/categories",
+                headers=cors_headers,
+                timeout=10
+            )
+            
+            cors_success = options_response.status_code in [200, 204, 405]  # 405 is acceptable if OPTIONS not implemented
+            cors_details = f"OPTIONS Status: {options_response.status_code}"
+            
+            # Check CORS headers in response
+            cors_headers_present = any(header.lower().startswith('access-control') for header in options_response.headers.keys())
+            if cors_headers_present:
+                cors_details += f", CORS headers present: {cors_headers_present}"
+            
+            # Test cross-origin request simulation
+            cross_origin_response = requests.get(
+                f"{self.api_url}/categories",
+                headers={'Origin': 'https://different-domain.com'},
+                timeout=10
+            )
+            
+            cross_origin_success = cross_origin_response.status_code == 200
+            cors_details += f", Cross-origin GET: {cross_origin_response.status_code}"
+            
+            cors_success = cors_success and cross_origin_success
+            
+            self.log_test("CRITICAL - CORS and Networking", cors_success, cors_details)
+            
+            # TEST 7: Error Response Analysis
+            print("  ❌ TEST 7: Error Response Analysis...")
+            
+            # Test invalid category creation (missing required fields)
+            invalid_category = {
+                "description": "Missing name field",
+                "is_main_category": True
+            }
+            
+            error_response = requests.post(
+                f"{self.api_url}/admin/categories",
+                json=invalid_category,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            error_handling_success = error_response.status_code == 422  # Validation error
+            error_details = f"Invalid data Status: {error_response.status_code} (should be 422)"
+            
+            if error_response.status_code == 422:
+                error_data = error_response.json()
+                has_error_detail = 'detail' in error_data
+                error_details += f", Has error detail: {has_error_detail}"
+            
+            # Test invalid parent category ID
+            invalid_subcategory = {
+                "name": "Invalid Parent Test",
+                "description": "Test with invalid parent ID",
+                "is_main_category": False,
+                "parent_category_id": "invalid-uuid-12345"
+            }
+            
+            invalid_parent_response = requests.post(
+                f"{self.api_url}/admin/categories",
+                json=invalid_subcategory,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            invalid_parent_success = invalid_parent_response.status_code in [400, 422, 500]  # Various error codes acceptable
+            error_details += f", Invalid parent Status: {invalid_parent_response.status_code}"
+            
+            # Test non-existent category retrieval
+            non_existent_response = requests.get(f"{self.api_url}/categories/sub/non-existent-id", timeout=10)
+            non_existent_success = non_existent_response.status_code in [404, 200]  # 200 with empty list is also acceptable
+            error_details += f", Non-existent subcategories Status: {non_existent_response.status_code}"
+            
+            error_handling_success = error_handling_success and invalid_parent_success and non_existent_success
+            
+            self.log_test("CRITICAL - Error Response Analysis", error_handling_success, error_details)
+            
+            # TEST 8: API Endpoint Availability and Response Times
+            print("  ⚡ TEST 8: API Endpoint Availability and Response Times...")
+            
+            endpoints_to_test = [
+                ("GET", f"{self.api_url}/categories"),
+                ("GET", f"{self.api_url}/categories/main"),
+                ("POST", f"{self.api_url}/admin/categories")
+            ]
+            
+            response_times = []
+            availability_success = True
+            availability_details = ""
+            
+            for method, endpoint in endpoints_to_test:
+                start_time = time.time()
+                
+                try:
+                    if method == "GET":
+                        response = requests.get(endpoint, timeout=10)
+                    else:  # POST
+                        response = requests.post(
+                            endpoint,
+                            json={"name": "Availability Test", "is_main_category": True},
+                            headers={'Content-Type': 'application/json'},
+                            timeout=10
+                        )
+                    
+                    response_time = (time.time() - start_time) * 1000  # Convert to milliseconds
+                    response_times.append(response_time)
+                    
+                    endpoint_available = response.status_code in [200, 422]  # 422 for validation errors is acceptable
+                    if not endpoint_available:
+                        availability_success = False
+                    
+                    availability_details += f"{method} {endpoint.split('/')[-1]}: {response.status_code} ({response_time:.0f}ms), "
+                    
+                except Exception as e:
+                    availability_success = False
+                    availability_details += f"{method} {endpoint.split('/')[-1]}: ERROR ({str(e)}), "
+            
+            avg_response_time = sum(response_times) / len(response_times) if response_times else 0
+            availability_details += f"Avg response time: {avg_response_time:.0f}ms"
+            
+            self.log_test("CRITICAL - API Endpoint Availability", availability_success, availability_details)
+            
+            # FINAL SUMMARY
+            print("  📊 CATEGORYMANAGEMENTMODAL API TESTING SUMMARY:")
+            print(f"    ✅ Main Category Creation: {'WORKING' if main_creation_success else 'FAILED'}")
+            print(f"    ✅ Subcategory Creation: {'WORKING' if sub_creation_success else 'FAILED'}")
+            print(f"    ✅ All Categories Loading: {'WORKING' if all_categories_success else 'FAILED'}")
+            print(f"    ✅ Main Categories Loading: {'WORKING' if main_categories_success else 'FAILED'}")
+            print(f"    ✅ Subcategories Loading: {'WORKING' if sub_categories_success else 'FAILED'}")
+            print(f"    ✅ CORS and Networking: {'WORKING' if cors_success else 'FAILED'}")
+            print(f"    ✅ Error Response Handling: {'WORKING' if error_handling_success else 'FAILED'}")
+            print(f"    ✅ API Endpoint Availability: {'WORKING' if availability_success else 'FAILED'}")
+            print(f"    📈 Average Response Time: {avg_response_time:.0f}ms")
+            
+            # Calculate overall success rate
+            tests = [main_creation_success, sub_creation_success, all_categories_success, 
+                    main_categories_success, sub_categories_success, cors_success, 
+                    error_handling_success, availability_success]
+            success_count = sum(tests)
+            total_tests = len(tests)
+            success_rate = (success_count / total_tests) * 100
+            
+            print(f"    🎯 OVERALL SUCCESS RATE: {success_count}/{total_tests} ({success_rate:.1f}%)")
+            
+            if success_rate >= 87.5:  # 7/8 tests
+                print("    🎉 CATEGORYMANAGEMENTMODAL BACKEND APIs are WORKING EXCELLENTLY!")
+                return True
+            elif success_rate >= 62.5:  # 5/8 tests
+                print("    ⚠️  CATEGORYMANAGEMENTMODAL BACKEND APIs have some issues but core functionality works")
+                return True
+            else:
+                print("    ❌ CATEGORYMANAGEMENTMODAL BACKEND APIs have critical issues")
+                return False
+                
+        except Exception as e:
+            self.log_test("CRITICAL - CategoryManagementModal API Exception", False, str(e))
+            print(f"    ❌ CRITICAL ERROR in CategoryManagementModal API testing: {str(e)}")
+            return False
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("🚀 Starting Live Shopping App Backend API Tests")
