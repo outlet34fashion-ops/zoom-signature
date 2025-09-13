@@ -402,6 +402,7 @@ class CatalogProductUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     material: Optional[str] = None
+    material_properties: Optional[List[str]] = None
     category_id: Optional[str] = None
     price: Optional[float] = None
     sizes: Optional[List[str]] = None
