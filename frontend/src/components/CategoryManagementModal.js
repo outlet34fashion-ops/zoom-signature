@@ -713,6 +713,7 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                     tabIndex="0"
                     role="button"
                     aria-label="Unterkategorie hinzufügen"
+                    data-sub-category-button="true"
                   >
                     {loading ? '⏳' : '➕'}
                   </button>
