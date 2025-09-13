@@ -4180,7 +4180,12 @@ function App() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     {/* Category Management Button */}
                     <button
-                      onClick={() => setShowCategoryManagementModal(true)}
+                      onClick={() => {
+                        console.log('🔵 Kategorien button clicked - opening CategoryManagementModal');
+                        console.log('Current showCategoryManagementModal state:', showCategoryManagementModal);
+                        setShowCategoryManagementModal(true);
+                        console.log('CategoryManagementModal should now be open');
+                      }}
                       className="bg-blue-600 hover:bg-blue-700 text-white p-6 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-between"
                     >
                       <div className="flex items-center space-x-3">
