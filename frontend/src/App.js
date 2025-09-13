@@ -7477,6 +7477,14 @@ function App() {
         onMaterialChange={(material) => setNewProductData({ ...newProductData, material })}
       />
       
+      {/* Material Properties Selection Modal */}
+      <MaterialPropertiesModal 
+        isOpen={showMaterialPropertiesModal}
+        onClose={() => setShowMaterialPropertiesModal(false)}
+        selectedProperties={newProductData.material_properties}
+        onPropertiesChange={(properties) => setNewProductData({ ...newProductData, material_properties: properties })}
+      />
+      
       {/* Size Selection Modal */}
       <SizeModal 
         isOpen={showSizeModal}
