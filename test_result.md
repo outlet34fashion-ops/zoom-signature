@@ -242,6 +242,18 @@ backend:
         comment: "CONFIRMED NOT IMPLEMENTED: Customer authentication middleware still not present in backend. However, this is medium priority and does not affect core functionality. All customer authentication is handled at the API endpoint level with proper status checks. The existing customer status check API (GET /api/customers/check/{customer_number}) provides all necessary authentication functionality for the frontend. No critical impact on system operation."
 
 frontend:
+  - task: "Material Properties Modal Testing"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/components/MaterialPropertiesModal.js, /app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "user"
+        comment: "NEW TESTING REQUEST: Test the new Material Properties functionality in the product creation form: 1) Admin login with PIN 1924, 2) Navigate to 'Produktkatalog Verwaltung', 3) Click 'Neues Produkt' to open product creation modal, 4) Look for 'Material-Eigenschaften (optional)' section, 5) Find purple button 'Material-Eigenschaften wählen' showing '(Keine Eigenschaften gewählt)', 6) Test MaterialPropertiesModal with 5 categories (Weiche/Kuschelige, Glatte/Elegante, Robuste/Natürliche, Strick & Stretch, Glänzende/Effekt-Oberflächen), 7) Test property selection and UI updates, 8) Test custom property functionality."
+
   - task: "VIDEO CONFLICT FIX: LiveKit Streaming Video Playback Error Resolution"
     implemented: true
     working: true
