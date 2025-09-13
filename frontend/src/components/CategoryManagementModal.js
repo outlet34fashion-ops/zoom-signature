@@ -445,15 +445,29 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                     }}
                   />
                   <button
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
                       console.log('🟢 Subcategory button clicked!');
+                      console.log('🔍 Button state:', {
+                        newSubCategory,
+                        trimmed: newSubCategory.trim(),
+                        selectedMainCategory,
+                        disabled: !newSubCategory.trim() || loading,
+                        loading
+                      });
                       createSubCategory();
                     }}
                     disabled={!newSubCategory.trim() || loading}
-                    className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-4 py-2 rounded text-sm font-semibold min-w-[40px] flex items-center justify-center"
+                    className={`px-4 py-2 rounded text-sm font-semibold min-w-[40px] flex items-center justify-center transition-colors ${
+                      !newSubCategory.trim() || loading
+                        ? 'bg-gray-400 cursor-not-allowed text-white'
+                        : 'bg-green-600 hover:bg-green-700 text-white cursor-pointer'
+                    }`}
                     type="button"
+                    style={{ pointerEvents: 'auto', zIndex: 10 }}
                   >
-                    {loading ? '...' : '➕'}
+                    {loading ? '⏳' : '➕'}
                   </button>
                 </div>
 
