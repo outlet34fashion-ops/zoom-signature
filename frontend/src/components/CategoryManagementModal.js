@@ -40,17 +40,62 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
       setLoading(true);
       setError('');
       
+      console.log('📥 Loading categories...');
+      
+      // Try multiple endpoints for loading categories
+      const endpoints = [
+        `${API}/categories`,
+        '/api/categories',
+        `${window.location.origin}/api/categories`
+      ];
+      
+      let response, mainResponse;
+      
       // Load all categories
-      const response = await axios.get(`${API}/categories`);
-      setCategories(response.data);
+      for (const endpoint of endpoints) {
+        try {
+          console.log('🌐 Trying categories endpoint:', endpoint);
+          response = await axios.get(endpoint);
+          console.log('✅ Categories loaded from:', endpoint);
+          break;
+        } catch (endpointError) {
+          console.log('❌ Failed loading categories from:', endpoint, endpointError.message);
+          continue;
+        }
+      }
+      
+      if (response) {
+        setCategories(response.data);
+        console.log('📋 Categories loaded:', response.data.length, 'items');
+      }
       
       // Load main categories
-      const mainResponse = await axios.get(`${API}/categories/main`);
-      setMainCategories(mainResponse.data);
+      const mainEndpoints = [
+        `${API}/categories/main`,
+        '/api/categories/main',
+        `${window.location.origin}/api/categories/main`
+      ];
+      
+      for (const endpoint of mainEndpoints) {
+        try {
+          console.log('🌐 Trying main categories endpoint:', endpoint);
+          mainResponse = await axios.get(endpoint);
+          console.log('✅ Main categories loaded from:', endpoint);
+          break;
+        } catch (endpointError) {
+          console.log('❌ Failed loading main categories from:', endpoint, endpointError.message);
+          continue;
+        }
+      }
+      
+      if (mainResponse) {
+        setMainCategories(mainResponse.data);
+        console.log('📋 Main categories loaded:', mainResponse.data.length, 'items');
+      }
       
     } catch (error) {
-      console.error('Error loading categories:', error);
-      setError('Fehler beim Laden der Kategorien');
+      console.error('❌ Error loading categories:', error);
+      setError('Fehler beim Laden der Kategorien: ' + error.message);
     } finally {
       setLoading(false);
     }
