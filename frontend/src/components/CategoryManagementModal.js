@@ -600,109 +600,33 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                       console.log('🔍 Sub category key pressed:', e.key);
                       if (e.key === 'Enter') {
                         console.log('🔍 Enter pressed - calling createSubCategory');
-                        createSubCategory();
+                        if (newSubCategory.trim() && selectedMainCategory && !loading) {
+                          createSubCategory();
+                        }
                       }
                     }}
                   />
                   <button
-                    onClick={(e) => {
-                      console.log('🟢 SUBCATEGORY BUTTON CLICK EVENT TRIGGERED!');
-                      e.preventDefault();
-                      e.stopPropagation();
-                      console.log('🔍 Event object:', e);
-                      console.log('🟢 Subcategory button clicked!');
-                      console.log('🔍 Button state:', {
-                        newSubCategory,
-                        trimmed: newSubCategory.trim(),
-                        selectedMainCategory,
-                        disabled: !newSubCategory.trim() || loading,
-                        loading
-                      });
-                      
-                      if (!newSubCategory.trim()) {
-                        console.log('❌ Subcategory button disabled - no text entered');
-                        alert('Bitte geben Sie einen Unterkategorienamen ein.');
-                        return;
-                      }
-                      
-                      if (loading) {
-                        console.log('❌ Subcategory button disabled - loading in progress');
-                        return;
-                      }
-                      
-                      if (!selectedMainCategory) {
-                        console.log('❌ Subcategory button disabled - no main category selected');
-                        alert('Bitte wählen Sie zuerst eine Hauptkategorie aus.');
-                        return;
-                      }
-                      
-                      console.log('✅ Calling createSubCategory...');
-                      createSubCategory();
-                    }}
-                    onMouseDown={(e) => {
-                      console.log('🟢 MOUSEDOWN EVENT on subcategory button');
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                    onMouseUp={(e) => {
-                      console.log('🟢 MOUSEUP EVENT on subcategory button');
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                    onTouchStart={(e) => {
-                      console.log('🟢 TOUCHSTART EVENT on subcategory button');
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                    disabled={!newSubCategory.trim() || loading}
-                    className={`px-4 py-2 rounded text-sm font-semibold min-w-[40px] flex items-center justify-center transition-colors ${
-                      !newSubCategory.trim() || loading
-                        ? 'bg-gray-400 cursor-not-allowed text-white'
-                        : 'bg-green-600 hover:bg-green-700 text-white cursor-pointer'
-                    }`}
-                    type="button"
-                    style={{ 
-                      pointerEvents: 'auto !important', 
-                      zIndex: '10003 !important',
-                      position: 'relative',
-                      isolation: 'isolate',
-                      touchAction: 'manipulation'
-                    }}
-                    tabIndex="0"
-                    role="button"
-                    aria-label="Unterkategorie hinzufügen"
-                    data-sub-category-button="true"
-                  >
-                    {loading ? '⏳' : '➕'}
-                  </button>
-                  {/* Backup text button - Alternative solution if plus button fails */}
-                  <button
-                    onClick={(e) => {
-                      console.log('🟢 BACKUP SUBCATEGORY BUTTON CLICKED!');
-                      e.preventDefault();
-                      e.stopPropagation();
+                    onClick={() => {
+                      console.log('🟢 CREATE BUTTON CLICKED - Sub Category');
                       if (newSubCategory.trim() && selectedMainCategory && !loading) {
+                        console.log('✅ Creating subcategory:', newSubCategory.trim());
                         createSubCategory();
                       } else if (!selectedMainCategory) {
                         alert('Bitte wählen Sie zuerst eine Hauptkategorie aus.');
-                      } else {
+                      } else if (!newSubCategory.trim()) {
                         alert('Bitte geben Sie einen Unterkategorienamen ein.');
                       }
                     }}
                     disabled={!newSubCategory.trim() || !selectedMainCategory || loading}
-                    className={`px-3 py-2 rounded text-xs font-semibold transition-colors ${
+                    className={`px-4 py-2 rounded text-sm font-semibold transition-all duration-200 ${
                       !newSubCategory.trim() || !selectedMainCategory || loading
-                        ? 'bg-gray-300 cursor-not-allowed text-gray-600'
-                        : 'bg-green-500 hover:bg-green-600 text-white cursor-pointer'
+                        ? 'bg-gray-300 cursor-not-allowed text-gray-500 border border-gray-300'
+                        : 'bg-green-600 hover:bg-green-700 text-white cursor-pointer border border-green-600 hover:border-green-700 shadow-sm hover:shadow-md'
                     }`}
                     type="button"
-                    style={{ 
-                      pointerEvents: 'auto !important', 
-                      zIndex: '10003 !important',
-                      position: 'relative'
-                    }}
                   >
-                    Erstellen
+                    {loading ? 'Erstelle...' : 'Erstellen'}
                   </button>
                 </div>
 
