@@ -526,6 +526,7 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                   tabIndex="0"
                   role="button"
                   aria-label="Hauptkategorie hinzufügen"
+                  data-main-category-button="true"
                 >
                   {loading ? '⏳' : '➕'}
                 </button>
