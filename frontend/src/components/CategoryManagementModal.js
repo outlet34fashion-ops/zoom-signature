@@ -305,15 +305,28 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                   }}
                 />
                 <button
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
                     console.log('🔵 Main category button clicked!');
+                    console.log('🔍 Button state:', {
+                      newMainCategory,
+                      trimmed: newMainCategory.trim(),
+                      disabled: !newMainCategory.trim() || loading,
+                      loading
+                    });
                     createMainCategory();
                   }}
                   disabled={!newMainCategory.trim() || loading}
-                  className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-4 py-2 rounded text-sm font-semibold min-w-[40px] flex items-center justify-center"
+                  className={`px-4 py-2 rounded text-sm font-semibold min-w-[40px] flex items-center justify-center transition-colors ${
+                    !newMainCategory.trim() || loading
+                      ? 'bg-gray-400 cursor-not-allowed text-white'
+                      : 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer'
+                  }`}
                   type="button"
+                  style={{ pointerEvents: 'auto', zIndex: 10 }}
                 >
-                  {loading ? '...' : '➕'}
+                  {loading ? '⏳' : '➕'}
                 </button>
               </div>
             </div>
