@@ -83,8 +83,12 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
       }
       
       if (response) {
+        console.log('📋 Setting all categories:', response.data.length, 'items');
+        console.log('📋 Categories data:', response.data.slice(0, 3).map(c => ({ id: c.id, name: c.name })));
         setCategories(response.data);
-        console.log('📋 Categories loaded:', response.data.length, 'items');
+        console.log('📋 Categories state updated');
+      } else {
+        console.log('❌ No response from categories endpoint');
       }
       
       // Load main categories
