@@ -5,6 +5,8 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
+  console.log('🟦 CategoryManagementModal render - isOpen:', isOpen);
+  
   const [categories, setCategories] = useState([]);
   const [mainCategories, setMainCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
