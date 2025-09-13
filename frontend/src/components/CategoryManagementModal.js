@@ -252,6 +252,17 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
       return;
     }
     
+    if (loading) {
+      console.log('❌ Already loading - preventing duplicate request');
+      return;
+    }
+    
+    // Set loading timeout to prevent permanent disabled state
+    const loadingTimeout = setTimeout(() => {
+      console.log('⚠️ Loading timeout - forcing loading to false');
+      setLoading(false);
+    }, 10000); // 10 second timeout
+    
     try {
       console.log('🔄 Setting loading to true...');
       setLoading(true);
