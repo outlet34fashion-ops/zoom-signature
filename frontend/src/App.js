@@ -861,6 +861,25 @@ function App() {
       setCreatingProduct(true);
       setCatalogError('');
       
+      // Validate mandatory fields
+      if (newProductData.sizes.length === 0) {
+        alert('❌ Bitte wählen Sie mindestens eine Größe aus (Pflichtfeld).');
+        setCreatingProduct(false);
+        return;
+      }
+      
+      if (newProductData.colors.length === 0) {
+        alert('❌ Bitte wählen Sie mindestens eine Farbe aus (Pflichtfeld).');
+        setCreatingProduct(false);
+        return;
+      }
+      
+      if (newProductData.material_properties.length === 0) {
+        alert('❌ Bitte wählen Sie mindestens eine Material-Eigenschaft aus (Pflichtfeld).');
+        setCreatingProduct(false);
+        return;
+      }
+      
       // Convert sizes string to array
       const sizesArray = newProductData.sizes.length > 0 
         ? newProductData.sizes 
