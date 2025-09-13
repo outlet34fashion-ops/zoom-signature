@@ -98,11 +98,16 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
   };
 
   const createSubCategory = async () => {
-    if (!newSubCategory.trim() || !selectedMainCategory) return;
+    console.log('🟢 createSubCategory called:', newSubCategory);
+    if (!newSubCategory.trim() || !selectedMainCategory) {
+      console.log('❌ Missing subcategory name or main category:', { newSubCategory, selectedMainCategory });
+      return;
+    }
     
     try {
       setLoading(true);
       setError('');
+      console.log('📤 Sending subcategory API request...');
       
       const categoryData = {
         name: newSubCategory.trim(),
@@ -113,14 +118,19 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
         is_main_category: false
       };
       
-      await axios.post(`${API}/admin/categories`, categoryData);
+      console.log('📋 Subcategory data:', categoryData);
+      console.log('🔗 API URL:', `${API}/admin/categories`);
+      
+      const response = await axios.post(`${API}/admin/categories`, categoryData);
+      console.log('✅ Subcategory API Response:', response.data);
+      
       setNewSubCategory('');
       await loadSubCategories(selectedMainCategory.id);
       if (onUpdate) onUpdate();
       
     } catch (error) {
-      console.error('Error creating subcategory:', error);
-      setError('Fehler beim Erstellen der Unterkategorie');
+      console.error('❌ Error creating subcategory:', error);
+      setError('Fehler beim Erstellen der Unterkategorie: ' + error.message);
     } finally {
       setLoading(false);
     }
