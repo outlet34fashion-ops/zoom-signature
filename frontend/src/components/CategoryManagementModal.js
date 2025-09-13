@@ -643,13 +643,26 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                   <button
                     onClick={() => {
                       console.log('🟢 CREATE BUTTON CLICKED - Sub Category');
+                      console.log('🔍 Subcategory button click state check:', {
+                        newSubCategory: `"${newSubCategory}"`,
+                        trimmed: `"${newSubCategory.trim()}"`,
+                        selectedMainCategory: selectedMainCategory?.name || 'none',
+                        loading,
+                        disabled: !newSubCategory.trim() || !selectedMainCategory || loading
+                      });
+                      
                       if (newSubCategory.trim() && selectedMainCategory && !loading) {
                         console.log('✅ Creating subcategory:', newSubCategory.trim());
                         createSubCategory();
                       } else if (!selectedMainCategory) {
+                        console.log('❌ No main category selected');
                         alert('Bitte wählen Sie zuerst eine Hauptkategorie aus.');
                       } else if (!newSubCategory.trim()) {
+                        console.log('❌ Empty subcategory input field');
                         alert('Bitte geben Sie einen Unterkategorienamen ein.');
+                      } else if (loading) {
+                        console.log('❌ Currently loading');
+                        alert('Bitte warten Sie...');
                       }
                     }}
                     disabled={!newSubCategory.trim() || !selectedMainCategory || loading}
@@ -659,6 +672,7 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                         : 'bg-green-600 hover:bg-green-700 text-white cursor-pointer border border-green-600 hover:border-green-700 shadow-sm hover:shadow-md'
                     }`}
                     type="button"
+                    title={!newSubCategory.trim() ? 'Bitte geben Sie einen Unterkategorienamen ein' : !selectedMainCategory ? 'Bitte wählen Sie zuerst eine Hauptkategorie aus' : loading ? 'Lädt...' : 'Unterkategorie erstellen'}
                   >
                     {loading ? 'Erstelle...' : 'Erstellen'}
                   </button>
