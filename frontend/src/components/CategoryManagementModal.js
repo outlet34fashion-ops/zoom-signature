@@ -19,6 +19,22 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
+  // Debug state for button troubleshooting
+  useEffect(() => {
+    console.log('🔍 CategoryManagementModal State Debug:', {
+      loading,
+      newMainCategory: `"${newMainCategory}"`,
+      newMainCategoryTrimmed: `"${newMainCategory.trim()}"`,
+      newMainCategoryLength: newMainCategory.trim().length,
+      newSubCategory: `"${newSubCategory}"`,
+      newSubCategoryTrimmed: `"${newSubCategory.trim()}"`,
+      newSubCategoryLength: newSubCategory.trim().length,
+      selectedMainCategory: selectedMainCategory?.name || 'none',
+      mainButtonDisabled: !newMainCategory.trim() || loading,
+      subButtonDisabled: !newSubCategory.trim() || !selectedMainCategory || loading
+    });
+  }, [loading, newMainCategory, newSubCategory, selectedMainCategory]);
+  
   // New category states
   const [newMainCategory, setNewMainCategory] = useState('');
   const [newSubCategory, setNewSubCategory] = useState('');
