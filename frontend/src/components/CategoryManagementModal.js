@@ -493,11 +493,22 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                 <button
                   onClick={() => {
                     console.log('🔵 CREATE BUTTON CLICKED - Main Category');
+                    console.log('🔍 Button click state check:', {
+                      newMainCategory: `"${newMainCategory}"`,
+                      trimmed: `"${newMainCategory.trim()}"`,
+                      loading,
+                      disabled: !newMainCategory.trim() || loading
+                    });
+                    
                     if (newMainCategory.trim() && !loading) {
                       console.log('✅ Creating main category:', newMainCategory.trim());
                       createMainCategory();
                     } else if (!newMainCategory.trim()) {
+                      console.log('❌ Empty input field');
                       alert('Bitte geben Sie einen Kategorienamen ein.');
+                    } else if (loading) {
+                      console.log('❌ Currently loading');
+                      alert('Bitte warten Sie...');
                     }
                   }}
                   disabled={!newMainCategory.trim() || loading}
@@ -507,6 +518,7 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                       : 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer border border-blue-600 hover:border-blue-700 shadow-sm hover:shadow-md'
                   }`}
                   type="button"
+                  title={!newMainCategory.trim() ? 'Bitte geben Sie einen Kategorienamen ein' : loading ? 'Lädt...' : 'Hauptkategorie erstellen'}
                 >
                   {loading ? 'Erstelle...' : 'Erstellen'}
                 </button>
