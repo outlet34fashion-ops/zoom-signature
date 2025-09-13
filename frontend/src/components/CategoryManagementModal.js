@@ -643,7 +643,7 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                     type="button"
                     style={{ 
                       pointerEvents: 'auto', 
-                      zIndex: 50,
+                      zIndex: '10003 !important',
                       position: 'relative',
                       isolation: 'isolate'
                     }}
