@@ -12019,9 +12019,35 @@ TIMEZONE BUG ANALYSIS COMPLETE:
             print("\n📦 STEP 1: FINAL BACKUP - Creating complete backup of current customer data...")
             
             try:
-                backup_response = requests.get(f"{self.api_url}/admin/customers", timeout=30)
-                if backup_response.status_code == 200:
-                    current_customers = backup_response.json()
+                # Use direct MongoDB query to avoid Pydantic validation issues with old schema
+                import pymongo
+                from urllib.parse import urlparse
+                
+                # Parse MongoDB URL from backend .env
+                mongo_url = None
+                try:
+                    with open('/app/backend/.env', 'r') as f:
+                        for line in f:
+                            if line.startswith('MONGO_URL='):
+                                mongo_url = line.split('=', 1)[1].strip().strip('"')
+                                break
+                except:
+                    mongo_url = "mongodb://localhost:27017/shopping_calendar"
+                
+                if mongo_url:
+                    # Connect directly to MongoDB to get raw customer data
+                    mongo_client = pymongo.MongoClient(mongo_url)
+                    db_name = "test_database"  # From backend .env
+                    mongo_db = mongo_client[db_name]
+                    
+                    # Get all customers directly from MongoDB
+                    current_customers = list(mongo_db.customers.find({}))
+                    
+                    # Convert ObjectId to string for JSON serialization
+                    for customer in current_customers:
+                        if '_id' in customer:
+                            customer['_id'] = str(customer['_id'])
+                    
                     migration_results["current_customers_count"] = len(current_customers)
                     
                     # Save backup to file with timestamp
@@ -12039,11 +12065,16 @@ TIMEZONE BUG ANALYSIS COMPLETE:
                     if current_customers:
                         print(f"  📋 Sample current customers:")
                         for i, customer in enumerate(current_customers[:3]):
-                            print(f"    {i+1}. {customer.get('customer_number', 'N/A')} - {customer.get('first_name', '')} {customer.get('last_name', '')} - {customer.get('email', 'N/A')}")
+                            customer_number = customer.get('customer_number', 'N/A')
+                            name = customer.get('name', f"{customer.get('first_name', '')} {customer.get('last_name', '')}".strip())
+                            email = customer.get('email', 'N/A')
+                            print(f"    {i+1}. {customer_number} - {name} - {email}")
                         if len(current_customers) > 3:
                             print(f"    ... and {len(current_customers) - 3} more customers")
+                    
+                    mongo_client.close()
                 else:
-                    self.log_test("MIGRATION - Final Backup Creation", False, f"Backup failed with status {backup_response.status_code}")
+                    self.log_test("MIGRATION - Final Backup Creation", False, "Could not get MongoDB URL")
                     return False
                     
             except Exception as e:
