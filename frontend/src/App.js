@@ -2695,17 +2695,7 @@ function App() {
                   </div>
                 )}
                 
-                {/* Admin Navigation */}
-                {isAdminAuthenticated && isAdminView && (
-                  <div className="flex items-center space-x-2">
-                    <img 
-                      src="/images/outlet34-logo-small.png" 
-                      alt="OUTLET34 Logo" 
-                      className="w-10 h-10 rounded-full border-2 border-white"
-                    />
-                    <h1 className="text-xl font-bold">OUTLET34 Admin</h1>
-                  </div>
-                )}
+                {/* Admin Navigation - Logo and text removed as requested */}
                 
                 {/* Admin Profile Dropdown */}
                 {isAdminAuthenticated && isAdminView && (
