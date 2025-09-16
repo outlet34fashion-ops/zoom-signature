@@ -544,46 +544,139 @@ function App() {
       setLoadingCatalog(true);
       setCatalogError('');
       
-      // For now, use mock data since backend endpoint doesn't exist
-      // In production, this would call the actual API
+      // Enhanced mock products with real images for testing
       const mockProducts = [
+        // Neue Artikel (letzte 30 Tage)
         {
           id: '1',
-          name: 'Sommer T-Shirt',
-          description: 'Leichtes Baumwoll-T-Shirt für den Sommer',
+          name: 'Basic T-Shirt Weiß',
+          description: 'Klassisches weißes T-Shirt aus 100% Baumwolle',
           price: 19.99,
           sizes: ['S', 'M', 'L', 'XL'],
-          colors: ['Weiß', 'Schwarz', 'Blau'],
+          colors: ['Weiß', 'Schwarz', 'Grau'],
           material: 'Baumwolle',
-          material_properties: ['Weich', 'Atmungsaktiv'],
-          image_url: '/images/shirt1.jpg',
-          created_at: new Date().toISOString(),
+          material_properties: ['Weich', 'Atmungsaktiv', 'Pflegeleicht'],
+          image_url: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&h=500&fit=crop',
+          created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(), // 5 days ago
           category_id: categoryId || 'all'
         },
         {
           id: '2',
-          name: 'Denim Jeans',
-          description: 'Klassische Jeans aus hochwertigem Denim',
-          price: 49.99,
-          sizes: ['28', '30', '32', '34'],
-          colors: ['Blau', 'Schwarz'],
+          name: 'Skinny Jeans Blau',
+          description: 'Moderne Skinny-Jeans mit Stretch-Anteil',
+          price: 59.99,
+          sizes: ['28', '30', '32', '34', '36'],
+          colors: ['Blau', 'Schwarz', 'Grau'],
           material: 'Denim',
-          material_properties: ['Robust', 'Stretch'],
-          image_url: '/images/jeans1.jpg',
-          created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 45).toISOString(), // 45 days ago
+          material_properties: ['Stretch', 'Robust', 'Formstabil'],
+          image_url: 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=500&h=500&fit=crop',
+          created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10).toISOString(), // 10 days ago
           category_id: categoryId || 'all'
         },
         {
           id: '3',
-          name: 'Elegantes Kleid',
-          description: 'Elegantes Abendkleid für besondere Anlässe',
-          price: 89.99,
-          sizes: ['XS', 'S', 'M', 'L'],
-          colors: ['Schwarz', 'Rosa', 'Blau'],
-          material: 'Polyester',
-          material_properties: ['Elegant', 'Glänzend'],
-          image_url: '/images/dress1.jpg',
+          name: 'Sommerkleid Floral',
+          description: 'Leichtes Sommerkleid mit floralem Muster',
+          price: 45.99,
+          sizes: ['XS', 'S', 'M', 'L', 'XL'],
+          colors: ['Rosa', 'Blau', 'Gelb'],
+          material: 'Viskose',
+          material_properties: ['Leicht', 'Fließend', 'Atmungsaktiv'],
+          image_url: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500&h=500&fit=crop',
           created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 15).toISOString(), // 15 days ago
+          category_id: categoryId || 'all'
+        },
+        {
+          id: '4',
+          name: 'Oversized Hoodie',
+          description: 'Kuscheliger Oversized Hoodie für entspannte Tage',
+          price: 39.99,
+          sizes: ['S', 'M', 'L', 'XL'],
+          colors: ['Grau', 'Schwarz', 'Rosa', 'Beige'],
+          material: 'Baumwoll-Mix',
+          material_properties: ['Kuschelig', 'Warm', 'Oversized'],
+          image_url: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500&h=500&fit=crop',
+          created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 20).toISOString(), // 20 days ago
+          category_id: categoryId || 'all'
+        },
+        {
+          id: '5',
+          name: 'High Waist Shorts',
+          description: 'Trendige High-Waist Shorts für den Sommer',
+          price: 29.99,
+          sizes: ['XS', 'S', 'M', 'L'],
+          colors: ['Beige', 'Weiß', 'Schwarz'],
+          material: 'Baumwolle',
+          material_properties: ['High-Waist', 'Bequem', 'Sommerlich'],
+          image_url: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=500&h=500&fit=crop',
+          created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 25).toISOString(), // 25 days ago
+          category_id: categoryId || 'all'
+        },
+        
+        // Bestseller (älter als 30 Tage)
+        {
+          id: '6',
+          name: 'Classic Blazer',
+          description: 'Zeitloser Business Blazer für jeden Anlass',
+          price: 89.99,
+          sizes: ['S', 'M', 'L', 'XL'],
+          colors: ['Schwarz', 'Navy', 'Grau'],
+          material: 'Polyester-Mix',
+          material_properties: ['Elegant', 'Bürotauglich', 'Pflegeleicht'],
+          image_url: 'https://images.unsplash.com/photo-1594223274512-ad4803739b7c?w=500&h=500&fit=crop',
+          created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 45).toISOString(), // 45 days ago
+          category_id: categoryId || 'all'
+        },
+        {
+          id: '7',
+          name: 'Mom Jeans Vintage',
+          description: 'Angesagte Mom-Jeans im Vintage-Look',
+          price: 54.99,
+          sizes: ['26', '28', '30', '32', '34'],
+          colors: ['Light Blue', 'Medium Blue', 'Dark Blue'],
+          material: 'Denim',
+          material_properties: ['Vintage', 'High-Waist', 'Relaxed Fit'],
+          image_url: 'https://images.unsplash.com/photo-1582418702059-97ebafb35d09?w=500&h=500&fit=crop',
+          created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 60).toISOString(), // 60 days ago
+          category_id: categoryId || 'all'
+        },
+        {
+          id: '8',
+          name: 'Maxi Kleid Boho',
+          description: 'Fließendes Maxi-Kleid im Boho-Style',
+          price: 69.99,
+          sizes: ['XS', 'S', 'M', 'L', 'XL'],
+          colors: ['Beige', 'Terracotta', 'Olive'],
+          material: 'Viskose',
+          material_properties: ['Fließend', 'Boho-Style', 'Maxi-Länge'],
+          image_url: 'https://images.unsplash.com/photo-1566479179817-e3a57b4eef29?w=500&h=500&fit=crop',
+          created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 75).toISOString(), // 75 days ago
+          category_id: categoryId || 'all'
+        },
+        {
+          id: '9',
+          name: 'Leder Handtasche',
+          description: 'Elegante Handtasche aus echtem Leder',
+          price: 129.99,
+          sizes: ['OneSize'],
+          colors: ['Schwarz', 'Braun', 'Cognac'],
+          material: 'Leder',
+          material_properties: ['Echtleder', 'Elegant', 'Langlebig'],
+          image_url: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&h=500&fit=crop',
+          created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 90).toISOString(), // 90 days ago
+          category_id: categoryId || 'all'
+        },
+        {
+          id: '10',
+          name: 'Sneaker Weiß',
+          description: 'Klassische weiße Sneaker für jeden Tag',
+          price: 79.99,
+          sizes: ['36', '37', '38', '39', '40', '41'],
+          colors: ['Weiß', 'Weiß-Rosa', 'Weiß-Grau'],
+          material: 'Kunstleder',
+          material_properties: ['Bequem', 'Alltagstauglich', 'Pflegeleicht'],
+          image_url: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=500&h=500&fit=crop',
+          created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 120).toISOString(), // 120 days ago
           category_id: categoryId || 'all'
         }
       ];
