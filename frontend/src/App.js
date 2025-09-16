@@ -5046,21 +5046,8 @@ function App() {
                     </select>
                   </div>
                   
-                  {/* Logout and Close Buttons */}
+                  {/* Close Button */}
                   <div className="grid grid-cols-1 gap-3 pt-4">
-                    <Button 
-                      onClick={() => {
-                        if (isAdminAuthenticated) {
-                          adminLogout();
-                        } else {
-                          customerLogout();
-                        }
-                        setShowProfileModal(false);
-                      }}
-                      className="w-full bg-red-500 hover:bg-red-600 text-white"
-                    >
-                      🚪 {t('auth.logout')}
-                    </Button>
                     <Button 
                       onClick={() => setShowProfileModal(false)}
                       className="w-full bg-gray-500 hover:bg-gray-600 text-white"
