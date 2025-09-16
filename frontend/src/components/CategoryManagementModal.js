@@ -23,6 +23,71 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
   const [newMainCategory, setNewMainCategory] = useState('');
   const [newSubCategory, setNewSubCategory] = useState('');
   const [sortMode, setSortMode] = useState(false);
+  const [draggedCategory, setDraggedCategory] = useState(null);
+  
+  // Handle drag start
+  const handleDragStart = (e, category) => {
+    setDraggedCategory(category);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+  
+  // Handle drag over
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+  
+  // Handle drop for main categories
+  const handleDropMainCategory = (e, targetCategory) => {
+    e.preventDefault();
+    if (!draggedCategory || draggedCategory.id === targetCategory.id) return;
+    
+    // Reorder main categories
+    const draggedIndex = mainCategories.findIndex(cat => cat.id === draggedCategory.id);
+    const targetIndex = mainCategories.findIndex(cat => cat.id === targetCategory.id);
+    
+    const newMainCategories = [...mainCategories];
+    const [removed] = newMainCategories.splice(draggedIndex, 1);
+    newMainCategories.splice(targetIndex, 0, removed);
+    
+    // Update sort order
+    const updatedCategories = newMainCategories.map((cat, index) => ({
+      ...cat,
+      sort_order: index
+    }));
+    
+    setMainCategories(updatedCategories);
+    setDraggedCategory(null);
+    
+    // TODO: Send API request to update sort order in backend
+    console.log('🔀 Main categories reordered:', updatedCategories.map(c => ({ name: c.name, sort_order: c.sort_order })));
+  };
+  
+  // Handle drop for subcategories
+  const handleDropSubCategory = (e, targetCategory) => {
+    e.preventDefault();
+    if (!draggedCategory || draggedCategory.id === targetCategory.id) return;
+    
+    // Reorder subcategories
+    const draggedIndex = subCategories.findIndex(cat => cat.id === draggedCategory.id);
+    const targetIndex = subCategories.findIndex(cat => cat.id === targetCategory.id);
+    
+    const newSubCategories = [...subCategories];
+    const [removed] = newSubCategories.splice(draggedIndex, 1);
+    newSubCategories.splice(targetIndex, 0, removed);
+    
+    // Update sort order
+    const updatedCategories = newSubCategories.map((cat, index) => ({
+      ...cat,
+      sort_order: index
+    }));
+    
+    setSubCategories(updatedCategories);
+    setDraggedCategory(null);
+    
+    // TODO: Send API request to update sort order in backend
+    console.log('🔀 Subcategories reordered:', updatedCategories.map(c => ({ name: c.name, sort_order: c.sort_order })));
+  };
   
   // Debug state for button troubleshooting
   useEffect(() => {
