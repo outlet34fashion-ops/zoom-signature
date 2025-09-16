@@ -670,8 +670,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Mobile Catalog Header Optimization Testing"
-    - "Profile Dropdown with Logout Functionality Testing"
+    - "Product Catalog Restructure Testing - Neue Artikel First"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
