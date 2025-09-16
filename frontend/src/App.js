@@ -6325,61 +6325,7 @@ function App() {
               </div>
             </div>
                 
-                {/* Main Categories (Hauptkategorien - bold/black) */}
-                <div className="space-y-2">
-                  {mainCategories.map((mainCategory) => (
-                    <div key={mainCategory.id}>
-                      {/* Main Category Button */}
-                      <button
-                        onClick={() => {
-                          setSelectedCategory(mainCategory);
-                          loadCatalogProducts(mainCategory.id);
-                          // Load subcategories for this main category
-                          loadSubCategories(mainCategory.id);
-                        }}
-                        className={`w-full text-left px-4 py-2 rounded-lg font-bold text-sm transition-colors duration-200 flex items-center justify-between ${
-                          selectedCategory?.id === mainCategory.id
-                            ? 'bg-pink-600 text-white'
-                            : 'bg-white text-black hover:bg-pink-100'
-                        }`}
-                      >
-                        <div className="flex items-center space-x-2">
-                          <span className="text-lg">{mainCategory.icon}</span>
-                          <span>{mainCategory.name}</span>
-                        </div>
-                        <span className={`text-xs px-2 py-1 rounded-full ${
-                          selectedCategory?.id === mainCategory.id
-                            ? 'bg-white bg-opacity-20 text-white'
-                            : 'bg-gray-100 text-gray-600'
-                        }`}>
-                          {mainCategory.product_count || 0}
-                        </span>
-                      </button>
-                      
-                      {/* Subcategories (shown when main category is selected) */}
-                      {selectedCategory?.id === mainCategory.id && subCategories.length > 0 && (
-                        <div className="ml-6 mt-2 space-y-1">
-                          {subCategories.map((subCategory) => (
-                            <button
-                              key={subCategory.id}
-                              onClick={() => {
-                                loadCatalogProducts(subCategory.id);
-                              }}
-                              className="flex w-full text-left px-3 py-1 text-sm text-gray-600 hover:text-pink-600 hover:bg-pink-50 rounded transition-colors duration-200 items-center justify-between"
-                            >
-                              <span>{subCategory.name}</span>
-                              <span className="text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded-full ml-2">
-                                {subCategory.product_count || 0}
-                              </span>
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+                {/* Old navigation removed - replaced with horizontal tabs above */}
 
             {/* Recently Viewed Section */}
             {showRecentlyViewed && (
