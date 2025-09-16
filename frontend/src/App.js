@@ -6931,18 +6931,65 @@ function App() {
                           </span>
                         </button>
 
-                        {/* Admin Edit Button - Desktop */}
+                        {/* Admin Action Buttons - Desktop */}
                         {isAdminAuthenticated && (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              startEditProduct(product);
-                            }}
-                            className="absolute bottom-2 right-2 w-8 h-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-colors duration-200 shadow-lg"
-                            title="Produkt bearbeiten"
-                          >
-                            <span className="text-sm">✏️</span>
-                          </button>
+                          <div className="absolute bottom-2 right-2 flex space-x-1">
+                            {/* Edit Button */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                startEditProduct(product);
+                              }}
+                              className="w-8 h-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-colors duration-200 shadow-lg"
+                              title="Produkt bearbeiten"
+                            >
+                              <span className="text-sm">✏️</span>
+                            </button>
+
+                            {/* Out of Stock Toggle Button */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleOutOfStock(product);
+                              }}
+                              className={`w-8 h-8 rounded-full ${
+                                product.stock_quantity === 0 
+                                  ? 'bg-green-600 hover:bg-green-700' 
+                                  : 'bg-red-600 hover:bg-red-700'
+                              } text-white flex items-center justify-center transition-colors duration-200 shadow-lg`}
+                              title={product.stock_quantity === 0 ? 'Wieder verfügbar machen' : 'Als ausverkauft markieren'}
+                            >
+                              <span className="text-sm">{product.stock_quantity === 0 ? '✅' : '🚫'}</span>
+                            </button>
+
+                            {/* Visibility Toggle Button */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleProductVisibility(product);
+                              }}
+                              className={`w-8 h-8 rounded-full ${
+                                product.is_active === false 
+                                  ? 'bg-green-600 hover:bg-green-700' 
+                                  : 'bg-orange-600 hover:bg-orange-700'
+                              } text-white flex items-center justify-center transition-colors duration-200 shadow-lg`}
+                              title={product.is_active === false ? 'Produkt einblenden' : 'Produkt ausblenden'}
+                            >
+                              <span className="text-sm">{product.is_active === false ? '👁️' : '🙈'}</span>
+                            </button>
+
+                            {/* Delete Button */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteProduct(product);
+                              }}
+                              className="w-8 h-8 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center transition-colors duration-200 shadow-lg"
+                              title="Produkt löschen"
+                            >
+                              <span className="text-sm">🗑️</span>
+                            </button>
+                          </div>
                         )}
                         
                         {/* Stock Badge */}
