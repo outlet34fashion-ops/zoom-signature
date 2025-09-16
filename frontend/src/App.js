@@ -180,6 +180,8 @@ function App() {
   const [showCreateProduct, setShowCreateProduct] = useState(false);
   const [mainCategories, setMainCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
+  const [selectedCategorySubcategories, setSelectedCategorySubcategories] = useState([]);
+  const [showSubcategories, setShowSubcategories] = useState(false);
   const [totalProductCount, setTotalProductCount] = useState(0);
   const [newCategoryData, setNewCategoryData] = useState({
     name: '',
