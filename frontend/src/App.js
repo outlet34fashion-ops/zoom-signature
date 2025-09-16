@@ -4388,7 +4388,7 @@ function App() {
                   </div>
 
                   {/* Management Buttons */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                     {/* Category Management Button */}
                     <button
                       onClick={() => {
@@ -4411,6 +4411,29 @@ function App() {
                       </div>
                     </button>
                     
+                    {/* Products Management Button - NEW */}
+                    <button
+                      onClick={() => {
+                        console.log('🔵 Produkte anzeigen button clicked');
+                        setShowCatalogManagement(false); // Close current view
+                        setIsCustomerView(true); // Switch to customer view to show catalog
+                        setCurrentView('catalog'); // Show catalog
+                        loadCatalogProducts(); // Load products
+                      }}
+                      className="bg-green-600 hover:bg-green-700 text-white p-6 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-between"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="text-3xl">📦</div>
+                        <div className="text-left">
+                          <div className="text-xl font-bold">Produkte</div>
+                          <div className="text-sm opacity-90">Alle Produkte anzeigen</div>
+                        </div>
+                      </div>
+                      <div className="text-4xl font-bold">
+                        {catalogProducts.length}
+                      </div>
+                    </button>
+                    
                     <button
                       onClick={() => {
                         setShowCreateProduct(true);
@@ -4418,16 +4441,16 @@ function App() {
                         // Load categories for dropdown
                         loadCategories();
                       }}
-                      className="bg-green-600 hover:bg-green-700 text-white p-6 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-between"
+                      className="bg-orange-600 hover:bg-orange-700 text-white p-6 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-between"
                     >
                       <div className="flex items-center space-x-3">
-                        <div className="text-3xl">📦</div>
+                        <div className="text-3xl">➕</div>
                         <div className="text-left">
                           <div className="text-xl font-bold">Neues Produkt</div>
                           <div className="text-sm opacity-90">Produkt hinzufügen</div>
                         </div>
                       </div>
-                      <div className="text-3xl">➕</div>
+                      <div className="text-3xl">📦</div>
                     </button>
                   </div>
 
