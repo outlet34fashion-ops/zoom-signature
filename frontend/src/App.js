@@ -909,17 +909,6 @@ function App() {
     }
   };
 
-  // Add to recently viewed
-  const addToRecentlyViewed = async (productId) => {
-    if (!isAuthenticated || !currentCustomer?.customer_number) return;
-    
-    try {
-      await axios.post(`${API}/recently-viewed/${currentCustomer.customer_number}/${productId}`);
-    } catch (error) {
-      console.error('Error adding to recently viewed:', error);
-    }
-  };
-
   // Toggle favorite
   const toggleFavorite = async (productId) => {
     if (!isAuthenticated || !currentCustomer?.customer_number) {
