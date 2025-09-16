@@ -6497,6 +6497,130 @@ function App() {
                       </div>
                     </div>
                   ))}
+                    </div>
+                  </div>
+
+                  {/* Bestseller Section - Second Block */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                      <span className="mr-2">🏆</span>
+                      Bestseller
+                    </h3>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                      {catalogProducts
+                        .filter(product => {
+                          // Zeige ältere oder beliebte Produkte als Bestseller
+                          const productDate = new Date(product.created_at);
+                          const thirtyDaysAgo = new Date();
+                          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                          return productDate <= thirtyDaysAgo || !product.created_at; // Älter als 30 Tage oder kein Datum
+                        })
+                        .map((product) => (
+                          <div
+                            key={product.id}
+                            onClick={() => {
+                              setSelectedCatalogProduct(product);
+                              setShowProductDetail(true);
+                              setSelectedProductSize(product.sizes?.[0] || 'OneSize');
+                              setCurrentImageIndex(0);
+                              addToRecentlyViewed(product.id);
+                            }}
+                            className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 cursor-pointer group"
+                          >
+                            {/* Square Image Container - WhatsApp Style */}
+                            <div className="relative w-full pt-[100%] bg-gray-100 rounded-t-lg overflow-hidden">
+                              {product.image_url ? (
+                                <img
+                                  src={product.image_url}
+                                  alt={product.name}
+                                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                                />
+                              ) : (
+                                <div className="absolute inset-0 flex items-center justify-center text-gray-400">
+                                  <span className="text-4xl">📷</span>
+                                </div>
+                              )}
+                              
+                              {/* Favorite Heart */}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleFavorite(product.id);
+                                }}
+                                className="absolute top-2 right-2 w-8 h-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors duration-200"
+                              >
+                                <span className={`text-lg ${favoriteProducts.includes(product.id) ? 'text-red-500' : 'text-gray-400 hover:text-red-400'}`}>
+                                  {favoriteProducts.includes(product.id) ? '❤️' : '🤍'}
+                                </span>
+                              </button>
+                              
+                              {/* Price Badge */}
+                              <div className="absolute bottom-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-sm font-semibold">
+                                €{product.price.toFixed(2)}
+                              </div>
+                            </div>
+                            
+                            {/* Product Info */}
+                            <div className="p-3">
+                              <h4 className="font-medium text-gray-900 text-sm mb-1 line-clamp-2 leading-tight">
+                                {product.name}
+                              </h4>
+                              <p className="text-xs text-gray-600 mb-2 line-clamp-2">
+                                {product.description}
+                              </p>
+                              
+                              {/* Material and Properties */}
+                              {(product.material || (product.material_properties && product.material_properties.length > 0)) && (
+                                <div className="text-xs text-gray-500 mb-2">
+                                  {product.material && <span>{product.material}</span>}
+                                  {product.material && product.material_properties && product.material_properties.length > 0 && <span>, </span>}
+                                  {product.material_properties && product.material_properties.length > 0 && (
+                                    <span>{product.material_properties.slice(0, 2).join(', ')}</span>
+                                  )}
+                                  {product.material_properties && product.material_properties.length > 2 && (
+                                    <span>...</span>
+                                  )}
+                                </div>
+                              )}
+                              
+                              {/* Colors */}
+                              {product.colors && product.colors.length > 0 && (
+                                <div className="flex items-center space-x-1 mb-1">
+                                  {product.colors.slice(0, 3).map((color, index) => (
+                                    <div
+                                      key={index}
+                                      className="w-3 h-3 rounded-full border border-gray-300"
+                                      style={{
+                                        backgroundColor: color.toLowerCase() === 'schwarz' ? '#000000' :
+                                                       color.toLowerCase() === 'weiß' || color.toLowerCase() === 'weiss' ? '#FFFFFF' :
+                                                       color.toLowerCase() === 'grau' ? '#808080' :
+                                                       color.toLowerCase() === 'blau' ? '#0066CC' :
+                                                       color.toLowerCase() === 'grün' ? '#008000' :
+                                                       color.toLowerCase() === 'gelb' ? '#FFD700' :
+                                                       color.toLowerCase() === 'rosa' || color.toLowerCase() === 'pink' ? '#FFC0CB' :
+                                                       color.toLowerCase() === 'lila' || color.toLowerCase() === 'violett' ? '#8A2BE2' :
+                                                       color.toLowerCase() === 'braun' ? '#8B4513' :
+                                                       color.toLowerCase() === 'orange' ? '#FFA500' :
+                                                       color.toLowerCase() === 'rot' ? '#CC0000' :
+                                                       color.toLowerCase() === 'beige' ? '#F5F5DC' : 
+                                                       color.startsWith('#') ? color : '#CCCCCC'
+                                      }}
+                                      title={color}
+                                    />
+                                  ))}
+                                  {product.colors.length > 3 && (
+                                    <span className="text-xs text-gray-500">+{product.colors.length - 3}</span>
+                                  )}
+                                </div>
+                              )}
+                              <div className="text-xs text-gray-500">
+                                {product.sizes?.join(', ') || 'OneSize'}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
