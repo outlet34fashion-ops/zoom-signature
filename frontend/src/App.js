@@ -947,6 +947,7 @@ function App() {
   
   // Profile Modal States
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   
   // Login Modal States
   const [showLoginModal, setShowLoginModal] = useState(false);
