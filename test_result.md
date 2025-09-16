@@ -652,10 +652,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "WhatsApp-Style Camera Integration testing completed successfully"
+    - "Profile Dropdown with Logout Functionality Testing"
   stuck_tasks: []
   test_all: false
-  test_priority: "critical_first"
+  test_priority: "high_first"
 
 agent_communication:
     - agent: "testing"
