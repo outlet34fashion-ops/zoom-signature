@@ -1654,7 +1654,6 @@ function App() {
     if (isAuthenticated && currentCustomer?.customer_number && !isAdminView) {
       loadCustomerCatalogOrders(currentCustomer.customer_number);
       loadFavoriteProducts(currentCustomer.customer_number);
-      loadRecentlyViewed(currentCustomer.customer_number);
     }
   }, [isAuthenticated, currentCustomer?.customer_number, isAdminView]);
 
