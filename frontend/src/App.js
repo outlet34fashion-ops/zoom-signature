@@ -6643,7 +6643,123 @@ function App() {
                       <span className="mr-2">✨</span>
                       Neue Artikel
                     </h3>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                    {/* Mobile: Horizontal scrollable 2-column grid */}
+                    <div className="block md:hidden">
+                      <div className="flex overflow-x-auto space-x-4 pb-4" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                        {catalogProducts
+                          .filter(product => {
+                            // Zeige Produkte die in den letzten 30 Tagen erstellt wurden als "neu"
+                            const productDate = new Date(product.created_at);
+                            const thirtyDaysAgo = new Date();
+                            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                            return productDate > thirtyDaysAgo;
+                          })
+                          .slice(0, 10) // Maximal 10 neue Artikel anzeigen
+                          .map((product) => (
+                      <div
+                        key={product.id}
+                        onClick={() => {
+                          setSelectedCatalogProduct(product);
+                          setShowProductDetail(true);
+                          setSelectedProductSize(product.sizes?.[0] || 'OneSize');
+                          setCurrentImageIndex(0);
+                          addToRecentlyViewed(product.id);
+                        }}
+                        className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 cursor-pointer group min-w-[160px] flex-shrink-0"
+                      >
+                        {/* Square Image Container - WhatsApp Style Mobile */}
+                        <div className="relative w-full pt-[100%] bg-gray-100 rounded-t-lg overflow-hidden">
+                          {product.image_url ? (
+                            <img
+                              src={product.image_url}
+                              alt={product.name}
+                              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                            />
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center text-gray-400">
+                              <span className="text-4xl">📷</span>
+                            </div>
+                          )}
+                          
+                          {/* Favorite Heart */}
+                          <div className="absolute top-2 left-2">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleFavorite(product.id);
+                              }}
+                              className="w-8 h-8 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-full flex items-center justify-center transition-all duration-200 shadow-sm"
+                            >
+                              <span className="text-lg">
+                                {favorites.includes(product.id) ? '❤️' : '🤍'}
+                              </span>
+                            </button>
+                          </div>
+
+                          {/* "Ausverkauft" Badge */}
+                          {product.stock_quantity === 0 && (
+                            <div className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                              Ausverkauft
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Product Info Mobile */}
+                        <div className="p-3">
+                          <div className="text-xs text-gray-500 mb-1">
+                            Art.-Nr.: {product.article_number}
+                          </div>
+                          <h3 className="font-semibold text-sm text-gray-800 mb-1 line-clamp-2" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                            {product.name}
+                          </h3>
+                          {product.material && (
+                            <div className="text-xs text-blue-600 mb-1">
+                              {product.material}
+                            </div>
+                          )}
+                          <div className="flex justify-between items-end">
+                            <span className="text-lg font-bold text-pink-600">
+                              {product.price.toFixed(2)} €
+                            </span>
+                            <div className="text-right">
+                              {product.colors && product.colors.length > 0 && (
+                                <div className="flex space-x-1 mb-1">
+                                  {product.colors.slice(0, 2).map((color, index) => (
+                                    <div
+                                      key={index}
+                                      className="w-3 h-3 rounded-full border border-gray-300"
+                                      style={{
+                                        backgroundColor: color.toLowerCase() === 'schwarz' ? '#000000' :
+                                                       color.toLowerCase() === 'weiß' ? '#FFFFFF' :
+                                                       color.toLowerCase() === 'blau' ? '#0066CC' :
+                                                       color.toLowerCase() === 'rot' ? '#CC0000' :
+                                                       color.toLowerCase() === 'beige' ? '#F5F5DC' : 
+                                                       color.startsWith('#') ? color : '#CCCCCC'
+                                      }}
+                                      title={color}
+                                    />
+                                  ))}
+                                  {product.colors.length > 2 && (
+                                    <span className="text-xs text-gray-500">+{product.colors.length - 2}</span>
+                                  )}
+                                </div>
+                              )}
+                              <div className="text-xs text-gray-500">
+                                {product.sizes && product.sizes.length > 0 ? 
+                                  product.sizes.slice(0, 2).join(', ') + (product.sizes.length > 2 ? '...' : '') : 
+                                  'OneSize'
+                                }
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {/* Desktop: Regular grid */}
+                    <div className="hidden md:grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                       {catalogProducts
                         .filter(product => {
                           // Zeige Produkte die in den letzten 30 Tagen erstellt wurden als "neu"
