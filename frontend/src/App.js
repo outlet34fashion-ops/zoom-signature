@@ -6367,29 +6367,6 @@ function App() {
                     </span>
                   </button>
 
-                  {/* Oberteile Tab */}
-                  <button
-                    onClick={() => {
-                      // Find Oberteile category
-                      const oberteileCategory = mainCategories.find(cat => 
-                        cat.name.toLowerCase().includes('oberteile') || 
-                        cat.name.toLowerCase().includes('oberteil')
-                      );
-                      if (oberteileCategory) {
-                        setSelectedCategory(oberteileCategory);
-                        loadCatalogProducts(oberteileCategory.id);
-                        loadCategorySubcategories(oberteileCategory);
-                      }
-                    }}
-                    className={`px-6 py-3 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-200 flex items-center space-x-2 min-w-max ${
-                      selectedCategory?.name?.toLowerCase().includes('oberteile')
-                        ? 'bg-pink-600 text-white shadow-lg'
-                        : 'bg-white text-gray-700 hover:bg-pink-100 border border-gray-200'
-                    }`}
-                  >
-                    <span>👕</span>
-                    <span>Oberteile</span>
-                  </button>
 
                   {/* Hosen & Jeans Tab */}
                   <button
