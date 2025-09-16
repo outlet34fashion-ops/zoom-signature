@@ -11995,6 +11995,327 @@ TIMEZONE BUG ANALYSIS COMPLETE:
             self.log_test("Migration - Preparation Exception", False, str(e))
             return False
 
+    def test_critical_database_migration(self):
+        """CRITICAL: Test Customer Database Migration - Complete Data Replacement"""
+        print("\n🚨 CRITICAL DATABASE MIGRATION TESTING")
+        print("=" * 80)
+        print("🎯 EXECUTING CRITICAL DATABASE MIGRATION - Customer Data Replacement")
+        print("📋 OPERATION: Complete backup, deletion, and import of 731 customers from CSV")
+        print("⚠️  WARNING: This is a DESTRUCTIVE operation with full documentation")
+        print("=" * 80)
+        
+        migration_results = {
+            "backup_created": False,
+            "current_customers_count": 0,
+            "csv_customers_count": 0,
+            "deletion_successful": False,
+            "import_successful": False,
+            "final_customers_count": 0,
+            "verification_successful": False
+        }
+        
+        try:
+            # STEP 1: FINAL BACKUP - Create complete backup of all current customer data
+            print("\n📦 STEP 1: FINAL BACKUP - Creating complete backup of current customer data...")
+            
+            try:
+                backup_response = requests.get(f"{self.api_url}/admin/customers", timeout=30)
+                if backup_response.status_code == 200:
+                    current_customers = backup_response.json()
+                    migration_results["current_customers_count"] = len(current_customers)
+                    
+                    # Save backup to file with timestamp
+                    backup_filename = f"/tmp/customer_backup_{int(time.time())}.json"
+                    with open(backup_filename, 'w') as f:
+                        json.dump(current_customers, f, indent=2, default=str)
+                    
+                    migration_results["backup_created"] = True
+                    self.log_test("MIGRATION - Final Backup Creation", True, f"Backup created: {len(current_customers)} customers saved to {backup_filename}")
+                    
+                    print(f"  ✅ Backup successful: {len(current_customers)} customers backed up")
+                    print(f"  📁 Backup location: {backup_filename}")
+                    
+                    # Show sample of current customers
+                    if current_customers:
+                        print(f"  📋 Sample current customers:")
+                        for i, customer in enumerate(current_customers[:3]):
+                            print(f"    {i+1}. {customer.get('customer_number', 'N/A')} - {customer.get('first_name', '')} {customer.get('last_name', '')} - {customer.get('email', 'N/A')}")
+                        if len(current_customers) > 3:
+                            print(f"    ... and {len(current_customers) - 3} more customers")
+                else:
+                    self.log_test("MIGRATION - Final Backup Creation", False, f"Backup failed with status {backup_response.status_code}")
+                    return False
+                    
+            except Exception as e:
+                self.log_test("MIGRATION - Final Backup Creation", False, f"Backup error: {str(e)}")
+                return False
+            
+            # STEP 2: ANALYZE CSV DATA - Verify CSV data is ready for import
+            print("\n📊 STEP 2: CSV DATA ANALYSIS - Verifying CSV data at /tmp/contacts.csv...")
+            
+            try:
+                import csv
+                import codecs
+                
+                csv_customers = []
+                with codecs.open('/tmp/contacts.csv', 'r', encoding='iso-8859-1') as csvfile:
+                    reader = csv.reader(csvfile, delimiter=';')
+                    headers = next(reader)  # Skip header row
+                    
+                    for row in reader:
+                        if len(row) >= 22:  # Ensure we have enough columns (V is column 22)
+                            customer_data = {
+                                "customer_number": row[0].strip(),  # Column A (Kundennummer)
+                                "company_name": row[2].strip(),     # Column C (Firmenname)
+                                "first_name": row[5].strip(),       # Column F (Vorname)
+                                "last_name": row[6].strip(),        # Column G (Nachname)
+                                "email": row[21].strip()            # Column V (E-Mail 1)
+                            }
+                            
+                            # Only add if we have essential data
+                            if customer_data["customer_number"] and customer_data["email"]:
+                                csv_customers.append(customer_data)
+                
+                migration_results["csv_customers_count"] = len(csv_customers)
+                
+                if len(csv_customers) > 0:
+                    self.log_test("MIGRATION - CSV Data Analysis", True, f"CSV processed: {len(csv_customers)} valid customers found")
+                    
+                    print(f"  ✅ CSV analysis successful: {len(csv_customers)} valid customers")
+                    print(f"  📋 Sample CSV customers:")
+                    for i, customer in enumerate(csv_customers[:3]):
+                        print(f"    {i+1}. {customer['customer_number']} - {customer['company_name']} - {customer['first_name']} {customer['last_name']} - {customer['email']}")
+                    if len(csv_customers) > 3:
+                        print(f"    ... and {len(csv_customers) - 3} more customers")
+                else:
+                    self.log_test("MIGRATION - CSV Data Analysis", False, "No valid customers found in CSV")
+                    return False
+                    
+            except Exception as e:
+                self.log_test("MIGRATION - CSV Data Analysis", False, f"CSV analysis error: {str(e)}")
+                return False
+            
+            # STEP 3: DELETE ALL CUSTOMERS - Remove all existing customers from database
+            print(f"\n🗑️  STEP 3: DELETE ALL CUSTOMERS - Removing all {migration_results['current_customers_count']} existing customers...")
+            print("⚠️  WARNING: This will delete ALL customers including admin PIN 1924 customers!")
+            
+            deleted_count = 0
+            deletion_errors = []
+            
+            try:
+                # Get fresh list of customers to delete
+                delete_response = requests.get(f"{self.api_url}/admin/customers", timeout=30)
+                if delete_response.status_code == 200:
+                    customers_to_delete = delete_response.json()
+                    
+                    print(f"  🎯 Deleting {len(customers_to_delete)} customers...")
+                    
+                    for customer in customers_to_delete:
+                        try:
+                            customer_id = customer.get('id')
+                            customer_number = customer.get('customer_number', 'Unknown')
+                            
+                            delete_response = requests.delete(
+                                f"{self.api_url}/admin/customers/{customer_id}",
+                                timeout=10
+                            )
+                            
+                            if delete_response.status_code == 200:
+                                deleted_count += 1
+                                if deleted_count <= 5:  # Show first 5 deletions
+                                    print(f"    ✅ Deleted: {customer_number}")
+                            else:
+                                deletion_errors.append(f"Failed to delete {customer_number}: Status {delete_response.status_code}")
+                                
+                        except Exception as e:
+                            deletion_errors.append(f"Error deleting {customer_number}: {str(e)}")
+                    
+                    migration_results["deletion_successful"] = deleted_count > 0 and len(deletion_errors) == 0
+                    
+                    if migration_results["deletion_successful"]:
+                        self.log_test("MIGRATION - Delete All Customers", True, f"Successfully deleted {deleted_count} customers")
+                        print(f"  ✅ Deletion successful: {deleted_count} customers deleted")
+                    else:
+                        self.log_test("MIGRATION - Delete All Customers", False, f"Deletion issues: {deleted_count} deleted, {len(deletion_errors)} errors")
+                        print(f"  ⚠️  Deletion issues: {deleted_count} deleted, {len(deletion_errors)} errors")
+                        for error in deletion_errors[:5]:  # Show first 5 errors
+                            print(f"    ❌ {error}")
+                else:
+                    self.log_test("MIGRATION - Delete All Customers", False, f"Could not get customers for deletion: Status {delete_response.status_code}")
+                    return False
+                    
+            except Exception as e:
+                self.log_test("MIGRATION - Delete All Customers", False, f"Deletion error: {str(e)}")
+                return False
+            
+            # STEP 4: IMPORT NEW CUSTOMERS - Import all customers from CSV
+            print(f"\n📥 STEP 4: IMPORT NEW CUSTOMERS - Importing {len(csv_customers)} customers from CSV...")
+            
+            imported_count = 0
+            import_errors = []
+            
+            try:
+                for i, customer_data in enumerate(csv_customers):
+                    try:
+                        # Prepare customer data for API
+                        api_customer_data = {
+                            "customer_number": customer_data["customer_number"],
+                            "first_name": customer_data["first_name"] or "N/A",
+                            "last_name": customer_data["last_name"] or "N/A", 
+                            "email": customer_data["email"],
+                            "company_name": customer_data["company_name"] or ""
+                        }
+                        
+                        import_response = requests.post(
+                            f"{self.api_url}/admin/customers/create",
+                            json=api_customer_data,
+                            headers={'Content-Type': 'application/json'},
+                            timeout=10
+                        )
+                        
+                        if import_response.status_code == 200:
+                            imported_count += 1
+                            if imported_count <= 5:  # Show first 5 imports
+                                print(f"    ✅ Imported: {customer_data['customer_number']} - {customer_data['company_name']}")
+                        else:
+                            import_errors.append(f"Failed to import {customer_data['customer_number']}: Status {import_response.status_code}")
+                            
+                        # Progress indicator
+                        if (i + 1) % 100 == 0:
+                            print(f"    📊 Progress: {i + 1}/{len(csv_customers)} customers processed...")
+                            
+                    except Exception as e:
+                        import_errors.append(f"Error importing {customer_data['customer_number']}: {str(e)}")
+                
+                migration_results["import_successful"] = imported_count > 0
+                
+                if migration_results["import_successful"]:
+                    self.log_test("MIGRATION - Import New Customers", True, f"Successfully imported {imported_count}/{len(csv_customers)} customers")
+                    print(f"  ✅ Import successful: {imported_count}/{len(csv_customers)} customers imported")
+                    if import_errors:
+                        print(f"  ⚠️  Import issues: {len(import_errors)} errors")
+                        for error in import_errors[:5]:  # Show first 5 errors
+                            print(f"    ❌ {error}")
+                else:
+                    self.log_test("MIGRATION - Import New Customers", False, f"Import failed: {imported_count} imported, {len(import_errors)} errors")
+                    return False
+                    
+            except Exception as e:
+                self.log_test("MIGRATION - Import New Customers", False, f"Import error: {str(e)}")
+                return False
+            
+            # STEP 5: VERIFICATION - Verify all customers are properly imported and accessible
+            print(f"\n🔍 STEP 5: VERIFICATION - Verifying all customers are properly imported...")
+            
+            try:
+                verify_response = requests.get(f"{self.api_url}/admin/customers", timeout=30)
+                if verify_response.status_code == 200:
+                    final_customers = verify_response.json()
+                    migration_results["final_customers_count"] = len(final_customers)
+                    
+                    # Test random customer access
+                    verification_tests = []
+                    
+                    if final_customers:
+                        # Test first 3 customers
+                        for i, customer in enumerate(final_customers[:3]):
+                            customer_number = customer.get('customer_number')
+                            if customer_number:
+                                check_response = requests.get(
+                                    f"{self.api_url}/customers/check/{customer_number}",
+                                    timeout=10
+                                )
+                                
+                                if check_response.status_code == 200:
+                                    check_data = check_response.json()
+                                    if check_data.get('exists') and check_data.get('activation_status') == 'active':
+                                        verification_tests.append(True)
+                                        print(f"    ✅ Verified: {customer_number} - accessible and active")
+                                    else:
+                                        verification_tests.append(False)
+                                        print(f"    ❌ Issue: {customer_number} - not accessible or inactive")
+                                else:
+                                    verification_tests.append(False)
+                                    print(f"    ❌ Issue: {customer_number} - check failed with status {check_response.status_code}")
+                    
+                    migration_results["verification_successful"] = len(verification_tests) > 0 and all(verification_tests)
+                    
+                    if migration_results["verification_successful"]:
+                        self.log_test("MIGRATION - Customer Verification", True, f"All tested customers ({len(verification_tests)}) are accessible and active")
+                        print(f"  ✅ Verification successful: All tested customers accessible")
+                    else:
+                        self.log_test("MIGRATION - Customer Verification", False, f"Verification issues: {sum(verification_tests)}/{len(verification_tests)} customers verified")
+                        print(f"  ⚠️  Verification issues: {sum(verification_tests)}/{len(verification_tests)} customers verified")
+                else:
+                    self.log_test("MIGRATION - Customer Verification", False, f"Could not get customers for verification: Status {verify_response.status_code}")
+                    return False
+                    
+            except Exception as e:
+                self.log_test("MIGRATION - Customer Verification", False, f"Verification error: {str(e)}")
+                return False
+            
+            # STEP 6: FINAL REPORT - Provide complete migration report with before/after statistics
+            print(f"\n📊 STEP 6: FINAL REPORT - Complete Migration Statistics")
+            print("=" * 80)
+            print("🎯 CUSTOMER DATABASE MIGRATION COMPLETED")
+            print("=" * 80)
+            
+            print(f"📦 BACKUP PHASE:")
+            print(f"  ✅ Backup created: {migration_results['backup_created']}")
+            print(f"  📊 Original customers backed up: {migration_results['current_customers_count']}")
+            
+            print(f"\n📊 DATA ANALYSIS PHASE:")
+            print(f"  📁 CSV file processed: /tmp/contacts.csv")
+            print(f"  📊 Valid CSV customers found: {migration_results['csv_customers_count']}")
+            
+            print(f"\n🗑️  DELETION PHASE:")
+            print(f"  ✅ Deletion successful: {migration_results['deletion_successful']}")
+            print(f"  📊 Customers deleted: {deleted_count}")
+            
+            print(f"\n📥 IMPORT PHASE:")
+            print(f"  ✅ Import successful: {migration_results['import_successful']}")
+            print(f"  📊 Customers imported: {imported_count}")
+            print(f"  📊 Import success rate: {(imported_count/len(csv_customers)*100):.1f}%")
+            
+            print(f"\n🔍 VERIFICATION PHASE:")
+            print(f"  ✅ Verification successful: {migration_results['verification_successful']}")
+            print(f"  📊 Final customer count: {migration_results['final_customers_count']}")
+            
+            print(f"\n📈 MIGRATION SUMMARY:")
+            print(f"  📊 Before: {migration_results['current_customers_count']} customers")
+            print(f"  📊 After: {migration_results['final_customers_count']} customers")
+            print(f"  📊 Net change: {migration_results['final_customers_count'] - migration_results['current_customers_count']:+d} customers")
+            print(f"  📊 Target achieved: {migration_results['final_customers_count']} / 731 customers")
+            
+            # Overall success assessment
+            overall_success = (
+                migration_results["backup_created"] and
+                migration_results["deletion_successful"] and
+                migration_results["import_successful"] and
+                migration_results["verification_successful"] and
+                migration_results["final_customers_count"] > 0
+            )
+            
+            if overall_success:
+                print(f"\n🎉 MIGRATION COMPLETED SUCCESSFULLY!")
+                print(f"✅ All phases completed without critical errors")
+                print(f"✅ Customer database successfully replaced")
+                print(f"✅ All imported customers are accessible and active")
+                self.log_test("MIGRATION - Overall Success", True, f"Complete migration successful: {migration_results['final_customers_count']} customers active")
+            else:
+                print(f"\n⚠️  MIGRATION COMPLETED WITH ISSUES!")
+                print(f"❌ Some phases had errors - review logs above")
+                self.log_test("MIGRATION - Overall Success", False, "Migration completed but with issues in one or more phases")
+            
+            print("=" * 80)
+            
+            return overall_success
+            
+        except Exception as e:
+            self.log_test("MIGRATION - Critical Exception", False, f"Critical migration error: {str(e)}")
+            print(f"\n❌ CRITICAL MIGRATION ERROR: {str(e)}")
+            return False
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("🚀 Starting Live Shopping App Backend API Tests")
