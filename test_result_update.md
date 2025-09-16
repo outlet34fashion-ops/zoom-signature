@@ -7,8 +7,8 @@ Comprehensive debugging reveals the EXACT issue preventing Plus-Buttons from wor
 ### DETAILED FINDINGS:
 
 **1) ✅ ENVIRONMENT ANALYSIS:**
-- Frontend URL correctly configured (https://liveshop-admin.preview.emergentagent.com)
-- BACKEND_URL properly set (https://liveshop-admin.preview.emergentagent.com)
+- Frontend URL correctly configured (https://category-management.preview.emergentagent.com)
+- BACKEND_URL properly set (https://category-management.preview.emergentagent.com)
 - API endpoints reachable:
   - GET /api/categories returns 200 OK with 30 categories
   - GET /api/categories/main returns 200 OK with 14 categories
