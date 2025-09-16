@@ -947,7 +947,21 @@ function App() {
   
   // Profile Modal States
   const [showProfileModal, setShowProfileModal] = useState(false);
-  // Profile dropdown functionality removed as requested
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  
+  // Close profile dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showProfileDropdown && !event.target.closest('.profile-dropdown')) {
+        setShowProfileDropdown(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showProfileDropdown]);
   
   // Login Modal States
   const [showLoginModal, setShowLoginModal] = useState(false);
