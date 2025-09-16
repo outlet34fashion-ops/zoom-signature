@@ -6187,7 +6187,7 @@ function App() {
 
             {/* Horizontal Scrollable Category Tabs */}
             <div className="bg-gray-50 border-b">
-              <div className="overflow-x-auto scrollbar-hide">
+              <div className="overflow-x-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                 <div className="flex space-x-2 p-4 min-w-max">
                   {/* Alle Kategorien Tab */}
                   <button
