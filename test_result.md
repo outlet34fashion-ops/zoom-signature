@@ -242,6 +242,18 @@ backend:
         comment: "CONFIRMED NOT IMPLEMENTED: Customer authentication middleware still not present in backend. However, this is medium priority and does not affect core functionality. All customer authentication is handled at the API endpoint level with proper status checks. The existing customer status check API (GET /api/customers/check/{customer_number}) provides all necessary authentication functionality for the frontend. No critical impact on system operation."
 
 frontend:
+  - task: "Profile Dropdown with Logout Functionality Testing"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "user"
+        comment: "NEW TESTING REQUEST: Test the new profile dropdown menu implementation with logout functionality: 1) Customer Profile Dropdown Test - Login as customer 10001, verify old standalone 'Abmelden' button is no longer visible, locate profile picture/avatar button in header, test dropdown with 'Profil bearbeiten' and 'Abmelden' options, 2) Admin Profile Dropdown Test - Login as admin PIN 1924, test admin profile button (👨‍💼 icon), verify dropdown with 'Admin-Bereich' header and 'Abmelden' option, 3) Profile Modal Logout Removal - verify logout button is NO LONGER present in profile modal, 4) Dropdown Behavior - test clicking behavior, outside clicks, proper styling and positioning. FOCUS: Confirm ALL logout buttons moved to profile dropdown menus and no standalone logout buttons remain visible."
+
   - task: "Material Properties Modal Testing"
     implemented: true
     working: true
