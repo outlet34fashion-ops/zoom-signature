@@ -6691,7 +6691,7 @@ function App() {
                               className="w-8 h-8 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-full flex items-center justify-center transition-all duration-200 shadow-sm"
                             >
                               <span className="text-lg">
-                                {favorites.includes(product.id) ? '❤️' : '🤍'}
+                                {productFavoriteStatus[product.id] ? '❤️' : '🤍'}
                               </span>
                             </button>
                           </div>
