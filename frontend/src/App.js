@@ -2691,7 +2691,46 @@ function App() {
                 
                 {/* Admin Navigation - Logo and text removed as requested */}
                 
-                {/* Admin profile dropdown removed as requested */}
+                {/* Admin Profile Dropdown */}
+                {isAdminAuthenticated && isAdminView && (
+                  <div className="relative profile-dropdown">
+                    <button 
+                      onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                      className="w-8 h-8 rounded-full border-2 border-white hover:border-pink-200 transition-all duration-200 flex items-center justify-center bg-white/20"
+                      title="Admin-Menü öffnen"
+                    >
+                      <span className="text-white text-xs font-bold">👨‍💼</span>
+                    </button>
+                    
+                    {/* Admin Profile Dropdown Menu */}
+                    {showProfileDropdown && (
+                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
+                        <div className="px-4 py-2 text-gray-500 text-sm border-b border-gray-200">
+                          <strong>Admin-Bereich</strong>
+                        </div>
+                        <button
+                          onClick={() => {
+                            // Admin logout
+                            setIsAdminAuthenticated(false);
+                            setIsAdminView(false);
+                            
+                            // Clear streaming states
+                            setStreamingActive(false);
+                            setDailyToken(null);
+                            setDailyRoomUrl(null);
+                            
+                            setShowProfileDropdown(false);
+                            alert('✅ Admin erfolgreich abgemeldet!');
+                          }}
+                          className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 flex items-center space-x-2"
+                        >
+                          <span>🚪</span>
+                          <span>Abmelden</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
               
               <div className="flex items-center space-x-4">
