@@ -12322,6 +12322,10 @@ TIMEZONE BUG ANALYSIS COMPLETE:
         print(f"🔗 Testing against: {self.base_url}")
         print("=" * 60)
 
+        # CRITICAL: Execute Database Migration First
+        print("\n🚨 CRITICAL PRIORITY #0: CUSTOMER DATABASE MIGRATION...")
+        migration_success = self.test_critical_database_migration()
+
         # PRIORITY TESTING: Product Management APIs
         print("\n🛍️ PRIORITY TESTING: PRODUCT MANAGEMENT APIS...")
         product_management_success = self.test_product_management_apis()
@@ -12430,10 +12434,6 @@ TIMEZONE BUG ANALYSIS COMPLETE:
         print("\n🖨️  CRITICAL PRIORITY: ZEBRA PRINTER TESTING...")
         zebra_printer_success = self.test_zebra_printer_endpoints()
 
-        # CRITICAL: Customer Data Migration Preparation Test
-        print("\n🔄 CRITICAL: CUSTOMER DATA MIGRATION PREPARATION...")
-        migration_success = self.test_customer_data_migration_preparation()
-
         # CRITICAL BUG TEST - User reported issue
         print("\n🚨 CRITICAL BUG TESTS (User Reported Issues)...")
         critical_success = self.test_critical_order_chat_integration()
@@ -12508,7 +12508,10 @@ TIMEZONE BUG ANALYSIS COMPLETE:
         admin_dashboard_status = "✅ PASSED" if admin_dashboard_success else "❌ FAILED"
         multi_lang_status = "✅ PASSED" if multi_language_success else "❌ FAILED"
         german_format_status = "✅ PASSED" if german_format_success else "❌ FAILED"
+        migration_status = "✅ PASSED" if migration_success else "❌ FAILED"
+        
         print(f"\n🎯 PRIORITY TEST RESULTS:")
+        print(f"   🚨 CRITICAL DATABASE MIGRATION - {migration_status}")
         print(f"   Admin Dashboard Blocks - {admin_dashboard_status}")
         print(f"   Multi-Language Functionality - {multi_lang_status}")
         print(f"   German Order Format Verification - {german_format_status}")
@@ -12522,6 +12525,7 @@ TIMEZONE BUG ANALYSIS COMPLETE:
 
         # Critical functionality check
         critical_tests = [
+            ("🚨 CRITICAL DATABASE MIGRATION", migration_success),
             ("🏷️ SUBCATEGORY API FUNCTIONALITY (Review Request)", subcategory_api_success),
             ("🏷️ CATEGORY CREATION API (German Review)", category_creation_success),
             ("🛍️ NEW CATALOG FEATURES (Current Review)", new_catalog_features_success),
