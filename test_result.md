@@ -700,7 +700,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Product Catalog Restructure Testing - Neue Artikel First"
+    - "Horizontal Category Tabs with Product Sections Testing"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
