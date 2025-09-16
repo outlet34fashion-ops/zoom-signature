@@ -1138,6 +1138,83 @@ function App() {
     }
   };
 
+  // Toggle product out of stock
+  const toggleOutOfStock = async (product) => {
+    try {
+      console.log('Toggling out of stock for product:', product.id);
+      const newStockQuantity = product.stock_quantity === 0 ? null : 0;
+      
+      const response = await axios.put(`${API}/admin/products/${product.id}`, {
+        stock_quantity: newStockQuantity
+      });
+      
+      console.log('Product stock updated:', response.data);
+      
+      // Reload products to show updated state
+      await loadCatalogProducts();
+      
+      const status = newStockQuantity === 0 ? 'als ausverkauft markiert' : 'wieder verfügbar gemacht';
+      alert(`✅ Produkt ${status}!`);
+      
+    } catch (error) {
+      console.error('Error updating stock:', error);
+      alert('❌ Fehler beim Aktualisieren des Lagerbestands');
+    }
+  };
+
+  // Toggle product visibility
+  const toggleProductVisibility = async (product) => {
+    try {
+      console.log('Toggling visibility for product:', product.id);
+      const newActiveState = !product.is_active;
+      
+      const response = await axios.put(`${API}/admin/products/${product.id}`, {
+        is_active: newActiveState
+      });
+      
+      console.log('Product visibility updated:', response.data);
+      
+      // Reload products to show updated state
+      await loadCatalogProducts();
+      
+      const status = newActiveState ? 'eingeblendet' : 'ausgeblendet';
+      alert(`✅ Produkt ${status}!`);
+      
+    } catch (error) {
+      console.error('Error updating visibility:', error);
+      alert('❌ Fehler beim Aktualisieren der Sichtbarkeit');
+    }
+  };
+
+  // Delete product
+  const deleteProduct = async (product) => {
+    try {
+      // Confirm deletion
+      const confirmed = window.confirm(
+        `Sind Sie sicher, dass Sie das Produkt "${product.name}" (Art.-Nr.: ${product.article_number}) löschen möchten?\n\nDiese Aktion kann nicht rückgängig gemacht werden!`
+      );
+      
+      if (!confirmed) {
+        return;
+      }
+      
+      console.log('Deleting product:', product.id);
+      
+      const response = await axios.delete(`${API}/admin/products/${product.id}`);
+      
+      console.log('Product deleted:', response.data);
+      
+      // Reload products to show updated list
+      await loadCatalogProducts();
+      
+      alert('✅ Produkt erfolgreich gelöscht!');
+      
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      alert('❌ Fehler beim Löschen des Produkts');
+    }
+  };
+
   // Check notification permission on load
   useEffect(() => {
     const savedNotification = localStorage.getItem('notificationsEnabled');
