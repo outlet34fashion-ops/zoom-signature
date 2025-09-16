@@ -11776,6 +11776,10 @@ TIMEZONE BUG ANALYSIS COMPLETE:
         print(f"🔗 Testing against: {self.base_url}")
         print("=" * 60)
 
+        # PRIORITY TESTING: Product Management APIs
+        print("\n🛍️ PRIORITY TESTING: PRODUCT MANAGEMENT APIS...")
+        product_management_success = self.test_product_management_apis()
+
         # CRITICAL: Subcategory API functionality test (Review Request)
         print("\n🏷️ CRITICAL: SUBCATEGORY API FUNCTIONALITY TEST...")
         subcategory_api_success = self.test_subcategory_api_functionality()
