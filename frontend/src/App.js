@@ -173,6 +173,7 @@ function App() {
   const [catalogError, setCatalogError] = useState('');
   const [customerCatalogOrders, setCustomerCatalogOrders] = useState([]);
   const [showMyOrders, setShowMyOrders] = useState(false);
+  const [showFavorites, setShowFavorites] = useState(false);
   
   // Admin Katalog States
   const [showCatalogManagement, setShowCatalogManagement] = useState(false);
