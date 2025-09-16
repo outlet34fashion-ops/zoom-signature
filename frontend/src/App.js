@@ -6185,28 +6185,145 @@ function App() {
               </div>
             </div>
 
-            {/* Category Navigation */}
-            <div className="bg-gray-50 p-4 border-b">
-              <div className="space-y-3">
-                {/* All Categories Button */}
-                <div className="flex space-x-2">
+            {/* Horizontal Scrollable Category Tabs */}
+            <div className="bg-gray-50 border-b">
+              <div className="overflow-x-auto scrollbar-hide">
+                <div className="flex space-x-2 p-4 min-w-max">
+                  {/* Alle Kategorien Tab */}
                   <button
                     onClick={() => {
                       setSelectedCategory(null);
                       loadCatalogProducts();
                     }}
-                    className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-200 flex items-center space-x-2 ${
+                    className={`px-6 py-3 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-200 flex items-center space-x-2 min-w-max ${
                       !selectedCategory
-                        ? 'bg-pink-600 text-white'
-                        : 'bg-white text-gray-700 hover:bg-pink-100'
+                        ? 'bg-pink-600 text-white shadow-lg'
+                        : 'bg-white text-gray-700 hover:bg-pink-100 border border-gray-200'
                     }`}
                   >
                     <span>Alle Kategorien</span>
-                    <span className="bg-white bg-opacity-20 text-xs px-2 py-1 rounded-full">
+                    <span className={`text-xs px-2 py-1 rounded-full ${
+                      !selectedCategory 
+                        ? 'bg-white bg-opacity-20' 
+                        : 'bg-pink-100 text-pink-600'
+                    }`}>
                       {totalProductCount}
                     </span>
                   </button>
+
+                  {/* Oberteile Tab */}
+                  <button
+                    onClick={() => {
+                      // Find Oberteile category
+                      const oberteileCategory = mainCategories.find(cat => 
+                        cat.name.toLowerCase().includes('oberteile') || 
+                        cat.name.toLowerCase().includes('oberteil')
+                      );
+                      if (oberteileCategory) {
+                        setSelectedCategory(oberteileCategory);
+                        loadCatalogProducts(oberteileCategory.id);
+                      }
+                    }}
+                    className={`px-6 py-3 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-200 flex items-center space-x-2 min-w-max ${
+                      selectedCategory?.name?.toLowerCase().includes('oberteile')
+                        ? 'bg-pink-600 text-white shadow-lg'
+                        : 'bg-white text-gray-700 hover:bg-pink-100 border border-gray-200'
+                    }`}
+                  >
+                    <span>👕</span>
+                    <span>Oberteile</span>
+                  </button>
+
+                  {/* Hosen & Jeans Tab */}
+                  <button
+                    onClick={() => {
+                      const hosenCategory = mainCategories.find(cat => 
+                        cat.name.toLowerCase().includes('hose') || 
+                        cat.name.toLowerCase().includes('jean')
+                      );
+                      if (hosenCategory) {
+                        setSelectedCategory(hosenCategory);
+                        loadCatalogProducts(hosenCategory.id);
+                      }
+                    }}
+                    className={`px-6 py-3 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-200 flex items-center space-x-2 min-w-max ${
+                      selectedCategory?.name?.toLowerCase().includes('hose') || selectedCategory?.name?.toLowerCase().includes('jean')
+                        ? 'bg-pink-600 text-white shadow-lg'
+                        : 'bg-white text-gray-700 hover:bg-pink-100 border border-gray-200'
+                    }`}
+                  >
+                    <span>👖</span>
+                    <span>Hosen & Jeans</span>
+                  </button>
+
+                  {/* Kleider & Röcke Tab */}
+                  <button
+                    onClick={() => {
+                      const kleiderCategory = mainCategories.find(cat => 
+                        cat.name.toLowerCase().includes('kleid') || 
+                        cat.name.toLowerCase().includes('rock')
+                      );
+                      if (kleiderCategory) {
+                        setSelectedCategory(kleiderCategory);
+                        loadCatalogProducts(kleiderCategory.id);
+                      }
+                    }}
+                    className={`px-6 py-3 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-200 flex items-center space-x-2 min-w-max ${
+                      selectedCategory?.name?.toLowerCase().includes('kleid') || selectedCategory?.name?.toLowerCase().includes('rock')
+                        ? 'bg-pink-600 text-white shadow-lg'
+                        : 'bg-white text-gray-700 hover:bg-pink-100 border border-gray-200'
+                    }`}
+                  >
+                    <span>👗</span>
+                    <span>Kleider & Röcke</span>
+                  </button>
+
+                  {/* Jacken & Mäntel Tab */}
+                  <button
+                    onClick={() => {
+                      const jackenCategory = mainCategories.find(cat => 
+                        cat.name.toLowerCase().includes('jacke') || 
+                        cat.name.toLowerCase().includes('mantel')
+                      );
+                      if (jackenCategory) {
+                        setSelectedCategory(jackenCategory);
+                        loadCatalogProducts(jackenCategory.id);
+                      }
+                    }}
+                    className={`px-6 py-3 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-200 flex items-center space-x-2 min-w-max ${
+                      selectedCategory?.name?.toLowerCase().includes('jacke') || selectedCategory?.name?.toLowerCase().includes('mantel')
+                        ? 'bg-pink-600 text-white shadow-lg'
+                        : 'bg-white text-gray-700 hover:bg-pink-100 border border-gray-200'
+                    }`}
+                  >
+                    <span>🧥</span>
+                    <span>Jacken & Mäntel</span>
+                  </button>
+
+                  {/* Accessoires Tab */}
+                  <button
+                    onClick={() => {
+                      const accessoiresCategory = mainCategories.find(cat => 
+                        cat.name.toLowerCase().includes('accessoire') || 
+                        cat.name.toLowerCase().includes('schmuck')
+                      );
+                      if (accessoiresCategory) {
+                        setSelectedCategory(accessoiresCategory);
+                        loadCatalogProducts(accessoiresCategory.id);
+                      }
+                    }}
+                    className={`px-6 py-3 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-200 flex items-center space-x-2 min-w-max ${
+                      selectedCategory?.name?.toLowerCase().includes('accessoire') || selectedCategory?.name?.toLowerCase().includes('schmuck')
+                        ? 'bg-pink-600 text-white shadow-lg'
+                        : 'bg-white text-gray-700 hover:bg-pink-100 border border-gray-200'
+                    }`}
+                  >
+                    <span>👜</span>
+                    <span>Accessoires</span>
+                  </button>
                 </div>
+              </div>
+            </div>
                 
                 {/* Main Categories (Hauptkategorien - bold/black) */}
                 <div className="space-y-2">
