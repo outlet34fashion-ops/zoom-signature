@@ -1189,29 +1189,74 @@ function App() {
   // Delete product
   const deleteProduct = async (product) => {
     try {
+      console.log('🗑️ Delete product initiated:', product);
+      
+      // Validate product object
+      if (!product || !product.id) {
+        console.error('Invalid product object:', product);
+        alert('❌ Fehler: Produkt-ID nicht gefunden');
+        return;
+      }
+      
       // Confirm deletion
       const confirmed = window.confirm(
         `Sind Sie sicher, dass Sie das Produkt "${product.name}" (Art.-Nr.: ${product.article_number}) löschen möchten?\n\nDiese Aktion kann nicht rückgängig gemacht werden!`
       );
       
       if (!confirmed) {
+        console.log('🚫 Product deletion cancelled by user');
         return;
       }
       
-      console.log('Deleting product:', product.id);
+      console.log('🔄 Sending DELETE request for product ID:', product.id);
+      console.log('🌐 API URL:', `${API}/admin/products/${product.id}`);
       
-      const response = await axios.delete(`${API}/admin/products/${product.id}`);
+      const response = await axios.delete(`${API}/admin/products/${product.id}`, {
+        timeout: 10000, // 10 second timeout
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
       
-      console.log('Product deleted:', response.data);
+      console.log('✅ Product deletion response:', response);
+      console.log('📄 Response status:', response.status);
+      console.log('📋 Response data:', response.data);
       
-      // Reload products to show updated list
-      await loadCatalogProducts();
-      
-      alert('✅ Produkt erfolgreich gelöscht!');
+      if (response.status === 200) {
+        console.log('🔄 Reloading products after successful deletion...');
+        
+        // Reload products to show updated list
+        await loadCatalogProducts();
+        
+        alert('✅ Produkt erfolgreich gelöscht!');
+        console.log('✅ Product deletion completed successfully');
+      } else {
+        throw new Error(`Unexpected response status: ${response.status}`);
+      }
       
     } catch (error) {
-      console.error('Error deleting product:', error);
-      alert('❌ Fehler beim Löschen des Produkts');
+      console.error('❌ Error during product deletion:');
+      console.error('📋 Error object:', error);
+      console.error('🌐 Error response:', error.response);
+      console.error('📄 Error status:', error.response?.status);
+      console.error('📋 Error data:', error.response?.data);
+      
+      // More specific error messages
+      let errorMessage = '❌ Fehler beim Löschen des Produkts';
+      
+      if (error.response?.status === 404) {
+        errorMessage = '❌ Produkt nicht gefunden (bereits gelöscht?)';
+      } else if (error.response?.status === 403) {
+        errorMessage = '❌ Keine Berechtigung zum Löschen';
+      } else if (error.response?.status === 500) {
+        errorMessage = '❌ Server-Fehler beim Löschen';
+      } else if (error.code === 'ECONNABORTED') {
+        errorMessage = '❌ Zeitüberschreitung beim Löschen';
+      } else if (error.message) {
+        errorMessage += `: ${error.message}`;
+      }
+      
+      alert(errorMessage);
     }
   };
 
