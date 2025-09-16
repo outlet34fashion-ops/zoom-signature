@@ -455,16 +455,32 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
               </div>
               <div>
                 <h2 className="text-2xl font-bold text-gray-800">Kategorien verwalten</h2>
-                <p className="text-gray-600">Haupt- und Unterkategorien bearbeiten</p>
+                <p className="text-gray-600">
+                  Haupt- und Unterkategorien bearbeiten
+                  {sortMode && <span className="text-blue-600 font-medium"> | Sortier-Modus aktiv</span>}
+                </p>
               </div>
             </div>
-            <button
-              onClick={onClose}
-              className="text-gray-500 hover:text-gray-700 text-2xl font-bold relative z-20"
-              style={{ pointerEvents: 'auto' }}
-            >
-              ×
-            </button>
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={() => setSortMode(!sortMode)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center space-x-2 ${
+                  sortMode 
+                    ? 'bg-blue-600 text-white shadow-lg' 
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+                }`}
+              >
+                <span>🔀</span>
+                <span>{sortMode ? 'Sortierung beenden' : 'Sortieren'}</span>
+              </button>
+              <button
+                onClick={onClose}
+                className="text-gray-500 hover:text-gray-700 text-2xl font-bold relative z-20"
+                style={{ pointerEvents: 'auto' }}
+              >
+                ×
+              </button>
+            </div>
           </div>
         </div>
 
