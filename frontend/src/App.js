@@ -2642,13 +2642,7 @@ function App() {
                 {/* Logo and Navigation for Customers */}
                 {isAuthenticated && !isAdminView && (
                   <div className="flex items-center space-x-2">
-                    {/* OUTLET34 Logo in Header */}
-                    <img 
-                      src="/images/outlet34-logo-header.png" 
-                      alt="OUTLET34 Logo" 
-                      className="w-8 h-8 rounded-full border-2 border-white"
-                    />
-                    <span className="text-lg font-bold">OUTLET34</span>
+                    {/* OUTLET34 Logo and text removed as requested */}
                     
                     {/* WhatsApp Support Button */}
                     <a 
