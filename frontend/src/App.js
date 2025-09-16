@@ -4415,9 +4415,8 @@ function App() {
                     <button
                       onClick={() => {
                         console.log('🔵 Produkte anzeigen button clicked');
-                        setShowCatalogManagement(false); // Close current view
-                        setIsCustomerView(true); // Switch to customer view to show catalog
-                        setCurrentView('catalog'); // Show catalog
+                        setShowCatalog(true); // Show catalog
+                        loadCategories(); // Load categories
                         loadCatalogProducts(); // Load products
                       }}
                       className="bg-green-600 hover:bg-green-700 text-white p-6 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-between"
