@@ -1141,14 +1141,27 @@ function App() {
   // Toggle product out of stock
   const toggleOutOfStock = async (product) => {
     try {
-      console.log('Toggling out of stock for product:', product.id);
+      console.log('🚫 Toggle out of stock for product:', product);
+      
+      if (!product || !product.id) {
+        console.error('Invalid product object:', product);
+        alert('❌ Fehler: Produkt-ID nicht gefunden');
+        return;
+      }
+      
       const newStockQuantity = product.stock_quantity === 0 ? null : 0;
+      console.log('📦 Changing stock from', product.stock_quantity, 'to', newStockQuantity);
       
       const response = await axios.put(`${API}/admin/products/${product.id}`, {
         stock_quantity: newStockQuantity
+      }, {
+        timeout: 10000,
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
       
-      console.log('Product stock updated:', response.data);
+      console.log('✅ Stock update response:', response.data);
       
       // Reload products to show updated state
       await loadCatalogProducts();
@@ -1157,22 +1170,43 @@ function App() {
       alert(`✅ Produkt ${status}!`);
       
     } catch (error) {
-      console.error('Error updating stock:', error);
-      alert('❌ Fehler beim Aktualisieren des Lagerbestands');
+      console.error('❌ Error updating stock:', error);
+      let errorMessage = '❌ Fehler beim Aktualisieren des Lagerbestands';
+      
+      if (error.response?.status === 404) {
+        errorMessage = '❌ Produkt nicht gefunden';
+      } else if (error.response?.data?.detail) {
+        errorMessage += `: ${error.response.data.detail}`;
+      }
+      
+      alert(errorMessage);
     }
   };
 
   // Toggle product visibility
   const toggleProductVisibility = async (product) => {
     try {
-      console.log('Toggling visibility for product:', product.id);
+      console.log('👁️ Toggle visibility for product:', product);
+      
+      if (!product || !product.id) {
+        console.error('Invalid product object:', product);
+        alert('❌ Fehler: Produkt-ID nicht gefunden');
+        return;
+      }
+      
       const newActiveState = !product.is_active;
+      console.log('🔄 Changing visibility from', product.is_active, 'to', newActiveState);
       
       const response = await axios.put(`${API}/admin/products/${product.id}`, {
         is_active: newActiveState
+      }, {
+        timeout: 10000,
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
       
-      console.log('Product visibility updated:', response.data);
+      console.log('✅ Visibility update response:', response.data);
       
       // Reload products to show updated state
       await loadCatalogProducts();
@@ -1181,8 +1215,16 @@ function App() {
       alert(`✅ Produkt ${status}!`);
       
     } catch (error) {
-      console.error('Error updating visibility:', error);
-      alert('❌ Fehler beim Aktualisieren der Sichtbarkeit');
+      console.error('❌ Error updating visibility:', error);
+      let errorMessage = '❌ Fehler beim Aktualisieren der Sichtbarkeit';
+      
+      if (error.response?.status === 404) {
+        errorMessage = '❌ Produkt nicht gefunden';
+      } else if (error.response?.data?.detail) {
+        errorMessage += `: ${error.response.data.detail}`;
+      }
+      
+      alert(errorMessage);
     }
   };
 
