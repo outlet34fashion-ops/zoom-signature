@@ -222,8 +222,6 @@ function App() {
   
   // New Catalog Features States
   const [searchQuery, setSearchQuery] = useState('');
-  const [showRecentlyViewed, setShowRecentlyViewed] = useState(false);
-  const [recentlyViewedProducts, setRecentlyViewedProducts] = useState([]);
   const [favoriteProducts, setFavoriteProducts] = useState([]);
   const [productFavoriteStatus, setProductFavoriteStatus] = useState({});
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
