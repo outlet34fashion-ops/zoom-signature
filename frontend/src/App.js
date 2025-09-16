@@ -6104,26 +6104,11 @@ function App() {
       {showCatalog && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-hidden">
           <div className="bg-white w-full h-full max-w-7xl max-h-full flex flex-col">
-            {/* Header */}
-            <div className="bg-gradient-to-r from-pink-600 to-purple-600 text-white p-4 flex justify-between items-center">
-              <div className="flex items-center space-x-3">
-                <h2 className="text-2xl font-bold">🛍️ OUTLET34 Produktkatalog</h2>
-                {selectedCategory && (
-                  <span className="bg-white/20 px-3 py-1 rounded-full text-sm">
-                    {selectedCategory.name}
-                  </span>
-                )}
-              </div>
-              <div className="flex items-center space-x-2">
-                {isAuthenticated && (
-                  <button
-                    onClick={() => setShowMyOrders(true)}
-                    className="bg-white/20 hover:bg-white/30 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center space-x-1"
-                  >
-                    <span>📦</span>
-                    <span>Meine Bestellungen</span>
-                  </button>
-                )}
+            {/* Header - Mobile optimized */}
+            <div className="bg-gradient-to-r from-pink-600 to-purple-600 text-white p-3">
+              {/* Top row with title and close button */}
+              <div className="flex justify-between items-center mb-2">
+                <h2 className="text-lg font-semibold">🛍️ OUTLET34 Produktkatalog</h2>
                 <button
                   onClick={() => {
                     setShowCatalog(false);
@@ -6131,10 +6116,32 @@ function App() {
                     setSelectedCatalogProduct(null);
                     setShowProductDetail(false);
                   }}
-                  className="bg-white/20 hover:bg-white/30 p-2 rounded-lg transition-colors duration-200"
+                  className="bg-white/20 hover:bg-white/30 w-8 h-8 rounded-lg transition-colors duration-200 flex items-center justify-center text-lg font-bold"
                 >
                   ✕
                 </button>
+              </div>
+              
+              {/* Bottom row with orders and category */}
+              <div className="flex justify-between items-center">
+                <div className="flex items-center space-x-3">
+                  {isAuthenticated && (
+                    <button
+                      onClick={() => setShowMyOrders(true)}
+                      className="bg-white/20 hover:bg-white/30 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center space-x-1"
+                    >
+                      <span>📦</span>
+                      <span>Meine Bestellung</span>
+                    </button>
+                  )}
+                </div>
+                <div className="flex items-center">
+                  {selectedCategory && (
+                    <span className="bg-white/20 px-3 py-1 rounded-full text-sm">
+                      {selectedCategory.name}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
 
