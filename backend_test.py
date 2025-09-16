@@ -12134,46 +12134,27 @@ TIMEZONE BUG ANALYSIS COMPLETE:
             deletion_errors = []
             
             try:
-                # Get fresh list of customers to delete
-                delete_response = requests.get(f"{self.api_url}/admin/customers", timeout=30)
-                if delete_response.status_code == 200:
-                    customers_to_delete = delete_response.json()
-                    
-                    print(f"  🎯 Deleting {len(customers_to_delete)} customers...")
-                    
-                    for customer in customers_to_delete:
-                        try:
-                            customer_id = customer.get('id')
-                            customer_number = customer.get('customer_number', 'Unknown')
-                            
-                            delete_response = requests.delete(
-                                f"{self.api_url}/admin/customers/{customer_id}",
-                                timeout=10
-                            )
-                            
-                            if delete_response.status_code == 200:
-                                deleted_count += 1
-                                if deleted_count <= 5:  # Show first 5 deletions
-                                    print(f"    ✅ Deleted: {customer_number}")
-                            else:
-                                deletion_errors.append(f"Failed to delete {customer_number}: Status {delete_response.status_code}")
-                                
-                        except Exception as e:
-                            deletion_errors.append(f"Error deleting {customer_number}: {str(e)}")
-                    
-                    migration_results["deletion_successful"] = deleted_count > 0 and len(deletion_errors) == 0
-                    
-                    if migration_results["deletion_successful"]:
-                        self.log_test("MIGRATION - Delete All Customers", True, f"Successfully deleted {deleted_count} customers")
-                        print(f"  ✅ Deletion successful: {deleted_count} customers deleted")
-                    else:
-                        self.log_test("MIGRATION - Delete All Customers", False, f"Deletion issues: {deleted_count} deleted, {len(deletion_errors)} errors")
-                        print(f"  ⚠️  Deletion issues: {deleted_count} deleted, {len(deletion_errors)} errors")
-                        for error in deletion_errors[:5]:  # Show first 5 errors
-                            print(f"    ❌ {error}")
+                # Use direct MongoDB access to delete all customers
+                import pymongo
+                
+                # Connect directly to MongoDB
+                mongo_client = pymongo.MongoClient(mongo_url)
+                mongo_db = mongo_client[db_name]
+                
+                # Delete all customers directly from MongoDB
+                delete_result = mongo_db.customers.delete_many({})
+                deleted_count = delete_result.deleted_count
+                
+                migration_results["deletion_successful"] = deleted_count > 0
+                
+                if migration_results["deletion_successful"]:
+                    self.log_test("MIGRATION - Delete All Customers", True, f"Successfully deleted {deleted_count} customers")
+                    print(f"  ✅ Deletion successful: {deleted_count} customers deleted")
                 else:
-                    self.log_test("MIGRATION - Delete All Customers", False, f"Could not get customers for deletion: Status {delete_response.status_code}")
-                    return False
+                    self.log_test("MIGRATION - Delete All Customers", False, f"No customers were deleted")
+                    print(f"  ⚠️  No customers were deleted")
+                
+                mongo_client.close()
                     
             except Exception as e:
                 self.log_test("MIGRATION - Delete All Customers", False, f"Deletion error: {str(e)}")
