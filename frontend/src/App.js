@@ -6853,6 +6853,20 @@ function App() {
                             {productFavoriteStatus[product.id] ? '❤️' : '🤍'}
                           </span>
                         </button>
+
+                        {/* Admin Edit Button - Desktop */}
+                        {isAdminAuthenticated && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              startEditProduct(product);
+                            }}
+                            className="absolute bottom-2 right-2 w-8 h-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-colors duration-200 shadow-lg"
+                            title="Produkt bearbeiten"
+                          >
+                            <span className="text-sm">✏️</span>
+                          </button>
+                        )}
                         
                         {/* Stock Badge */}
                         {product.stock_quantity !== null && (
