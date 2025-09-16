@@ -22,6 +22,7 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
   // New category states - MUST be declared before useEffect that uses them
   const [newMainCategory, setNewMainCategory] = useState('');
   const [newSubCategory, setNewSubCategory] = useState('');
+  const [sortMode, setSortMode] = useState(false);
   
   // Debug state for button troubleshooting
   useEffect(() => {
