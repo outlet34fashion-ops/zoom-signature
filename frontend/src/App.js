@@ -6825,6 +6825,46 @@ function App() {
                               Ausverkauft
                             </div>
                           )}
+
+                          {/* Admin Action Buttons - Mobile */}
+                          {isAdminAuthenticated && (
+                            <div className="absolute bottom-2 right-2 flex space-x-1">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  startEditProduct(product);
+                                }}
+                                className="w-6 h-6 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-colors duration-200 shadow-lg"
+                                title="Bearbeiten"
+                              >
+                                <span className="text-xs">✏️</span>
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleOutOfStock(product);
+                                }}
+                                className={`w-6 h-6 rounded-full ${
+                                  product.stock_quantity === 0 
+                                    ? 'bg-green-600 hover:bg-green-700' 
+                                    : 'bg-red-600 hover:bg-red-700'
+                                } text-white flex items-center justify-center transition-colors duration-200 shadow-lg`}
+                                title={product.stock_quantity === 0 ? 'Verfügbar' : 'Ausverkauft'}
+                              >
+                                <span className="text-xs">{product.stock_quantity === 0 ? '✅' : '🚫'}</span>
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deleteProduct(product);
+                                }}
+                                className="w-6 h-6 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center transition-colors duration-200 shadow-lg"
+                                title="Löschen"
+                              >
+                                <span className="text-xs">🗑️</span>
+                              </button>
+                            </div>
+                          )}
                         </div>
 
                         {/* Product Info Mobile */}
