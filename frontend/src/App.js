@@ -6369,22 +6369,21 @@ function App() {
                 </div>
               ) : (
                 <div className="space-y-6">
-                  {/* Neue Artikel Section - First Block */}
+                  {/* Bestseller Section - Second Block */}
                   <div>
                     <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                      <span className="mr-2">✨</span>
-                      Neue Artikel
+                      <span className="mr-2">🏆</span>
+                      Bestseller
                     </h3>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                       {catalogProducts
                         .filter(product => {
-                          // Zeige Produkte die in den letzten 30 Tagen erstellt wurden als "neu"
+                          // Zeige ältere oder beliebte Produkte als Bestseller
                           const productDate = new Date(product.created_at);
                           const thirtyDaysAgo = new Date();
                           thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-                          return productDate > thirtyDaysAgo;
+                          return productDate <= thirtyDaysAgo || !product.created_at; // Älter als 30 Tage oder kein Datum
                         })
-                        .slice(0, 10) // Maximal 10 neue Artikel anzeigen
                         .map((product) => (
                     <div
                       key={product.id}
