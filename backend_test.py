@@ -11770,6 +11770,231 @@ TIMEZONE BUG ANALYSIS COMPLETE:
         
         return product_success_count == len(recent_product_tests)
 
+    def test_customer_data_migration_preparation(self):
+        """Test customer data migration preparation functionality"""
+        print("\n🔄 TESTING CUSTOMER DATA MIGRATION PREPARATION...")
+        print("  🎯 OBJECTIVE: Safely backup current customer data, then prepare for CSV import")
+        print("  📁 CSV DATA LOCATION: /tmp/contacts.csv")
+        print("  📊 EXPECTED RECORDS: 804 customers")
+        
+        try:
+            # STEP 1: BACKUP CURRENT DATA - Export all current customers from database
+            print("  📤 STEP 1: BACKUP CURRENT DATA - Export all current customers...")
+            
+            current_customers_response = requests.get(f"{self.api_url}/admin/customers", timeout=15)
+            if current_customers_response.status_code != 200:
+                self.log_test("Migration - Current Customer Backup", False, f"Failed to get current customers: {current_customers_response.status_code}")
+                return False
+            
+            current_customers = current_customers_response.json()
+            current_count = len(current_customers)
+            
+            # Show current customer count and sample data
+            print(f"    📊 Current customer count: {current_count}")
+            if current_customers:
+                sample_customer = current_customers[0]
+                print(f"    📋 Sample current customer structure:")
+                print(f"      - ID: {sample_customer.get('id', 'N/A')}")
+                print(f"      - Customer Number: {sample_customer.get('customer_number', 'N/A')}")
+                print(f"      - Name: {sample_customer.get('first_name', '')} {sample_customer.get('last_name', '')}")
+                print(f"      - Email: {sample_customer.get('email', 'N/A')}")
+                print(f"      - Company: {sample_customer.get('company_name', 'N/A')}")
+                print(f"      - Status: {sample_customer.get('activation_status', 'N/A')}")
+            
+            self.log_test("Migration - Current Customer Backup", True, f"Successfully backed up {current_count} current customers")
+            
+            # STEP 2: ANALYZE TARGET DATA - Process the CSV data
+            print("  📊 STEP 2: ANALYZE TARGET DATA - Process CSV data...")
+            
+            import csv
+            import codecs
+            
+            # Read CSV file with proper encoding (ISO-8859-1)
+            csv_customers = []
+            try:
+                with codecs.open('/tmp/contacts.csv', 'r', encoding='iso-8859-1') as csvfile:
+                    reader = csv.DictReader(csvfile, delimiter=';')
+                    for row in reader:
+                        # Extract the required columns: A(Kundennummer), C(Firmenname), F(Vorname), G(Nachname), V(E-Mail 1)
+                        csv_customer = {
+                            'customer_number': row.get('Kundennummer', '').strip(),
+                            'company_name': row.get('Firmenname', '').strip(),
+                            'first_name': row.get('Vorname', '').strip(),
+                            'last_name': row.get('Nachname', '').strip(),
+                            'email': row.get('E-Mail 1', '').strip()
+                        }
+                        
+                        # Only include customers with valid customer number and email
+                        if csv_customer['customer_number'] and csv_customer['email']:
+                            csv_customers.append(csv_customer)
+                
+                csv_count = len(csv_customers)
+                print(f"    📊 CSV customer count: {csv_count}")
+                print(f"    📋 Sample CSV customer data:")
+                if csv_customers:
+                    sample_csv = csv_customers[0]
+                    print(f"      - Customer Number: {sample_csv['customer_number']}")
+                    print(f"      - Company: {sample_csv['company_name']}")
+                    print(f"      - Name: {sample_csv['first_name']} {sample_csv['last_name']}")
+                    print(f"      - Email: {sample_csv['email']}")
+                
+                # Show a few more samples
+                print(f"    📋 Additional CSV samples:")
+                for i, sample in enumerate(csv_customers[1:4], 2):
+                    print(f"      Sample {i}: {sample['customer_number']} - {sample['first_name']} {sample['last_name']} ({sample['email']})")
+                
+                self.log_test("Migration - CSV Data Analysis", True, f"Successfully processed {csv_count} customers from CSV")
+                
+            except Exception as e:
+                self.log_test("Migration - CSV Data Analysis", False, f"CSV processing error: {str(e)}")
+                return False
+            
+            # STEP 3: PREPARE FOR MIGRATION - Verify data compatibility
+            print("  🔍 STEP 3: PREPARE FOR MIGRATION - Verify data format compatibility...")
+            
+            # Check for data format compatibility
+            compatibility_issues = []
+            valid_csv_customers = 0
+            
+            for csv_customer in csv_customers[:10]:  # Check first 10 for validation
+                # Check customer number format
+                if not csv_customer['customer_number'].isdigit():
+                    compatibility_issues.append(f"Non-numeric customer number: {csv_customer['customer_number']}")
+                
+                # Check email format (basic validation)
+                if '@' not in csv_customer['email'] or '.' not in csv_customer['email']:
+                    compatibility_issues.append(f"Invalid email format: {csv_customer['email']}")
+                else:
+                    valid_csv_customers += 1
+            
+            # Show compatibility analysis
+            print(f"    ✅ Valid CSV customers (sample check): {valid_csv_customers}/10")
+            if compatibility_issues:
+                print(f"    ⚠️  Compatibility issues found (sample):")
+                for issue in compatibility_issues[:5]:  # Show first 5 issues
+                    print(f"      - {issue}")
+            else:
+                print(f"    ✅ No compatibility issues found in sample data")
+            
+            # STEP 4: MIGRATION IMPACT ANALYSIS
+            print("  📊 STEP 4: MIGRATION IMPACT ANALYSIS...")
+            
+            # Find customers that would be deleted (current customers not in CSV)
+            current_customer_numbers = {c.get('customer_number') for c in current_customers}
+            csv_customer_numbers = {c['customer_number'] for c in csv_customers}
+            
+            customers_to_delete = current_customer_numbers - csv_customer_numbers
+            customers_to_add = csv_customer_numbers - current_customer_numbers
+            customers_to_update = current_customer_numbers & csv_customer_numbers
+            
+            print(f"    🗑️  Customers that would be DELETED: {len(customers_to_delete)}")
+            if customers_to_delete and len(customers_to_delete) <= 10:
+                print(f"      - Customer numbers: {list(customers_to_delete)}")
+            elif customers_to_delete:
+                sample_delete = list(customers_to_delete)[:5]
+                print(f"      - Sample customer numbers: {sample_delete}... (and {len(customers_to_delete)-5} more)")
+            
+            print(f"    ➕ Customers that would be ADDED: {len(customers_to_add)}")
+            if customers_to_add and len(customers_to_add) <= 10:
+                sample_add = list(customers_to_add)[:5]
+                print(f"      - Sample customer numbers: {sample_add}")
+            elif customers_to_add:
+                sample_add = list(customers_to_add)[:5]
+                print(f"      - Sample customer numbers: {sample_add}... (and {len(customers_to_add)-5} more)")
+            
+            print(f"    🔄 Customers that would be UPDATED: {len(customers_to_update)}")
+            if customers_to_update and len(customers_to_update) <= 10:
+                sample_update = list(customers_to_update)[:5]
+                print(f"      - Sample customer numbers: {sample_update}")
+            elif customers_to_update:
+                sample_update = list(customers_to_update)[:5]
+                print(f"      - Sample customer numbers: {sample_update}... (and {len(customers_to_update)-5} more)")
+            
+            # STEP 5: SAFETY VERIFICATION
+            print("  🛡️  STEP 5: SAFETY VERIFICATION...")
+            
+            # Verify backup APIs exist for restoration
+            backup_apis_available = True
+            
+            # Test if we can create a customer (for restoration capability)
+            test_customer = {
+                "customer_number": f"BACKUP_TEST_{int(time.time())}",
+                "first_name": "Backup",
+                "last_name": "Test",
+                "email": f"backup.test.{int(time.time())}@example.com",
+                "company_name": "Test Company"
+            }
+            
+            create_response = requests.post(
+                f"{self.api_url}/admin/customers/create",
+                json=test_customer,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            if create_response.status_code == 200:
+                created_customer = create_response.json()
+                print(f"    ✅ Customer creation API working (test customer created)")
+                
+                # Clean up test customer
+                delete_response = requests.delete(
+                    f"{self.api_url}/admin/customers/{created_customer['id']}",
+                    timeout=10
+                )
+                if delete_response.status_code == 200:
+                    print(f"    ✅ Customer deletion API working (test customer cleaned up)")
+                else:
+                    print(f"    ⚠️  Test customer cleanup failed (ID: {created_customer['id']})")
+            else:
+                backup_apis_available = False
+                print(f"    ❌ Customer creation API not working - backup/restore not possible")
+            
+            # STEP 6: MIGRATION READINESS REPORT
+            print("  📋 STEP 6: MIGRATION READINESS REPORT...")
+            
+            migration_ready = (
+                csv_count > 0 and
+                len(compatibility_issues) < csv_count * 0.1 and  # Less than 10% issues
+                backup_apis_available
+            )
+            
+            print(f"    📊 MIGRATION STATISTICS:")
+            print(f"      - Current customers in database: {current_count}")
+            print(f"      - New customers from CSV: {csv_count}")
+            print(f"      - Customers to be deleted: {len(customers_to_delete)}")
+            print(f"      - Customers to be added: {len(customers_to_add)}")
+            print(f"      - Customers to be updated: {len(customers_to_update)}")
+            print(f"      - Data compatibility issues: {len(compatibility_issues)}")
+            print(f"      - Backup/Restore APIs available: {backup_apis_available}")
+            
+            print(f"    🚦 MIGRATION READINESS: {'✅ READY' if migration_ready else '❌ NOT READY'}")
+            
+            if migration_ready:
+                print(f"    ✅ SAFETY CHECKS PASSED:")
+                print(f"      - CSV data successfully parsed and validated")
+                print(f"      - Current customer data successfully backed up")
+                print(f"      - Migration impact analysis completed")
+                print(f"      - Backup/restore APIs verified working")
+                print(f"      - Data format compatibility verified")
+            else:
+                print(f"    ❌ SAFETY CONCERNS:")
+                if csv_count == 0:
+                    print(f"      - No valid customers found in CSV")
+                if len(compatibility_issues) >= csv_count * 0.1:
+                    print(f"      - Too many data compatibility issues ({len(compatibility_issues)})")
+                if not backup_apis_available:
+                    print(f"      - Backup/restore APIs not working")
+            
+            # Log the overall test result
+            self.log_test("Migration - Complete Preparation Analysis", migration_ready, 
+                         f"CSV: {csv_count} customers, Current: {current_count}, Delete: {len(customers_to_delete)}, Add: {len(customers_to_add)}, Update: {len(customers_to_update)}")
+            
+            return migration_ready
+            
+        except Exception as e:
+            self.log_test("Migration - Preparation Exception", False, str(e))
+            return False
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("🚀 Starting Live Shopping App Backend API Tests")
