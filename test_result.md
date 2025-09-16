@@ -242,6 +242,21 @@ backend:
         comment: "CONFIRMED NOT IMPLEMENTED: Customer authentication middleware still not present in backend. However, this is medium priority and does not affect core functionality. All customer authentication is handled at the API endpoint level with proper status checks. The existing customer status check API (GET /api/customers/check/{customer_number}) provides all necessary authentication functionality for the frontend. No critical impact on system operation."
 
 frontend:
+  - task: "Product Catalog Restructure Testing - Neue Artikel First"
+    implemented: true
+    working: false
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "critical"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "testing"
+        comment: "PRODUCT CATALOG RESTRUCTURE TESTING - NEUE ARTIKEL FIRST: Testing the restructured product catalog with 'Neue Artikel' first, then 'Bestseller' as requested by user. Requirements: 1) Admin login with PIN 1924 and navigation to customer view, 2) Mobile header verification with smaller title, 3) Product sections order verification (Neue Artikel → Bestseller), 4) Section content and mobile layout verification."
+      - working: false
+        agent: "testing"
+        comment: "🚨 CRITICAL ISSUE FOUND: PRODUCT CATALOG RESTRUCTURE HAS INCORRECT SECTION ORDER! Comprehensive testing reveals a MAJOR ORDERING BUG that needs immediate fixing. DETAILED FINDINGS: 1) ✅ ADMIN LOGIN & NAVIGATION: Successfully logged in with PIN 1924, switched to customer view (Kunde button), opened product catalog (Katalog button), 2) ✅ MOBILE HEADER VERIFICATION PERFECT: Found catalog title '🛍️ OUTLET34 Produktkatalog' with smaller text size (text-lg), 'Meine Bestellung' button present and functional, X close button prominently placed with proper styling (bg-white/20 hover:bg-white/30 w-8 h-8), 3) ✅ SECTIONS FOUND WITH CORRECT ICONS: 'Neue Artikel' section found with ✨ icon, 'Bestseller' section found with 🏆 icon, both sections properly implemented and visible, 4) ❌ CRITICAL ORDER ISSUE: SECTIONS ARE IN WRONG ORDER! Currently showing: 1st: Bestseller (Y=-296), 2nd: Neue Artikel (Y=-296). REQUIRED ORDER: 1st: Neue Artikel → 2nd: Bestseller. The sections are in REVERSE ORDER from what was specifically requested by the user, 5) ✅ MOBILE LAYOUT: Responsive grid layout working correctly (2 grid elements found), proper section separation (5 section headers), mobile viewport (390x844) functioning well. CONCLUSION: The restructure implementation is 80% complete but has a CRITICAL ORDERING BUG. The user specifically requested 'Neue Artikel' to appear FIRST and 'Bestseller' to appear SECOND, but currently they are reversed. This needs immediate fixing in the frontend code to swap the section order. All other aspects (mobile header, icons, layout) are working perfectly."
+
   - task: "Mobile Catalog Header Optimization Testing"
     implemented: true
     working: true
