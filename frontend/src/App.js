@@ -2752,7 +2752,7 @@ function App() {
               <div className="flex items-center space-x-4">
                 {/* Profile Dropdown for customers */}
                 {isAuthenticated && !isAdminView && (
-                  <div className="relative">
+                  <div className="relative profile-dropdown">
                     <button 
                       onClick={() => setShowProfileDropdown(!showProfileDropdown)}
                       className="w-8 h-8 rounded-full border-2 border-white hover:border-pink-200 transition-all duration-200 flex items-center justify-center"
