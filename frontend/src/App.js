@@ -1018,44 +1018,29 @@ function App() {
       setCatalogError('');
       
       // Validate mandatory fields
-      if (newProductData.sizes.length === 0) {
-        alert('❌ Bitte wählen Sie mindestens eine Größe aus (Pflichtfeld).');
-        setCreatingProduct(false);
-        return;
+      if (!newProductData.name.trim()) {
+        throw new Error('Produktname ist erforderlich');
       }
       
-      if (newProductData.colors.length === 0) {
-        alert('❌ Bitte wählen Sie mindestens eine Farbe aus (Pflichtfeld).');
-        setCreatingProduct(false);
-        return;
+      if (!newProductData.main_category_id) {
+        throw new Error('Hauptkategorie ist erforderlich');
       }
-      
-      if (newProductData.material_properties.length === 0) {
-        alert('❌ Bitte wählen Sie mindestens eine Material-Eigenschaft aus (Pflichtfeld).');
-        setCreatingProduct(false);
-        return;
+
+      // Validate sizes (mandatory)
+      if (!newProductData.sizes || newProductData.sizes.length === 0) {
+        throw new Error('Mindestens eine Größe ist erforderlich');
       }
+
+      // Validate colors (mandatory)
+      if (!newProductData.colors || newProductData.colors.length === 0) {
+        throw new Error('Mindestens eine Farbe ist erforderlich');
+      }
+
+      console.log('Submitting product data:', newProductData);
       
-      // Convert sizes string to array
-      const sizesArray = newProductData.sizes.length > 0 
-        ? newProductData.sizes 
-        : ['OneSize'];
+      const response = await axios.post(`${API}/admin/products`, newProductData);
       
-      // Sort media files by order and extract URLs
-      const sortedMedia = productMediaFiles.sort((a, b) => a.order - b.order);
-      const imageUrl = sortedMedia.find(file => file.type === 'image')?.url || '';
-      const additionalImages = sortedMedia.filter(file => file.type === 'image').slice(1).map(file => file.url);
-      
-      const productData = {
-        ...newProductData,
-        sizes: sizesArray,
-        price: parseFloat(newProductData.price),
-        stock_quantity: newProductData.stock_quantity ? parseInt(newProductData.stock_quantity) : null,
-        image_url: imageUrl,
-        additional_images: additionalImages
-      };
-      
-      await axios.post(`${API}/admin/products`, productData);
+      console.log('Product created successfully:', response.data);
       
       // Reset form
       setNewProductData({
@@ -1070,6 +1055,7 @@ function App() {
         sizes: [],
         colors: [],
         image_url: '',
+        additional_images: [],
         stock_quantity: null
       });
       setProductMediaFiles([]);
@@ -1084,12 +1070,71 @@ function App() {
     } catch (error) {
       console.error('Error creating product:', error);
       if (error.response?.status === 400 && error.response.data.detail.includes('Article number')) {
-        setCatalogError('Artikelnummer bereits vorhanden');
+        setCatalogError('⚠️ Artikelnummer bereits vorhanden. Bitte verwenden Sie eine andere Nummer.');
       } else {
-        setCatalogError('Fehler beim Erstellen des Produkts');
+        setCatalogError(error.message || 'Fehler beim Erstellen des Produkts');
       }
     } finally {
       setCreatingProduct(false);
+    }
+  };
+
+  // Admin: Update Product
+  const updateProduct = async () => {
+    try {
+      setCreatingProduct(true);
+      setCatalogError('');
+      
+      if (!editingProduct) {
+        throw new Error('Kein Produkt zum Bearbeiten ausgewählt');
+      }
+
+      console.log('Updating product:', editingProduct.id, editingProduct);
+      
+      const response = await axios.put(`${API}/admin/products/${editingProduct.id}`, editingProduct);
+      
+      console.log('Product updated successfully:', response.data);
+      
+      // Reset editing state
+      setEditingProduct(null);
+      setShowEditProduct(false);
+      
+      // Reload products
+      await loadCatalogProducts();
+      alert('✅ Produkt erfolgreich aktualisiert!');
+      
+    } catch (error) {
+      console.error('Error updating product:', error);
+      setCatalogError(error.response?.data?.detail || error.message || 'Fehler beim Aktualisieren des Produkts');
+    } finally {
+      setCreatingProduct(false);
+    }
+  };
+
+  // Start editing a product
+  const startEditProduct = (product) => {
+    console.log('Starting to edit product:', product);
+    setEditingProduct({
+      id: product.id,
+      name: product.name || '',
+      description: product.description || '',
+      material: product.material || '',
+      material_properties: product.material_properties || [],
+      main_category_id: product.main_category_id || '',
+      sub_category_id: product.sub_category_id || '',
+      price: product.price || 0,
+      sizes: product.sizes || [],
+      colors: product.colors || [],
+      image_url: product.image_url || '',
+      additional_images: product.additional_images || [],
+      stock_quantity: product.stock_quantity || null
+    });
+    setShowEditProduct(true);
+    
+    // Load categories and subcategories for dropdowns
+    loadCategories();
+    if (product.main_category_id) {
+      loadSubCategories(product.main_category_id);
     }
   };
 
