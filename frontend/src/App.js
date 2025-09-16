@@ -540,6 +540,21 @@ function App() {
     }
   };
 
+  // Load subcategories for display in catalog
+  const loadCategorySubcategories = async (mainCategory) => {
+    try {
+      console.log('Loading subcategories for category:', mainCategory.name);
+      const response = await axios.get(`${API}/categories/sub/${mainCategory.id}`);
+      console.log('Loaded subcategories:', response.data);
+      setSelectedCategorySubcategories(response.data);
+      setShowSubcategories(true);
+    } catch (error) {
+      console.error('Error loading category subcategories:', error);
+      setSelectedCategorySubcategories([]);
+      setShowSubcategories(false);
+    }
+  };
+
   // Load products (optionally filtered by category)
   const loadCatalogProducts = async (categoryId = null) => {
     try {
