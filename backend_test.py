@@ -11248,6 +11248,528 @@ TIMEZONE BUG ANALYSIS COMPLETE:
             self.log_test("SUBCATEGORY API - Exception", False, str(e))
             return False
 
+    def test_product_management_apis(self):
+        """Test complete product management flow for Live Shopping App admin functionality"""
+        print("\n🛍️ TESTING PRODUCT MANAGEMENT APIS - LIVE SHOPPING APP ADMIN FUNCTIONALITY")
+        print("=" * 80)
+        print("🎯 PRIORITY 1 - Product Creation & Management APIs")
+        print("🎯 PRIORITY 2 - Complete Admin Workflow Testing")
+        print("🎯 PRIORITY 3 - Error Scenarios Testing")
+        print("=" * 80)
+        
+        # Test data for product creation
+        test_products = []
+        
+        # PRIORITY 1 - Test POST /api/admin/products - Create test products with all required fields
+        print("\n📝 PRIORITY 1: Testing POST /api/admin/products - Product Creation")
+        
+        # First, get categories to use for product creation
+        try:
+            categories_response = requests.get(f"{self.api_url}/categories/main", timeout=10)
+            if categories_response.status_code == 200:
+                categories = categories_response.json()
+                if categories:
+                    main_category_id = categories[0]['id']
+                    print(f"  ✅ Using main category: {categories[0]['name']} (ID: {main_category_id})")
+                else:
+                    # Create a test category if none exist
+                    test_category = {
+                        "name": "Test Kategorie",
+                        "description": "Test category for product testing",
+                        "icon": "🧪",
+                        "is_main_category": True,
+                        "sort_order": 1
+                    }
+                    cat_response = requests.post(
+                        f"{self.api_url}/admin/categories",
+                        json=test_category,
+                        headers={'Content-Type': 'application/json'},
+                        timeout=10
+                    )
+                    if cat_response.status_code == 200:
+                        main_category_id = cat_response.json()['id']
+                        print(f"  ✅ Created test category (ID: {main_category_id})")
+                    else:
+                        print(f"  ❌ Failed to create test category: {cat_response.status_code}")
+                        return False
+            else:
+                print(f"  ❌ Failed to get categories: {categories_response.status_code}")
+                return False
+        except Exception as e:
+            print(f"  ❌ Error getting categories: {str(e)}")
+            return False
+        
+        # Test product creation with different configurations
+        product_test_cases = [
+            {
+                "name": "Test Produkt 1 - Basic",
+                "description": "Grundlegendes Testprodukt für Admin-Funktionalität",
+                "material": "Baumwolle",
+                "material_properties": ["Weich", "Atmungsaktiv"],
+                "main_category_id": main_category_id,
+                "price": 29.99,
+                "sizes": ["S", "M", "L", "XL"],
+                "colors": ["Schwarz", "Weiß", "Grau"],
+                "stock_quantity": 50
+            },
+            {
+                "name": "Test Produkt 2 - Premium",
+                "description": "Premium Testprodukt mit erweiterten Eigenschaften",
+                "material": "Seide",
+                "material_properties": ["Luxuriös", "Glänzend", "Elegant"],
+                "main_category_id": main_category_id,
+                "price": 89.99,
+                "sizes": ["XS", "S", "M", "L"],
+                "colors": ["Rot", "Blau", "Gold"],
+                "stock_quantity": 25
+            },
+            {
+                "name": "Test Produkt 3 - Sale Item",
+                "description": "Reduziertes Testprodukt für Verkaufstests",
+                "material": "Polyester",
+                "material_properties": ["Pflegeleicht", "Robust"],
+                "main_category_id": main_category_id,
+                "price": 19.99,
+                "sizes": ["M", "L", "XL"],
+                "colors": ["Grün", "Gelb"],
+                "stock_quantity": 10
+            }
+        ]
+        
+        # Create test products
+        for i, product_data in enumerate(product_test_cases):
+            try:
+                print(f"  📦 Creating product {i+1}: {product_data['name']}")
+                response = requests.post(
+                    f"{self.api_url}/admin/products",
+                    json=product_data,
+                    headers={'Content-Type': 'application/json'},
+                    timeout=10
+                )
+                
+                success = response.status_code == 200
+                details = f"POST Status: {response.status_code}"
+                
+                if success:
+                    created_product = response.json()
+                    required_fields = ['id', 'name', 'price', 'sizes', 'colors', 'material', 'article_number', 'is_active']
+                    has_all_fields = all(field in created_product for field in required_fields)
+                    
+                    # Verify data integrity
+                    data_correct = (
+                        created_product.get('name') == product_data['name'] and
+                        created_product.get('price') == product_data['price'] and
+                        created_product.get('material') == product_data['material'] and
+                        created_product.get('is_active') == True and
+                        len(created_product.get('article_number', '')) > 0
+                    )
+                    
+                    success = has_all_fields and data_correct
+                    details += f", Fields: {has_all_fields}, Data: {data_correct}, Article: {created_product.get('article_number')}"
+                    
+                    if success:
+                        test_products.append(created_product)
+                        print(f"    ✅ Product created successfully (ID: {created_product['id']}, Article: {created_product['article_number']})")
+                
+                self.log_test(f"Create Product {i+1} - {product_data['name']}", success, details)
+                
+            except Exception as e:
+                self.log_test(f"Create Product {i+1} - {product_data['name']}", False, str(e))
+        
+        if not test_products:
+            print("  ❌ No products created successfully. Cannot continue with further tests.")
+            return False
+        
+        print(f"  ✅ Successfully created {len(test_products)} test products")
+        
+        # PRIORITY 1 - Test GET /api/products - Verify products are created correctly
+        print("\n📋 PRIORITY 1: Testing GET /api/products - Verify Product Retrieval")
+        
+        try:
+            response = requests.get(f"{self.api_url}/products?active_only=false", timeout=10)
+            success = response.status_code == 200
+            details = f"GET Status: {response.status_code}"
+            
+            if success:
+                all_products = response.json()
+                is_list = isinstance(all_products, list)
+                has_test_products = len(all_products) >= len(test_products)
+                
+                # Verify our test products are in the response
+                found_products = 0
+                for test_product in test_products:
+                    for product in all_products:
+                        if product.get('id') == test_product['id']:
+                            found_products += 1
+                            break
+                
+                all_found = found_products == len(test_products)
+                success = is_list and has_test_products and all_found
+                details += f", List: {is_list}, Total: {len(all_products)}, Found: {found_products}/{len(test_products)}"
+            
+            self.log_test("Get All Products", success, details)
+            
+        except Exception as e:
+            self.log_test("Get All Products", False, str(e))
+        
+        # PRIORITY 1 - Test PUT /api/admin/products/{id} - Update products
+        print("\n✏️ PRIORITY 1: Testing PUT /api/admin/products/{id} - Product Updates")
+        
+        if test_products:
+            # Test 1: Update product name and price
+            try:
+                product_to_update = test_products[0]
+                update_data = {
+                    "name": "Updated Test Produkt 1 - Modified",
+                    "price": 39.99,
+                    "description": "Updated description for testing"
+                }
+                
+                response = requests.put(
+                    f"{self.api_url}/admin/products/{product_to_update['id']}",
+                    json=update_data,
+                    headers={'Content-Type': 'application/json'},
+                    timeout=10
+                )
+                
+                success = response.status_code == 200
+                details = f"PUT Status: {response.status_code}"
+                
+                if success:
+                    updated_product = response.json()
+                    name_updated = updated_product.get('name') == update_data['name']
+                    price_updated = updated_product.get('price') == update_data['price']
+                    desc_updated = updated_product.get('description') == update_data['description']
+                    
+                    success = name_updated and price_updated and desc_updated
+                    details += f", Name: {name_updated}, Price: {price_updated}, Desc: {desc_updated}"
+                    
+                    if success:
+                        test_products[0] = updated_product  # Update our test data
+                
+                self.log_test("Update Product - Name & Price", success, details)
+                
+            except Exception as e:
+                self.log_test("Update Product - Name & Price", False, str(e))
+            
+            # Test 2: Hide product (is_active: false)
+            try:
+                product_to_hide = test_products[1] if len(test_products) > 1 else test_products[0]
+                hide_data = {"is_active": False}
+                
+                response = requests.put(
+                    f"{self.api_url}/admin/products/{product_to_hide['id']}",
+                    json=hide_data,
+                    headers={'Content-Type': 'application/json'},
+                    timeout=10
+                )
+                
+                success = response.status_code == 200
+                details = f"PUT Status: {response.status_code}"
+                
+                if success:
+                    hidden_product = response.json()
+                    is_hidden = hidden_product.get('is_active') == False
+                    success = is_hidden
+                    details += f", Hidden: {is_hidden}"
+                    
+                    if success:
+                        # Update our test data
+                        for i, p in enumerate(test_products):
+                            if p['id'] == product_to_hide['id']:
+                                test_products[i] = hidden_product
+                                break
+                
+                self.log_test("Hide Product - Set is_active=false", success, details)
+                
+            except Exception as e:
+                self.log_test("Hide Product - Set is_active=false", False, str(e))
+            
+            # Test 3: Mark product out of stock (stock_quantity: 0)
+            try:
+                product_for_stock = test_products[2] if len(test_products) > 2 else test_products[0]
+                stock_data = {"stock_quantity": 0}
+                
+                response = requests.put(
+                    f"{self.api_url}/admin/products/{product_for_stock['id']}",
+                    json=stock_data,
+                    headers={'Content-Type': 'application/json'},
+                    timeout=10
+                )
+                
+                success = response.status_code == 200
+                details = f"PUT Status: {response.status_code}"
+                
+                if success:
+                    out_of_stock_product = response.json()
+                    is_out_of_stock = out_of_stock_product.get('stock_quantity') == 0
+                    success = is_out_of_stock
+                    details += f", Out of stock: {is_out_of_stock}"
+                    
+                    if success:
+                        # Update our test data
+                        for i, p in enumerate(test_products):
+                            if p['id'] == product_for_stock['id']:
+                                test_products[i] = out_of_stock_product
+                                break
+                
+                self.log_test("Mark Out of Stock - stock_quantity=0", success, details)
+                
+            except Exception as e:
+                self.log_test("Mark Out of Stock - stock_quantity=0", False, str(e))
+        
+        # PRIORITY 1 - Test DELETE /api/admin/products/{id} - Delete products
+        print("\n🗑️ PRIORITY 1: Testing DELETE /api/admin/products/{id} - Product Deletion")
+        
+        if test_products:
+            # Test successful deletion
+            try:
+                product_to_delete = test_products[-1]  # Delete the last product
+                
+                response = requests.delete(
+                    f"{self.api_url}/admin/products/{product_to_delete['id']}",
+                    timeout=10
+                )
+                
+                success = response.status_code == 200
+                details = f"DELETE Status: {response.status_code}"
+                
+                if success:
+                    response_data = response.json()
+                    has_message = 'message' in response_data
+                    success = has_message
+                    details += f", Has message: {has_message}"
+                    
+                    if success:
+                        # Remove from our test data
+                        test_products = [p for p in test_products if p['id'] != product_to_delete['id']]
+                        print(f"    ✅ Product deleted successfully (ID: {product_to_delete['id']})")
+                
+                self.log_test("Delete Product - Valid ID", success, details)
+                
+            except Exception as e:
+                self.log_test("Delete Product - Valid ID", False, str(e))
+        
+        # PRIORITY 3 - Error Scenarios Testing
+        print("\n⚠️ PRIORITY 3: Testing Error Scenarios")
+        
+        # Test 1: Delete non-existent product
+        try:
+            fake_product_id = f"fake_product_{int(time.time())}"
+            
+            response = requests.delete(
+                f"{self.api_url}/admin/products/{fake_product_id}",
+                timeout=10
+            )
+            
+            success = response.status_code == 404
+            details = f"DELETE Status: {response.status_code} (should be 404)"
+            
+            if success:
+                error_data = response.json()
+                has_error_detail = 'detail' in error_data
+                success = has_error_detail
+                details += f", Has error detail: {has_error_detail}"
+            
+            self.log_test("Delete Non-existent Product", success, details)
+            
+        except Exception as e:
+            self.log_test("Delete Non-existent Product", False, str(e))
+        
+        # Test 2: Update non-existent product
+        try:
+            fake_product_id = f"fake_product_{int(time.time())}"
+            update_data = {"name": "This should fail"}
+            
+            response = requests.put(
+                f"{self.api_url}/admin/products/{fake_product_id}",
+                json=update_data,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            success = response.status_code == 404
+            details = f"PUT Status: {response.status_code} (should be 404)"
+            
+            if success:
+                error_data = response.json()
+                has_error_detail = 'detail' in error_data
+                success = has_error_detail
+                details += f", Has error detail: {has_error_detail}"
+            
+            self.log_test("Update Non-existent Product", success, details)
+            
+        except Exception as e:
+            self.log_test("Update Non-existent Product", False, str(e))
+        
+        # Test 3: Create product with invalid category
+        try:
+            invalid_product = {
+                "name": "Invalid Category Product",
+                "main_category_id": "invalid_category_id",
+                "price": 25.99,
+                "sizes": ["M"],
+                "colors": ["Blue"]
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/admin/products",
+                json=invalid_product,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            success = response.status_code == 400
+            details = f"POST Status: {response.status_code} (should be 400)"
+            
+            if success:
+                error_data = response.json()
+                has_error_detail = 'detail' in error_data
+                success = has_error_detail
+                details += f", Has error detail: {has_error_detail}"
+            
+            self.log_test("Create Product - Invalid Category", success, details)
+            
+        except Exception as e:
+            self.log_test("Create Product - Invalid Category", False, str(e))
+        
+        # Test 4: Create product with missing required fields
+        try:
+            incomplete_product = {
+                "name": "Incomplete Product"
+                # Missing required fields: main_category_id, price
+            }
+            
+            response = requests.post(
+                f"{self.api_url}/admin/products",
+                json=incomplete_product,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            success = response.status_code == 422  # Validation error
+            details = f"POST Status: {response.status_code} (should be 422)"
+            
+            self.log_test("Create Product - Missing Required Fields", success, details)
+            
+        except Exception as e:
+            self.log_test("Create Product - Missing Required Fields", False, str(e))
+        
+        # PRIORITY 2 - Complete Admin Workflow Test
+        print("\n🔄 PRIORITY 2: Complete Admin Workflow Test")
+        
+        if test_products:
+            workflow_success = True
+            
+            # Test complete workflow: Create -> Update -> Hide -> Show -> Delete
+            try:
+                # Create a workflow test product
+                workflow_product = {
+                    "name": "Workflow Test Produkt",
+                    "description": "Kompletter Admin-Workflow Test",
+                    "material": "Test Material",
+                    "main_category_id": main_category_id,
+                    "price": 49.99,
+                    "sizes": ["S", "M", "L"],
+                    "colors": ["Schwarz", "Weiß"],
+                    "stock_quantity": 100
+                }
+                
+                # Step 1: Create
+                create_response = requests.post(
+                    f"{self.api_url}/admin/products",
+                    json=workflow_product,
+                    headers={'Content-Type': 'application/json'},
+                    timeout=10
+                )
+                
+                if create_response.status_code != 200:
+                    workflow_success = False
+                    self.log_test("Workflow - Create Step", False, f"Create failed: {create_response.status_code}")
+                else:
+                    workflow_product_data = create_response.json()
+                    product_id = workflow_product_data['id']
+                    
+                    # Step 2: Update
+                    update_response = requests.put(
+                        f"{self.api_url}/admin/products/{product_id}",
+                        json={"name": "Updated Workflow Test Produkt", "price": 59.99},
+                        headers={'Content-Type': 'application/json'},
+                        timeout=10
+                    )
+                    
+                    if update_response.status_code != 200:
+                        workflow_success = False
+                        self.log_test("Workflow - Update Step", False, f"Update failed: {update_response.status_code}")
+                    
+                    # Step 3: Hide
+                    hide_response = requests.put(
+                        f"{self.api_url}/admin/products/{product_id}",
+                        json={"is_active": False},
+                        headers={'Content-Type': 'application/json'},
+                        timeout=10
+                    )
+                    
+                    if hide_response.status_code != 200:
+                        workflow_success = False
+                        self.log_test("Workflow - Hide Step", False, f"Hide failed: {hide_response.status_code}")
+                    
+                    # Step 4: Show (reactivate)
+                    show_response = requests.put(
+                        f"{self.api_url}/admin/products/{product_id}",
+                        json={"is_active": True},
+                        headers={'Content-Type': 'application/json'},
+                        timeout=10
+                    )
+                    
+                    if show_response.status_code != 200:
+                        workflow_success = False
+                        self.log_test("Workflow - Show Step", False, f"Show failed: {show_response.status_code}")
+                    
+                    # Step 5: Delete
+                    delete_response = requests.delete(
+                        f"{self.api_url}/admin/products/{product_id}",
+                        timeout=10
+                    )
+                    
+                    if delete_response.status_code != 200:
+                        workflow_success = False
+                        self.log_test("Workflow - Delete Step", False, f"Delete failed: {delete_response.status_code}")
+                    
+                    if workflow_success:
+                        self.log_test("Complete Admin Workflow", True, "All workflow steps completed successfully")
+                        print("    ✅ Complete workflow: Create → Update → Hide → Show → Delete - SUCCESS")
+                
+            except Exception as e:
+                self.log_test("Complete Admin Workflow", False, str(e))
+                workflow_success = False
+        
+        # Final Summary
+        print("\n" + "=" * 80)
+        print("📊 PRODUCT MANAGEMENT API TESTING SUMMARY")
+        print("=" * 80)
+        
+        # Count product-related tests
+        product_tests = [r for r in self.test_results if any(keyword in r['name'] for keyword in ['Product', 'Create', 'Update', 'Delete', 'Hide', 'Workflow'])]
+        recent_product_tests = product_tests[-20:]  # Get recent product tests
+        product_success_count = sum(1 for test in recent_product_tests if test['success'])
+        
+        print(f"✅ Product Tests Passed: {product_success_count}/{len(recent_product_tests)}")
+        print(f"📈 Product API Success Rate: {(product_success_count/len(recent_product_tests)*100):.1f}%")
+        
+        if product_success_count == len(recent_product_tests):
+            print("🎉 ALL PRODUCT MANAGEMENT TESTS PASSED!")
+            print("✅ Admin can create, read, update, and delete products successfully")
+            print("✅ Error handling works correctly for invalid operations")
+            print("✅ Complete admin workflow functions properly")
+        else:
+            print("⚠️ Some product management tests failed")
+            failed_tests = [test for test in recent_product_tests if not test['success']]
+            for failed_test in failed_tests:
+                print(f"  ❌ {failed_test['name']}: {failed_test['details']}")
+        
+        return product_success_count == len(recent_product_tests)
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("🚀 Starting Live Shopping App Backend API Tests")
