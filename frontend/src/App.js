@@ -6498,6 +6498,16 @@ function App() {
                       <span>Meine Bestellung</span>
                     </button>
                   )}
+                  
+                  {isAuthenticated && (
+                    <button
+                      onClick={() => setShowFavorites(true)}
+                      className="bg-white/20 hover:bg-white/30 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center space-x-1"
+                    >
+                      <span>❤️</span>
+                      <span>Favoriten</span>
+                    </button>
+                  )}
                 </div>
                 <div className="flex items-center">
                   {selectedCategory && (
