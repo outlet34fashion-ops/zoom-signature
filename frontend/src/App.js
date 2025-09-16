@@ -892,28 +892,18 @@ function App() {
     }
   };
 
-  // Load recently viewed products
-  const loadRecentlyViewed = async (customerNumber) => {
-    try {
-      const response = await axios.get(`${API}/recently-viewed/${customerNumber}?limit=10`);
-      setRecentlyViewedProducts(response.data);
-    } catch (error) {
-      console.error('Error loading recently viewed:', error);
-    }
-  };
-
   // Load favorite products
   const loadFavoriteProducts = async (customerNumber) => {
     try {
       const response = await axios.get(`${API}/favorites/${customerNumber}`);
       setFavoriteProducts(response.data);
       
-      // Create favorite status map
-      const statusMap = {};
+      // Create a status lookup for favorites
+      const favoriteStatus = {};
       response.data.forEach(product => {
-        statusMap[product.id] = true;
+        favoriteStatus[product.id] = true;
       });
-      setProductFavoriteStatus(statusMap);
+      setProductFavoriteStatus(favoriteStatus);
     } catch (error) {
       console.error('Error loading favorites:', error);
     }
