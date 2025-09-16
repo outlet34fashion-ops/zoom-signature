@@ -6347,6 +6347,8 @@ function App() {
                   <button
                     onClick={() => {
                       setSelectedCategory(null);
+                      setShowSubcategories(false);
+                      setSelectedCategorySubcategories([]);
                       loadCatalogProducts();
                     }}
                     className={`px-6 py-3 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-200 flex items-center space-x-2 min-w-max ${
