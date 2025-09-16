@@ -6485,6 +6485,50 @@ function App() {
                 </div>
               </div>
             </div>
+
+            {/* Subcategories List - Only shown when a main category is selected and has subcategories */}
+            {showSubcategories && selectedCategorySubcategories.length > 0 && (
+              <div className="bg-white border-b border-gray-200">
+                <div className="px-4 py-3">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-sm font-medium text-gray-700 flex items-center">
+                      <span className="mr-2">📂</span>
+                      Unterkategorien von "{selectedCategory?.name}" ({selectedCategorySubcategories.length})
+                    </h4>
+                    <button
+                      onClick={() => {
+                        setShowSubcategories(false);
+                        setSelectedCategorySubcategories([]);
+                      }}
+                      className="text-gray-400 hover:text-gray-600 text-sm"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+                    {selectedCategorySubcategories.map((subcategory) => (
+                      <button
+                        key={subcategory.id}
+                        onClick={() => {
+                          console.log('Subcategory clicked:', subcategory.name);
+                          // Load products for this subcategory
+                          loadCatalogProducts(subcategory.id);
+                          // Optionally highlight the selected subcategory
+                        }}
+                        className="bg-gray-50 hover:bg-pink-50 border border-gray-200 hover:border-pink-300 rounded-lg p-3 text-left transition-colors duration-200 group"
+                      >
+                        <div className="font-medium text-sm text-gray-800 group-hover:text-pink-600">
+                          {subcategory.name}
+                        </div>
+                        <div className="text-xs text-gray-500 mt-1">
+                          {subcategory.product_count || 0} Produkte
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
                 
                 {/* Old navigation removed - replaced with horizontal tabs above */}
 
