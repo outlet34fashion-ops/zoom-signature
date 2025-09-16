@@ -544,12 +544,56 @@ function App() {
       setLoadingCatalog(true);
       setCatalogError('');
       
-      const url = categoryId 
-        ? `${API}/products?category_id=${categoryId}`
-        : `${API}/products`;
+      // For now, use mock data since backend endpoint doesn't exist
+      // In production, this would call the actual API
+      const mockProducts = [
+        {
+          id: '1',
+          name: 'Sommer T-Shirt',
+          description: 'Leichtes Baumwoll-T-Shirt für den Sommer',
+          price: 19.99,
+          sizes: ['S', 'M', 'L', 'XL'],
+          colors: ['Weiß', 'Schwarz', 'Blau'],
+          material: 'Baumwolle',
+          material_properties: ['Weich', 'Atmungsaktiv'],
+          image_url: '/images/shirt1.jpg',
+          created_at: new Date().toISOString(),
+          category_id: categoryId || 'all'
+        },
+        {
+          id: '2',
+          name: 'Denim Jeans',
+          description: 'Klassische Jeans aus hochwertigem Denim',
+          price: 49.99,
+          sizes: ['28', '30', '32', '34'],
+          colors: ['Blau', 'Schwarz'],
+          material: 'Denim',
+          material_properties: ['Robust', 'Stretch'],
+          image_url: '/images/jeans1.jpg',
+          created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 45).toISOString(), // 45 days ago
+          category_id: categoryId || 'all'
+        },
+        {
+          id: '3',
+          name: 'Elegantes Kleid',
+          description: 'Elegantes Abendkleid für besondere Anlässe',
+          price: 89.99,
+          sizes: ['XS', 'S', 'M', 'L'],
+          colors: ['Schwarz', 'Rosa', 'Blau'],
+          material: 'Polyester',
+          material_properties: ['Elegant', 'Glänzend'],
+          image_url: '/images/dress1.jpg',
+          created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 15).toISOString(), // 15 days ago
+          category_id: categoryId || 'all'
+        }
+      ];
       
-      const response = await axios.get(url);
-      setCatalogProducts(response.data);
+      // Filter products by category if specified
+      const filteredProducts = categoryId ? 
+        mockProducts.filter(p => p.category_id === categoryId) : 
+        mockProducts;
+        
+      setCatalogProducts(filteredProducts);
       
     } catch (error) {
       console.error('Error loading products:', error);
