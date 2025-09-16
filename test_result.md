@@ -655,6 +655,7 @@ metadata:
 
 test_plan:
   current_focus:
+    - "Mobile Catalog Header Optimization Testing"
     - "Profile Dropdown with Logout Functionality Testing"
   stuck_tasks: []
   test_all: false
