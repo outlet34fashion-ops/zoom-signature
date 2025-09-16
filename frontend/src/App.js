@@ -7114,7 +7114,6 @@ function App() {
                                 setShowProductDetail(true);
                                 setSelectedProductSize(product.sizes?.[0] || 'OneSize');
                                 setCurrentImageIndex(0);
-                                addToRecentlyViewed(product.id);
                               }}
                               className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 cursor-pointer group min-w-[160px] flex-shrink-0"
                             >
