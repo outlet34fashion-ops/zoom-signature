@@ -2826,54 +2826,7 @@ function App() {
                   </div>
                 )}
                 
-                {/* Logout Button for Customers */}
-                {isAuthenticated && !isAdminView && (
-                  <button 
-                    onClick={() => {
-                      // Customer logout
-                      setIsAuthenticated(false);
-                      setCurrentCustomer(null);
-                      setCustomerId('');
-                      localStorage.removeItem('customerNumber');
-                      localStorage.removeItem('customerData');
-                      
-                      // Clear streaming states
-                      setStreamingActive(false);
-                      setDailyToken(null);
-                      setDailyRoomUrl(null);
-                      
-                      alert('✅ Erfolgreich abgemeldet!');
-                    }}
-                    className="inline-flex items-center px-3 py-1 bg-pink-600 hover:bg-pink-700 text-white rounded transition-colors duration-200"
-                    title="Abmelden"
-                  >
-                    🚪
-                    <span className="text-sm font-medium ml-1">Abmelden</span>
-                  </button>
-                )}
-                
-                {/* Logout Button for Admin */}
-                {isAdminAuthenticated && (
-                  <button 
-                    onClick={() => {
-                      // Admin logout
-                      setIsAdminAuthenticated(false);
-                      setIsAdminView(false);
-                      
-                      // Clear streaming states
-                      setStreamingActive(false);
-                      setDailyToken(null);
-                      setDailyRoomUrl(null);
-                      
-                      alert('✅ Admin erfolgreich abgemeldet!');
-                    }}
-                    className="inline-flex items-center px-3 py-1 bg-pink-600 hover:bg-pink-700 text-white rounded transition-colors duration-200"
-                    title="Admin Abmelden"
-                  >
-                    🚪
-                    <span className="text-sm font-medium ml-1">Abmelden</span>
-                  </button>
-                )}
+                {/* Logout buttons removed - functionality moved to profile dropdown menus */}
               </div>
             </div>
           </div>
