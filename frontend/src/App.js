@@ -2695,7 +2695,69 @@ function App() {
               </div>
               
               <div className="flex items-center space-x-4">
-                {/* Profile dropdown for customers removed as requested */}
+                {/* Profile Dropdown for customers */}
+                {isAuthenticated && !isAdminView && (
+                  <div className="relative profile-dropdown">
+                    <button 
+                      onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                      className="w-8 h-8 rounded-full border-2 border-white hover:border-pink-200 transition-all duration-200 flex items-center justify-center"
+                      title="Profil-Menü öffnen"
+                    >
+                      {currentCustomer?.profile_image ? (
+                        <img
+                          src={currentCustomer.profile_image}
+                          alt="Profil"
+                          className="w-full h-full rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full rounded-full bg-white/20 flex items-center justify-center">
+                          <span className="text-white text-xs font-bold">
+                            {currentCustomer?.name ? currentCustomer.name.charAt(0).toUpperCase() : '👤'}
+                          </span>
+                        </div>
+                      )}
+                    </button>
+                    
+                    {/* Customer Profile Dropdown Menu */}
+                    {showProfileDropdown && (
+                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
+                        <button
+                          onClick={() => {
+                            setShowProfileModal(true);
+                            setShowProfileDropdown(false);
+                          }}
+                          className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center space-x-2"
+                        >
+                          <span>👤</span>
+                          <span>Profil bearbeiten</span>
+                        </button>
+                        <hr className="my-1 border-gray-200" />
+                        <button
+                          onClick={() => {
+                            // Customer logout
+                            setIsAuthenticated(false);
+                            setCurrentCustomer(null);
+                            setCustomerId('');
+                            localStorage.removeItem('customerNumber');
+                            localStorage.removeItem('customerData');
+                            
+                            // Clear streaming states
+                            setStreamingActive(false);
+                            setDailyToken(null);
+                            setDailyRoomUrl(null);
+                            
+                            setShowProfileDropdown(false);
+                            alert('✅ Erfolgreich abgemeldet!');
+                          }}
+                          className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 flex items-center space-x-2"
+                        >
+                          <span>🚪</span>
+                          <span>Abmelden</span>
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
                 
                 {/* View Toggle for Admin */}
                 {isAdminAuthenticated && (
