@@ -8553,6 +8553,140 @@ function App() {
           </Card>
         </div>
       )}
+
+      {/* Favorites Modal */}
+      {showFavorites && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center">
+              <h3 className="text-xl font-bold text-gray-800">❤️ Meine Favoriten</h3>
+              <button
+                onClick={() => setShowFavorites(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-6">
+              {favoriteProducts.length === 0 ? (
+                <div className="text-center text-gray-600 py-8">
+                  <div className="text-6xl mb-4">❤️</div>
+                  <p className="text-lg mb-2">Noch keine Favoriten gespeichert</p>
+                  <p className="text-sm text-gray-500 mb-4">
+                    Klicken Sie auf das Herz-Symbol bei Produkten, um sie zu Ihren Favoriten hinzuzufügen.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setShowFavorites(false);
+                      // Catalog is already open
+                    }}
+                    className="bg-pink-600 hover:bg-pink-700 text-white px-6 py-3 rounded-lg transition-colors duration-200"
+                  >
+                    Jetzt Produkte entdecken
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className="mb-4">
+                    <p className="text-gray-600">
+                      Sie haben {favoriteProducts.length} Produkt{favoriteProducts.length !== 1 ? 'e' : ''} als Favorit{favoriteProducts.length !== 1 ? 'en' : ''} markiert.
+                    </p>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {favoriteProducts.map((product) => (
+                      <div
+                        key={product.id}
+                        className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden"
+                      >
+                        {/* Product Image */}
+                        <div className="relative w-full pt-[100%] bg-gray-100">
+                          {product.image_url ? (
+                            <img
+                              src={product.image_url}
+                              alt={product.name}
+                              className="absolute inset-0 w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center text-gray-400">
+                              <span className="text-4xl">📷</span>
+                            </div>
+                          )}
+                          
+                          {/* Remove from Favorites Button */}
+                          <button
+                            onClick={() => toggleFavorite(product.id)}
+                            className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center transition-colors duration-200"
+                          >
+                            <span className="text-lg text-red-500">❤️</span>
+                          </button>
+                          
+                          {/* Out of Stock Badge */}
+                          {product.stock_quantity === 0 && (
+                            <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                              Ausverkauft
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Product Info */}
+                        <div className="p-4">
+                          <div className="text-xs text-gray-500 mb-1">
+                            Art.-Nr.: {product.article_number}
+                          </div>
+                          <h4 className="font-semibold text-sm text-gray-800 mb-2 line-clamp-2">
+                            {product.name}
+                          </h4>
+                          {product.material && (
+                            <div className="text-xs text-blue-600 mb-2">
+                              {product.material}
+                            </div>
+                          )}
+                          <div className="flex justify-between items-end">
+                            <span className="text-lg font-bold text-pink-600">
+                              {product.price.toFixed(2)} €
+                            </span>
+                            <button
+                              onClick={() => {
+                                setSelectedCatalogProduct(product);
+                                setShowProductDetail(true);
+                                setSelectedProductSize(product.sizes?.[0] || 'OneSize');
+                                setCurrentImageIndex(0);
+                                setShowFavorites(false); // Close favorites modal
+                              }}
+                              className="bg-pink-600 hover:bg-pink-700 text-white px-3 py-1 rounded text-xs transition-colors duration-200"
+                            >
+                              Ansehen
+                            </button>
+                          </div>
+                          
+                          {/* Colors and Sizes */}
+                          <div className="mt-2 flex justify-between items-center text-xs text-gray-500">
+                            <div>
+                              {product.colors && product.colors.length > 0 && (
+                                <span>{product.colors.slice(0, 2).join(', ')}{product.colors.length > 2 ? '...' : ''}</span>
+                              )}
+                            </div>
+                            <div>
+                              {product.sizes && product.sizes.length > 0 ? 
+                                product.sizes.slice(0, 2).join(', ') + (product.sizes.length > 2 ? '...' : '') : 
+                                'OneSize'
+                              }
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Admin Login Modal */}
       {showAdminLoginModal && (
