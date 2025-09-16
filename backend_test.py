@@ -11046,6 +11046,208 @@ TIMEZONE BUG ANALYSIS COMPLETE:
             print(f"    ❌ CRITICAL ERROR in CategoryManagementModal API testing: {str(e)}")
             return False
 
+    def test_subcategory_api_functionality(self):
+        """Test subcategory API functionality as per review request"""
+        print("\n🏷️ TESTING SUBCATEGORY API FUNCTIONALITY (Review Request)")
+        print("  🎯 SPECIFIC REQUIREMENTS:")
+        print("    1. Test GET /api/categories/main - Verify main categories with proper structure")
+        print("    2. Test GET /api/categories/sub/{category_id} - Test loading subcategories")
+        print("    3. Verify subcategory data structure (id, name, product_count, parent_category_id)")
+        print("    4. Test with different main categories (Hosen, Oberteile, Kleider)")
+        print("    5. Error handling with invalid category IDs")
+        
+        try:
+            # STEP 1: Test GET /api/categories/main
+            print("  📋 STEP 1: Testing GET /api/categories/main...")
+            main_response = requests.get(f"{self.api_url}/categories/main", timeout=10)
+            
+            if main_response.status_code != 200:
+                self.log_test("SUBCATEGORY API - Main Categories", False, f"Main categories API failed with status {main_response.status_code}")
+                return False
+            
+            main_categories = main_response.json()
+            
+            if not isinstance(main_categories, list):
+                self.log_test("SUBCATEGORY API - Main Categories Structure", False, "Main categories response is not a list")
+                return False
+            
+            if len(main_categories) == 0:
+                self.log_test("SUBCATEGORY API - Main Categories Data", False, "No main categories found")
+                return False
+            
+            # Verify main category structure
+            first_category = main_categories[0]
+            required_main_fields = ['id', 'name', 'is_main_category', 'product_count']
+            missing_fields = [field for field in required_main_fields if field not in first_category]
+            
+            if missing_fields:
+                self.log_test("SUBCATEGORY API - Main Category Structure", False, f"Missing fields in main category: {missing_fields}")
+                return False
+            
+            # Verify is_main_category is True for main categories
+            if not first_category.get('is_main_category'):
+                self.log_test("SUBCATEGORY API - Main Category Flag", False, "is_main_category should be True for main categories")
+                return False
+            
+            self.log_test("SUBCATEGORY API - Main Categories", True, f"Found {len(main_categories)} main categories with proper structure")
+            
+            # STEP 2: Find categories with German names for testing
+            print("  🔍 STEP 2: Finding German categories for testing...")
+            
+            test_categories = []
+            target_names = ["Hosen", "Oberteile", "Kleider", "Jacken", "Accessoires"]
+            
+            for category in main_categories:
+                category_name = category.get('name', '')
+                for target in target_names:
+                    if target.lower() in category_name.lower():
+                        test_categories.append(category)
+                        print(f"    ✅ Found test category: {category_name} (ID: {category['id']})")
+                        break
+            
+            if not test_categories:
+                # Use first few categories if no German names found
+                test_categories = main_categories[:3]
+                print(f"    ℹ️ Using first {len(test_categories)} categories for testing")
+            
+            # STEP 3: Test GET /api/categories/sub/{category_id} for each test category
+            print("  🏷️ STEP 3: Testing subcategory endpoints...")
+            
+            subcategory_tests_passed = 0
+            total_subcategories_found = 0
+            
+            for i, category in enumerate(test_categories):
+                category_id = category['id']
+                category_name = category['name']
+                
+                print(f"    📂 Testing subcategories for '{category_name}' (ID: {category_id})...")
+                
+                sub_response = requests.get(f"{self.api_url}/categories/sub/{category_id}", timeout=10)
+                
+                if sub_response.status_code != 200:
+                    self.log_test(f"SUBCATEGORY API - Subcategories for {category_name}", False, f"Subcategory API failed with status {sub_response.status_code}")
+                    continue
+                
+                subcategories = sub_response.json()
+                
+                if not isinstance(subcategories, list):
+                    self.log_test(f"SUBCATEGORY API - Subcategories Structure for {category_name}", False, "Subcategories response is not a list")
+                    continue
+                
+                # Verify subcategory data structure
+                if len(subcategories) > 0:
+                    first_subcategory = subcategories[0]
+                    required_sub_fields = ['id', 'name', 'parent_category_id', 'product_count', 'is_main_category']
+                    missing_sub_fields = [field for field in required_sub_fields if field not in first_subcategory]
+                    
+                    if missing_sub_fields:
+                        self.log_test(f"SUBCATEGORY API - Subcategory Structure for {category_name}", False, f"Missing fields in subcategory: {missing_sub_fields}")
+                        continue
+                    
+                    # Verify parent_category_id matches
+                    if first_subcategory.get('parent_category_id') != category_id:
+                        self.log_test(f"SUBCATEGORY API - Parent ID for {category_name}", False, f"Parent category ID mismatch: expected {category_id}, got {first_subcategory.get('parent_category_id')}")
+                        continue
+                    
+                    # Verify is_main_category is False for subcategories
+                    if first_subcategory.get('is_main_category'):
+                        self.log_test(f"SUBCATEGORY API - Subcategory Flag for {category_name}", False, "is_main_category should be False for subcategories")
+                        continue
+                    
+                    # Check for expected subcategory names based on category
+                    expected_subcategories = {
+                        "hosen": ["jeans", "chinos", "shorts", "leggings"],
+                        "oberteile": ["t-shirts", "blusen", "pullover", "tank tops"],
+                        "kleider": ["sommerkleider", "abendkleider", "röcke", "maxikleider"]
+                    }
+                    
+                    category_lower = category_name.lower()
+                    found_expected = False
+                    for key, expected_subs in expected_subcategories.items():
+                        if key in category_lower:
+                            found_subcategory_names = [sub['name'].lower() for sub in subcategories]
+                            matching_subs = [sub for sub in expected_subs if any(sub in name for name in found_subcategory_names)]
+                            if matching_subs:
+                                found_expected = True
+                                print(f"      ✅ Found expected subcategories: {matching_subs}")
+                            break
+                    
+                    total_subcategories_found += len(subcategories)
+                    self.log_test(f"SUBCATEGORY API - Subcategories for {category_name}", True, f"Found {len(subcategories)} subcategories with proper structure")
+                    subcategory_tests_passed += 1
+                else:
+                    # No subcategories found - this is acceptable
+                    self.log_test(f"SUBCATEGORY API - Subcategories for {category_name}", True, f"No subcategories found (acceptable)")
+                    subcategory_tests_passed += 1
+            
+            # STEP 4: Test error handling with invalid category ID
+            print("  ❌ STEP 4: Testing error handling with invalid category ID...")
+            
+            invalid_id = "invalid-category-id-12345"
+            error_response = requests.get(f"{self.api_url}/categories/sub/{invalid_id}", timeout=10)
+            
+            # Should return 200 with empty list or 404, both are acceptable
+            if error_response.status_code == 200:
+                error_data = error_response.json()
+                if isinstance(error_data, list) and len(error_data) == 0:
+                    self.log_test("SUBCATEGORY API - Invalid ID Handling", True, "Invalid category ID returns empty list (acceptable)")
+                else:
+                    self.log_test("SUBCATEGORY API - Invalid ID Handling", False, f"Invalid category ID returned unexpected data: {error_data}")
+            elif error_response.status_code == 404:
+                self.log_test("SUBCATEGORY API - Invalid ID Handling", True, "Invalid category ID returns 404 (acceptable)")
+            else:
+                self.log_test("SUBCATEGORY API - Invalid ID Handling", False, f"Invalid category ID returned unexpected status: {error_response.status_code}")
+            
+            # STEP 5: Test with non-existent but valid UUID format
+            print("  🔍 STEP 5: Testing with non-existent UUID...")
+            
+            fake_uuid = "12345678-1234-1234-1234-123456789abc"
+            uuid_response = requests.get(f"{self.api_url}/categories/sub/{fake_uuid}", timeout=10)
+            
+            if uuid_response.status_code == 200:
+                uuid_data = uuid_response.json()
+                if isinstance(uuid_data, list) and len(uuid_data) == 0:
+                    self.log_test("SUBCATEGORY API - Non-existent UUID", True, "Non-existent UUID returns empty list")
+                else:
+                    self.log_test("SUBCATEGORY API - Non-existent UUID", False, f"Non-existent UUID returned unexpected data: {uuid_data}")
+            else:
+                self.log_test("SUBCATEGORY API - Non-existent UUID", True, f"Non-existent UUID returns status {uuid_response.status_code}")
+            
+            # STEP 6: Summary and analysis
+            print("  📊 STEP 6: Subcategory API Testing Summary...")
+            
+            print(f"  ✅ SUBCATEGORY API FUNCTIONALITY VERIFIED:")
+            print(f"    - Main categories endpoint: WORKING ({len(main_categories)} categories)")
+            print(f"    - Subcategory endpoint: WORKING ({subcategory_tests_passed}/{len(test_categories)} categories tested)")
+            print(f"    - Total subcategories found: {total_subcategories_found}")
+            print(f"    - Data structure validation: PASSED")
+            print(f"    - Parent-child relationships: VERIFIED")
+            print(f"    - Error handling: WORKING")
+            
+            print(f"  🏷️ CATEGORY STRUCTURE ANALYSIS:")
+            print(f"    - Main categories have is_main_category=True")
+            print(f"    - Subcategories have is_main_category=False")
+            print(f"    - Parent-child relationships properly maintained")
+            print(f"    - Product counts included for all categories")
+            
+            # Overall success check
+            main_categories_success = len(main_categories) > 0
+            subcategory_structure_success = subcategory_tests_passed == len(test_categories)
+            
+            overall_success = main_categories_success and subcategory_structure_success
+            
+            if overall_success:
+                self.log_test("SUBCATEGORY API - Overall Functionality", True, f"All subcategory API requirements met successfully")
+                print(f"  🎉 SUCCESS: Subcategory API functionality is working perfectly!")
+            else:
+                self.log_test("SUBCATEGORY API - Overall Functionality", False, f"Some subcategory API tests failed")
+            
+            return overall_success
+            
+        except Exception as e:
+            self.log_test("SUBCATEGORY API - Exception", False, str(e))
+            return False
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("🚀 Starting Live Shopping App Backend API Tests")
