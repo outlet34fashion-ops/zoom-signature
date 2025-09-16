@@ -8079,6 +8079,223 @@ function App() {
           </div>
         </div>
       )}
+
+      {/* Edit Product Modal (Admin) */}
+      {showEditProduct && editingProduct && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white p-4 border-b">
+              <h3 className="text-xl font-bold text-gray-800">Produkt bearbeiten</h3>
+            </div>
+            
+            <div className="p-6 space-y-6">
+              {/* Basic Info */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Artikelnummer (wird automatisch generiert)
+                  </label>
+                  <input
+                    type="text"
+                    value={editingProduct.article_number || 'Wird generiert...'}
+                    disabled
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Produktname *
+                  </label>
+                  <input
+                    type="text"
+                    value={editingProduct.name}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  />
+                </div>
+              </div>
+
+              {/* Price and Stock */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Preis (€) *
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={editingProduct.price}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, price: parseFloat(e.target.value) || 0 })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Lagerbestand (optional)
+                  </label>
+                  <input
+                    type="number"
+                    value={editingProduct.stock_quantity || ''}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, stock_quantity: e.target.value ? parseInt(e.target.value) : null })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  />
+                </div>
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Beschreibung
+                </label>
+                <textarea
+                  value={editingProduct.description}
+                  onChange={(e) => setEditingProduct({ ...editingProduct, description: e.target.value })}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+
+              {/* Material */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Material
+                </label>
+                <input
+                  type="text"
+                  value={editingProduct.material}
+                  onChange={(e) => setEditingProduct({ ...editingProduct, material: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+
+              {/* Categories */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Hauptkategorie *
+                  </label>
+                  <select
+                    value={editingProduct.main_category_id}
+                    onChange={(e) => {
+                      setEditingProduct({ ...editingProduct, main_category_id: e.target.value, sub_category_id: '' });
+                      if (e.target.value) {
+                        loadSubCategories(e.target.value);
+                      }
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  >
+                    <option value="">Hauptkategorie wählen...</option>
+                    {mainCategories.map(category => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Unterkategorie (optional)
+                  </label>
+                  <select
+                    value={editingProduct.sub_category_id || ''}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, sub_category_id: e.target.value || null })}
+                    disabled={!editingProduct.main_category_id}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-100"
+                  >
+                    <option value="">Unterkategorie wählen...</option>
+                    {subCategories.map(category => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Sizes */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Verfügbare Größen *
+                </label>
+                <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
+                  {['XS', 'S', 'M', 'L', 'XL', 'XXL', '34', '36', '38', '40', '42', '44', '46', '48', 'OneSize'].map(size => (
+                    <label key={size} className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={editingProduct.sizes.includes(size)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setEditingProduct({ ...editingProduct, sizes: [...editingProduct.sizes, size] });
+                          } else {
+                            setEditingProduct({ ...editingProduct, sizes: editingProduct.sizes.filter(s => s !== size) });
+                          }
+                        }}
+                        className="rounded text-green-600 focus:ring-green-500"
+                      />
+                      <span className="text-sm">{size}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Colors */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Verfügbare Farben *
+                </label>
+                <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
+                  {['Schwarz', 'Weiß', 'Grau', 'Blau', 'Rot', 'Grün', 'Gelb', 'Rosa', 'Lila', 'Braun', 'Orange', 'Beige'].map(color => (
+                    <label key={color} className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={editingProduct.colors.includes(color)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setEditingProduct({ ...editingProduct, colors: [...editingProduct.colors, color] });
+                          } else {
+                            setEditingProduct({ ...editingProduct, colors: editingProduct.colors.filter(c => c !== color) });
+                          }
+                        }}
+                        className="rounded text-green-600 focus:ring-green-500"
+                      />
+                      <span className="text-sm">{color}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {catalogError && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <p className="text-red-800 text-sm">{catalogError}</p>
+                </div>
+              )}
+            </div>
+            
+            <div className="sticky bottom-0 bg-white p-4 border-t flex justify-end space-x-3">
+              <button
+                onClick={() => {
+                  setShowEditProduct(false);
+                  setEditingProduct(null);
+                  setCatalogError('');
+                }}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors duration-200"
+              >
+                Abbrechen
+              </button>
+              <button
+                onClick={updateProduct}
+                disabled={creatingProduct || !editingProduct.name.trim() || !editingProduct.main_category_id}
+                className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-6 py-2 rounded-lg transition-colors duration-200"
+              >
+                {creatingProduct ? 'Speichere...' : 'Speichern'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Customer Login Modal */}
       {showLoginModal && (
