@@ -1,66 +1,85 @@
 <analysis>
-This trajectory details the AI engineer's work on a Live Shopping App, iteratively addressing user requests and critical bugs. Initially, significant effort was dedicated to fixing the , which suffered from unresponsive buttons, incorrect modal invocation, z-index conflicts, and loading state issues. The engineer meticulously debugged UI events, API payloads, and React state management across multiple attempts. Subsequent work involved implementing a new 'Material Properties' modal, reordering product input fields with validation, and refining the mobile product catalog header. A notable back-and-forth occurred regarding the placement of logout functionality and branding elements. The trajectory concludes with the implementation of horizontal category tabs and the *start* of drag-and-drop sorting for categories in the admin interface. The process highlights a systematic approach to debugging and feature development, though some issues required multiple iterations due to subtle interaction bugs and miscommunications.
+This trajectory captures the AI engineer's work on a Live Shopping App, responding to various user feature requests and bug reports. Initial focus was on fixing the  and implementing a new . Key developments include creating subcategory functionality, refining product input fields, and implementing horizontal category tabs. Significant effort was dedicated to improving the admin interface by adding buttons for viewing, editing, marking as out-of-stock, hiding, and deleting products. The mobile product catalog layout was optimized for two-column scrollable display. The Kürzlich angesehen (recently viewed) section was removed, and a Favoriten (favorites) button and modal were added. The final major task involved a critical customer data migration, cleaning the database, and importing new customer records from a CSV file. The process demonstrates iterative development, debugging, and careful handling of destructive operations.
 </analysis>
 
 <product_requirements>
-The Live Shopping App is a platform for live streaming, chat, and product ordering, featuring a modern UI and automated Zebra label printing. It includes migration to Daily.co, branding updates, and dynamic navigation. Product management requires a WhatsApp-style grid, detailed product views, and admin features for media uploads, price changes, and product creation with auto-generated article numbers. Categories need to support a hierarchical structure (main/subcategories) with product counts. Product details require categorized material, color, and size selections. Customer profiles are to be extended with specific fields and a status.
-
-Explicit requests and implemented features in this trajectory include:
-- A dedicated  for managing main and subcategories via a new button.
-- A new Material Properties modal, optional for product creation, with categories like soft, elegant, robust, knit/stretch, and glossy.
-- Reordering of product input fields in the create form: Price and Stock (top), Sizes Overview (mandatory), Color Chart (mandatory), Material Overview (optional), Material Properties (mandatory).
-- Moving 'Logout' functionality into a profile picture dropdown menu for both admin and customer, removing standalone logout buttons.
-- Removing OUTLET34 text and logo from the top bar (later reversed to re-include profile picture/logout, but keep branding removed).
-- Mobile optimization for the product catalog header: smaller OUTLET34 Produktkatalog title, Meine Bestellung and a close 'X' button for better mobile overview.
-- Reordering product display in the catalog for customers: Neue Artikel (New Products) first, then Bestseller.
-- Implementing horizontal, scrollable category tabs (Oberteile, Hosen&Jeans, Kleider&Röcke, Jacken Mäntel, Accessoires) in the catalog.
-- Implementing sortability for all main and subcategories in the admin area, and adding images to articles.
+The Live Shopping App is a platform for live shopping, chat, and product ordering, with a modern UI and automated Zebra label printing. It requires robust product and category management.
+Implemented features from this trajectory include:
+-  for hierarchical categories (main/subcategories) with drag-and-drop sorting.
+- Material Properties modal for product specifics.
+- Reordered product creation input fields (Price, Stock, Sizes, Colors, Material, Material Properties).
+- Mobile optimization for the product catalog header and main product listings, showing two items side-by-side with horizontal scrolling.
+- Horizontal, scrollable category tabs.
+- Admin capabilities to view, edit, mark as ausverkauft (out of stock), ausblenden (hide), and löschen (delete) products.
+- Removal of Kürzlich angesehen (recently viewed) section.
+- Favoriten (favorites) button and modal, exclusively in the catalog header.
+- Customer database cleanup and import of new customer data from a CSV, mapping specified columns.
 </product_requirements>
 
 <key_technical_concepts>
-- **FastAPI**: Backend API development.
-- **React**: Frontend UI development.
-- **MongoDB**: NoSQL database.
-- **Tailwind CSS**: Utility-first styling.
+- **FastAPI**: Backend API development for product, category, and customer management.
+- **React**: Frontend UI development using functional components and state management.
+- **MongoDB**: NoSQL database for data persistence.
+- **Tailwind CSS**: Utility-first styling for responsive design.
 - **Yarn**: Frontend package management.
-- **Web Camera API**: Direct device camera access.
+- **CSV Parsing**: Handling and importing customer data from CSV files.
 </key_technical_concepts>
 
 <code_architecture>
-The application comprises a React frontend, FastAPI backend, and MongoDB database.
+The application follows a standard MERN-like stack (MongoDB, Express/FastAPI, React, Node.js/Python).
 
 
 
 - :
-    - **Importance**: Core FastAPI application, defines API endpoints and MongoDB models. Contains product and category related models and endpoints.
-    - **Changes Made**: Extended  and  models to include the  field (List[str]). Backend API  was verified to be working correctly.
+    - **Importance**: Core backend API for products, categories, and customers.
+    - **Changes Made**: Confirmed existing  and  APIs for product modification and deletion. Verified  model includes  and  fields. New endpoints were likely used for customer data backup, deletion, and import during the migration process.
+
 - :
-    - **Importance**: Central React component, handles state, UI logic, and API calls.
-    - **Changes Made**: Significant refactoring for  integration and bug fixes. Integrated . Updated  state with . Reordered product input fields and updated validation logic. Implemented profile picture dropdowns for logout (customer/admin) and later re-added them after a user-requested removal/reversal. Modified the product catalog header for mobile view and rearranged product display sections for Neue Artikel and Bestseller. Implemented horizontal category tabs. Removed OUTLET34 branding.
+    - **Importance**: Central React component, handles application state, UI logic, API calls, and renders various sections and modals.
+    - **Changes Made**:
+        - Integrated , .
+        - Added states (, , , , ).
+        - Implemented functions: , , , , .
+        - Modified  handlers for category tabs to load and display subcategories.
+        - Adjusted product display for mobile (2-column, horizontal scroll) and desktop layouts.
+        - Removed Oberteile category tab.
+        - Added an Produkte button in admin catalog management to display all products.
+        - Added admin-only Edit, Ausverkauft/Verfügbar, Ausblenden/Einblenden, and Löschen buttons to product cards (mobile and desktop).
+        - Created  and .
+        - Removed Kürzlich angesehen section, its toggle button, states, and related functions.
+        - Placed Meine Bestellung and Favoriten buttons exclusively in the product catalog header.
+
 - :
-    - **Importance**: Dedicated modal for managing main and subcategories (CRUD).
-    - **Changes Made**: Fixed critical bugs related to button responsiveness, z-index conflicts, event propagation, and incorrect API payload field names (, ). Enhanced button logic, visual feedback, error handling, and debugging. Fixed React hooks order and loading state issues. Removed  icons, replacing them with Erstellen text buttons.  state was added to prepare for sorting functionality.
--  (NEW FILE):
-    - **Importance**: New modal component for selecting and managing material properties for products.
-    - **Changes Made**: Created as a copy of  with specific categories (e.g., Weiche / Kuschelige Eigenschaften).
+    - **Importance**: Manages main and subcategories.
+    - **Changes Made**: Explicitly confirmed to have working subcategory creation and drag-and-drop sorting functionality.
+
 - :
-    - **Importance**: Global styling.
-    - **Changes Made**: Likely implicit styling changes for z-index, new horizontal category tabs, and mobile layout adjustments.
+    - **Importance**: New modal for managing material properties.
+    - **Changes Made**: Created as a copy of , serving its specific purpose.
 </code_architecture>
 
 <pending_tasks>
 - Implement Desktop Split-Screen Layout to display Orders and Chat side-by-side.
 - Provide the complete  and  files for Mac setup.
 - Resolve frontend display issues for the extended customer profile fields (e.g., Mitglied seit, Status, trophy icon).
-- Implement drag-and-drop sort functionality for categories in .
 - Add images to articles for display in the product catalog.
-- Address backend product API validation errors if they impact product display or sorting.
+- Address backend product API validation errors if they impact product display or sorting (though this was mostly a debug step).
 </pending_tasks>
 
 <current_work>
-Immediately prior to this summary, the AI engineer was implementing the requested category sorting functionality in the admin area. Specifically, the task involves adding drag-and-drop capabilities to the category lists within the . The engineer had just started to implement the necessary functions for sorting. This includes identifying the correct UI elements in  to attach drag-and-drop handlers and modify their display, after adding a  state variable to manage this feature. The last action was an attempt to add drag-and-drop functionality to the category lists, but the precise location or method was being refined. The user expects all main and subcategories to be sortable within the admin interface.
+Immediately prior to this summary, the AI engineer completed a critical customer data migration. This involved:
+1.  **Parsing a CSV file**: The engineer debugged encoding issues and successfully parsed a CSV file containing new customer data, identifying relevant columns ('Kundennummer', 'Firmenname', 'Vorname', 'Nachname', 'E-Mail 1').
+2.  **Backend verification**: Tested existing backend APIs for customer management (backup, delete, import) to ensure a safe migration.
+3.  **Executing the migration**: After user confirmation, the engineer performed the migration:
+    *   Backed up existing customer data.
+    *   Deleted all old customer records, including a specific admin PIN (1924).
+    *   Imported 586 new customer records from the parsed CSV.
+    *   Verified the final customer count in the database (728 customers).
+4.  **Frontend verification**: Tested the frontend to confirm that new customer logins were successful and that the catalog was accessible with the updated data. The old admin PIN 1924 was confirmed to be non-functional, as expected.
+
+The migration was successfully completed and verified.
 </current_work>
 
 <optional_next_step>
-Implement the necessary functions and UI elements for drag-and-drop sorting of categories in .
+Based on the completed customer data migration, no immediate next step is explicitly required from the user.
 </optional_next_step>
