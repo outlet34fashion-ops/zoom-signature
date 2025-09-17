@@ -8783,7 +8783,23 @@ function App() {
           }}
         >
           Modal State: {showCategoryManagementModal ? 'OPEN' : 'CLOSED'}<br/>
-          Time: {new Date().toLocaleTimeString()}
+          Time: {new Date().toLocaleTimeString()}<br/>
+          <button 
+            onClick={() => {
+              console.log('🔧 DEBUG: Force opening modal');
+              setShowCategoryManagementModal(true);
+            }}
+            style={{
+              background: 'red',
+              color: 'white',
+              border: 'none',
+              padding: '2px 5px',
+              fontSize: '10px',
+              cursor: 'pointer'
+            }}
+          >
+            FORCE OPEN
+          </button>
         </div>
       )}
       
