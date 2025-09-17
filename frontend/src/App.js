@@ -8767,6 +8767,26 @@ function App() {
       
       </div> {/* Close the padding div */}
       
+      {/* DEBUG: Modal State Display */}
+      {process.env.NODE_ENV === 'development' && (
+        <div 
+          style={{
+            position: 'fixed',
+            top: '10px',
+            right: '10px',
+            background: 'black',
+            color: 'white',
+            padding: '10px',
+            borderRadius: '5px',
+            zIndex: 99999,
+            fontSize: '12px'
+          }}
+        >
+          Modal State: {showCategoryManagementModal ? 'OPEN' : 'CLOSED'}<br/>
+          Time: {new Date().toLocaleTimeString()}
+        </div>
+      )}
+      
       {/* Category Management Modal */}
       <CategoryManagementModal 
         isOpen={showCategoryManagementModal}
