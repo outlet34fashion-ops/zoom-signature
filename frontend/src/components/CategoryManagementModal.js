@@ -970,6 +970,7 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                     }`}
                     type="button"
                     title={!newSubCategory.trim() ? 'Bitte geben Sie einen Unterkategorienamen ein' : !selectedMainCategory ? 'Bitte wählen Sie zuerst eine Hauptkategorie aus' : loading ? 'Lädt...' : 'Unterkategorie erstellen'}
+                    style={{ zIndex: '10005 !important', position: 'relative', pointerEvents: 'auto' }}
                   >
                     {loading ? 'Erstelle...' : 'Erstellen'}
                   </button>
