@@ -853,66 +853,6 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                   <span className="mr-2">📂</span>
                   Unterkategorien von "{selectedMainCategory.name}" ({subCategories.length})
                 </h3>
-                
-                {/* New Sub Category */}
-                <div className="flex space-x-2 mb-4">
-                  <input
-                    type="text"
-                    value={newSubCategory}
-                    onChange={(e) => {
-                      console.log('🔍 Sub category input change:', e.target.value);
-                      setNewSubCategory(e.target.value);
-                    }}
-                    placeholder="Neue Unterkategorie..."
-                    className="flex-1 border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                    onKeyPress={(e) => {
-                      console.log('🔍 Sub category key pressed:', e.key);
-                      if (e.key === 'Enter') {
-                        console.log('🔍 Enter pressed - calling createSubCategory');
-                        if (newSubCategory.trim() && selectedMainCategory && !loading) {
-                          createSubCategory();
-                        }
-                      }
-                    }}
-                  />
-                  <button
-                    onClick={() => {
-                      console.log('🟢 CREATE BUTTON CLICKED - Sub Category');
-                      console.log('🔍 Subcategory button click state check:', {
-                        newSubCategory: `"${newSubCategory}"`,
-                        trimmed: `"${newSubCategory.trim()}"`,
-                        selectedMainCategory: selectedMainCategory?.name || 'none',
-                        loading,
-                        disabled: !newSubCategory.trim() || !selectedMainCategory || loading
-                      });
-                      
-                      if (newSubCategory.trim() && selectedMainCategory && !loading) {
-                        console.log('✅ Creating subcategory:', newSubCategory.trim());
-                        createSubCategory();
-                      } else if (!selectedMainCategory) {
-                        console.log('❌ No main category selected');
-                        alert('Bitte wählen Sie zuerst eine Hauptkategorie aus.');
-                      } else if (!newSubCategory.trim()) {
-                        console.log('❌ Empty subcategory input field');
-                        alert('Bitte geben Sie einen Unterkategorienamen ein.');
-                      } else if (loading) {
-                        console.log('❌ Currently loading');
-                        alert('Bitte warten Sie...');
-                      }
-                    }}
-                    disabled={!newSubCategory.trim() || !selectedMainCategory || loading}
-                    className={`px-4 py-2 rounded text-sm font-semibold transition-all duration-200 ${
-                      !newSubCategory.trim() || !selectedMainCategory || loading
-                        ? 'bg-gray-300 cursor-not-allowed text-gray-500 border border-gray-300'
-                        : 'bg-green-600 hover:bg-green-700 text-white cursor-pointer border border-green-600 hover:border-green-700 shadow-sm hover:shadow-md'
-                    }`}
-                    type="button"
-                    title={!newSubCategory.trim() ? 'Bitte geben Sie einen Unterkategorienamen ein' : !selectedMainCategory ? 'Bitte wählen Sie zuerst eine Hauptkategorie aus' : loading ? 'Lädt...' : 'Unterkategorie erstellen'}
-                    style={{ zIndex: '10005 !important', position: 'relative', pointerEvents: 'auto' }}
-                  >
-                    {loading ? 'Erstelle...' : 'Erstellen'}
-                  </button>
-                </div>
 
                 {/* Sub Categories List */}
                 <div className="space-y-2 max-h-96 overflow-y-auto">
