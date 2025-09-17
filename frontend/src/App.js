@@ -4584,23 +4584,20 @@ function App() {
                         e.stopPropagation();
                         console.log('🔵 Kategorien button clicked - opening CategoryManagementModal');
                         console.log('Current showCategoryManagementModal state:', showCategoryManagementModal);
-                        console.log('Event object:', e);
-                        console.log('Button element:', e.target);
                         
-                        try {
-                          setShowCategoryManagementModal(true);
-                          console.log('✅ setShowCategoryManagementModal(true) called successfully');
-                          
-                          // Force a re-render check
-                          setTimeout(() => {
-                            console.log('🔍 Post-click state check:', showCategoryManagementModal);
-                          }, 100);
-                          
-                        } catch (error) {
-                          console.error('❌ Error setting modal state:', error);
-                        }
+                        // Use immediate state update with callback
+                        setShowCategoryManagementModal(prev => {
+                          console.log('State update callback - prev:', prev, 'new: true');
+                          return true;
+                        });
+                        
+                        // Force re-render check
+                        setTimeout(() => {
+                          console.log('🔍 Post-click state check - should be true now');
+                        }, 100);
                       }}
                       className="bg-blue-600 hover:bg-blue-700 text-white p-6 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-between"
+                      style={{ zIndex: '1', position: 'relative' }}
                     >
                       <div className="flex items-center space-x-3">
                         <div className="text-3xl">🏷️</div>
