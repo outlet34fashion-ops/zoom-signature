@@ -12611,6 +12611,262 @@ TIMEZONE BUG ANALYSIS COMPLETE:
             self.log_test("Category Creation Bug and Sort Order - Exception", False, str(e))
             return False
 
+    def test_category_management_critical_bug_investigation(self):
+        """CRITICAL: Test category management backend APIs as per review request"""
+        print("\n🚨 CRITICAL CATEGORY MANAGEMENT BUG INVESTIGATION - Backend API Testing")
+        print("  🎯 SPECIFIC REQUIREMENTS:")
+        print("    1. Category Creation API Test: POST /api/admin/categories")
+        print("    2. Batch Sort Order API Test: PUT /api/admin/categories/batch-sort-order")
+        print("    3. Category Retrieval APIs: GET /api/categories/main and GET /api/categories")
+        print("    4. Test Scenario: Create test category and try batch sort order update")
+        print("    5. Focus on 'Fehler beim Speichern der Reihenfolge' error")
+        
+        # Test data as specified in review request
+        test_category_data = {
+            "name": "Test Kategorie Debug",
+            "description": "",
+            "icon": "📁",
+            "image_url": "",
+            "sort_order": 1,
+            "is_main_category": True
+        }
+        
+        created_category_id = None
+        
+        try:
+            # STEP 1: Category Creation API Test
+            print("  📝 STEP 1: Testing POST /api/admin/categories with test data...")
+            
+            response = requests.post(
+                f"{self.api_url}/admin/categories",
+                json=test_category_data,
+                headers={'Content-Type': 'application/json'},
+                timeout=10
+            )
+            
+            creation_success = response.status_code == 200
+            creation_details = f"POST Status: {response.status_code}"
+            
+            if creation_success:
+                category_data = response.json()
+                required_fields = ['id', 'name', 'description', 'icon', 'is_main_category', 'sort_order']
+                has_all_fields = all(field in category_data for field in required_fields)
+                
+                if has_all_fields:
+                    created_category_id = category_data['id']
+                    creation_details += f", Category created with ID: {created_category_id}"
+                    creation_details += f", Name: '{category_data['name']}', Sort Order: {category_data['sort_order']}"
+                else:
+                    creation_success = False
+                    creation_details += f", Missing fields in response"
+            else:
+                try:
+                    error_data = response.json()
+                    creation_details += f", Error: {error_data.get('detail', 'Unknown error')}"
+                except:
+                    creation_details += f", Raw response: {response.text[:200]}"
+            
+            self.log_test("CRITICAL - Category Creation API", creation_success, creation_details)
+            
+            # STEP 2: Category Retrieval APIs Test
+            print("  📥 STEP 2: Testing GET /api/categories/main...")
+            
+            main_categories_response = requests.get(f"{self.api_url}/categories/main", timeout=10)
+            main_categories_success = main_categories_response.status_code == 200
+            main_categories_details = f"GET Status: {main_categories_response.status_code}"
+            
+            if main_categories_success:
+                main_categories = main_categories_response.json()
+                is_list = isinstance(main_categories, list)
+                has_test_category = any(cat.get('name') == 'Test Kategorie Debug' for cat in main_categories) if is_list else False
+                
+                main_categories_details += f", Is list: {is_list}, Count: {len(main_categories) if is_list else 'N/A'}"
+                main_categories_details += f", Test category found: {has_test_category}"
+                
+                main_categories_success = is_list
+            else:
+                try:
+                    error_data = main_categories_response.json()
+                    main_categories_details += f", Error: {error_data.get('detail', 'Unknown error')}"
+                except:
+                    main_categories_details += f", Raw response: {main_categories_response.text[:200]}"
+            
+            self.log_test("CRITICAL - GET /api/categories/main", main_categories_success, main_categories_details)
+            
+            # STEP 3: Test GET /api/categories (all categories)
+            print("  📥 STEP 3: Testing GET /api/categories...")
+            
+            all_categories_response = requests.get(f"{self.api_url}/categories", timeout=10)
+            all_categories_success = all_categories_response.status_code == 200
+            all_categories_details = f"GET Status: {all_categories_response.status_code}"
+            
+            if all_categories_success:
+                all_categories = all_categories_response.json()
+                is_list = isinstance(all_categories, list)
+                has_test_category = any(cat.get('name') == 'Test Kategorie Debug' for cat in all_categories) if is_list else False
+                
+                all_categories_details += f", Is list: {is_list}, Count: {len(all_categories) if is_list else 'N/A'}"
+                all_categories_details += f", Test category found: {has_test_category}"
+                
+                all_categories_success = is_list
+            else:
+                try:
+                    error_data = all_categories_response.json()
+                    all_categories_details += f", Error: {error_data.get('detail', 'Unknown error')}"
+                except:
+                    all_categories_details += f", Raw response: {all_categories_response.text[:200]}"
+            
+            self.log_test("CRITICAL - GET /api/categories", all_categories_success, all_categories_details)
+            
+            # STEP 4: Batch Sort Order API Test (THE CRITICAL TEST)
+            print("  🔄 STEP 4: Testing PUT /api/admin/categories/batch-sort-order (CRITICAL)...")
+            
+            if created_category_id:
+                # Test batch sort order update as specified in review request
+                batch_update_data = {
+                    "category_updates": [
+                        {
+                            "id": created_category_id,
+                            "sort_order": 2
+                        }
+                    ]
+                }
+                
+                batch_response = requests.put(
+                    f"{self.api_url}/admin/categories/batch-sort-order",
+                    json=batch_update_data,
+                    headers={'Content-Type': 'application/json'},
+                    timeout=10
+                )
+                
+                batch_success = batch_response.status_code == 200
+                batch_details = f"PUT Status: {batch_response.status_code}"
+                
+                if batch_success:
+                    try:
+                        batch_result = batch_response.json()
+                        batch_details += f", Response: {batch_result}"
+                        
+                        # Verify the sort order was actually updated
+                        verify_response = requests.get(f"{self.api_url}/categories/main", timeout=10)
+                        if verify_response.status_code == 200:
+                            updated_categories = verify_response.json()
+                            updated_category = next((cat for cat in updated_categories if cat.get('id') == created_category_id), None)
+                            
+                            if updated_category and updated_category.get('sort_order') == 2:
+                                batch_details += f", Sort order successfully updated to 2"
+                            else:
+                                batch_success = False
+                                batch_details += f", Sort order NOT updated (still {updated_category.get('sort_order') if updated_category else 'category not found'})"
+                        
+                    except Exception as e:
+                        batch_details += f", Response parsing error: {str(e)}"
+                else:
+                    try:
+                        error_data = batch_response.json()
+                        batch_details += f", Error: {error_data.get('detail', 'Unknown error')}"
+                        
+                        # Check if this is the "Fehler beim Speichern der Reihenfolge" error
+                        if 'detail' in error_data:
+                            error_message = error_data['detail']
+                            if 'reihenfolge' in error_message.lower() or 'sort' in error_message.lower():
+                                batch_details += " - THIS IS THE REPORTED ERROR!"
+                        
+                    except:
+                        batch_details += f", Raw response: {batch_response.text[:200]}"
+                
+                self.log_test("CRITICAL - Batch Sort Order API (Main Issue)", batch_success, batch_details)
+            else:
+                self.log_test("CRITICAL - Batch Sort Order API (Main Issue)", False, "Cannot test - category creation failed")
+            
+            # STEP 5: Individual Category Update Test (Alternative approach)
+            print("  🔄 STEP 5: Testing individual category update as fallback...")
+            
+            if created_category_id:
+                individual_update_data = {
+                    "sort_order": 3
+                }
+                
+                individual_response = requests.put(
+                    f"{self.api_url}/admin/categories/{created_category_id}",
+                    json=individual_update_data,
+                    headers={'Content-Type': 'application/json'},
+                    timeout=10
+                )
+                
+                individual_success = individual_response.status_code == 200
+                individual_details = f"PUT Status: {individual_response.status_code}"
+                
+                if individual_success:
+                    try:
+                        individual_result = individual_response.json()
+                        individual_details += f", Response: {individual_result}"
+                    except:
+                        individual_details += ", Response received but not JSON"
+                else:
+                    try:
+                        error_data = individual_response.json()
+                        individual_details += f", Error: {error_data.get('detail', 'Unknown error')}"
+                    except:
+                        individual_details += f", Raw response: {individual_response.text[:200]}"
+                
+                self.log_test("CRITICAL - Individual Category Update", individual_success, individual_details)
+            else:
+                self.log_test("CRITICAL - Individual Category Update", False, "Cannot test - category creation failed")
+            
+            # STEP 6: Backend Logs Check
+            print("  📋 STEP 6: Checking backend logs for errors...")
+            
+            try:
+                # Try to get backend logs to identify the root cause
+                import subprocess
+                log_result = subprocess.run(['tail', '-n', '50', '/var/log/supervisor/backend.err.log'], 
+                                          capture_output=True, text=True, timeout=5)
+                
+                if log_result.returncode == 0 and log_result.stdout:
+                    log_lines = log_result.stdout.strip().split('\n')
+                    error_lines = [line for line in log_lines if 'error' in line.lower() or 'exception' in line.lower()]
+                    
+                    if error_lines:
+                        self.log_test("CRITICAL - Backend Error Logs Found", False, f"Found {len(error_lines)} error lines in logs")
+                        print(f"    🚨 Recent backend errors:")
+                        for error_line in error_lines[-3:]:  # Show last 3 errors
+                            print(f"      {error_line}")
+                    else:
+                        self.log_test("CRITICAL - Backend Error Logs Check", True, "No recent errors found in backend logs")
+                else:
+                    self.log_test("CRITICAL - Backend Error Logs Check", True, "Backend logs not accessible (normal in production)")
+                    
+            except Exception as e:
+                self.log_test("CRITICAL - Backend Error Logs Check", True, f"Log check not available: {str(e)}")
+            
+            # STEP 7: Summary and Root Cause Analysis
+            print("  📊 STEP 7: Critical Category Management Bug Investigation Summary...")
+            
+            print(f"  ✅ BACKEND API FUNCTIONALITY ANALYSIS:")
+            print(f"    - Category Creation (POST /api/admin/categories): {'WORKING' if creation_success else 'FAILING'}")
+            print(f"    - Main Categories Retrieval (GET /api/categories/main): {'WORKING' if main_categories_success else 'FAILING'}")
+            print(f"    - All Categories Retrieval (GET /api/categories): {'WORKING' if all_categories_success else 'FAILING'}")
+            print(f"    - Batch Sort Order Update (PUT /api/admin/categories/batch-sort-order): {'WORKING' if 'batch_success' in locals() and batch_success else 'FAILING - THIS IS THE MAIN ISSUE'}")
+            
+            print(f"  🔍 ROOT CAUSE ANALYSIS:")
+            if not creation_success:
+                print(f"    - Category creation is failing - this explains why the frontend button doesn't work")
+            if 'batch_success' in locals() and not batch_success:
+                print(f"    - Batch sort order API is failing - this explains 'Fehler beim Speichern der Reihenfolge'")
+            if creation_success and ('batch_success' not in locals() or batch_success):
+                print(f"    - Backend APIs are working - issue might be in frontend integration")
+            
+            print(f"  🚨 USER REPORTED ISSUES VERIFICATION:")
+            print(f"    - 'Kategorie erstellen' button not working: {'BACKEND ISSUE' if not creation_success else 'FRONTEND ISSUE'}")
+            print(f"    - 'Fehler beim Speichern der Reihenfolge' error: {'BACKEND ISSUE' if 'batch_success' in locals() and not batch_success else 'NEEDS FRONTEND TESTING'}")
+            
+            return creation_success and main_categories_success and all_categories_success
+            
+        except Exception as e:
+            self.log_test("CRITICAL - Category Management Exception", False, str(e))
+            return False
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("🚀 Starting Live Shopping App Backend API Tests")
