@@ -2491,45 +2491,6 @@ async def delete_category(category_id: str):
 class BatchSortOrderUpdate(BaseModel):
     category_updates: List[Dict[str, Any]]  # [{"id": "uuid", "sort_order": 0}, ...]
 
-@api_router.put("/admin/categories/batch-sort-order")
-async def update_categories_sort_order(update_request: BatchSortOrderUpdate):
-    """Update sort order for multiple categories at once"""
-    try:
-        if not update_request.category_updates:
-            raise HTTPException(status_code=400, detail="No category updates provided")
-        
-        # Update each category's sort order
-        updated_count = 0
-        for update in update_request.category_updates:
-            category_id = update.get("id")
-            sort_order = update.get("sort_order")
-            
-            if not category_id or sort_order is None:
-                continue
-                
-            result = await db.categories.update_one(
-                {"id": category_id},
-                {"$set": {
-                    "sort_order": sort_order,
-                    "updated_at": datetime.now(timezone.utc)
-                }}
-            )
-            
-            if result.matched_count > 0:
-                updated_count += 1
-        
-        return {
-            "message": f"Successfully updated sort order for {updated_count} categories",
-            "updated_count": updated_count,
-            "total_requested": len(update_request.category_updates)
-        }
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        logging.error(f"Batch sort order update error: {str(e)}")
-        raise HTTPException(status_code=500, detail="Batch sort order update failed")
-
 # Products - Public Endpoints
 @api_router.get("/products", response_model=List[CatalogProduct])
 async def get_products(
