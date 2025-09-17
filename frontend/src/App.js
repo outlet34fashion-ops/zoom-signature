@@ -4702,7 +4702,7 @@ function App() {
                         </div>
                       </div>
                       <div className="text-3xl font-bold">
-                        {categories.length}
+                        {categories?.length || 0}
                       </div>
                     </button>
 
