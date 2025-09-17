@@ -659,10 +659,12 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
 
   if (!isOpen) {
     console.log('🟦 CategoryManagementModal: Modal is closed (isOpen = false)');
+    console.log('🟦 CategoryManagementModal: Returning null - modal will not render');
     return null;
   }
 
   console.log('🟦 CategoryManagementModal: Rendering modal (isOpen = true)');
+  console.log('🟦 CategoryManagementModal: Props received:', { isOpen, onClose: !!onClose, onUpdate: !!onUpdate });
 
   return (
     <div 
