@@ -8907,6 +8907,58 @@ function App() {
       
       </div> {/* Close the padding div */}
       
+      {/* Simple Category Creation Modal */}
+      {showSimpleCategoryModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h2 className="text-xl font-bold mb-4 text-gray-800">Neue Kategorie erstellen</h2>
+            
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Kategoriename:
+              </label>
+              <input
+                type="text"
+                value={simpleCategoryName}
+                onChange={(e) => setSimpleCategoryName(e.target.value)}
+                placeholder="Z.B. Oberteile, Hosen, Jacken..."
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter' && simpleCategoryName.trim() && !simpleCategoryLoading) {
+                    createCategorySimple();
+                  }
+                }}
+                autoFocus
+              />
+            </div>
+            
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => {
+                  setShowSimpleCategoryModal(false);
+                  setSimpleCategoryName('');
+                }}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium"
+                disabled={simpleCategoryLoading}
+              >
+                Abbrechen
+              </button>
+              <button
+                onClick={createCategorySimple}
+                disabled={!simpleCategoryName.trim() || simpleCategoryLoading}
+                className={`px-6 py-2 rounded-lg font-semibold transition-colors ${
+                  !simpleCategoryName.trim() || simpleCategoryLoading
+                    ? 'bg-gray-300 cursor-not-allowed text-gray-500'
+                    : 'bg-purple-600 hover:bg-purple-700 text-white'
+                }`}
+              >
+                {simpleCategoryLoading ? 'Erstelle...' : 'Erstellen'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Category Management Modal */}
       <CategoryManagementModal 
         isOpen={showCategoryManagementModal}
