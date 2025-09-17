@@ -454,11 +454,15 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
       setError('');
       console.log('📤 Sending subcategory API request...');
       
+      // FIXED: Calculate proper sort_order based on existing subcategories
+      const nextSortOrder = Math.max(0, ...subCategories.map(cat => cat.sort_order || 0)) + 1;
+      
       const categoryData = {
         name: newSubCategory.trim(),
         description: '',
+        icon: '📂',
         image_url: '',
-        sort_order: subCategories.length,
+        sort_order: nextSortOrder,
         parent_category_id: selectedMainCategory.id,
         is_main_category: false
       };
@@ -478,11 +482,20 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
       for (const endpoint of endpoints) {
         try {
           console.log('🌐 Trying subcategory API endpoint:', endpoint);
-          response = await axios.post(endpoint, categoryData);
+          response = await axios.post(endpoint, categoryData, {
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            timeout: 15000  // Increased timeout
+          });
           console.log('✅ Success with subcategory endpoint:', endpoint);
           break;
         } catch (endpointError) {
-          console.log('❌ Failed with subcategory endpoint:', endpoint, endpointError.message);
+          console.log('❌ Failed with subcategory endpoint:', endpoint, {
+            message: endpointError.message,
+            status: endpointError.response?.status,
+            data: endpointError.response?.data
+          });
           lastError = endpointError;
           continue;
         }
@@ -499,19 +512,43 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
       alert(`✅ Unterkategorie "${newSubCategory.trim()}" erfolgreich erstellt!`);
       
       setNewSubCategory('');
-      await loadSubCategories(selectedMainCategory.id);
-      if (onUpdate) onUpdate();
+      
+      // FIXED: Proper subcategory reload and state update
+      try {
+        await loadSubCategories(selectedMainCategory.id);
+        console.log('✅ Subcategories reloaded successfully');
+      } catch (reloadError) {
+        console.error('⚠️ Error reloading subcategories:', reloadError);
+        // Still show success since creation worked
+      }
+      
+      if (onUpdate) {
+        try {
+          onUpdate();
+          console.log('✅ onUpdate callback executed');
+        } catch (updateError) {
+          console.error('⚠️ Error in onUpdate callback:', updateError);
+        }
+      }
       
     } catch (error) {
       console.error('❌ Error creating subcategory:', error);
       console.error('❌ Full subcategory error object:', {
         message: error.message,
-        response: error.response,
-        request: error.request,
+        response: error.response?.data,
+        status: error.response?.status,
         config: error.config
       });
       
-      const errorMessage = error.response?.data?.detail || error.message || 'Unbekannter Fehler';
+      let errorMessage = 'Unbekannter Fehler';
+      if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       setError('Fehler beim Erstellen der Unterkategorie: ' + errorMessage);
       alert('❌ Fehler beim Erstellen der Unterkategorie: ' + errorMessage);
     } finally {
