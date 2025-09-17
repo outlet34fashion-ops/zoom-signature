@@ -751,7 +751,7 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                   }}
                 />
                 <button
-                  onClick={() => {
+                  onClick={(e) => {
                     console.log('🔵 CREATE BUTTON CLICKED - Main Category');
                     console.log('🔍 Button click state check:', {
                       newMainCategory: `"${newMainCategory}"`,
@@ -760,16 +760,50 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                       disabled: !newMainCategory.trim() || loading
                     });
                     
-                    if (newMainCategory.trim() && !loading) {
-                      console.log('✅ Creating main category:', newMainCategory.trim());
-                      createMainCategory();
-                    } else if (!newMainCategory.trim()) {
+                    // Show user feedback immediately
+                    const feedbackDiv = document.createElement('div');
+                    feedbackDiv.style.cssText = `
+                      position: fixed;
+                      top: 50%;
+                      left: 50%;
+                      transform: translate(-50%, -50%);
+                      background: #333;
+                      color: white;
+                      padding: 20px;
+                      border-radius: 10px;
+                      z-index: 99999;
+                      font-size: 16px;
+                    `;
+                    feedbackDiv.textContent = 'Button wurde geklickt! Verarbeitung läuft...';
+                    document.body.appendChild(feedbackDiv);
+                    
+                    setTimeout(() => {
+                      if (feedbackDiv.parentNode) {
+                        feedbackDiv.parentNode.removeChild(feedbackDiv);
+                      }
+                    }, 3000);
+                    
+                    if (!newMainCategory.trim()) {
                       console.log('❌ Empty input field');
                       alert('Bitte geben Sie einen Kategorienamen ein.');
-                    } else if (loading) {
+                      return;
+                    }
+                    
+                    if (loading) {
                       console.log('❌ Currently loading');
                       alert('Bitte warten Sie...');
+                      return;
                     }
+                    
+                    console.log('✅ Creating main category:', newMainCategory.trim());
+                    
+                    // Call creation function with user feedback
+                    createMainCategory().then(() => {
+                      console.log('✅ Category creation completed');
+                    }).catch((error) => {
+                      console.error('❌ Category creation failed:', error);
+                      alert(`❌ Fehler: ${error.message}`);
+                    });
                   }}
                   disabled={!newMainCategory.trim() || loading}
                   className={`px-4 py-2 rounded text-sm font-semibold transition-all duration-200 ${
