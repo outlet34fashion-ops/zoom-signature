@@ -4625,6 +4625,27 @@ function App() {
 
                   {/* Management Buttons */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    {/* ALTERNATIVE 2: Simple Category Modal Button */}
+                    <button
+                      onClick={() => {
+                        console.log('🎯 Simple Category Modal Button clicked');
+                        setShowSimpleCategoryModal(true);
+                      }}
+                      className="bg-purple-600 hover:bg-purple-700 text-white p-6 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-between"
+                      style={{ marginBottom: '1rem' }}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="text-3xl">🏷️</div>
+                        <div className="text-left">
+                          <div className="text-xl font-bold">Kategorie hinzufügen</div>
+                          <div className="text-sm opacity-90">Einfaches Eingabe-Fenster</div>
+                        </div>
+                      </div>
+                      <div className="text-2xl">
+                        +
+                      </div>
+                    </button>
+
                     {/* ALTERNATIVE: Direct Category Creation Button */}
                     <button
                       onClick={async () => {
