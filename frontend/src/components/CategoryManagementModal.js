@@ -179,22 +179,6 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
     }
   };
   
-  // Debug state for button troubleshooting
-  useEffect(() => {
-    console.log('🔍 CategoryManagementModal State Debug:', {
-      loading,
-      newMainCategory: `"${newMainCategory}"`,
-      newMainCategoryTrimmed: `"${newMainCategory.trim()}"`,
-      newMainCategoryLength: newMainCategory.trim().length,
-      newSubCategory: `"${newSubCategory}"`,
-      newSubCategoryTrimmed: `"${newSubCategory.trim()}"`,
-      newSubCategoryLength: newSubCategory.trim().length,
-      selectedMainCategory: selectedMainCategory?.name || 'none',
-      mainButtonDisabled: !newMainCategory.trim() || loading,
-      subButtonDisabled: !newSubCategory.trim() || !selectedMainCategory || loading
-    });
-  }, [loading, newMainCategory, newSubCategory, selectedMainCategory]);
-  
   // Edit states
   const [editingCategory, setEditingCategory] = useState(null);
   const [editingName, setEditingName] = useState('');
