@@ -4757,6 +4757,28 @@ function App() {
                       </div>
                     </button>
                     
+                    {/* Products View Button - Show All Products */}
+                    <button
+                      onClick={() => {
+                        console.log('🔵 Produkte anzeigen button clicked');
+                        setShowCatalog(true); // Show catalog
+                        loadCategories(); // Load categories
+                        loadCatalogProducts(); // Load products
+                      }}
+                      className="bg-green-600 hover:bg-green-700 text-white p-4 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-between"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <div className="text-2xl">📦</div>
+                        <div className="text-left">
+                          <div className="text-lg font-bold">Produkte</div>
+                          <div className="text-xs opacity-90">Alle Produkte anzeigen</div>
+                        </div>
+                      </div>
+                      <div className="text-3xl font-bold">
+                        {catalogProducts.length}
+                      </div>
+                    </button>
+                    
                     {/* Products Management Button - NEW */}
                     <button
                       onClick={() => {
@@ -4766,16 +4788,16 @@ function App() {
                         // Load categories for dropdown
                         loadCategories();
                       }}
-                      className="bg-orange-600 hover:bg-orange-700 text-white p-6 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-between"
+                      className="bg-orange-600 hover:bg-orange-700 text-white p-4 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-between"
                     >
-                      <div className="flex items-center space-x-3">
-                        <div className="text-3xl">📦</div>
+                      <div className="flex items-center space-x-2">
+                        <div className="text-2xl">📦</div>
                         <div className="text-left">
-                          <div className="text-xl font-bold">Neues Produkt</div>
-                          <div className="text-sm opacity-90">Produkt hinzufügen</div>
+                          <div className="text-lg font-bold">Neues Produkt</div>
+                          <div className="text-xs opacity-90">Produkt hinzufügen</div>
                         </div>
                       </div>
-                      <div className="text-4xl font-bold">+</div>
+                      <div className="text-3xl font-bold">+</div>
                     </button>
                   </div>
 
