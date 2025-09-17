@@ -218,6 +218,62 @@ function App() {
   const [showSimpleCategoryModal, setShowSimpleCategoryModal] = useState(false);
   const [simpleCategoryName, setSimpleCategoryName] = useState('');
   const [simpleCategoryLoading, setSimpleCategoryLoading] = useState(false);
+  
+  // Subcategory Creation States
+  const [showSimpleSubcategoryModal, setShowSimpleSubcategoryModal] = useState(false);
+  const [simpleSubcategoryName, setSimpleSubcategoryName] = useState('');
+  const [simpleSubcategoryLoading, setSimpleSubcategoryLoading] = useState(false);
+  const [selectedParentCategory, setSelectedParentCategory] = useState('');
+
+  const createSubcategorySimple = async () => {
+    if (!simpleSubcategoryName.trim()) {
+      alert('Bitte geben Sie einen Unterkategorienamen ein.');
+      return;
+    }
+
+    if (!selectedParentCategory) {
+      alert('Bitte wählen Sie eine Hauptkategorie aus.');
+      return;
+    }
+
+    setSimpleSubcategoryLoading(true);
+    
+    try {
+      const categoryData = {
+        name: simpleSubcategoryName.trim(),
+        description: '',
+        icon: '📂',
+        image_url: '',
+        sort_order: 0, // Will be calculated by backend
+        parent_category_id: selectedParentCategory,
+        is_main_category: false
+      };
+
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/categories`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(categoryData)
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        alert(`✅ Unterkategorie "${simpleSubcategoryName.trim()}" erfolgreich erstellt!`);
+        setSimpleSubcategoryName('');
+        setSelectedParentCategory('');
+        setShowSimpleSubcategoryModal(false);
+        await loadCategories();
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        alert(`❌ Fehler: ${errorData.detail || 'Unbekannter Fehler'}`);
+      }
+    } catch (error) {
+      alert(`❌ Netzwerkfehler: ${error.message}`);
+    } finally {
+      setSimpleSubcategoryLoading(false);
+    }
+  };
 
   const createCategorySimple = async () => {
     if (!simpleCategoryName.trim()) {
