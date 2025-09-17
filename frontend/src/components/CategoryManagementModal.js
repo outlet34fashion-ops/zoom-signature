@@ -785,6 +785,7 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                   }`}
                   type="button"
                   title={!newMainCategory.trim() ? 'Bitte geben Sie einen Kategorienamen ein' : loading ? 'Lädt...' : 'Hauptkategorie erstellen'}
+                  style={{ zIndex: '10005 !important', position: 'relative', pointerEvents: 'auto' }}
                 >
                   {loading ? 'Erstelle...' : 'Erstellen'}
                 </button>
