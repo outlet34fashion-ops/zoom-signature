@@ -13,7 +13,7 @@ from datetime import datetime
 
 class CustomerMigrationTester:
     def __init__(self):
-        self.base_url = "https://product-catalog-33.preview.emergentagent.com"
+        self.base_url = "https://shop-category-fix.preview.emergentagent.com"
         self.api_url = f"{self.base_url}/api"
         
     def test_csv_data_analysis(self):
