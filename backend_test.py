@@ -12637,6 +12637,10 @@ TIMEZONE BUG ANALYSIS COMPLETE:
         print("\n🏷️ CRITICAL PRIORITY: CATEGORY CREATION API TESTING...")
         category_creation_success = self.test_category_creation_api()
 
+        # CRITICAL: CATEGORY CREATION BUG AND SORT ORDER IMPLEMENTATION (Current Review Request)
+        print("\n🏷️ CRITICAL: CATEGORY CREATION BUG AND SORT ORDER IMPLEMENTATION...")
+        category_bug_success = self.test_category_creation_bug_and_sort_order()
+
         # PRIORITY #1: MATERIAL SELECTION FEATURE VERIFICATION (Current Review Request)
         print("\n🧵 PRIORITY #1: MATERIAL SELECTION FEATURE VERIFICATION...")
         material_verification_success = self.test_material_selection_verification()
