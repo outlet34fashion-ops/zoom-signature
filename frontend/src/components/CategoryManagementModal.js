@@ -38,7 +38,7 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
   };
   
   // Handle drop for main categories
-  const handleDropMainCategory = (e, targetCategory) => {
+  const handleDropMainCategory = async (e, targetCategory) => {
     e.preventDefault();
     if (!draggedCategory || draggedCategory.id === targetCategory.id) return;
     
@@ -59,8 +59,43 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
     setMainCategories(updatedCategories);
     setDraggedCategory(null);
     
-    // TODO: Send API request to update sort order in backend
-    console.log('🔀 Main categories reordered:', updatedCategories.map(c => ({ name: c.name, sort_order: c.sort_order })));
+    // FIXED: Send API request to update sort order in backend
+    try {
+      console.log('🔀 Updating main categories sort order:', updatedCategories.map(c => ({ name: c.name, sort_order: c.sort_order })));
+      
+      for (const category of updatedCategories) {
+        const endpoints = [
+          `${API}/admin/categories/${category.id}`,
+          `/api/admin/categories/${category.id}`,
+          `${window.location.origin}/api/admin/categories/${category.id}`
+        ];
+        
+        let updateSuccess = false;
+        for (const endpoint of endpoints) {
+          try {
+            await axios.put(endpoint, { sort_order: category.sort_order });
+            updateSuccess = true;
+            break;
+          } catch (endpointError) {
+            console.log('❌ Failed updating sort order at:', endpoint, endpointError.message);
+            continue;
+          }
+        }
+        
+        if (!updateSuccess) {
+          console.error('❌ Failed to update sort order for category:', category.name);
+        }
+      }
+      
+      console.log('✅ Main categories sort order updated successfully');
+      if (onUpdate) onUpdate();
+      
+    } catch (error) {
+      console.error('❌ Error updating main categories sort order:', error);
+      alert('❌ Fehler beim Speichern der Reihenfolge');
+      // Reload categories to reset order
+      await loadCategories();
+    }
   };
   
   // Handle drop for subcategories
