@@ -4681,24 +4681,37 @@ function App() {
 
                   {/* Management Buttons */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                    {/* ALTERNATIVE 3: Simple Subcategory Creation Button */}
+                    {/* Category Management Button */}
                     <button
-                      onClick={() => {
-                        console.log('🔸 Simple Subcategory Modal Button clicked');
-                        setShowSimpleSubcategoryModal(true);
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('🔵 Kategorien button clicked - opening CategoryManagementModal');
+                        console.log('Current showCategoryManagementModal state:', showCategoryManagementModal);
+                        
+                        // Use immediate state update with callback
+                        setShowCategoryManagementModal(prev => {
+                          console.log('State update callback - prev:', prev, 'new: true');
+                          return true;
+                        });
+                        
+                        // Force re-render check
+                        setTimeout(() => {
+                          console.log('🔍 Post-click state check - should be true now');
+                        }, 100);
                       }}
-                      className="bg-orange-600 hover:bg-orange-700 text-white p-6 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-between"
-                      style={{ marginBottom: '1rem' }}
+                      className="bg-blue-600 hover:bg-blue-700 text-white p-6 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-between"
+                      style={{ zIndex: '1', position: 'relative', marginBottom: '1rem' }}
                     >
                       <div className="flex items-center space-x-3">
-                        <div className="text-3xl">📂</div>
+                        <div className="text-3xl">🏷️</div>
                         <div className="text-left">
-                          <div className="text-xl font-bold">Unterkategorie hinzufügen</div>
-                          <div className="text-sm opacity-90">Zu bestehender Hauptkategorie</div>
+                          <div className="text-xl font-bold">Kategorien</div>
+                          <div className="text-sm opacity-90">Haupt- und Unterkategorien verwalten</div>
                         </div>
                       </div>
-                      <div className="text-2xl">
-                        +
+                      <div className="text-4xl font-bold">
+                        {categories.length}
                       </div>
                     </button>
 
@@ -4723,37 +4736,24 @@ function App() {
                       </div>
                     </button>
 
-                    {/* Category Management Button */}
+                    {/* ALTERNATIVE 3: Simple Subcategory Creation Button */}
                     <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        console.log('🔵 Kategorien button clicked - opening CategoryManagementModal');
-                        console.log('Current showCategoryManagementModal state:', showCategoryManagementModal);
-                        
-                        // Use immediate state update with callback
-                        setShowCategoryManagementModal(prev => {
-                          console.log('State update callback - prev:', prev, 'new: true');
-                          return true;
-                        });
-                        
-                        // Force re-render check
-                        setTimeout(() => {
-                          console.log('🔍 Post-click state check - should be true now');
-                        }, 100);
+                      onClick={() => {
+                        console.log('🔸 Simple Subcategory Modal Button clicked');
+                        setShowSimpleSubcategoryModal(true);
                       }}
-                      className="bg-blue-600 hover:bg-blue-700 text-white p-6 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-between"
-                      style={{ zIndex: '1', position: 'relative' }}
+                      className="bg-orange-600 hover:bg-orange-700 text-white p-6 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-between"
+                      style={{ marginBottom: '1rem' }}
                     >
                       <div className="flex items-center space-x-3">
-                        <div className="text-3xl">🏷️</div>
+                        <div className="text-3xl">📂</div>
                         <div className="text-left">
-                          <div className="text-xl font-bold">Kategorien</div>
-                          <div className="text-sm opacity-90">Haupt- und Unterkategorien verwalten</div>
+                          <div className="text-xl font-bold">Unterkategorie hinzufügen</div>
+                          <div className="text-sm opacity-90">Zu bestehender Hauptkategorie</div>
                         </div>
                       </div>
-                      <div className="text-4xl font-bold">
-                        {categories.length}
+                      <div className="text-2xl">
+                        +
                       </div>
                     </button>
                     
