@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "LIVE-STREAMING CRITICAL ISSUE: Das größte Problem ist das Live-Streaming. Alles andere wie Chat oder Icons ist nebensächlich. We need a stable streaming solution that works as reliably as Zoom. During testing, live-streaming did not work - no video/audio reached viewers. Please implement a working solution with very low latency that is stable for 30-100 viewers. If LiveKit is not reliable, consider Amazon AWS IVS or similar stable technology. Critical: Only live-streaming, everything else is uninteresting. This is the central feature of our app."
+user_problem_statement: "KATEGORIE-ERSTELLUNG BUG: Der 'Kategorie erstellen' Button funktioniert nicht - es passiert nichts beim Klicken. Zusätzlich sollen Kategorien in benutzerdefinierter Reihenfolge sortierbar sein (Oberteile, Hosen, Jacken, Accessoires). Änderungen müssen sofort gespeichert werden und in der Übersicht direkt sichtbar sein."
 
 backend:
   - task: "CRITICAL: LiveKit Streaming System Diagnosis and Fix"
