@@ -4681,6 +4681,27 @@ function App() {
 
                   {/* Management Buttons */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    {/* ALTERNATIVE 3: Simple Subcategory Creation Button */}
+                    <button
+                      onClick={() => {
+                        console.log('🔸 Simple Subcategory Modal Button clicked');
+                        setShowSimpleSubcategoryModal(true);
+                      }}
+                      className="bg-orange-600 hover:bg-orange-700 text-white p-6 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-between"
+                      style={{ marginBottom: '1rem' }}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="text-3xl">📂</div>
+                        <div className="text-left">
+                          <div className="text-xl font-bold">Unterkategorie hinzufügen</div>
+                          <div className="text-sm opacity-90">Zu bestehender Hauptkategorie</div>
+                        </div>
+                      </div>
+                      <div className="text-2xl">
+                        +
+                      </div>
+                    </button>
+
                     {/* ALTERNATIVE 2: Simple Category Modal Button */}
                     <button
                       onClick={() => {
