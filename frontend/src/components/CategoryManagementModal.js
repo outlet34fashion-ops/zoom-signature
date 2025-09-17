@@ -59,32 +59,41 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
     setMainCategories(updatedCategories);
     setDraggedCategory(null);
     
-    // FIXED: Send API request to update sort order in backend
+    // OPTIMIZED: Use batch update API for better performance
     try {
       console.log('🔀 Updating main categories sort order:', updatedCategories.map(c => ({ name: c.name, sort_order: c.sort_order })));
       
-      for (const category of updatedCategories) {
-        const endpoints = [
-          `${API}/admin/categories/${category.id}`,
-          `/api/admin/categories/${category.id}`,
-          `${window.location.origin}/api/admin/categories/${category.id}`
-        ];
-        
-        let updateSuccess = false;
-        for (const endpoint of endpoints) {
-          try {
-            await axios.put(endpoint, { sort_order: category.sort_order });
-            updateSuccess = true;
-            break;
-          } catch (endpointError) {
-            console.log('❌ Failed updating sort order at:', endpoint, endpointError.message);
-            continue;
-          }
+      const batchUpdateData = {
+        category_updates: updatedCategories.map(cat => ({
+          id: cat.id,
+          sort_order: cat.sort_order
+        }))
+      };
+      
+      const endpoints = [
+        `${API}/admin/categories/batch-sort-order`,
+        `/api/admin/categories/batch-sort-order`,
+        `${window.location.origin}/api/admin/categories/batch-sort-order`
+      ];
+      
+      let updateSuccess = false;
+      for (const endpoint of endpoints) {
+        try {
+          const response = await axios.put(endpoint, batchUpdateData, {
+            headers: { 'Content-Type': 'application/json' },
+            timeout: 10000
+          });
+          console.log('✅ Batch update successful:', response.data);
+          updateSuccess = true;
+          break;
+        } catch (endpointError) {
+          console.log('❌ Failed batch update at:', endpoint, endpointError.message);
+          continue;
         }
-        
-        if (!updateSuccess) {
-          console.error('❌ Failed to update sort order for category:', category.name);
-        }
+      }
+      
+      if (!updateSuccess) {
+        throw new Error('All batch update endpoints failed');
       }
       
       console.log('✅ Main categories sort order updated successfully');
