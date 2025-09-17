@@ -214,6 +214,54 @@ function App() {
   const [showSizeModal, setShowSizeModal] = useState(false);
   const [showMediaUploadModal, setShowMediaUploadModal] = useState(false);
   const [showCameraCapture, setShowCameraCapture] = useState(false);
+  // Alternative Category Creation States
+  const [showSimpleCategoryModal, setShowSimpleCategoryModal] = useState(false);
+  const [simpleCategoryName, setSimpleCategoryName] = useState('');
+  const [simpleCategoryLoading, setSimpleCategoryLoading] = useState(false);
+
+  const createCategorySimple = async () => {
+    if (!simpleCategoryName.trim()) {
+      alert('Bitte geben Sie einen Kategorienamen ein.');
+      return;
+    }
+
+    setSimpleCategoryLoading(true);
+    
+    try {
+      const categoryData = {
+        name: simpleCategoryName.trim(),
+        description: '',
+        icon: '📁',
+        image_url: '',
+        sort_order: Math.max(0, ...categories.map(cat => cat.sort_order || 0)) + 1,
+        is_main_category: true
+      };
+
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/admin/categories`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(categoryData)
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        alert(`✅ Kategorie "${simpleCategoryName.trim()}" erfolgreich erstellt!`);
+        setSimpleCategoryName('');
+        setShowSimpleCategoryModal(false);
+        await loadCategories();
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        alert(`❌ Fehler: ${errorData.detail || 'Unbekannter Fehler'}`);
+      }
+    } catch (error) {
+      alert(`❌ Netzwerkfehler: ${error.message}`);
+    } finally {
+      setSimpleCategoryLoading(false);
+    }
+  };
+
   const [showCategoryManagementModal, setShowCategoryManagementModal] = useState(false);
   
   // Media Upload States
