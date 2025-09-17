@@ -99,7 +99,7 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
   };
   
   // Handle drop for subcategories
-  const handleDropSubCategory = (e, targetCategory) => {
+  const handleDropSubCategory = async (e, targetCategory) => {
     e.preventDefault();
     if (!draggedCategory || draggedCategory.id === targetCategory.id) return;
     
@@ -120,8 +120,47 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
     setSubCategories(updatedCategories);
     setDraggedCategory(null);
     
-    // TODO: Send API request to update sort order in backend
-    console.log('🔀 Subcategories reordered:', updatedCategories.map(c => ({ name: c.name, sort_order: c.sort_order })));
+    // FIXED: Send API request to update sort order in backend
+    try {
+      console.log('🔀 Updating subcategories sort order:', updatedCategories.map(c => ({ name: c.name, sort_order: c.sort_order })));
+      
+      for (const category of updatedCategories) {
+        const endpoints = [
+          `${API}/admin/categories/${category.id}`,
+          `/api/admin/categories/${category.id}`,
+          `${window.location.origin}/api/admin/categories/${category.id}`
+        ];
+        
+        let updateSuccess = false;
+        for (const endpoint of endpoints) {
+          try {
+            await axios.put(endpoint, { sort_order: category.sort_order });
+            updateSuccess = true;
+            break;
+          } catch (endpointError) {
+            console.log('❌ Failed updating subcategory sort order at:', endpoint, endpointError.message);
+            continue;
+          }
+        }
+        
+        if (!updateSuccess) {
+          console.error('❌ Failed to update sort order for subcategory:', category.name);
+        }
+      }
+      
+      console.log('✅ Subcategories sort order updated successfully');
+      if (selectedMainCategory) {
+        await loadSubCategories(selectedMainCategory.id);
+      }
+      
+    } catch (error) {
+      console.error('❌ Error updating subcategories sort order:', error);
+      alert('❌ Fehler beim Speichern der Unterkategorien-Reihenfolge');
+      // Reload subcategories to reset order
+      if (selectedMainCategory) {
+        await loadSubCategories(selectedMainCategory.id);
+      }
+    }
   };
   
   // Debug state for button troubleshooting
