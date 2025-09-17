@@ -776,7 +776,18 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                 </div>
               ) : (
                 mainCategories.map((category) => (
-                  <div key={category.id} className="border rounded-lg p-3 hover:bg-gray-50">
+                  <div 
+                    key={category.id} 
+                    className={`border rounded-lg p-3 transition-all duration-200 ${
+                      sortMode 
+                        ? 'cursor-move hover:bg-blue-50 border-blue-200' 
+                        : 'hover:bg-gray-50'
+                    }`}
+                    draggable={sortMode}
+                    onDragStart={(e) => sortMode && handleDragStart(e, category)}
+                    onDragOver={(e) => sortMode && handleDragOver(e)}
+                    onDrop={(e) => sortMode && handleDropMainCategory(e, category)}
+                  >
                     {editingCategory?.id === category.id ? (
                       <div className="space-y-2">
                         <input
@@ -811,35 +822,54 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                     ) : (
                       <div className="flex items-center justify-between">
                         <div
-                          className="flex-1 cursor-pointer"
+                          className="flex-1 cursor-pointer flex items-center space-x-3"
                           onClick={() => {
                             setSelectedMainCategory(category);
                             loadSubCategories(category.id);
                           }}
                         >
-                          <div className="font-medium text-gray-800">{category.name}</div>
-                          {category.description && (
-                            <div className="text-sm text-gray-600">{category.description}</div>
-                          )}
-                          <div className="text-xs text-gray-500">
-                            {category.product_count || 0} Produkte
+                          <div className="flex items-center space-x-2">
+                            {sortMode && (
+                              <div className="text-gray-400 text-sm">
+                                <span className="text-xs bg-gray-100 px-1 py-0.5 rounded">
+                                  {category.sort_order}
+                                </span>
+                              </div>
+                            )}
+                            <div>
+                              <div className="font-medium text-gray-800">{category.name}</div>
+                              {category.description && (
+                                <div className="text-sm text-gray-600">{category.description}</div>
+                              )}
+                              <div className="text-xs text-gray-500">
+                                {category.product_count || 0} Produkte
+                              </div>
+                            </div>
                           </div>
                         </div>
                         <div className="flex space-x-1 ml-2">
-                          <button
-                            onClick={() => startEditing(category)}
-                            className="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded"
-                            title="Bearbeiten"
-                          >
-                            ✏️
-                          </button>
-                          <button
-                            onClick={() => deleteCategory(category)}
-                            className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded"
-                            title="Löschen"
-                          >
-                            🗑️
-                          </button>
+                          {sortMode ? (
+                            <div className="text-blue-600 text-sm px-2 py-1 bg-blue-50 rounded">
+                              🔀 Sortieren
+                            </div>
+                          ) : (
+                            <>
+                              <button
+                                onClick={() => startEditing(category)}
+                                className="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded"
+                                title="Bearbeiten"
+                              >
+                                ✏️
+                              </button>
+                              <button
+                                onClick={() => deleteCategory(category)}
+                                className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded"
+                                title="Löschen"
+                              >
+                                🗑️
+                              </button>
+                            </>
+                          )}
                         </div>
                       </div>
                     )}
