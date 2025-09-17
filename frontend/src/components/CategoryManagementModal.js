@@ -686,7 +686,7 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
         }}
       >
         {/* Header */}
-        <div className="p-6 border-b bg-gradient-to-r from-blue-50 to-blue-100 relative z-10">
+        <div className="p-6 border-b bg-gradient-to-r from-blue-50 to-blue-100 relative" style={{ zIndex: '10003 !important' }}>
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-3">
               <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
@@ -708,14 +708,15 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
                     ? 'bg-blue-600 text-white shadow-lg' 
                     : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
                 }`}
+                style={{ zIndex: '10004 !important', position: 'relative' }}
               >
                 <span>🔀</span>
                 <span>{sortMode ? 'Sortierung beenden' : 'Sortieren'}</span>
               </button>
               <button
                 onClick={onClose}
-                className="text-gray-500 hover:text-gray-700 text-2xl font-bold relative z-20"
-                style={{ pointerEvents: 'auto' }}
+                className="text-gray-500 hover:text-gray-700 text-2xl font-bold relative"
+                style={{ pointerEvents: 'auto', zIndex: '10004 !important' }}
               >
                 ×
               </button>
@@ -724,7 +725,7 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
         </div>
 
         {/* Content */}
-        <div className="flex h-[600px]">
+        <div className="flex h-[600px]" style={{ zIndex: '10003 !important', position: 'relative' }}>
           {/* Left Panel - Main Categories */}
           <div className="w-1/2 border-r p-6">
             <div className="mb-4">
