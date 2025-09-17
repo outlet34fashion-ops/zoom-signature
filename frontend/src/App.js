@@ -8140,7 +8140,7 @@ function App() {
                     disabled={!newProductData.main_category_id || (subCategories || []).length === 0}
                   >
                     <option value="">Unterkategorie auswählen (optional)</option>
-                    {subCategories.map((category) => (
+                    {(subCategories || []).map((category) => (
                       <option key={category.id} value={category.id}>
                         {category.name}
                       </option>
