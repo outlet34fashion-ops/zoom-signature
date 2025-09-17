@@ -8137,7 +8137,7 @@ function App() {
                     value={newProductData.sub_category_id}
                     onChange={(e) => setNewProductData({ ...newProductData, sub_category_id: e.target.value })}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                    disabled={!newProductData.main_category_id || subCategories.length === 0}
+                    disabled={!newProductData.main_category_id || (subCategories || []).length === 0}
                   >
                     <option value="">Unterkategorie auswählen (optional)</option>
                     {subCategories.map((category) => (
