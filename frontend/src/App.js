@@ -4700,17 +4700,17 @@ function App() {
                           console.log('🔍 Post-click state check - should be true now');
                         }, 100);
                       }}
-                      className="bg-blue-600 hover:bg-blue-700 text-white p-6 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-between"
+                      className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-between"
                       style={{ zIndex: '1', position: 'relative', marginBottom: '1rem' }}
                     >
-                      <div className="flex items-center space-x-3">
-                        <div className="text-3xl">🏷️</div>
+                      <div className="flex items-center space-x-2">
+                        <div className="text-2xl">🏷️</div>
                         <div className="text-left">
-                          <div className="text-xl font-bold">Kategorien</div>
-                          <div className="text-sm opacity-90">Haupt- und Unterkategorien verwalten</div>
+                          <div className="text-lg font-bold">Kategorien</div>
+                          <div className="text-xs opacity-90">Haupt- und Unterkategorien verwalten</div>
                         </div>
                       </div>
-                      <div className="text-4xl font-bold">
+                      <div className="text-3xl font-bold">
                         {categories.length}
                       </div>
                     </button>
@@ -4721,14 +4721,14 @@ function App() {
                         console.log('🎯 Simple Category Modal Button clicked');
                         setShowSimpleCategoryModal(true);
                       }}
-                      className="bg-purple-600 hover:bg-purple-700 text-white p-6 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-between"
+                      className="bg-purple-600 hover:bg-purple-700 text-white p-4 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-between"
                       style={{ marginBottom: '1rem' }}
                     >
-                      <div className="flex items-center space-x-3">
-                        <div className="text-3xl">🏷️</div>
+                      <div className="flex items-center space-x-2">
+                        <div className="text-2xl">🏷️</div>
                         <div className="text-left">
-                          <div className="text-xl font-bold">Kategorie hinzufügen</div>
-                          <div className="text-sm opacity-90">Einfaches Eingabe-Fenster</div>
+                          <div className="text-lg font-bold">Kategorie hinzufügen</div>
+                          <div className="text-xs opacity-90">Einfaches Eingabe-Fenster</div>
                         </div>
                       </div>
                       <div className="text-2xl">
@@ -4742,14 +4742,14 @@ function App() {
                         console.log('🔸 Simple Subcategory Modal Button clicked');
                         setShowSimpleSubcategoryModal(true);
                       }}
-                      className="bg-orange-600 hover:bg-orange-700 text-white p-6 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-between"
+                      className="bg-orange-600 hover:bg-orange-700 text-white p-4 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-between"
                       style={{ marginBottom: '1rem' }}
                     >
-                      <div className="flex items-center space-x-3">
-                        <div className="text-3xl">📂</div>
+                      <div className="flex items-center space-x-2">
+                        <div className="text-2xl">📂</div>
                         <div className="text-left">
-                          <div className="text-xl font-bold">Unterkategorie hinzufügen</div>
-                          <div className="text-sm opacity-90">Zu bestehender Hauptkategorie</div>
+                          <div className="text-lg font-bold">Unterkategorie hinzufügen</div>
+                          <div className="text-xs opacity-90">Zu bestehender Hauptkategorie</div>
                         </div>
                       </div>
                       <div className="text-2xl">
