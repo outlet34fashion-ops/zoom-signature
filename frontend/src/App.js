@@ -4760,27 +4760,7 @@ function App() {
                     {/* Products Management Button - NEW */}
                     <button
                       onClick={() => {
-                        console.log('🔵 Produkte anzeigen button clicked');
-                        setShowCatalog(true); // Show catalog
-                        loadCategories(); // Load categories
-                        loadCatalogProducts(); // Load products
-                      }}
-                      className="bg-green-600 hover:bg-green-700 text-white p-6 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-between"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className="text-3xl">📦</div>
-                        <div className="text-left">
-                          <div className="text-xl font-bold">Produkte</div>
-                          <div className="text-sm opacity-90">Alle Produkte anzeigen</div>
-                        </div>
-                      </div>
-                      <div className="text-4xl font-bold">
-                        {catalogProducts.length}
-                      </div>
-                    </button>
-                    
-                    <button
-                      onClick={() => {
+                        console.log('🔵 Neues Produkt button clicked');
                         setShowCreateProduct(true);
                         setCatalogError('');
                         // Load categories for dropdown
@@ -4789,13 +4769,13 @@ function App() {
                       className="bg-orange-600 hover:bg-orange-700 text-white p-6 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-between"
                     >
                       <div className="flex items-center space-x-3">
-                        <div className="text-3xl">➕</div>
+                        <div className="text-3xl">📦</div>
                         <div className="text-left">
                           <div className="text-xl font-bold">Neues Produkt</div>
                           <div className="text-sm opacity-90">Produkt hinzufügen</div>
                         </div>
                       </div>
-                      <div className="text-3xl">📦</div>
+                      <div className="text-4xl font-bold">+</div>
                     </button>
                   </div>
 
