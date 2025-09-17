@@ -12,6 +12,12 @@ console.log('   Current location:', window.location.href);
 const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
   console.log('🟦 CategoryManagementModal render - isOpen:', isOpen);
   
+  // Force debugging visibility
+  if (typeof window !== 'undefined') {
+    window.DEBUG_MODAL_STATE = { isOpen, timestamp: new Date().toISOString() };
+    console.log('🟦 Modal state saved to window.DEBUG_MODAL_STATE:', window.DEBUG_MODAL_STATE);
+  }
+  
   const [categories, setCategories] = useState([]);
   const [mainCategories, setMainCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
