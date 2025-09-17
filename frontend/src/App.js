@@ -6888,7 +6888,7 @@ function App() {
                     Erneut versuchen
                   </button>
                 </div>
-              ) : catalogProducts.length === 0 ? (
+              ) : (catalogProducts?.length || 0) === 0 ? (
                 <div className="text-center text-gray-600 py-8">
                   <p>Keine Produkte gefunden</p>
                   {selectedCategory && (
