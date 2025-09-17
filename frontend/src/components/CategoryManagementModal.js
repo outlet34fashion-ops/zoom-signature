@@ -308,11 +308,15 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
       setError('');
       console.log('📤 Sending API request...');
       
+      // FIXED: Calculate proper sort_order based on existing categories
+      const nextSortOrder = Math.max(0, ...mainCategories.map(cat => cat.sort_order || 0)) + 1;
+      
       const categoryData = {
         name: newMainCategory.trim(),
         description: '',
+        icon: '📁',
         image_url: '',
-        sort_order: mainCategories.length,
+        sort_order: nextSortOrder,
         is_main_category: true
       };
       
@@ -331,11 +335,20 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
       for (const endpoint of endpoints) {
         try {
           console.log('🌐 Trying API endpoint:', endpoint);
-          response = await axios.post(endpoint, categoryData);
+          response = await axios.post(endpoint, categoryData, {
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            timeout: 15000  // Increased timeout
+          });
           console.log('✅ Success with endpoint:', endpoint);
           break;
         } catch (endpointError) {
-          console.log('❌ Failed with endpoint:', endpoint, endpointError.message);
+          console.log('❌ Failed with endpoint:', endpoint, {
+            message: endpointError.message,
+            status: endpointError.response?.status,
+            data: endpointError.response?.data
+          });
           lastError = endpointError;
           continue;
         }
@@ -352,19 +365,43 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
       alert(`✅ Hauptkategorie "${newMainCategory.trim()}" erfolgreich erstellt!`);
       
       setNewMainCategory('');
-      await loadCategories();
-      if (onUpdate) onUpdate();
+      
+      // FIXED: Proper category reload and state update
+      try {
+        await loadCategories();
+        console.log('✅ Categories reloaded successfully');
+      } catch (reloadError) {
+        console.error('⚠️ Error reloading categories:', reloadError);
+        // Still show success since creation worked
+      }
+      
+      if (onUpdate) {
+        try {
+          onUpdate();
+          console.log('✅ onUpdate callback executed');
+        } catch (updateError) {
+          console.error('⚠️ Error in onUpdate callback:', updateError);
+        }
+      }
       
     } catch (error) {
       console.error('❌ Error creating main category:', error);
       console.error('❌ Full error object:', {
         message: error.message,
-        response: error.response,
-        request: error.request,
+        response: error.response?.data,
+        status: error.response?.status,
         config: error.config
       });
       
-      const errorMessage = error.response?.data?.detail || error.message || 'Unbekannter Fehler';
+      let errorMessage = 'Unbekannter Fehler';
+      if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       setError('Fehler beim Erstellen der Hauptkategorie: ' + errorMessage);
       alert('❌ Fehler beim Erstellen der Hauptkategorie: ' + errorMessage);
     } finally {
