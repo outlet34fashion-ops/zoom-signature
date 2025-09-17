@@ -58,7 +58,7 @@
 ##
 ## agent_communication:
 ##     -agent: "user"
-##     -message: "CRITICAL BUG REPORTED: 1) Die erste Nachricht wird angezeigt, aber die zweite Nachricht erscheint nicht (First message displays but second message doesn't appear), 2) Uhrzeit ist falsch: aktuell 08:54 Uhr, korrekt wäre 10:54 Uhr deutsche Zeit UTC+2 (Time wrong: shows 08:54 but should be 10:54 German time UTC+2). Both are WebSocket real-time and timezone issues that need immediate fixing."
+##     -message: "CRITICAL BUG REPORT CONFIRMED: Despite previous testing showing success, user provides screenshots showing two critical issues still exist: 1) Sorting save error - 'Fehler beim Speichern der Reihenfolge' (Error saving the order), 2) Category creation not working - very important. Both features require immediate investigation and fixing as they are core functionality."
 
 # Protocol Guidelines for Main agent
 #
