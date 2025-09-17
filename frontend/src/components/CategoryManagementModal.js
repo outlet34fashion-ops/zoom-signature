@@ -19,9 +19,7 @@ const CategoryManagementModal = ({ isOpen, onClose, onUpdate }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
-  // New category states - MUST be declared before useEffect that uses them
-  const [newMainCategory, setNewMainCategory] = useState('');
-  const [newSubCategory, setNewSubCategory] = useState('');
+  // Sorting and drag-drop states
   const [sortMode, setSortMode] = useState(false);
   const [draggedCategory, setDraggedCategory] = useState(null);
   
