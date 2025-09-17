@@ -12328,6 +12328,289 @@ TIMEZONE BUG ANALYSIS COMPLETE:
             print(f"\n❌ CRITICAL MIGRATION ERROR: {str(e)}")
             return False
 
+    def test_category_creation_bug_and_sort_order(self):
+        """CRITICAL: Test Category Creation Bug and Sort Order Implementation as per review request"""
+        print("\n🏷️ CRITICAL: Testing Category Creation Bug and Sort Order Implementation...")
+        print("  🎯 TESTING PRIORITY:")
+        print("    1. POST /api/admin/categories for creating main categories (is_main_category: true)")
+        print("    2. POST /api/admin/categories for creating subcategories (is_main_category: false)")
+        print("    3. GET /api/categories/main returns categories in sort_order")
+        print("    4. Creating categories with different sort_order values")
+        print("    5. PUT /api/admin/categories/{id} for updating sort_order")
+        
+        # Test categories to create as specified in review request
+        test_categories = [
+            {"name": "Oberteile", "sort_order": 1, "description": "Oberteile für alle Gelegenheiten"},
+            {"name": "Hosen", "sort_order": 2, "description": "Hosen und Jeans"},
+            {"name": "Jacken", "sort_order": 3, "description": "Jacken und Mäntel"},
+            {"name": "Accessoires", "sort_order": 4, "description": "Accessoires und Schmuck"}
+        ]
+        
+        created_categories = []
+        
+        try:
+            # PRIORITY 1: Test POST /api/admin/categories for creating main categories
+            print("  📝 PRIORITY 1: Testing main category creation...")
+            
+            for i, category_data in enumerate(test_categories):
+                try:
+                    category_create = {
+                        "name": category_data["name"],
+                        "description": category_data["description"],
+                        "icon": "📦",
+                        "is_main_category": True,
+                        "sort_order": category_data["sort_order"]
+                    }
+                    
+                    response = requests.post(
+                        f"{self.api_url}/admin/categories",
+                        json=category_create,
+                        headers={'Content-Type': 'application/json'},
+                        timeout=10
+                    )
+                    
+                    success = response.status_code in [200, 201]
+                    details = f"POST Status: {response.status_code}"
+                    
+                    if success:
+                        data = response.json()
+                        required_fields = ['id', 'name', 'sort_order', 'is_main_category', 'created_at']
+                        has_all_fields = all(field in data for field in required_fields)
+                        correct_sort_order = data.get('sort_order') == category_data["sort_order"]
+                        is_main_category = data.get('is_main_category') == True
+                        
+                        success = has_all_fields and correct_sort_order and is_main_category
+                        details += f", Fields: {has_all_fields}, Sort order: {data.get('sort_order')}, Main: {is_main_category}"
+                        
+                        if success:
+                            created_categories.append(data)
+                    
+                    self.log_test(f"Create Main Category '{category_data['name']}' (sort_order: {category_data['sort_order']})", success, details)
+                    
+                except Exception as e:
+                    self.log_test(f"Create Main Category '{category_data['name']}'", False, str(e))
+            
+            # PRIORITY 2: Test POST /api/admin/categories for creating subcategories
+            print("  📝 PRIORITY 2: Testing subcategory creation...")
+            
+            if created_categories:
+                # Create subcategories for the first main category (Oberteile)
+                parent_category = created_categories[0]  # Oberteile
+                subcategories = [
+                    {"name": "T-Shirts", "sort_order": 1},
+                    {"name": "Blusen", "sort_order": 2},
+                    {"name": "Pullover", "sort_order": 3}
+                ]
+                
+                for sub_data in subcategories:
+                    try:
+                        subcategory_create = {
+                            "name": sub_data["name"],
+                            "description": f"{sub_data['name']} Unterkategorie",
+                            "icon": "👕",
+                            "parent_category_id": parent_category["id"],
+                            "is_main_category": False,
+                            "sort_order": sub_data["sort_order"]
+                        }
+                        
+                        response = requests.post(
+                            f"{self.api_url}/admin/categories",
+                            json=subcategory_create,
+                            headers={'Content-Type': 'application/json'},
+                            timeout=10
+                        )
+                        
+                        success = response.status_code in [200, 201]
+                        details = f"POST Status: {response.status_code}"
+                        
+                        if success:
+                            data = response.json()
+                            has_parent_id = data.get('parent_category_id') == parent_category["id"]
+                            is_subcategory = data.get('is_main_category') == False
+                            correct_sort_order = data.get('sort_order') == sub_data["sort_order"]
+                            
+                            success = has_parent_id and is_subcategory and correct_sort_order
+                            details += f", Parent ID: {has_parent_id}, Subcategory: {is_subcategory}, Sort: {correct_sort_order}"
+                        
+                        self.log_test(f"Create Subcategory '{sub_data['name']}' (parent: Oberteile)", success, details)
+                        
+                    except Exception as e:
+                        self.log_test(f"Create Subcategory '{sub_data['name']}'", False, str(e))
+            
+            # PRIORITY 3: Test GET /api/categories/main returns categories in sort_order
+            print("  📋 PRIORITY 3: Testing main categories retrieval with sort_order...")
+            
+            try:
+                response = requests.get(f"{self.api_url}/categories/main", timeout=10)
+                success = response.status_code == 200
+                details = f"GET Status: {response.status_code}"
+                
+                if success:
+                    categories = response.json()
+                    is_list = isinstance(categories, list)
+                    has_test_categories = len(categories) >= len(test_categories)
+                    
+                    # Check if categories are sorted by sort_order
+                    sort_orders = [cat.get('sort_order', 0) for cat in categories if cat.get('is_main_category')]
+                    is_sorted = sort_orders == sorted(sort_orders)
+                    
+                    # Find our test categories in the response
+                    found_categories = []
+                    for test_cat in test_categories:
+                        for cat in categories:
+                            if cat.get('name') == test_cat['name']:
+                                found_categories.append(cat)
+                                break
+                    
+                    correct_order = True
+                    if len(found_categories) >= 2:
+                        # Check if Oberteile comes before Hosen, etc.
+                        for i in range(len(found_categories) - 1):
+                            if found_categories[i].get('sort_order', 0) > found_categories[i + 1].get('sort_order', 0):
+                                correct_order = False
+                                break
+                    
+                    success = is_list and is_sorted and correct_order
+                    details += f", List: {is_list}, Sorted: {is_sorted}, Correct order: {correct_order}, Found: {len(found_categories)}/{len(test_categories)}"
+                
+                self.log_test("GET Main Categories Sorted by sort_order", success, details)
+                
+            except Exception as e:
+                self.log_test("GET Main Categories Sorted by sort_order", False, str(e))
+            
+            # PRIORITY 4: Test creating categories with different sort_order values
+            print("  🔢 PRIORITY 4: Testing different sort_order values...")
+            
+            try:
+                # Create a category with sort_order 10 (should appear last)
+                high_sort_category = {
+                    "name": "Test High Sort Order",
+                    "description": "Category with high sort order",
+                    "icon": "🔟",
+                    "is_main_category": True,
+                    "sort_order": 10
+                }
+                
+                response = requests.post(
+                    f"{self.api_url}/admin/categories",
+                    json=high_sort_category,
+                    headers={'Content-Type': 'application/json'},
+                    timeout=10
+                )
+                
+                success = response.status_code in [200, 201]
+                details = f"POST Status: {response.status_code}"
+                
+                if success:
+                    data = response.json()
+                    correct_sort_order = data.get('sort_order') == 10
+                    success = correct_sort_order
+                    details += f", Sort order 10: {correct_sort_order}"
+                    
+                    if success:
+                        # Verify it appears last in the list
+                        list_response = requests.get(f"{self.api_url}/categories/main", timeout=10)
+                        if list_response.status_code == 200:
+                            categories = list_response.json()
+                            main_categories = [cat for cat in categories if cat.get('is_main_category')]
+                            if main_categories:
+                                last_category = main_categories[-1]
+                                appears_last = last_category.get('name') == "Test High Sort Order"
+                                details += f", Appears last: {appears_last}"
+                
+                self.log_test("Create Category with High sort_order (10)", success, details)
+                
+            except Exception as e:
+                self.log_test("Create Category with High sort_order (10)", False, str(e))
+            
+            # PRIORITY 5: Test PUT /api/admin/categories/{id} for updating sort_order
+            print("  ✏️ PRIORITY 5: Testing sort_order updates...")
+            
+            if created_categories:
+                try:
+                    # Update the sort_order of the first created category
+                    category_to_update = created_categories[0]  # Oberteile
+                    new_sort_order = 99
+                    
+                    update_data = {
+                        "sort_order": new_sort_order
+                    }
+                    
+                    response = requests.put(
+                        f"{self.api_url}/admin/categories/{category_to_update['id']}",
+                        json=update_data,
+                        headers={'Content-Type': 'application/json'},
+                        timeout=10
+                    )
+                    
+                    success = response.status_code == 200
+                    details = f"PUT Status: {response.status_code}"
+                    
+                    if success:
+                        data = response.json()
+                        updated_sort_order = data.get('sort_order') == new_sort_order
+                        success = updated_sort_order
+                        details += f", Sort order updated to {new_sort_order}: {updated_sort_order}"
+                        
+                        if success:
+                            # Verify the change persists in GET request
+                            get_response = requests.get(f"{self.api_url}/categories/main", timeout=10)
+                            if get_response.status_code == 200:
+                                categories = get_response.json()
+                                updated_category = next((cat for cat in categories if cat.get('id') == category_to_update['id']), None)
+                                if updated_category:
+                                    persisted = updated_category.get('sort_order') == new_sort_order
+                                    details += f", Change persisted: {persisted}"
+                    
+                    self.log_test("Update Category sort_order via PUT", success, details)
+                    
+                except Exception as e:
+                    self.log_test("Update Category sort_order via PUT", False, str(e))
+            
+            # FINAL VERIFICATION: Test the complete expected order
+            print("  🎯 FINAL VERIFICATION: Testing complete category order...")
+            
+            try:
+                response = requests.get(f"{self.api_url}/categories/main", timeout=10)
+                if response.status_code == 200:
+                    categories = response.json()
+                    
+                    # Find our test categories and verify they appear in the expected order
+                    expected_names = ["Hosen", "Jacken", "Accessoires"]  # Oberteile was moved to sort_order 99
+                    found_in_order = []
+                    
+                    for cat in categories:
+                        if cat.get('name') in expected_names:
+                            found_in_order.append(cat.get('name'))
+                    
+                    # Check if the found categories are in the expected order
+                    correct_final_order = True
+                    for i, expected_name in enumerate(expected_names):
+                        if i < len(found_in_order) and found_in_order[i] != expected_name:
+                            correct_final_order = False
+                            break
+                    
+                    details = f"Expected order: {expected_names}, Found order: {found_in_order}, Correct: {correct_final_order}"
+                    self.log_test("Final Category Order Verification", correct_final_order, details)
+                else:
+                    self.log_test("Final Category Order Verification", False, f"GET failed with status {response.status_code}")
+                    
+            except Exception as e:
+                self.log_test("Final Category Order Verification", False, str(e))
+            
+            # Calculate success rate for category tests
+            category_tests = [r for r in self.test_results if 'Category' in r['name'] or 'sort_order' in r['name']]
+            recent_category_tests = category_tests[-15:]  # Get recent category tests
+            category_success_count = sum(1 for test in recent_category_tests if test['success'])
+            
+            print(f"  📊 Category Creation and Sort Order Tests: {category_success_count}/{len(recent_category_tests)} passed")
+            
+            return category_success_count >= (len(recent_category_tests) * 0.8)  # 80% success rate
+            
+        except Exception as e:
+            self.log_test("Category Creation Bug and Sort Order - Exception", False, str(e))
+            return False
+
     def run_all_tests(self):
         """Run all backend API tests"""
         print("🚀 Starting Live Shopping App Backend API Tests")
