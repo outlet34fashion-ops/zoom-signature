@@ -8121,7 +8121,7 @@ function App() {
                     required
                   >
                     <option value="">Hauptkategorie auswählen</option>
-                    {mainCategories.map((category) => (
+                    {(mainCategories || []).map((category) => (
                       <option key={category.id} value={category.id}>
                         {category.icon} {category.name}
                       </option>
