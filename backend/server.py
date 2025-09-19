@@ -143,6 +143,24 @@ class OrderCreate(BaseModel):
     quantity: int
     price: float = None  # Allow custom price
 
+class Customer(BaseModel):
+    customer_number: str
+    email: str
+    name: str
+    status: str = "pending"  # pending, approved, blocked
+    created_at: str
+    updated_at: str
+
+class CustomerRegistration(BaseModel):
+    customer_number: str
+    email: str
+    name: str
+
+class CustomerUpdate(BaseModel):
+    email: Optional[str] = None
+    name: Optional[str] = None
+    status: Optional[str] = None
+
 class ZoomTokenRequest(BaseModel):
     topic: str
     user_name: str
