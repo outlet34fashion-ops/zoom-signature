@@ -9158,11 +9158,7 @@ function App() {
                   createCategorySimple();
                 }}
                 disabled={!simpleCategoryName.trim() || simpleCategoryLoading}
-                className={`px-6 py-2 rounded-lg font-semibold transition-colors ${
-                  !simpleCategoryName.trim() || simpleCategoryLoading
-                    ? 'bg-gray-300 cursor-not-allowed text-gray-500'
-                    : 'bg-purple-600 hover:bg-purple-700 text-white'
-                }`}
+                className="px-6 py-2 rounded-lg font-semibold transition-colors bg-purple-600 hover:bg-purple-700 text-white disabled:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-500"
                 style={{zIndex: 20003, position: 'relative', pointerEvents: 'auto'}}
               >
                 {simpleCategoryLoading ? 'Erstelle...' : 'Erstellen'}
