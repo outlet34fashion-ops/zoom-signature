@@ -9030,7 +9030,7 @@ function App() {
         </div>
       )}
       
-      </div> {/* Close the padding div */}
+      </div> {/* Close main app container */}
       
       {/* Simple Subcategory Creation Modal */}
       {showSimpleSubcategoryModal && (
