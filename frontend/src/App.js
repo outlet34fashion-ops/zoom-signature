@@ -3549,57 +3549,8 @@ function App() {
                           </p>
                         </div>
                         
-                          <div className="bg-red-500/20 border border-red-500/30 rounded-xl p-3">
-                            <p className="text-red-200 text-sm">{customerLoginError}</p>
-                          </div>
-                        )}
-                        
-                        <div className="space-y-4">
-                          <div className="text-left">
-                            <label className="block text-white/80 text-sm font-medium mb-2">
-                              Kundennummer
-                            </label>
-                            <input
-                              type="text"
-                              placeholder="Ihre Kundennummer"
-                              value={customerLoginData.customer_number}
-                              onChange={(e) => setCustomerLoginData(prev => ({
-                                ...prev,
-                                customer_number: e.target.value
-                              }))}
-                              onKeyPress={(e) => {
-                                if (e.key === 'Enter') {
-                                  e.preventDefault();
-                                  customerLogin();
-                                }
-                              }}
-                              className="w-full bg-white/10 border border-white/30 text-white placeholder-white/50 py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-300"
-                            />
-                          </div>
-                        </div>
-                        
-                        <div className="flex space-x-3">
-                          <button 
-                            onClick={() => {
-                              setShowCustomerLogin(false);
-                              setCustomerLoginError('');
-                            }}
-                            className="flex-1 bg-white/10 hover:bg-white/20 border border-white/30 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300"
-                          >
-                            Zurück
-                          </button>
-                          <button 
-                            onClick={customerLogin}
-                            className="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300 hover:scale-105 shadow-lg"
-                          >
-                            Anmelden
-                          </button>
-                        </div>
-                        
-                        <div className="space-y-4 pt-4 border-t border-white/20">
-                          <p className="text-white/60 text-xs">
-                            Noch nicht registriert?
 
+        </div>
     </div>
   );
 }
