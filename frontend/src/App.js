@@ -8314,11 +8314,22 @@ function App() {
                 <button
                   type="button"
                   onClick={() => setShowColorModal(true)}
-                  className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg"
+                  className={`w-full px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg ${
+                    validationErrors.colors 
+                      ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white border-2 border-red-500' 
+                      : 'bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white'
+                  }`}
                 >
                   <span className="text-2xl">🎨</span>
                   <span className="font-medium">Farbkarte öffnen ({newProductData.colors.length} Farben gewählt)</span>
                 </button>
+                
+                {validationErrors.colors && (
+                  <p className="text-red-600 text-sm mt-2 flex items-center">
+                    <span className="mr-1">⚠️</span>
+                    {validationErrors.colors}
+                  </p>
+                )}
                 
                 {/* Selected Colors Display */}
                 {newProductData.colors.length > 0 && (
