@@ -8462,8 +8462,14 @@ function App() {
 
               
               {catalogError && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                  <p className="text-red-800 text-sm">{catalogError}</p>
+                <div 
+                  className="bg-red-50 border border-red-200 rounded-lg p-3"
+                  style={{ zIndex: '24010', position: 'relative' }}
+                >
+                  <p className="text-red-800 text-sm font-medium flex items-center space-x-2">
+                    <span>⚠️</span>
+                    <span>{catalogError}</span>
+                  </p>
                 </div>
               )}
             </div>
