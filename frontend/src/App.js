@@ -7969,35 +7969,37 @@ function App() {
           style={{ zIndex: '24000' }}
         >
           <div 
-            className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col"
             style={{ zIndex: '24001', position: 'relative' }}
           >
-            <div className="sticky top-0 bg-white p-4 border-b">
+            {/* FIXED HEADER WITH ERROR MESSAGE */}
+            <div className="bg-white p-4 border-b flex-shrink-0">
               <h3 className="text-xl font-bold text-gray-800">Neues Produkt erstellen</h3>
               
-              {/* PROMINENT ERROR MESSAGE - Directly visible */}
+              {/* PROMINENT ERROR MESSAGE - Always visible at top */}
               {catalogError && (
                 <div 
-                  className="mt-4 bg-red-100 border-l-4 border-red-500 p-4 rounded-r-lg shadow-lg"
+                  className="mt-3 bg-red-100 border-l-4 border-red-500 p-3 rounded-r-lg shadow-md animate-pulse"
                   style={{ zIndex: '24020', position: 'relative' }}
                 >
-                  <div className="flex items-center">
+                  <div className="flex items-start">
                     <div className="flex-shrink-0">
-                      <span className="text-2xl">🚨</span>
+                      <span className="text-xl">🚨</span>
                     </div>
-                    <div className="ml-3">
-                      <h3 className="text-lg font-semibold text-red-800">
-                        Fehler beim Erstellen des Produkts
-                      </h3>
-                      <p className="text-red-700 font-medium">
+                    <div className="ml-2 flex-grow">
+                      <h4 className="text-sm font-bold text-red-800">
+                        FEHLER
+                      </h4>
+                      <p className="text-sm text-red-700 mt-1">
                         {catalogError}
                       </p>
                     </div>
-                    <div className="ml-auto">
+                    <div className="flex-shrink-0 ml-2">
                       <button
                         onClick={() => setCatalogError('')}
-                        className="text-red-500 hover:text-red-700 text-xl font-bold"
+                        className="text-red-500 hover:text-red-700 text-lg font-bold p-1"
                         style={{ zIndex: '24021', position: 'relative' }}
+                        title="Fehlermeldung schließen"
                       >
                         ×
                       </button>
@@ -8006,7 +8008,11 @@ function App() {
                 </div>
               )}
             </div>
-            <div className="p-6 space-y-4">
+
+            {/* SCROLLABLE CONTENT */}
+            <div className="overflow-y-auto flex-grow"
+                 style={{ maxHeight: 'calc(90vh - 120px)' }}
+            >
               {/* Media Upload Section - WhatsApp Style */}
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50">
                 <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
