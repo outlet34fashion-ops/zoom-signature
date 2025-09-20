@@ -8238,12 +8238,34 @@ function App() {
                 {/* Size Selection Button */}
                 <button
                   type="button"
-                  onClick={() => setShowSizeModal(true)}
-                  className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg"
+                  onClick={() => {
+                    setShowSizeModal(true);
+                    // Clear sizes error when opening modal
+                    if (validationErrors.sizes) {
+                      const newErrors = { ...validationErrors };
+                      delete newErrors.sizes;
+                      setValidationErrors(newErrors);
+                    }
+                  }}
+                  className={`w-full px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg ${
+                    validationErrors.sizes 
+                      ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 border-2 border-red-300'
+                      : 'bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700'
+                  } text-white`}
                 >
                   <span className="text-2xl">📏</span>
-                  <span className="font-medium">Größen-Übersicht öffnen ({newProductData.sizes.length} Größen gewählt)</span>
+                  <span className="font-medium">Größen-Übersicht öffnen ({(newProductData.sizes || []).length} Größen gewählt)</span>
                 </button>
+
+                {/* Validation Error Message for Sizes */}
+                {validationErrors.sizes && (
+                  <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-red-700 text-sm font-medium flex items-center space-x-2">
+                      <span>⚠️</span>
+                      <span>{validationErrors.sizes}</span>
+                    </p>
+                  </div>
+                )}
                 
                 {/* Selected Sizes Display */}
                 {newProductData.sizes.length > 0 && (
