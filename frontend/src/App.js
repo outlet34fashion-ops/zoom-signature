@@ -1132,7 +1132,7 @@ function App() {
       if (Object.keys(errors).length > 0) {
         setValidationErrors(errors);
         
-        // Create user-friendly error message
+        // Create user-friendly error message for prominent display
         const missingFields = [];
         if (errors.name) missingFields.push('Produktname');
         if (errors.main_category_id) missingFields.push('Hauptkategorie');
@@ -1141,7 +1141,7 @@ function App() {
         if (errors.material) missingFields.push('Material-Übersicht');
         
         const errorMessage = `Folgende Pflichtfelder sind nicht ausgefüllt: ${missingFields.join(', ')}`;
-        alert(`❌ ${errorMessage}`);
+        setCatalogError(errorMessage);
         
         setCreatingProduct(false);
         return;
