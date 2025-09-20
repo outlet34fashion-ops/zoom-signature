@@ -179,6 +179,7 @@ function App() {
   const [showCatalogManagement, setShowCatalogManagement] = useState(false);
   const [showCreateCategory, setShowCreateCategory] = useState(false);
   const [showCreateProduct, setShowCreateProduct] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({});
   const [showEditProduct, setShowEditProduct] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [mainCategories, setMainCategories] = useState([]);
