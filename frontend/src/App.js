@@ -8297,7 +8297,7 @@ function App() {
               {/* 4. Material Overview - Fourth Position (Optional) */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Verfügbare Materialien (optional)
+                  Material-Übersicht * (Pflicht)
                 </label>
                 
                 {/* Material Selection Button */}
