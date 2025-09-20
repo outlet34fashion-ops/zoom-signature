@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "KATEGORIE-ERSTELLUNG BUG: Der 'Kategorie erstellen' Button funktioniert nicht - es passiert nichts beim Klicken. Zusätzlich sollen Kategorien in benutzerdefinierter Reihenfolge sortierbar sein (Oberteile, Hosen, Jacken, Accessoires). Änderungen müssen sofort gespeichert werden und in der Übersicht direkt sichtbar sein."
+user_problem_statement: "WENN EINE PFLICHTANGABE NICHT ANGEKLICKT MUSS ER ROT FEHLERMELDUNG ANZEIGEN AN DER STELLE WAS NICHT GEWÄHLT WURDE: Bei der Produkterstellung sollen Pflichtfelder, die nicht ausgefüllt sind, rote Fehlermeldungen direkt an der entsprechenden Stelle anzeigen. Besonders wichtig sind: Produktname, Hauptkategorie, Größen, Farben und Material-Übersicht."
 
 backend:
   - task: "CRITICAL: LiveKit Streaming System Diagnosis and Fix"
