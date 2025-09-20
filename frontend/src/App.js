@@ -1099,24 +1099,52 @@ function App() {
     try {
       setCreatingProduct(true);
       setCatalogError('');
+      setValidationErrors({}); // Reset validation errors
+      
+      // Prepare validation errors object
+      const errors = {};
       
       // Validate mandatory fields
       if (!newProductData.name.trim()) {
-        throw new Error('Produktname ist erforderlich');
+        errors.name = 'Produktname ist erforderlich';
       }
       
       if (!newProductData.main_category_id) {
-        throw new Error('Hauptkategorie ist erforderlich');
+        errors.main_category_id = 'Hauptkategorie ist erforderlich';
       }
 
       // Validate sizes (mandatory)
       if (!newProductData.sizes || newProductData.sizes.length === 0) {
-        throw new Error('Mindestens eine Größe ist erforderlich');
+        errors.sizes = 'Mindestens eine Größe ist erforderlich';
       }
 
       // Validate colors (mandatory)
       if (!newProductData.colors || newProductData.colors.length === 0) {
-        throw new Error('Mindestens eine Farbe ist erforderlich');
+        errors.colors = 'Mindestens eine Farbe ist erforderlich';
+      }
+
+      // Validate material (mandatory) - Material-Übersicht
+      if (!newProductData.material || !newProductData.material.trim()) {
+        errors.material = 'Material-Übersicht ist ein Pflichtfeld';
+      }
+
+      // If there are validation errors, show them and stop
+      if (Object.keys(errors).length > 0) {
+        setValidationErrors(errors);
+        
+        // Create user-friendly error message
+        const missingFields = [];
+        if (errors.name) missingFields.push('Produktname');
+        if (errors.main_category_id) missingFields.push('Hauptkategorie');
+        if (errors.sizes) missingFields.push('Größen');
+        if (errors.colors) missingFields.push('Farben');
+        if (errors.material) missingFields.push('Material-Übersicht');
+        
+        const errorMessage = `Folgende Pflichtfelder sind nicht ausgefüllt: ${missingFields.join(', ')}`;
+        alert(`❌ ${errorMessage}`);
+        
+        setCreatingProduct(false);
+        return;
       }
 
       console.log('Submitting product data:', newProductData);
