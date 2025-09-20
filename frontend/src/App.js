@@ -1132,7 +1132,7 @@ function App() {
       if (Object.keys(errors).length > 0) {
         setValidationErrors(errors);
         
-        // Create user-friendly error message for prominent display
+        // Create user-friendly error message for immediate alert
         const missingFields = [];
         if (errors.name) missingFields.push('Produktname');
         if (errors.main_category_id) missingFields.push('Hauptkategorie');
@@ -1140,8 +1140,10 @@ function App() {
         if (errors.colors) missingFields.push('Farben');
         if (errors.material) missingFields.push('Material-Übersicht');
         
-        const errorMessage = `Folgende Pflichtfelder sind nicht ausgefüllt: ${missingFields.join(', ')}`;
-        setCatalogError(errorMessage);
+        const errorMessage = `PFLICHTFELDER FEHLEN:\n\n${missingFields.join('\n• ')}`;
+        
+        // Show prominent alert immediately
+        alert(`🚨 FEHLER BEIM ERSTELLEN\n\n${errorMessage}\n\nBitte füllen Sie alle markierten Pflichtfelder aus.`);
         
         setCreatingProduct(false);
         return;
