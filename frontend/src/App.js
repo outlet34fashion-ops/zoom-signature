@@ -9112,8 +9112,8 @@ function App() {
         </div>
       )}
 
-      {/* Simple Category Creation Modal */}
-      {showSimpleCategoryModal && (
+      {/* Simple Category Creation Modal - TEMPORARILY DISABLED FOR TESTING */}
+      {false && showSimpleCategoryModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4" style={{zIndex: 20000}}>
           <div className="bg-white rounded-lg p-6 w-full max-w-md" style={{zIndex: 20001, position: 'relative'}}>
             <h2 className="text-xl font-bold mb-4 text-gray-800">Neue Kategorie erstellen</h2>
