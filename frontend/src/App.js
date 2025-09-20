@@ -8120,9 +8120,19 @@ function App() {
                     type="text"
                     value={newProductData.name}
                     onChange={(e) => setNewProductData({ ...newProductData, name: e.target.value })}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className={`w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 ${
+                      validationErrors.name 
+                        ? 'border-red-500 bg-red-50 focus:ring-red-500' 
+                        : 'border-gray-300 focus:ring-green-500'
+                    }`}
                     placeholder="z.B. Sommer T-Shirt"
                   />
+                  {validationErrors.name && (
+                    <p className="text-red-600 text-sm mt-1 flex items-center">
+                      <span className="mr-1">⚠️</span>
+                      {validationErrors.name}
+                    </p>
+                  )}
                 </div>
               </div>
               
