@@ -8259,11 +8259,22 @@ function App() {
                 <button
                   type="button"
                   onClick={() => setShowSizeModal(true)}
-                  className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg"
+                  className={`w-full px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg ${
+                    validationErrors.sizes 
+                      ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white border-2 border-red-500' 
+                      : 'bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white'
+                  }`}
                 >
                   <span className="text-2xl">📏</span>
                   <span className="font-medium">Größen-Übersicht öffnen ({newProductData.sizes.length} Größen gewählt)</span>
                 </button>
+                
+                {validationErrors.sizes && (
+                  <p className="text-red-600 text-sm mt-2 flex items-center">
+                    <span className="mr-1">⚠️</span>
+                    {validationErrors.sizes}
+                  </p>
+                )}
                 
                 {/* Selected Sizes Display */}
                 {newProductData.sizes.length > 0 && (
