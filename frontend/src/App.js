@@ -9032,8 +9032,6 @@ function App() {
         </div>
       )}
       
-      </div>
-      
       {/* Simple Subcategory Creation Modal */}
       {showSimpleSubcategoryModal && (
         <div 
