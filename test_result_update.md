@@ -7,8 +7,8 @@ Comprehensive debugging reveals the EXACT issue preventing Plus-Buttons from wor
 ### DETAILED FINDINGS:
 
 **1) ✅ ENVIRONMENT ANALYSIS:**
-- Frontend URL correctly configured (https://shop-category-fix.preview.emergentagent.com)
-- BACKEND_URL properly set (https://shop-category-fix.preview.emergentagent.com)
+- Frontend URL correctly configured (https://modalfix-dev.preview.emergentagent.com)
+- BACKEND_URL properly set (https://modalfix-dev.preview.emergentagent.com)
 - API endpoints reachable:
   - GET /api/categories returns 200 OK with 30 categories
   - GET /api/categories/main returns 200 OK with 14 categories
