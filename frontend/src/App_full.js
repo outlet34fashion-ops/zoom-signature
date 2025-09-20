@@ -5998,7 +5998,3232 @@ function App() {
                         <div ref={chatEndRef} />
                       </div>
 
+                      {/* Chat Input */}
+                      <div className="space-y-3">
+                        <div className="flex space-x-2">
+                          <input
+                            type="text"
+                            placeholder="Nachricht eingeben..."
+                            value={newMessage}
+                            onChange={(e) => setNewMessage(e.target.value)}
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                sendMessage();
+                              }
+                            }}
+                            className="flex-1 h-9 w-full rounded-md border border-gray-300 bg-white px-3 py-1 text-base shadow-sm placeholder:text-gray-500 focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                          />
+                          <Button 
+                            onClick={sendMessage}
+                            className="bg-pink-500 hover:bg-pink-600 text-white px-4"
+                            size="sm"
+                          >
+                            Nachricht senden
+                          </Button>
+                        </div>
 
+                        {/* Quick Action Buttons - Only for Admin */}
+                        {isAdminView && (
+                          <div className="grid grid-cols-2 gap-2">
+                            <Button 
+                              size="sm" 
+                              className="bg-orange-500 hover:bg-orange-600 text-white text-xs"
+                              onClick={() => sendEmoji('🔥')}
+                            >
+                              🔥 {t.topseller}
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              className="bg-purple-500 hover:bg-purple-600 text-white text-xs"
+                              onClick={() => sendEmoji('🆕')}
+                            >
+                              🆕 {t.newIn}
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              className="bg-teal-500 hover:bg-teal-600 text-white text-xs"
+                              onClick={() => sendEmoji('💸')}
+                            >
+                              💸 {t.sale}
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              className="bg-red-500 hover:bg-red-600 text-white text-xs"
+                              onClick={() => sendEmoji('💖')}
+                            >
+                              💖 {t.specialOffer}
+                            </Button>
+                          </div>
+                        )}
+
+                        {/* Emoji Reactions - For all users */}
+                        <div className="flex space-x-2 justify-center">
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => sendEmoji('❤️')}
+                            className="hover:bg-red-50"
+                          >
+                            ❤️
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => sendEmoji('🔥')}
+                            className="hover:bg-orange-50"
+                          >
+                            🔥
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => sendEmoji('👍')}
+                            className="hover:bg-blue-50"
+                          >
+                            👍
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+
+        </div>
+
+        {/* Product Selection Area - Only for Admin */}
+        {selectedProduct && isAdminView && (
+          <Card className="mt-6">
+            <CardContent className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                {/* Size and Price Selection - Combined in one row */}
+                <div className="md:col-span-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    {/* Size Selection */}
+                    <div>
+                      <h4 className="font-semibold mb-3">Größe</h4>
+                      <div className="grid grid-cols-3 gap-2">
+                        {selectedProduct.sizes.map((size) => (
+                          <Button
+                            key={size}
+                            variant={selectedSize === size ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => {
+                              setSelectedSize(size);
+                              setManualSize(size); // Copy selected size to manual field
+                            }}
+                            className={selectedSize === size ? "bg-gray-800 text-white" : ""}
+                          >
+                            {size}
+                          </Button>
+                        ))}
+                      </div>
+                      <Input 
+                        placeholder="Manuell" 
+                        className="mt-2" 
+                        value={manualSize}
+                        onChange={(e) => {
+                          setManualSize(e.target.value);
+                          setSelectedSize(e.target.value); // Update selected size when typing
+                        }}
+                      />
+                    </div>
+
+                    {/* Price Selection */}
+                    <div>
+                      <h4 className="font-semibold mb-3">Preis</h4>
+                      <div className="grid grid-cols-4 gap-2">
+                        {priceOptions.map((price) => (
+                          <Button
+                            key={price}
+                            variant={selectedPrice === parseFloat(price.replace(',', '.').replace(' €', '')) ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => {
+                              const numPrice = parseFloat(price.replace(',', '.').replace(' €', ''));
+                              setSelectedPrice(numPrice);
+                              setManualPrice(numPrice.toFixed(2)); // Copy selected price to manual field
+                            }}
+                            className={selectedPrice === parseFloat(price.replace(',', '.').replace(' €', '')) ? "bg-pink-500 text-white" : "text-xs hover:bg-pink-50"}
+                          >
+                            {price}
+                          </Button>
+                        ))}
+                      </div>
+                      <Input 
+                        placeholder="Manuell (z.B. 5,00)" 
+                        className="mt-2"
+                        type="text"
+                        value={manualPrice}
+                        onChange={(e) => {
+                          setManualPrice(e.target.value);
+                          // Convert comma to dot for price calculation
+                          const numValue = parseFloat(e.target.value.replace(',', '.')) || 0;
+                          setSelectedPrice(numValue);
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons - REMOVED per user request */}
+              {/* Blue and green buttons removed */}
+            </CardContent>
+          </Card>
+        )}
+      </div>
+
+      {/* Create Event Modal */}
+      {showCreateEvent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-md mx-4">
+            <CardContent className="p-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">📅 Neues Event erstellen</h3>
+              
+              {eventError && (
+                <div className="bg-red-100 border border-red-300 rounded-lg p-3 mb-4">
+                  <p className="text-red-700 text-sm">{eventError}</p>
+                </div>
+              )}
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Datum *</label>
+                  <Input
+                    type="date"
+                    value={newEventData.date}
+                    onChange={(e) => setNewEventData(prev => ({ ...prev, date: e.target.value }))}
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Zeit *</label>
+                  <Input
+                    type="time"
+                    value={newEventData.time}
+                    onChange={(e) => setNewEventData(prev => ({ ...prev, time: e.target.value }))}
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Titel *</label>
+                  <Input
+                    type="text"
+                    placeholder="z.B. Sale und aktuelle Ware"
+                    value={newEventData.title}
+                    onChange={(e) => setNewEventData(prev => ({ ...prev, title: e.target.value }))}
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Beschreibung</label>
+                  <Input
+                    type="text"
+                    placeholder="Zusätzliche Details (optional)"
+                    value={newEventData.description}
+                    onChange={(e) => setNewEventData(prev => ({ ...prev, description: e.target.value }))}
+                  />
+                </div>
+              </div>
+              
+              <div className="flex space-x-3 mt-6">
+                <Button 
+                  variant="outline"
+                  onClick={() => setShowCreateEvent(false)}
+                  className="flex-1"
+                >
+                  Abbrechen
+                </Button>
+                <Button 
+                  onClick={createEvent}
+                  className="flex-1 bg-pink-500 hover:bg-pink-600 text-white"
+                >
+                  Event erstellen
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Edit Event Modal */}
+      {showEditEvent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-md mx-4">
+            <CardContent className="p-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">📅 Event bearbeiten</h3>
+              
+              {eventError && (
+                <div className="bg-red-100 border border-red-300 rounded-lg p-3 mb-4">
+                  <p className="text-red-700 text-sm">{eventError}</p>
+                </div>
+              )}
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Datum *</label>
+                  <Input
+                    type="date"
+                    value={newEventData.date}
+                    onChange={(e) => setNewEventData(prev => ({ ...prev, date: e.target.value }))}
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Zeit *</label>
+                  <Input
+                    type="time"
+                    value={newEventData.time}
+                    onChange={(e) => setNewEventData(prev => ({ ...prev, time: e.target.value }))}
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Titel *</label>
+                  <Input
+                    type="text"
+                    placeholder="z.B. Sale und aktuelle Ware"
+                    value={newEventData.title}
+                    onChange={(e) => setNewEventData(prev => ({ ...prev, title: e.target.value }))}
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Beschreibung</label>
+                  <Input
+                    type="text"
+                    placeholder="Zusätzliche Details (optional)"
+                    value={newEventData.description}
+                    onChange={(e) => setNewEventData(prev => ({ ...prev, description: e.target.value }))}
+                  />
+                </div>
+              </div>
+              
+              <div className="flex space-x-3 mt-6">
+                <Button 
+                  variant="outline"
+                  onClick={() => {
+                    setShowEditEvent(false);
+                    setCurrentEvent(null);
+                  }}
+                  className="flex-1"
+                >
+                  Abbrechen
+                </Button>
+                <Button 
+                  onClick={updateEvent}
+                  className="flex-1 bg-pink-500 hover:bg-pink-600 text-white"
+                >
+                  Event aktualisieren
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Customer Calendar Modal */}
+      {showCalendar && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <CardContent className="p-4 md:p-6">
+              {/* Mobile-optimized Header */}
+              <div className="flex justify-between items-start mb-4">
+                <h3 className="text-lg md:text-xl font-semibold text-gray-800 pr-2">
+                  📅 Live Shopping Kalender
+                </h3>
+                
+                {/* Close Button - Always visible and prominent */}
+                <Button 
+                  variant="ghost"
+                  onClick={() => setShowCalendar(false)}
+                  className="text-gray-500 hover:text-gray-700 text-xl p-2 min-w-[40px] flex-shrink-0"
+                  title="Schließen"
+                >
+                  ✕
+                </Button>
+              </div>
+
+              {/* Notification Button - Mobile friendly placement */}
+              {!notificationsEnabled && (
+                <div className="mb-4">
+                  <Button 
+                    onClick={requestNotificationPermission}
+                    className="bg-green-500 hover:bg-green-600 text-white text-sm w-full md:w-auto"
+                    size="sm"
+                  >
+                    🔔 Erinnerungen aktivieren
+                  </Button>
+                </div>
+              )}
+              
+              {loadingEvents ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-600">Kalender wird geladen...</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {events.length === 0 ? (
+                    <div className="text-center py-8">
+                      <p className="text-gray-600 mb-2">📅 Keine kommenden Live Shopping Events geplant.</p>
+                      <p className="text-sm text-gray-500">Schauen Sie bald wieder vorbei für neue Events!</p>
+                      {notificationsEnabled && (
+                        <p className="text-xs text-green-600 mt-2">
+                          🔔 Sie werden über neue Events benachrichtigt
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <>
+                      <div className="mb-6">
+                        <h4 className="text-lg font-medium text-gray-800 mb-4">Kommende Live Shopping Events:</h4>
+                      </div>
+                      
+                      {events.map((event, index) => {
+                        const eventDateTime = new Date(event.date + 'T' + event.time);
+                        const now = new Date();
+                        const isToday = eventDateTime.toDateString() === now.toDateString();
+                        const isUpcoming = eventDateTime > now;
+                        
+                        return (
+                          <div key={event.id} className={`border rounded-lg p-4 transition-colors ${
+                            isToday ? 'bg-pink-50 border-pink-300' : 
+                            isUpcoming ? 'hover:bg-gray-50' : 'opacity-50'
+                          }`}>
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <div className="flex items-center space-x-4 mb-2">
+                                  <div className={`px-3 py-1 rounded-full text-sm font-medium ${
+                                    isToday ? 'bg-pink-500 text-white' : 'bg-pink-100 text-pink-800'
+                                  }`}>
+                                    {formatEventDate(event.date)}
+                                  </div>
+                                  <div className={`px-3 py-1 rounded-full text-sm font-bold ${
+                                    isToday ? 'bg-pink-600 text-white' : 'bg-pink-500 text-white'
+                                  }`}>
+                                    {event.time}
+                                  </div>
+                                  {isToday && (
+                                    <span className="animate-pulse text-pink-600 font-bold text-xs">
+                                      🔴 HEUTE LIVE!
+                                    </span>
+                                  )}
+                                </div>
+                                
+                                <h5 className="text-lg font-semibold text-gray-800 mb-1">
+                                  {event.title}
+                                </h5>
+                                
+                                {event.description && (
+                                  <p className="text-gray-600 text-sm">
+                                    {event.description}
+                                  </p>
+                                )}
+                              </div>
+                              
+                              <div className="ml-4 text-2xl">
+                                {isToday ? '🔴' : index === 0 ? '⭐' : '📅'}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                      
+                      <div className="mt-6 pt-4 border-t text-center">
+                        <p className="text-sm text-gray-500">
+                          💡 Verpassen Sie keine Live Shopping Events! Besuchen Sie uns zur angegebenen Zeit.
+                        </p>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* WebRTC Streaming Modal */}
+      {showStreaming && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-6xl max-h-[90vh] overflow-auto">
+            <CardContent className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800">
+                  {streamingMode === 'streamer' ? '🎥 Live-Stream' : '📺 Live-Stream ansehen'}
+                </h2>
+                <Button
+                  onClick={() => {
+                    setShowStreaming(false);
+                    handleStreamEnd();
+                  }}
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  ✕
+                </Button>
+              </div>
+
+              {/* CRITICAL: LiveKit Streaming Interface - WORKS */}
+              {streamingActive && dailyToken && dailyRoomUrl ? (
+                <div className="space-y-4">
+                  {/* Connection Status */}
+                  <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <div className={`w-3 h-3 rounded-full ${isDailyConnected ? 'bg-green-500' : 'bg-yellow-500'} animate-pulse`} />
+                      <span className="text-sm font-medium">
+                        {isDailyConnected ? '🟢 Live Connected' : '🟡 Connecting...'}
+                      </span>
+                    </div>
+                    {isAdminAuthenticated && (
+                      <Button 
+                        onClick={stopDailyStreaming}
+                        variant="destructive"
+                        size="sm"
+                      >
+                        ⏹️ Stream beenden
+                      </Button>
+                    )}
+                  </div>
+
+                  {/* Daily.co Error Display */}
+                  {dailyError && (
+                    <Alert className="border-red-200 bg-red-50">
+                      <AlertDescription className="text-red-800">
+                        ❌ Streaming Error: {dailyError}
+                      </AlertDescription>
+                    </Alert>
+                  )}
+
+                  {/* LiveKit Streaming Component */}
+                  <LiveKitStreamingInterface
+                    token={livekitToken}
+                    serverUrl={livekitUrl}
+                    roomName={currentRoomName}
+                    isPublisher={isAdminAuthenticated}
+                    onConnected={handleDailyConnected}
+                    onDisconnected={handleDailyDisconnected}
+                    onError={handleDailyError}
+                  />
+                </div>
+              ) : (
+                /* Start Streaming Button */
+                <div className="text-center py-8">
+                  <div className="space-y-4">
+                    <div className="text-gray-500 mb-4">
+                      {isAdminAuthenticated ? 
+                        '🎥 Live-Stream starten für Kunden' : 
+                        '📺 Warten auf Live-Stream...'}
+                    </div>
+                    {isAdminAuthenticated && (
+                      <Button 
+                        onClick={startDailyStreaming}
+                        className="bg-red-600 hover:bg-red-700 text-white"
+                        size="lg"
+                      >
+                        🔴 LIVE gehen
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Legacy Active Streams List for Customers (Backward Compatibility) */}
+      {isAuthenticated && !isAdminView && !showStreaming && !showSimpleStream && (
+        <div className="mt-6" style={{display: 'none'}}> {/* Hidden but kept for compatibility */}
+          <StreamsList
+            onJoinStream={joinWebRTCStream}
+            backendUrl={BACKEND_URL}
+          />
+        </div>
+      )}
+      </>
+      )}
+
+      {/* Termine Modal for Customers */}
+      {showTerminModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <Card className="w-full max-w-2xl mx-4 max-h-[80vh] overflow-hidden">
+            <CardContent className="p-6">
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-xl font-semibold text-gray-800">
+                    📅 Anstehende Live Shopping Termine
+                  </h3>
+                  <button 
+                    onClick={() => setShowTerminModal(false)}
+                    className="text-gray-500 hover:text-gray-700 text-2xl"
+                  >
+                    ×
+                  </button>
+                </div>
+                
+                <div className="max-h-[60vh] overflow-y-auto space-y-3">
+                  {events.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500">
+                      <div className="text-4xl mb-4">📅</div>
+                      <p>Keine Termine verfügbar</p>
+                      <p className="text-sm mt-2">Neue Termine werden hier angezeigt</p>
+                    </div>
+                  ) : (
+                    events.map((event) => {
+                      const eventDateTime = new Date(event.date + 'T' + event.time);
+                      const isUpcoming = eventDateTime > new Date();
+                      const hasReminder = customerReminders.includes(event.id);
+                      
+                      if (!isUpcoming) return null; // Nur zukünftige Termine anzeigen
+                      
+                      return (
+                        <div key={event.id} className="bg-gradient-to-r from-pink-50 to-purple-50 rounded-lg p-4 border border-pink-200">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <h4 className="font-semibold text-gray-800 mb-2">
+                                {event.title}
+                              </h4>
+                              <div className="text-sm text-gray-600 space-y-1">
+                                <div className="flex items-center">
+                                  <span className="mr-2">📅</span>
+                                  <span>{formatGermanDate(event.date)}</span>
+                                </div>
+                                <div className="flex items-center">
+                                  <span className="mr-2">🕐</span>
+                                  <span>{event.time} Uhr</span>
+                                </div>
+                                {event.description && (
+                                  <div className="flex items-start mt-2">
+                                    <span className="mr-2">📝</span>
+                                    <span className="text-gray-700">{event.description}</span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            
+                            <div className="ml-4">
+                              {hasReminder ? (
+                                <button
+                                  onClick={() => removeCustomerReminder(event.id)}
+                                  className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                                >
+                                  🔕 Erinnerung aus
+                                </button>
+                              ) : (
+                                <button
+                                  onClick={() => setCustomerReminder(event.id)}
+                                  className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                                >
+                                  🔔 Erinnern
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                          
+                          {hasReminder && (
+                            <div className="mt-3 p-2 bg-green-100 rounded-lg border border-green-300">
+                              <div className="text-green-700 text-sm flex items-center">
+                                <span className="mr-2">✅</span>
+                                <span>Sie werden 30 Minuten vor dem Termin benachrichtigt</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+                
+                <div className="border-t pt-4">
+                  <div className="text-center">
+                    <button 
+                      onClick={() => setShowTerminModal(false)}
+                      className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg"
+                    >
+                      Schließen
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Produktkatalog Modal */}
+      {showCatalog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-hidden">
+          <div className="bg-white w-full h-full max-w-7xl max-h-full flex flex-col">
+            {/* Header - Mobile optimized */}
+            <div className="bg-gradient-to-r from-pink-600 to-purple-600 text-white p-3">
+              {/* Top row with title and close button */}
+              <div className="flex justify-between items-center mb-2">
+                <h2 className="text-lg font-semibold">🛍️ OUTLET34 Produktkatalog</h2>
+                <button
+                  onClick={() => {
+                    setShowCatalog(false);
+                    setSelectedCategory(null);
+                    setSelectedCatalogProduct(null);
+                    setShowProductDetail(false);
+                  }}
+                  className="bg-white/20 hover:bg-white/30 w-8 h-8 rounded-lg transition-colors duration-200 flex items-center justify-center text-lg font-bold"
+                >
+                  ✕
+                </button>
+              </div>
+              
+              {/* Bottom row with orders and category */}
+              <div className="flex justify-between items-center">
+                <div className="flex items-center space-x-3">
+                  {isAuthenticated && (
+                    <button
+                      onClick={() => setShowMyOrders(true)}
+                      className="bg-white/20 hover:bg-white/30 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center space-x-1"
+                    >
+                      <span>📦</span>
+                      <span>Meine Bestellung</span>
+                    </button>
+                  )}
+                  
+                  {isAuthenticated && (
+                    <button
+                      onClick={() => setShowFavorites(true)}
+                      className="bg-white/20 hover:bg-white/30 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 flex items-center space-x-1"
+                    >
+                      <span>❤️</span>
+                      <span>Favoriten</span>
+                    </button>
+                  )}
+                </div>
+                <div className="flex items-center">
+                  {selectedCategory && (
+                    <span className="bg-white/20 px-3 py-1 rounded-full text-sm">
+                      {selectedCategory.name}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Search Bar */}
+            <div className="bg-white p-4 border-b">
+              <div className="flex space-x-4 items-center">
+                <div className="flex-1 relative">
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Suche nach Produktname, Material, Artikelnummer..."
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  />
+                  <div className="absolute left-3 top-2.5 text-gray-400">
+                    🔍
+                  </div>
+                  {searchQuery && (
+                    <button
+                      onClick={() => {
+                        setSearchQuery('');
+                        loadCatalogProducts(selectedCategory?.id);
+                      }}
+                      className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Horizontal Scrollable Category Tabs */}
+            <div className="bg-gray-50 border-b">
+              <div className="overflow-x-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                <div className="flex space-x-2 p-4 min-w-max">
+                  {/* Alle Kategorien Tab */}
+                  <button
+                    onClick={() => {
+                      setSelectedCategory(null);
+                      setShowSubcategories(false);
+                      setSelectedCategorySubcategories([]);
+                      loadCatalogProducts();
+                    }}
+                    className={`px-6 py-3 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-200 flex items-center space-x-2 min-w-max ${
+                      !selectedCategory
+                        ? 'bg-pink-600 text-white shadow-lg'
+                        : 'bg-white text-gray-700 hover:bg-pink-100 border border-gray-200'
+                    }`}
+                  >
+                    <span>Alle Kategorien</span>
+                    <span className={`text-xs px-2 py-1 rounded-full ${
+                      !selectedCategory 
+                        ? 'bg-white bg-opacity-20' 
+                        : 'bg-pink-100 text-pink-600'
+                    }`}>
+                      {totalProductCount}
+                    </span>
+                  </button>
+
+
+                  {/* Hosen & Jeans Tab */}
+                  <button
+                    onClick={() => {
+                      const hosenCategory = mainCategories.find(cat => 
+                        cat.name.toLowerCase().includes('hose') || 
+                        cat.name.toLowerCase().includes('jean')
+                      );
+                      if (hosenCategory) {
+                        setSelectedCategory(hosenCategory);
+                        loadCatalogProducts(hosenCategory.id);
+                        loadCategorySubcategories(hosenCategory);
+                      }
+                    }}
+                    className={`px-6 py-3 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-200 flex items-center space-x-2 min-w-max ${
+                      selectedCategory?.name?.toLowerCase().includes('hose') || selectedCategory?.name?.toLowerCase().includes('jean')
+                        ? 'bg-pink-600 text-white shadow-lg'
+                        : 'bg-white text-gray-700 hover:bg-pink-100 border border-gray-200'
+                    }`}
+                  >
+                    <span>👖</span>
+                    <span>Hosen & Jeans</span>
+                  </button>
+
+                  {/* Kleider & Röcke Tab */}
+                  <button
+                    onClick={() => {
+                      const kleiderCategory = mainCategories.find(cat => 
+                        cat.name.toLowerCase().includes('kleid') || 
+                        cat.name.toLowerCase().includes('rock')
+                      );
+                      if (kleiderCategory) {
+                        setSelectedCategory(kleiderCategory);
+                        loadCatalogProducts(kleiderCategory.id);
+                        loadCategorySubcategories(kleiderCategory);
+                      }
+                    }}
+                    className={`px-6 py-3 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-200 flex items-center space-x-2 min-w-max ${
+                      selectedCategory?.name?.toLowerCase().includes('kleid') || selectedCategory?.name?.toLowerCase().includes('rock')
+                        ? 'bg-pink-600 text-white shadow-lg'
+                        : 'bg-white text-gray-700 hover:bg-pink-100 border border-gray-200'
+                    }`}
+                  >
+                    <span>👗</span>
+                    <span>Kleider & Röcke</span>
+                  </button>
+
+                  {/* Jacken & Mäntel Tab */}
+                  <button
+                    onClick={() => {
+                      const jackenCategory = mainCategories.find(cat => 
+                        cat.name.toLowerCase().includes('jacke') || 
+                        cat.name.toLowerCase().includes('mantel')
+                      );
+                      if (jackenCategory) {
+                        setSelectedCategory(jackenCategory);
+                        loadCatalogProducts(jackenCategory.id);
+                        loadCategorySubcategories(jackenCategory);
+                      }
+                    }}
+                    className={`px-6 py-3 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-200 flex items-center space-x-2 min-w-max ${
+                      selectedCategory?.name?.toLowerCase().includes('jacke') || selectedCategory?.name?.toLowerCase().includes('mantel')
+                        ? 'bg-pink-600 text-white shadow-lg'
+                        : 'bg-white text-gray-700 hover:bg-pink-100 border border-gray-200'
+                    }`}
+                  >
+                    <span>🧥</span>
+                    <span>Jacken & Mäntel</span>
+                  </button>
+
+                  {/* Accessoires Tab */}
+                  <button
+                    onClick={() => {
+                      const accessoiresCategory = mainCategories.find(cat => 
+                        cat.name.toLowerCase().includes('accessoire') || 
+                        cat.name.toLowerCase().includes('schmuck')
+                      );
+                      if (accessoiresCategory) {
+                        setSelectedCategory(accessoiresCategory);
+                        loadCatalogProducts(accessoiresCategory.id);
+                        loadCategorySubcategories(accessoiresCategory);
+                      }
+                    }}
+                    className={`px-6 py-3 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-200 flex items-center space-x-2 min-w-max ${
+                      selectedCategory?.name?.toLowerCase().includes('accessoire') || selectedCategory?.name?.toLowerCase().includes('schmuck')
+                        ? 'bg-pink-600 text-white shadow-lg'
+                        : 'bg-white text-gray-700 hover:bg-pink-100 border border-gray-200'
+                    }`}
+                  >
+                    <span>👜</span>
+                    <span>Accessoires</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Subcategories List - Only shown when a main category is selected and has subcategories */}
+            {showSubcategories && selectedCategorySubcategories.length > 0 && (
+              <div className="bg-white border-b border-gray-200">
+                <div className="px-4 py-3">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="text-sm font-medium text-gray-700 flex items-center">
+                      <span className="mr-2">📂</span>
+                      Unterkategorien von "{selectedCategory?.name}" ({selectedCategorySubcategories.length})
+                    </h4>
+                    <button
+                      onClick={() => {
+                        setShowSubcategories(false);
+                        setSelectedCategorySubcategories([]);
+                      }}
+                      className="text-gray-400 hover:text-gray-600 text-sm"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+                    {selectedCategorySubcategories.map((subcategory) => (
+                      <button
+                        key={subcategory.id}
+                        onClick={() => {
+                          console.log('Subcategory clicked:', subcategory.name);
+                          // Load products for this subcategory
+                          loadCatalogProducts(subcategory.id);
+                          // Optionally highlight the selected subcategory
+                        }}
+                        className="bg-gray-50 hover:bg-pink-50 border border-gray-200 hover:border-pink-300 rounded-lg p-3 text-left transition-colors duration-200 group"
+                      >
+                        <div className="font-medium text-sm text-gray-800 group-hover:text-pink-600">
+                          {subcategory.name}
+                        </div>
+                        <div className="text-xs text-gray-500 mt-1">
+                          {subcategory.product_count || 0} Produkte
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+                
+                {/* Old navigation removed - replaced with horizontal tabs above */}
+
+            {/* Content Area */}
+            <div className="flex-1 overflow-y-auto p-6">
+              {loadingCatalog ? (
+                <div className="flex items-center justify-center h-64">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-600 mx-auto mb-4"></div>
+                    <p className="text-gray-600">Lade Produkte...</p>
+                  </div>
+                </div>
+              ) : catalogError ? (
+                <div className="text-center text-red-600 py-8">
+                  <p>{catalogError}</p>
+                  <button
+                    onClick={() => loadCatalogProducts(selectedCategory?.id)}
+                    className="mt-4 bg-pink-600 text-white px-4 py-2 rounded-lg hover:bg-pink-700 transition-colors duration-200"
+                  >
+                    Erneut versuchen
+                  </button>
+                </div>
+              ) : (catalogProducts?.length || 0) === 0 ? (
+                <div className="text-center text-gray-600 py-8">
+                  <p>Keine Produkte gefunden</p>
+                  {selectedCategory && (
+                    <button
+                      onClick={() => {
+                        setSelectedCategory(null);
+                        loadCatalogProducts();
+                      }}
+                      className="mt-4 text-pink-600 hover:text-pink-700 underline"
+                    >
+                      Alle Kategorien anzeigen
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {/* Neue Artikel Section - First Block */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                      <span className="mr-2">✨</span>
+                      Neue Artikel
+                    </h3>
+                    {/* Mobile: Horizontal scrollable 2-column grid */}
+                    <div className="block md:hidden">
+                      <div className="flex overflow-x-auto space-x-4 pb-4" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                        {catalogProducts
+                          .filter(product => {
+                            // Zeige Produkte die in den letzten 30 Tagen erstellt wurden als "neu"
+                            const productDate = new Date(product.created_at);
+                            const thirtyDaysAgo = new Date();
+                            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                            return productDate > thirtyDaysAgo;
+                          })
+                          .slice(0, 10) // Maximal 10 neue Artikel anzeigen
+                          .map((product) => (
+                      <div
+                        key={product.id}
+                        onClick={() => {
+                          setSelectedCatalogProduct(product);
+                          setShowProductDetail(true);
+                          setSelectedProductSize(product.sizes?.[0] || 'OneSize');
+                          setCurrentImageIndex(0);
+                        }}
+                        className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 cursor-pointer group min-w-[160px] flex-shrink-0"
+                      >
+                        {/* Square Image Container - WhatsApp Style Mobile */}
+                        <div className="relative w-full pt-[100%] bg-gray-100 rounded-t-lg overflow-hidden">
+                          {product.image_url ? (
+                            <img
+                              src={product.image_url}
+                              alt={product.name}
+                              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                            />
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center text-gray-400">
+                              <span className="text-4xl">📷</span>
+                            </div>
+                          )}
+                          
+                          {/* Favorite Heart */}
+                          <div className="absolute top-2 left-2">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleFavorite(product.id);
+                              }}
+                              className="w-8 h-8 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-full flex items-center justify-center transition-all duration-200 shadow-sm"
+                            >
+                              <span className="text-lg">
+                                {productFavoriteStatus[product.id] ? '❤️' : '🤍'}
+                              </span>
+                            </button>
+                          </div>
+
+                          {/* "Ausverkauft" Badge */}
+                          {product.stock_quantity === 0 && (
+                            <div className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                              Ausverkauft
+                            </div>
+                          )}
+
+                          {/* Admin Action Buttons - Mobile */}
+                          {isAdminAuthenticated && (
+                            <div className="absolute bottom-2 right-2 flex space-x-1">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  startEditProduct(product);
+                                }}
+                                className="w-6 h-6 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-colors duration-200 shadow-lg"
+                                title="Bearbeiten"
+                              >
+                                <span className="text-xs">✏️</span>
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleOutOfStock(product);
+                                }}
+                                className={`w-6 h-6 rounded-full ${
+                                  product.stock_quantity === 0 
+                                    ? 'bg-green-600 hover:bg-green-700' 
+                                    : 'bg-red-600 hover:bg-red-700'
+                                } text-white flex items-center justify-center transition-colors duration-200 shadow-lg`}
+                                title={product.stock_quantity === 0 ? 'Verfügbar' : 'Ausverkauft'}
+                              >
+                                <span className="text-xs">{product.stock_quantity === 0 ? '✅' : '🚫'}</span>
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deleteProduct(product);
+                                }}
+                                className="w-6 h-6 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center transition-colors duration-200 shadow-lg"
+                                title="Löschen"
+                              >
+                                <span className="text-xs">🗑️</span>
+                              </button>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Product Info Mobile */}
+                        <div className="p-3">
+                          <div className="text-xs text-gray-500 mb-1">
+                            Art.-Nr.: {product.article_number}
+                          </div>
+                          <h3 className="font-semibold text-sm text-gray-800 mb-1 line-clamp-2" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                            {product.name}
+                          </h3>
+                          {product.material && (
+                            <div className="text-xs text-blue-600 mb-1">
+                              {product.material}
+                            </div>
+                          )}
+                          <div className="flex justify-between items-end">
+                            <span className="text-lg font-bold text-pink-600">
+                              {product.price.toFixed(2)} €
+                            </span>
+                            <div className="text-right">
+                              {product.colors && product.colors.length > 0 && (
+                                <div className="flex space-x-1 mb-1">
+                                  {product.colors.slice(0, 2).map((color, index) => (
+                                    <div
+                                      key={index}
+                                      className="w-3 h-3 rounded-full border border-gray-300"
+                                      style={{
+                                        backgroundColor: color.toLowerCase() === 'schwarz' ? '#000000' :
+                                                       color.toLowerCase() === 'weiß' ? '#FFFFFF' :
+                                                       color.toLowerCase() === 'blau' ? '#0066CC' :
+                                                       color.toLowerCase() === 'rot' ? '#CC0000' :
+                                                       color.toLowerCase() === 'beige' ? '#F5F5DC' : 
+                                                       color.startsWith('#') ? color : '#CCCCCC'
+                                      }}
+                                      title={color}
+                                    />
+                                  ))}
+                                  {product.colors.length > 2 && (
+                                    <span className="text-xs text-gray-500">+{product.colors.length - 2}</span>
+                                  )}
+                                </div>
+                              )}
+                              <div className="text-xs text-gray-500">
+                                {product.sizes && product.sizes.length > 0 ? 
+                                  product.sizes.slice(0, 2).join(', ') + (product.sizes.length > 2 ? '...' : '') : 
+                                  'OneSize'
+                                }
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {/* Desktop: Regular grid */}
+                    <div className="hidden md:grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                      {catalogProducts
+                        .filter(product => {
+                          // Zeige Produkte die in den letzten 30 Tagen erstellt wurden als "neu"
+                          const productDate = new Date(product.created_at);
+                          const thirtyDaysAgo = new Date();
+                          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                          return productDate > thirtyDaysAgo;
+                        })
+                        .slice(0, 10) // Maximal 10 neue Artikel anzeigen
+                        .map((product) => (
+                    <div
+                      key={product.id}
+                      onClick={() => {
+                        setSelectedCatalogProduct(product);
+                        setShowProductDetail(true);
+                        setSelectedProductSize(product.sizes?.[0] || 'OneSize');
+                        setCurrentImageIndex(0);
+                      }}
+                      className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 cursor-pointer group"
+                    >
+                      {/* Square Image Container - WhatsApp Style */}
+                      <div className="relative w-full pt-[100%] bg-gray-100 rounded-t-lg overflow-hidden">
+                        {product.image_url ? (
+                          <img
+                            src={product.image_url}
+                            alt={product.name}
+                            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                          />
+                        ) : (
+                          <div className="absolute inset-0 flex items-center justify-center text-gray-400">
+                            <span className="text-4xl">📷</span>
+                          </div>
+                        )}
+                        
+                        {/* Favorite Heart */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleFavorite(product.id);
+                          }}
+                          className="absolute top-2 left-2 w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center transition-colors duration-200"
+                        >
+                          <span className={`text-lg ${productFavoriteStatus[product.id] ? 'text-red-500' : 'text-gray-400'}`}>
+                            {productFavoriteStatus[product.id] ? '❤️' : '🤍'}
+                          </span>
+                        </button>
+
+                        {/* Admin Action Buttons - Desktop */}
+                        {isAdminAuthenticated && (
+                          <div className="absolute bottom-2 right-2 flex space-x-1">
+                            {/* Edit Button */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                startEditProduct(product);
+                              }}
+                              className="w-8 h-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-colors duration-200 shadow-lg"
+                              title="Produkt bearbeiten"
+                            >
+                              <span className="text-sm">✏️</span>
+                            </button>
+
+                            {/* Out of Stock Toggle Button */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleOutOfStock(product);
+                              }}
+                              className={`w-8 h-8 rounded-full ${
+                                product.stock_quantity === 0 
+                                  ? 'bg-green-600 hover:bg-green-700' 
+                                  : 'bg-red-600 hover:bg-red-700'
+                              } text-white flex items-center justify-center transition-colors duration-200 shadow-lg`}
+                              title={product.stock_quantity === 0 ? 'Wieder verfügbar machen' : 'Als ausverkauft markieren'}
+                            >
+                              <span className="text-sm">{product.stock_quantity === 0 ? '✅' : '🚫'}</span>
+                            </button>
+
+                            {/* Visibility Toggle Button */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleProductVisibility(product);
+                              }}
+                              className={`w-8 h-8 rounded-full ${
+                                product.is_active === false 
+                                  ? 'bg-green-600 hover:bg-green-700' 
+                                  : 'bg-orange-600 hover:bg-orange-700'
+                              } text-white flex items-center justify-center transition-colors duration-200 shadow-lg`}
+                              title={product.is_active === false ? 'Produkt einblenden' : 'Produkt ausblenden'}
+                            >
+                              <span className="text-sm">{product.is_active === false ? '👁️' : '🙈'}</span>
+                            </button>
+
+                            {/* Delete Button */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteProduct(product);
+                              }}
+                              className="w-8 h-8 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center transition-colors duration-200 shadow-lg"
+                              title="Produkt löschen"
+                            >
+                              <span className="text-sm">🗑️</span>
+                            </button>
+                          </div>
+                        )}
+                        
+                        {/* Stock Badge */}
+                        {product.stock_quantity !== null && (
+                          <div className="absolute top-2 right-2">
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              product.stock_quantity > 10
+                                ? 'bg-green-100 text-green-700'
+                                : product.stock_quantity > 0
+                                  ? 'bg-yellow-100 text-yellow-700'
+                                  : 'bg-red-100 text-red-700'
+                            }`}>
+                              {product.stock_quantity > 0 ? `${product.stock_quantity} St.` : 'Ausverkauft'}
+                            </span>
+                          </div>
+                        )}
+                        
+                        {/* Multiple Images Indicator */}
+                        {product.additional_images && product.additional_images.length > 0 && (
+                          <div className="absolute bottom-2 left-2">
+                            <span className="bg-black/50 text-white text-xs px-2 py-1 rounded-full">
+                              📷 {product.additional_images.length + 1}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Product Info */}
+                      <div className="p-3">
+                        <div className="text-xs text-gray-500 mb-1">
+                          Art.-Nr.: {product.article_number}
+                        </div>
+                        <h3 className="font-semibold text-sm text-gray-800 mb-1 line-clamp-2" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                          {product.name}
+                        </h3>
+                        {product.material && (
+                          <div className="text-xs text-blue-600 mb-1">
+                            {product.material}
+                          </div>
+                        )}
+                        <div className="flex justify-between items-end">
+                          <span className="text-lg font-bold text-pink-600">
+                            {product.price.toFixed(2)} €
+                          </span>
+                          <div className="text-right">
+                            {product.colors && product.colors.length > 0 && (
+                              <div className="flex space-x-1 mb-1">
+                                {product.colors.slice(0, 3).map((color, index) => (
+                                  <div
+                                    key={index}
+                                    className="w-3 h-3 rounded-full border border-gray-300"
+                                    style={{
+                                      backgroundColor: color.toLowerCase() === 'schwarz' ? '#000000' :
+                                                     color.toLowerCase() === 'weiß' ? '#FFFFFF' :
+                                                     color.toLowerCase() === 'blau' ? '#0066CC' :
+                                                     color.toLowerCase() === 'rot' ? '#CC0000' :
+                                                     color.toLowerCase() === 'beige' ? '#F5F5DC' : 
+                                                     color.startsWith('#') ? color : '#CCCCCC'
+                                    }}
+                                    title={color}
+                                  />
+                                ))}
+                                {product.colors.length > 3 && (
+                                  <span className="text-xs text-gray-500">+{product.colors.length - 3}</span>
+                                )}
+                              </div>
+                            )}
+                            <div className="text-xs text-gray-500">
+                              {product.sizes?.join(', ') || 'OneSize'}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                    </div>
+                  </div>
+
+                  {/* Bestseller Section - Second Block */}
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                      <span className="mr-2">🏆</span>
+                      Bestseller
+                    </h3>
+                    {/* Mobile: Horizontal scrollable 2-column grid */}
+                    <div className="block md:hidden">
+                      <div className="flex overflow-x-auto space-x-4 pb-4" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                        {catalogProducts
+                          .filter(product => {
+                            // Zeige ältere oder beliebte Produkte als Bestseller
+                            const productDate = new Date(product.created_at);
+                            const thirtyDaysAgo = new Date();
+                            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                            return productDate <= thirtyDaysAgo || !product.created_at; // Älter als 30 Tage oder kein Datum
+                          })
+                          .map((product) => (
+                            <div
+                              key={product.id}
+                              onClick={() => {
+                                setSelectedCatalogProduct(product);
+                                setShowProductDetail(true);
+                                setSelectedProductSize(product.sizes?.[0] || 'OneSize');
+                                setCurrentImageIndex(0);
+                              }}
+                              className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 cursor-pointer group min-w-[160px] flex-shrink-0"
+                            >
+                              {/* Square Image Container - WhatsApp Style Mobile */}
+                              <div className="relative w-full pt-[100%] bg-gray-100 rounded-t-lg overflow-hidden">
+                                {product.image_url ? (
+                                  <img
+                                    src={product.image_url}
+                                    alt={product.name}
+                                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                                  />
+                                ) : (
+                                  <div className="absolute inset-0 flex items-center justify-center text-gray-400">
+                                    <span className="text-4xl">📷</span>
+                                  </div>
+                                )}
+                                
+                                {/* Favorite Heart */}
+                                <div className="absolute top-2 left-2">
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      toggleFavorite(product.id);
+                                    }}
+                                    className="w-8 h-8 bg-white bg-opacity-80 hover:bg-opacity-100 rounded-full flex items-center justify-center transition-all duration-200 shadow-sm"
+                                  >
+                                    <span className="text-lg">
+                                      {productFavoriteStatus[product.id] ? '❤️' : '🤍'}
+                                    </span>
+                                  </button>
+                                </div>
+
+                                {/* "Ausverkauft" Badge */}
+                                {product.stock_quantity === 0 && (
+                                  <div className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                                    Ausverkauft
+                                  </div>
+                                )}
+
+                                {/* Bestseller Badge */}
+                                <div className="absolute bottom-2 right-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                                  🏆 Bestseller
+                                </div>
+
+                                {/* Admin Action Buttons - Mobile Bestseller */}
+                                {isAdminAuthenticated && (
+                                  <div className="absolute bottom-2 left-2 flex space-x-1">
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        startEditProduct(product);
+                                      }}
+                                      className="w-6 h-6 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-colors duration-200 shadow-lg"
+                                      title="Bearbeiten"
+                                    >
+                                      <span className="text-xs">✏️</span>
+                                    </button>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        toggleOutOfStock(product);
+                                      }}
+                                      className={`w-6 h-6 rounded-full ${
+                                        product.stock_quantity === 0 
+                                          ? 'bg-green-600 hover:bg-green-700' 
+                                          : 'bg-red-600 hover:bg-red-700'
+                                      } text-white flex items-center justify-center transition-colors duration-200 shadow-lg`}
+                                      title={product.stock_quantity === 0 ? 'Verfügbar' : 'Ausverkauft'}
+                                    >
+                                      <span className="text-xs">{product.stock_quantity === 0 ? '✅' : '🚫'}</span>
+                                    </button>
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        deleteProduct(product);
+                                      }}
+                                      className="w-6 h-6 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center transition-colors duration-200 shadow-lg"
+                                      title="Löschen"
+                                    >
+                                      <span className="text-xs">🗑️</span>
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Product Info Mobile */}
+                              <div className="p-3">
+                                <div className="text-xs text-gray-500 mb-1">
+                                  Art.-Nr.: {product.article_number}
+                                </div>
+                                <h3 className="font-semibold text-sm text-gray-800 mb-1 line-clamp-2" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                  {product.name}
+                                </h3>
+                                {product.material && (
+                                  <div className="text-xs text-blue-600 mb-1">
+                                    {product.material}
+                                  </div>
+                                )}
+                                <div className="flex justify-between items-end">
+                                  <span className="text-lg font-bold text-pink-600">
+                                    {product.price.toFixed(2)} €
+                                  </span>
+                                  <div className="text-right">
+                                    {product.colors && product.colors.length > 0 && (
+                                      <div className="flex space-x-1 mb-1">
+                                        {product.colors.slice(0, 2).map((color, index) => (
+                                          <div
+                                            key={index}
+                                            className="w-3 h-3 rounded-full border border-gray-300"
+                                            style={{
+                                              backgroundColor: color.toLowerCase() === 'schwarz' ? '#000000' :
+                                                             color.toLowerCase() === 'weiß' ? '#FFFFFF' :
+                                                             color.toLowerCase() === 'blau' ? '#0066CC' :
+                                                             color.toLowerCase() === 'rot' ? '#CC0000' :
+                                                             color.toLowerCase() === 'beige' ? '#F5F5DC' : 
+                                                             color.startsWith('#') ? color : '#CCCCCC'
+                                            }}
+                                            title={color}
+                                          />
+                                        ))}
+                                        {product.colors.length > 2 && (
+                                          <span className="text-xs text-gray-500">+{product.colors.length - 2}</span>
+                                        )}
+                                      </div>
+                                    )}
+                                    <div className="text-xs text-gray-500">
+                                      {product.sizes && product.sizes.length > 0 ? 
+                                        product.sizes.slice(0, 2).join(', ') + (product.sizes.length > 2 ? '...' : '') : 
+                                        'OneSize'
+                                      }
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                    
+                    {/* Desktop: Regular grid */}
+                    <div className="hidden md:grid grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                      {catalogProducts
+                        .filter(product => {
+                          // Zeige ältere oder beliebte Produkte als Bestseller
+                          const productDate = new Date(product.created_at);
+                          const thirtyDaysAgo = new Date();
+                          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+                          return productDate <= thirtyDaysAgo || !product.created_at; // Älter als 30 Tage oder kein Datum
+                        })
+                        .map((product) => (
+                          <div
+                            key={product.id}
+                            onClick={() => {
+                              setSelectedCatalogProduct(product);
+                              setShowProductDetail(true);
+                              setSelectedProductSize(product.sizes?.[0] || 'OneSize');
+                              setCurrentImageIndex(0);
+                            }}
+                            className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-200 cursor-pointer group"
+                          >
+                            {/* Square Image Container - WhatsApp Style */}
+                            <div className="relative w-full pt-[100%] bg-gray-100 rounded-t-lg overflow-hidden">
+                              {product.image_url ? (
+                                <img
+                                  src={product.image_url}
+                                  alt={product.name}
+                                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                                />
+                              ) : (
+                                <div className="absolute inset-0 flex items-center justify-center text-gray-400">
+                                  <span className="text-4xl">📷</span>
+                                </div>
+                              )}
+                              
+                              {/* Favorite Heart */}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleFavorite(product.id);
+                                }}
+                                className="absolute top-2 right-2 w-8 h-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center hover:bg-white transition-colors duration-200"
+                              >
+                                <span className={`text-lg ${favoriteProducts.includes(product.id) ? 'text-red-500' : 'text-gray-400 hover:text-red-400'}`}>
+                                  {favoriteProducts.includes(product.id) ? '❤️' : '🤍'}
+                                </span>
+                              </button>
+                              
+                              {/* Price Badge */}
+                              <div className="absolute bottom-2 left-2 bg-black/70 text-white px-2 py-1 rounded text-sm font-semibold">
+                                €{product.price.toFixed(2)}
+                              </div>
+                            </div>
+                            
+                            {/* Product Info */}
+                            <div className="p-3">
+                              <h4 className="font-medium text-gray-900 text-sm mb-1 line-clamp-2 leading-tight">
+                                {product.name}
+                              </h4>
+                              <p className="text-xs text-gray-600 mb-2 line-clamp-2">
+                                {product.description}
+                              </p>
+                              
+                              {/* Material and Properties */}
+                              {(product.material || (product.material_properties && product.material_properties.length > 0)) && (
+                                <div className="text-xs text-gray-500 mb-2">
+                                  {product.material && <span>{product.material}</span>}
+                                  {product.material && product.material_properties && product.material_properties.length > 0 && <span>, </span>}
+                                  {product.material_properties && product.material_properties.length > 0 && (
+                                    <span>{product.material_properties.slice(0, 2).join(', ')}</span>
+                                  )}
+                                  {product.material_properties && product.material_properties.length > 2 && (
+                                    <span>...</span>
+                                  )}
+                                </div>
+                              )}
+                              
+                              {/* Colors */}
+                              {product.colors && product.colors.length > 0 && (
+                                <div className="flex items-center space-x-1 mb-1">
+                                  {product.colors.slice(0, 3).map((color, index) => (
+                                    <div
+                                      key={index}
+                                      className="w-3 h-3 rounded-full border border-gray-300"
+                                      style={{
+                                        backgroundColor: color.toLowerCase() === 'schwarz' ? '#000000' :
+                                                       color.toLowerCase() === 'weiß' || color.toLowerCase() === 'weiss' ? '#FFFFFF' :
+                                                       color.toLowerCase() === 'grau' ? '#808080' :
+                                                       color.toLowerCase() === 'blau' ? '#0066CC' :
+                                                       color.toLowerCase() === 'grün' ? '#008000' :
+                                                       color.toLowerCase() === 'gelb' ? '#FFD700' :
+                                                       color.toLowerCase() === 'rosa' || color.toLowerCase() === 'pink' ? '#FFC0CB' :
+                                                       color.toLowerCase() === 'lila' || color.toLowerCase() === 'violett' ? '#8A2BE2' :
+                                                       color.toLowerCase() === 'braun' ? '#8B4513' :
+                                                       color.toLowerCase() === 'orange' ? '#FFA500' :
+                                                       color.toLowerCase() === 'rot' ? '#CC0000' :
+                                                       color.toLowerCase() === 'beige' ? '#F5F5DC' : 
+                                                       color.startsWith('#') ? color : '#CCCCCC'
+                                      }}
+                                      title={color}
+                                    />
+                                  ))}
+                                  {product.colors.length > 3 && (
+                                    <span className="text-xs text-gray-500">+{product.colors.length - 3}</span>
+                                  )}
+                                </div>
+                              )}
+                              <div className="text-xs text-gray-500">
+                                {product.sizes?.join(', ') || 'OneSize'}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Product Detail Modal */}
+      {showProductDetail && selectedCatalogProduct && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center">
+              <h3 className="text-xl font-bold text-gray-800">{selectedCatalogProduct.name}</h3>
+              <button
+                onClick={() => {
+                  setShowProductDetail(false);
+                  setSelectedCatalogProduct(null);
+                  setSelectedProductSize('');
+                  setCatalogOrderQuantity(1);
+                }}
+                className="text-gray-500 hover:text-gray-700 text-2xl"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-6">
+              {/* Image Gallery */}
+              <div className="mb-6">
+                {/* Main Image */}
+                <div className="w-full h-64 bg-gray-100 rounded-lg overflow-hidden mb-4 relative">
+                  {(() => {
+                    const allImages = [selectedCatalogProduct.image_url, ...(selectedCatalogProduct.additional_images || [])].filter(Boolean);
+                    const currentImage = allImages[currentImageIndex] || null;
+                    
+                    return currentImage ? (
+                      <img
+                        src={currentImage}
+                        alt={selectedCatalogProduct.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-400">
+                        <span className="text-6xl">📷</span>
+                      </div>
+                    );
+                  })()}
+                  
+                  {/* Image Navigation Arrows */}
+                  {(() => {
+                    const allImages = [selectedCatalogProduct.image_url, ...(selectedCatalogProduct.additional_images || [])].filter(Boolean);
+                    return allImages.length > 1 && (
+                      <>
+                        <button
+                          onClick={() => setCurrentImageIndex(prev => prev > 0 ? prev - 1 : allImages.length - 1)}
+                          className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors duration-200"
+                        >
+                          ←
+                        </button>
+                        <button
+                          onClick={() => setCurrentImageIndex(prev => prev < allImages.length - 1 ? prev + 1 : 0)}
+                          className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors duration-200"
+                        >
+                          →
+                        </button>
+                        
+                        {/* Image Counter */}
+                        <div className="absolute bottom-2 right-2 bg-black/50 text-white text-sm px-2 py-1 rounded-full">
+                          {currentImageIndex + 1} / {allImages.length}
+                        </div>
+                      </>
+                    );
+                  })()}
+                  
+                  {/* Favorite Heart */}
+                  <button
+                    onClick={() => toggleFavorite(selectedCatalogProduct.id)}
+                    className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/80 hover:bg-white flex items-center justify-center transition-colors duration-200"
+                  >
+                    <span className={`text-xl ${productFavoriteStatus[selectedCatalogProduct.id] ? 'text-red-500' : 'text-gray-400'}`}>
+                      {productFavoriteStatus[selectedCatalogProduct.id] ? '❤️' : '🤍'}
+                    </span>
+                  </button>
+                </div>
+                
+                {/* Thumbnail Strip */}
+                {(() => {
+                  const allImages = [selectedCatalogProduct.image_url, ...(selectedCatalogProduct.additional_images || [])].filter(Boolean);
+                  return allImages.length > 1 && (
+                    <div className="flex space-x-2 overflow-x-auto pb-2">
+                      {allImages.map((image, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setCurrentImageIndex(index)}
+                          className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors duration-200 ${
+                            currentImageIndex === index ? 'border-pink-500' : 'border-gray-300'
+                          }`}
+                        >
+                          <img
+                            src={image}
+                            alt={`${selectedCatalogProduct.name} ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  );
+                })()}
+              </div>
+
+              {/* Product Info */}
+              <div className="space-y-4">
+                <div>
+                  <span className="text-sm text-gray-500">Artikel-Nr.: </span>
+                  <span className="font-medium">{selectedCatalogProduct.article_number}</span>
+                </div>
+                
+                <div>
+                  <span className="text-2xl font-bold text-pink-600">
+                    {selectedCatalogProduct.price.toFixed(2)} €
+                  </span>
+                </div>
+
+                {/* Material */}
+                {selectedCatalogProduct.material && (
+                  <div>
+                    <h4 className="font-semibold text-gray-800 mb-2">Material</h4>
+                    <p className="text-blue-600 font-medium">{selectedCatalogProduct.material}</p>
+                  </div>
+                )}
+
+                {/* Available Colors */}
+                {selectedCatalogProduct.colors && selectedCatalogProduct.colors.length > 0 && (
+                  <div>
+                    <h4 className="font-semibold text-gray-800 mb-2">Verfügbare Farben</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedCatalogProduct.colors.map((color, index) => (
+                        <div key={index} className="flex items-center space-x-2 bg-gray-100 rounded-full px-3 py-1">
+                          <div
+                            className="w-4 h-4 rounded-full border border-gray-300"
+                            style={{
+                              backgroundColor: color.toLowerCase() === 'schwarz' ? '#000000' :
+                                             color.toLowerCase() === 'weiß' ? '#FFFFFF' :
+                                             color.toLowerCase() === 'blau' ? '#0066CC' :
+                                             color.toLowerCase() === 'rot' ? '#CC0000' :
+                                             color.toLowerCase() === 'beige' ? '#F5F5DC' : 
+                                             color.startsWith('#') ? color : '#CCCCCC'
+                            }}
+                          />
+                          <span className="text-sm text-gray-700">{color}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {selectedCatalogProduct.description && (
+                  <div>
+                    <h4 className="font-semibold text-gray-800 mb-2">Beschreibung</h4>
+                    <p className="text-gray-600">{selectedCatalogProduct.description}</p>
+                  </div>
+                )}
+
+                {/* Stock Info */}
+                {selectedCatalogProduct.stock_quantity !== null && (
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-500">Lagerbestand:</span>
+                    <span className={`font-medium ${
+                      selectedCatalogProduct.stock_quantity > 10
+                        ? 'text-green-600'
+                        : selectedCatalogProduct.stock_quantity > 0
+                          ? 'text-yellow-600'
+                          : 'text-red-600'
+                    }`}>
+                      {selectedCatalogProduct.stock_quantity > 0 
+                        ? `${selectedCatalogProduct.stock_quantity} Stück verfügbar`
+                        : 'Ausverkauft'
+                      }
+                    </span>
+                  </div>
+                )}
+
+                {/* Order Form */}
+                {isAuthenticated && selectedCatalogProduct.stock_quantity !== 0 ? (
+                  <div className="bg-gray-50 rounded-lg p-4 space-y-4">
+                    <h4 className="font-semibold text-gray-800">Bestellung aufgeben</h4>
+                    
+                    {/* Size Selection */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Größe
+                      </label>
+                      <select
+                        value={selectedProductSize}
+                        onChange={(e) => setSelectedProductSize(e.target.value)}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      >
+                        {selectedCatalogProduct.sizes?.map((size) => (
+                          <option key={size} value={size}>
+                            {size}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* Quantity Selection */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Anzahl
+                      </label>
+                      <div className="flex items-center space-x-3">
+                        <button
+                          onClick={() => setCatalogOrderQuantity(Math.max(1, catalogOrderQuantity - 1))}
+                          className="w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center font-bold"
+                        >
+                          −
+                        </button>
+                        <span className="text-xl font-semibold w-12 text-center">
+                          {catalogOrderQuantity}
+                        </span>
+                        <button
+                          onClick={() => {
+                            const maxQty = selectedCatalogProduct.stock_quantity || 999;
+                            setCatalogOrderQuantity(Math.min(maxQty, catalogOrderQuantity + 1));
+                          }}
+                          className="w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center font-bold"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Total Price */}
+                    <div className="flex justify-between items-center pt-2 border-t">
+                      <span className="font-semibold text-gray-800">Gesamtpreis:</span>
+                      <span className="text-xl font-bold text-pink-600">
+                        {(selectedCatalogProduct.price * catalogOrderQuantity).toFixed(2)} €
+                      </span>
+                    </div>
+
+                    {/* Order Button */}
+                    <button
+                      onClick={placeCatalogOrder}
+                      disabled={!selectedProductSize}
+                      className="w-full bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 disabled:scale-100"
+                    >
+                      🛒 In Bestellung hinzufügen
+                    </button>
+                  </div>
+                ) : !isAuthenticated ? (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+                    <p className="text-blue-800 mb-3">
+                      Bitte melden Sie sich an, um Bestellungen aufzugeben.
+                    </p>
+                    <button
+                      onClick={() => {
+                        setShowCatalog(false);
+                        setShowProductDetail(false);
+                        setShowCustomerLogin(true);
+                      }}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-200"
+                    >
+                      Anmelden
+                    </button>
+                  </div>
+                ) : (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+                    <p className="text-red-800">Dieses Produkt ist derzeit ausverkauft.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* My Orders Modal */}
+      {showMyOrders && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center">
+              <h3 className="text-xl font-bold text-gray-800">📦 Meine Bestellungen</h3>
+              <button
+                onClick={() => setShowMyOrders(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-6">
+              {customerCatalogOrders.length === 0 ? (
+                <div className="text-center text-gray-600 py-8">
+                  <p>Sie haben noch keine Bestellungen aufgegeben.</p>
+                  <button
+                    onClick={() => {
+                      setShowMyOrders(false);
+                      // Catalog is already open
+                    }}
+                    className="mt-4 text-pink-600 hover:text-pink-700 underline"
+                  >
+                    Jetzt Produkte entdecken
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {customerCatalogOrders.map((order) => (
+                    <div key={order.id} className="bg-gray-50 rounded-lg p-4 border">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <h4 className="font-semibold text-gray-800">{order.product_name}</h4>
+                          <p className="text-sm text-gray-600">Art.-Nr.: {order.article_number}</p>
+                        </div>
+                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                          order.status === 'pending' 
+                            ? 'bg-yellow-100 text-yellow-700'
+                            : order.status === 'confirmed'
+                              ? 'bg-blue-100 text-blue-700'
+                              : order.status === 'shipped'
+                                ? 'bg-green-100 text-green-700'
+                                : 'bg-red-100 text-red-700'
+                        }`}>
+                          {order.status === 'pending' && 'Ausstehend'}
+                          {order.status === 'confirmed' && 'Bestätigt'}
+                          {order.status === 'shipped' && 'Versandt'}
+                          {order.status === 'cancelled' && 'Storniert'}
+                        </span>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                        <div>
+                          <span className="text-gray-500">Größe:</span>
+                          <span className="ml-2 font-medium">{order.size}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">Anzahl:</span>
+                          <span className="ml-2 font-medium">{order.quantity}x</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">Einzelpreis:</span>
+                          <span className="ml-2 font-medium">{order.unit_price.toFixed(2)} €</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">Gesamtpreis:</span>
+                          <span className="ml-2 font-bold text-pink-600">{order.total_price.toFixed(2)} €</span>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-3 text-sm text-gray-500">
+                        Bestellt am: {new Date(order.created_at).toLocaleDateString('de-DE', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {/* Order Summary */}
+                  <div className="bg-pink-50 border border-pink-200 rounded-lg p-4 mt-6">
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-semibold text-gray-800">
+                        Gesamtsumme ({customerCatalogOrders.length} Bestellungen):
+                      </span>
+                      <span className="text-2xl font-bold text-pink-600">
+                        {customerCatalogOrders.reduce((sum, order) => sum + order.total_price, 0).toFixed(2)} €
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Simple Video Streaming Modal */}
+      {showSimpleStream && (
+        <SimpleVideoStreaming
+          isAdmin={isAdminAuthenticated}
+          currentUser={currentCustomer}
+          onClose={handleSimpleStreamClose}
+        />
+      )}
+
+      {/* Create Product Modal (Admin) */}
+      {showCreateProduct && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4"
+          style={{zIndex: 24000}}
+        >
+          <div 
+            className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+            style={{ zIndex: '24001', position: 'relative' }}
+          >
+            {/* FIXED HEADER WITH ERROR MESSAGE */}
+            <div className="bg-white p-4 border-b flex-shrink-0">
+              <h3 className="text-xl font-bold text-gray-800">Neues Produkt erstellen</h3>
+              
+              {/* PROMINENT ERROR MESSAGE - Always visible at top */}
+              {catalogError && (
+                <div 
+                  className="mt-3 bg-red-100 border-l-4 border-red-500 p-3 rounded-r-lg shadow-md animate-pulse"
+                  style={{ zIndex: '24020', position: 'relative' }}
+                >
+                  <div className="flex items-start">
+                    <div className="flex-shrink-0">
+                      <span className="text-xl">🚨</span>
+                    </div>
+                    <div className="ml-2 flex-grow">
+                      <h4 className="text-sm font-bold text-red-800">
+                        FEHLER
+                      </h4>
+                      <p className="text-sm text-red-700 mt-1">
+                        {catalogError}
+                      </p>
+                    </div>
+                    <div className="flex-shrink-0 ml-2">
+                      <button
+                        onClick={() => setCatalogError('')}
+                        className="text-red-500 hover:text-red-700 text-lg font-bold p-1"
+                        style={{ zIndex: '24021', position: 'relative' }}
+                        title="Fehlermeldung schließen"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* SCROLLABLE CONTENT */}
+            <div className="overflow-y-auto flex-grow"
+                 style={{ maxHeight: 'calc(90vh - 120px)' }}
+            >
+              <div className="p-6 space-y-4">
+              {/* Media Upload Section - WhatsApp Style */}
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50">
+                <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                  📸 Bilder und Videos hinzufügen
+                </h4>
+                
+                {/* Upload Area - Combined Drag & Drop + Modal Options */}
+                <div className="space-y-4">
+                  {/* Primary Upload Button - WhatsApp Style */}
+                  <div className="text-center">
+                    <button
+                      type="button"
+                      onClick={() => setShowMediaUploadModal(true)}
+                      className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-6 py-4 rounded-lg transition-all duration-200 flex items-center justify-center space-x-3 shadow-lg"
+                    >
+                      <span className="text-2xl">📷</span>
+                      <span className="text-lg font-medium">Fotos & Videos hinzufügen</span>
+                    </button>
+                    <p className="text-sm text-gray-500 mt-2">
+                      Kamera verwenden oder aus Mediathek auswählen
+                    </p>
+                  </div>
+
+                  {/* Drag & Drop Area */}
+                  <div
+                    className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors duration-200 ${
+                      dragOver 
+                        ? 'border-green-400 bg-green-50' 
+                        : 'border-gray-300 hover:border-gray-400'
+                    }`}
+                    onDrop={handleFileDrop}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                  >
+                    <div className="text-gray-500">
+                      <span className="text-3xl mb-2 block">📁</span>
+                      <p className="text-sm">
+                        <strong>Dateien hierher ziehen</strong> oder oben auf Button klicken
+                      </p>
+                      <p className="text-xs mt-1 text-gray-400">
+                        Unterstützt: JPG, PNG, GIF, MP4, MOV
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Hidden file input for gallery selection */}
+                <input
+                  id="media-upload"
+                  type="file"
+                  multiple
+                  accept="image/*,video/*"
+                  onChange={handleFileInput}
+                  className="hidden"
+                />
+
+                {/* Uploaded Files Preview */}
+                {productMediaFiles.length > 0 && (
+                  <div className="mt-6">
+                    <h5 className="font-medium text-gray-800 mb-3">
+                      Hochgeladene Dateien ({productMediaFiles.length})
+                    </h5>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {productMediaFiles
+                        .sort((a, b) => a.order - b.order)
+                        .map((file, index) => (
+                        <div key={file.id} className="relative group bg-white rounded-lg shadow-md overflow-hidden">
+                          {/* File Preview */}
+                          <div className="aspect-square bg-gray-100 flex items-center justify-center">
+                            {file.type === 'image' ? (
+                              <img 
+                                src={file.url} 
+                                alt={file.filename}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="text-center">
+                                <div className="text-2xl text-blue-600 mb-2">🎥</div>
+                                <p className="text-xs text-gray-600 px-2">{file.filename}</p>
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Controls Overlay */}
+                          <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                            <div className="flex space-x-2">
+                              {/* Move Up */}
+                              {index > 0 && (
+                                <button
+                                  onClick={() => moveMediaFile(file.id, 'up')}
+                                  className="bg-white hover:bg-gray-100 text-gray-800 p-2 rounded-full transition-colors duration-200"
+                                  title="Nach oben"
+                                >
+                                  ↑
+                                </button>
+                              )}
+                              
+                              {/* Move Down */}
+                              {index < productMediaFiles.length - 1 && (
+                                <button
+                                  onClick={() => moveMediaFile(file.id, 'down')}
+                                  className="bg-white hover:bg-gray-100 text-gray-800 p-2 rounded-full transition-colors duration-200"
+                                  title="Nach unten"
+                                >
+                                  ↓
+                                </button>
+                              )}
+                              
+                              {/* Delete */}
+                              <button
+                                onClick={() => removeMediaFile(file.id, file.url)}
+                                className="bg-red-600 hover:bg-red-700 text-white p-2 rounded-full transition-colors duration-200"
+                                title="Löschen"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          </div>
+                          
+                          {/* Order Indicator */}
+                          <div className="absolute top-2 left-2 bg-blue-600 text-white text-xs px-2 py-1 rounded-full">
+                            {index + 1}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Upload Progress */}
+                {uploadingMedia && (
+                  <div className="mt-4 text-center">
+                    <div className="inline-flex items-center space-x-2 text-blue-600">
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+                      <span>Dateien werden hochgeladen...</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Artikelnummer (optional - wird automatisch generiert)
+                  </label>
+                  <input
+                    type="text"
+                    value={newProductData.article_number}
+                    onChange={(e) => setNewProductData({ ...newProductData, article_number: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="Leer lassen für automatische Generierung (1, 2, 3...)"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Produktname *
+                  </label>
+                  <input
+                    type="text"
+                    value={newProductData.name}
+                    onChange={(e) => setNewProductData({ ...newProductData, name: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="z.B. Sommer T-Shirt"
+                  />
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Hauptkategorie * (Pflicht)
+                  </label>
+                  <select
+                    value={newProductData.main_category_id}
+                    onChange={(e) => {
+                      const mainCatId = e.target.value;
+                      setNewProductData({ 
+                        ...newProductData, 
+                        main_category_id: mainCatId,
+                        sub_category_id: '' // Reset subcategory when main category changes
+                      });
+                      if (mainCatId) {
+                        loadSubCategories(mainCatId);
+                      } else {
+                        setSubCategories([]);
+                      }
+                    }}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    required
+                  >
+                    <option value="">Hauptkategorie auswählen</option>
+                    {(mainCategories || []).map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.icon} {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Unterkategorie (optional)
+                  </label>
+                  <select
+                    value={newProductData.sub_category_id}
+                    onChange={(e) => setNewProductData({ ...newProductData, sub_category_id: e.target.value })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    disabled={!newProductData.main_category_id || (subCategories || []).length === 0}
+                  >
+                    <option value="">Unterkategorie auswählen (optional)</option>
+                    {(subCategories || []).map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                  {!newProductData.main_category_id && (
+                    <p className="text-xs text-gray-500 mt-1">Erst Hauptkategorie auswählen</p>
+                  )}
+                  {newProductData.main_category_id && subCategories.length === 0 && (
+                    <p className="text-xs text-gray-500 mt-1">Keine Unterkategorien verfügbar</p>
+                  )}
+                </div>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Beschreibung
+                </label>
+                <textarea
+                  value={newProductData.description}
+                  onChange={(e) => setNewProductData({ ...newProductData, description: e.target.value })}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Produktbeschreibung"
+                  rows={3}
+                />
+              </div>
+              
+              {/* 1. Price and Stock - First Position */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Preis (€) *
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={newProductData.price}
+                    onChange={(e) => setNewProductData({ ...newProductData, price: parseFloat(e.target.value) || 0 })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="19.99"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Lagerbestand (optional)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={newProductData.stock_quantity || ''}
+                    onChange={(e) => setNewProductData({ ...newProductData, stock_quantity: e.target.value ? parseInt(e.target.value) : null })}
+                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="100"
+                  />
+                </div>
+              </div>
+              
+              {/* 2. Sizes Overview - Second Position (Mandatory) */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Verfügbare Größen *
+                </label>
+                
+                {/* Size Selection Button */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowSizeModal(true);
+                    // Clear sizes error when opening modal
+                    if (validationErrors.sizes) {
+                      const newErrors = { ...validationErrors };
+                      delete newErrors.sizes;
+                      setValidationErrors(newErrors);
+                    }
+                  }}
+                  className={`w-full px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg ${
+                    validationErrors.sizes 
+                      ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 border-2 border-red-300'
+                      : 'bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700'
+                  } text-white`}
+                >
+                  <span className="text-2xl">📏</span>
+                  <span className="font-medium">Größen-Übersicht öffnen ({(newProductData.sizes || []).length} Größen gewählt)</span>
+                </button>
+
+                {/* Validation Error Message for Sizes */}
+                {validationErrors.sizes && (
+                  <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-red-700 text-sm font-medium flex items-center space-x-2">
+                      <span>⚠️</span>
+                      <span>{validationErrors.sizes}</span>
+                    </p>
+                  </div>
+                )}
+                
+                {/* Selected Sizes Display */}
+                {newProductData.sizes.length > 0 && (
+                  <div className="mt-4">
+                    <h5 className="font-medium text-blue-800 mb-2">Gewählte Größen:</h5>
+                    <div className="flex flex-wrap gap-2">
+                      {newProductData.sizes.map((size, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center space-x-2 bg-blue-50 border border-blue-200 rounded-full px-3 py-1 text-sm"
+                        >
+                          <span className="text-blue-700 font-medium">{size}</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updatedSizes = newProductData.sizes.filter((_, i) => i !== index);
+                              setNewProductData({ ...newProductData, sizes: updatedSizes });
+                            }}
+                            className="text-blue-500 hover:text-blue-700 ml-1 font-bold"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {/* 3. Color Chart - Third Position (Mandatory) */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Verfügbare Farben *
+                </label>
+                
+                {/* Color Selection Button */}
+                <button
+                  type="button"
+                  onClick={() => setShowColorModal(true)}
+                  className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg"
+                >
+                  <span className="text-2xl">🎨</span>
+                  <span className="font-medium">Farbkarte öffnen ({newProductData.colors.length} Farben gewählt)</span>
+                </button>
+                
+                {/* Selected Colors Display */}
+                {newProductData.colors.length > 0 && (
+                  <div className="mt-4">
+                    <h5 className="font-medium text-gray-800 mb-2">Gewählte Farben:</h5>
+                    <div className="flex flex-wrap gap-2">
+                      {newProductData.colors.map((color, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center space-x-2 bg-gray-100 rounded-full px-3 py-1 text-sm"
+                        >
+                          <div
+                            className="w-4 h-4 rounded-full border border-gray-400"
+                            style={{
+                              backgroundColor: getColorValue(color)
+                            }}
+                          />
+                          <span>{color}</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const updatedColors = newProductData.colors.filter((_, i) => i !== index);
+                              setNewProductData({ ...newProductData, colors: updatedColors });
+                            }}
+                            className="text-red-500 hover:text-red-700 ml-1"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {/* 4. Material Overview - Fourth Position (Optional) */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Material-Übersicht * (Pflicht)
+                </label>
+                
+                {/* Material Selection Button */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowMaterialModal(true);
+                    // Clear material error when opening modal
+                    if (validationErrors.material) {
+                      const newErrors = { ...validationErrors };
+                      delete newErrors.material;
+                      setValidationErrors(newErrors);
+                    }
+                  }}
+                  className={`w-full px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg ${
+                    validationErrors.material 
+                      ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 border-2 border-red-300'
+                      : 'bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700'
+                  } text-white`}
+                >
+                  <span className="text-2xl">🧵</span>
+                  <span className="font-medium">Material-Übersicht öffnen {newProductData.material ? `(${newProductData.material})` : '(Kein Material gewählt)'}</span>
+                </button>
+
+                {/* Validation Error Message for Material */}
+                {validationErrors.material && (
+                  <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-red-700 text-sm font-medium flex items-center space-x-2">
+                      <span>⚠️</span>
+                      <span>{validationErrors.material}</span>
+                    </p>
+                  </div>
+                )}
+                
+                {/* Selected Material Display */}
+                {newProductData.material && (
+                  <div className="mt-4">
+                    <div className="flex items-center space-x-2 bg-green-50 border border-green-200 rounded-lg px-4 py-3">
+                      <span className="text-2xl">🧵</span>
+                      <div>
+                        <h5 className="font-medium text-green-800">Gewähltes Material:</h5>
+                        <p className="text-green-700 text-sm">{newProductData.material}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setNewProductData({ ...newProductData, material: '' })}
+                        className="ml-auto text-green-600 hover:text-green-800 font-bold text-lg"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {/* 5. Material Properties - Fifth Position (Mandatory) */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Material-Eigenschaften (optional)
+                </label>
+                
+                {/* Material Properties Selection Button */}
+                <button
+                  type="button"
+                  onClick={() => setShowMaterialPropertiesModal(true)}
+                  className="w-full bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg"
+                >
+                  <span className="text-2xl">🏷️</span>
+                  <span className="font-medium">Material-Eigenschaften wählen {newProductData.material_properties.length > 0 ? `(${newProductData.material_properties.length} gewählt)` : '(Keine Eigenschaften gewählt)'}</span>
+                </button>
+                
+                {/* Selected Properties Display */}
+                {newProductData.material_properties.length > 0 && (
+                  <div className="mt-4">
+                    <div className="bg-purple-50 border border-purple-200 rounded-lg px-4 py-3">
+                      <h5 className="font-medium text-purple-800 mb-2 flex items-center space-x-2">
+                        <span className="text-2xl">🏷️</span>
+                        <span>Gewählte Eigenschaften:</span>
+                      </h5>
+                      <div className="flex flex-wrap gap-2">
+                        {newProductData.material_properties.map((property, index) => (
+                          <div
+                            key={index}
+                            className="bg-white border border-purple-300 rounded-full px-3 py-1 text-sm text-purple-700 flex items-center space-x-2"
+                          >
+                            <span>{property}</span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const updatedProperties = newProductData.material_properties.filter((_, i) => i !== index);
+                                setNewProductData({ ...newProductData, material_properties: updatedProperties });
+                              }}
+                              className="text-purple-500 hover:text-purple-700 font-bold text-sm"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            
+            {/* FIXED FOOTER BUTTONS */}
+            <div className="bg-white p-4 border-t flex justify-end space-x-3 flex-shrink-0" style={{ zIndex: '24002' }}>
+              <button
+                onClick={() => {
+                  setShowCreateProduct(false);
+                  setValidationErrors({}); // Clear validation errors when closing
+                  setNewProductData({
+                    article_number: '',
+                    name: '',
+                    description: '',
+                    material: '',
+                    material_properties: [],
+                    main_category_id: '',
+                    sub_category_id: '',
+                    price: 0,
+                    sizes: [],
+                    colors: [],
+                    image_url: '',
+                    additional_images: [],
+                    stock_quantity: null
+                  });
+                  setProductMediaFiles([]);
+                  setCustomColor('');
+                  setCatalogError('');
+                }}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors duration-200"
+                style={{ zIndex: '24003', position: 'relative', pointerEvents: 'auto' }}
+              >
+                Abbrechen
+              </button>
+              <button
+                onClick={createProduct}
+                disabled={creatingProduct || !newProductData.name.trim() || !newProductData.main_category_id}
+                className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-6 py-2 rounded-lg transition-colors duration-200"
+                style={{ zIndex: '24003', position: 'relative', pointerEvents: 'auto' }}
+              >
+                {creatingProduct ? 'Erstelle...' : 'Erstellen'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Product Modal (Admin) */}
+      {showEditProduct && editingProduct && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white p-4 border-b">
+              <h3 className="text-xl font-bold text-gray-800">Produkt bearbeiten</h3>
+            </div>
+            
+            <div className="p-6 space-y-6">
+              {/* Basic Info */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Artikelnummer (wird automatisch generiert)
+                  </label>
+                  <input
+                    type="text"
+                    value={editingProduct.article_number || 'Wird generiert...'}
+                    disabled
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Produktname *
+                  </label>
+                  <input
+                    type="text"
+                    value={editingProduct.name}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  />
+                </div>
+              </div>
+
+              {/* Price and Stock */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Preis (€) *
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    value={editingProduct.price}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, price: parseFloat(e.target.value) || 0 })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Lagerbestand (optional)
+                  </label>
+                  <input
+                    type="number"
+                    value={editingProduct.stock_quantity || ''}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, stock_quantity: e.target.value ? parseInt(e.target.value) : null })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  />
+                </div>
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Beschreibung
+                </label>
+                <textarea
+                  value={editingProduct.description}
+                  onChange={(e) => setEditingProduct({ ...editingProduct, description: e.target.value })}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+
+              {/* Material */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Material
+                </label>
+                <input
+                  type="text"
+                  value={editingProduct.material}
+                  onChange={(e) => setEditingProduct({ ...editingProduct, material: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                />
+              </div>
+
+              {/* Categories */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Hauptkategorie *
+                  </label>
+                  <select
+                    value={editingProduct.main_category_id}
+                    onChange={(e) => {
+                      setEditingProduct({ ...editingProduct, main_category_id: e.target.value, sub_category_id: '' });
+                      if (e.target.value) {
+                        loadSubCategories(e.target.value);
+                      }
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  >
+                    <option value="">Hauptkategorie wählen...</option>
+                    {mainCategories.map(category => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Unterkategorie (optional)
+                  </label>
+                  <select
+                    value={editingProduct.sub_category_id || ''}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, sub_category_id: e.target.value || null })}
+                    disabled={!editingProduct.main_category_id}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-100"
+                  >
+                    <option value="">Unterkategorie wählen...</option>
+                    {subCategories.map(category => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Sizes */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Verfügbare Größen *
+                </label>
+                <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
+                  {['XS', 'S', 'M', 'L', 'XL', 'XXL', '34', '36', '38', '40', '42', '44', '46', '48', 'OneSize'].map(size => (
+                    <label key={size} className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={editingProduct.sizes.includes(size)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setEditingProduct({ ...editingProduct, sizes: [...editingProduct.sizes, size] });
+                          } else {
+                            setEditingProduct({ ...editingProduct, sizes: editingProduct.sizes.filter(s => s !== size) });
+                          }
+                        }}
+                        className="rounded text-green-600 focus:ring-green-500"
+                      />
+                      <span className="text-sm">{size}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Colors */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Verfügbare Farben *
+                </label>
+                <div className="grid grid-cols-3 md:grid-cols-4 gap-2">
+                  {['Schwarz', 'Weiß', 'Grau', 'Blau', 'Rot', 'Grün', 'Gelb', 'Rosa', 'Lila', 'Braun', 'Orange', 'Beige'].map(color => (
+                    <label key={color} className="flex items-center space-x-2 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={editingProduct.colors.includes(color)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setEditingProduct({ ...editingProduct, colors: [...editingProduct.colors, color] });
+                          } else {
+                            setEditingProduct({ ...editingProduct, colors: editingProduct.colors.filter(c => c !== color) });
+                          }
+                        }}
+                        className="rounded text-green-600 focus:ring-green-500"
+                      />
+                      <span className="text-sm">{color}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {catalogError && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <p className="text-red-800 text-sm">{catalogError}</p>
+                </div>
+              )}
+            </div>
+            
+            <div className="sticky bottom-0 bg-white p-4 border-t flex justify-end space-x-3">
+              <button
+                onClick={() => {
+                  setShowEditProduct(false);
+                  setEditingProduct(null);
+                  setCatalogError('');
+                }}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors duration-200"
+                style={{ zIndex: '24003', position: 'relative', pointerEvents: 'auto' }}
+              >
+                Abbrechen
+              </button>
+              <button
+                onClick={updateProduct}
+                disabled={creatingProduct || !editingProduct.name.trim() || !editingProduct.main_category_id}
+                className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white px-6 py-2 rounded-lg transition-colors duration-200"
+              >
+                {creatingProduct ? 'Speichere...' : 'Speichern'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Customer Login Modal */}
+      {showLoginModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-md">
+            <CardContent className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+                  <img 
+                    src="/images/outlet34-logo-header.png" 
+                    alt="OUTLET34 Logo" 
+                    className="w-8 h-8 rounded-full mr-3"
+                  />
+                  Kunden Login
+                </h2>
+                <button
+                  onClick={() => setShowLoginModal(false)}
+                  className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+                >
+                  ×
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Kundennummer
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="z.B. 10299"
+                    value={customerId}
+                    onChange={(e) => setCustomerId(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  />
+                </div>
+                
+                <button
+                  onClick={async () => {
+                    if (customerId.trim()) {
+                      await loginAsCustomer();
+                      setShowLoginModal(false);
+                    } else {
+                      alert('Bitte geben Sie eine Kundennummer ein.');
+                    }
+                  }}
+                  className="w-full bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-200"
+                >
+                  🔑 Anmelden
+                </button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Favorites Modal */}
+      {showFavorites && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="sticky top-0 bg-white border-b p-4 flex justify-between items-center">
+              <h3 className="text-xl font-bold text-gray-800">❤️ Meine Favoriten</h3>
+              <button
+                onClick={() => setShowFavorites(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-6">
+              {favoriteProducts.length === 0 ? (
+                <div className="text-center text-gray-600 py-8">
+                  <div className="text-6xl mb-4">❤️</div>
+                  <p className="text-lg mb-2">Noch keine Favoriten gespeichert</p>
+                  <p className="text-sm text-gray-500 mb-4">
+                    Klicken Sie auf das Herz-Symbol bei Produkten, um sie zu Ihren Favoriten hinzuzufügen.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setShowFavorites(false);
+                      // Catalog is already open
+                    }}
+                    className="bg-pink-600 hover:bg-pink-700 text-white px-6 py-3 rounded-lg transition-colors duration-200"
+                  >
+                    Jetzt Produkte entdecken
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <div className="mb-4">
+                    <p className="text-gray-600">
+                      Sie haben {favoriteProducts.length} Produkt{favoriteProducts.length !== 1 ? 'e' : ''} als Favorit{favoriteProducts.length !== 1 ? 'en' : ''} markiert.
+                    </p>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {favoriteProducts.map((product) => (
+                      <div
+                        key={product.id}
+                        className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden"
+                      >
+                        {/* Product Image */}
+                        <div className="relative w-full pt-[100%] bg-gray-100">
+                          {product.image_url ? (
+                            <img
+                              src={product.image_url}
+                              alt={product.name}
+                              className="absolute inset-0 w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="absolute inset-0 flex items-center justify-center text-gray-400">
+                              <span className="text-4xl">📷</span>
+                            </div>
+                          )}
+                          
+                          {/* Remove from Favorites Button */}
+                          <button
+                            onClick={() => toggleFavorite(product.id)}
+                            className="absolute top-2 right-2 w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center transition-colors duration-200"
+                          >
+                            <span className="text-lg text-red-500">❤️</span>
+                          </button>
+                          
+                          {/* Out of Stock Badge */}
+                          {product.stock_quantity === 0 && (
+                            <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                              Ausverkauft
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Product Info */}
+                        <div className="p-4">
+                          <div className="text-xs text-gray-500 mb-1">
+                            Art.-Nr.: {product.article_number}
+                          </div>
+                          <h4 className="font-semibold text-sm text-gray-800 mb-2 line-clamp-2">
+                            {product.name}
+                          </h4>
+                          {product.material && (
+                            <div className="text-xs text-blue-600 mb-2">
+                              {product.material}
+                            </div>
+                          )}
+                          <div className="flex justify-between items-end">
+                            <span className="text-lg font-bold text-pink-600">
+                              {product.price.toFixed(2)} €
+                            </span>
+                            <button
+                              onClick={() => {
+                                setSelectedCatalogProduct(product);
+                                setShowProductDetail(true);
+                                setSelectedProductSize(product.sizes?.[0] || 'OneSize');
+                                setCurrentImageIndex(0);
+                                setShowFavorites(false); // Close favorites modal
+                              }}
+                              className="bg-pink-600 hover:bg-pink-700 text-white px-3 py-1 rounded text-xs transition-colors duration-200"
+                            >
+                              Ansehen
+                            </button>
+                          </div>
+                          
+                          {/* Colors and Sizes */}
+                          <div className="mt-2 flex justify-between items-center text-xs text-gray-500">
+                            <div>
+                              {product.colors && product.colors.length > 0 && (
+                                <span>{product.colors.slice(0, 2).join(', ')}{product.colors.length > 2 ? '...' : ''}</span>
+                              )}
+                            </div>
+                            <div>
+                              {product.sizes && product.sizes.length > 0 ? 
+                                product.sizes.slice(0, 2).join(', ') + (product.sizes.length > 2 ? '...' : '') : 
+                                'OneSize'
+                              }
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Admin Login Modal */}
+      {showAdminLoginModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <Card className="w-full max-w-md">
+            <CardContent className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+                  <img 
+                    src="/images/outlet34-logo-header.png" 
+                    alt="OUTLET34 Logo" 
+                    className="w-8 h-8 rounded-full mr-3"
+                  />
+                  Admin Login
+                </h2>
+                <button
+                  onClick={() => setShowAdminLoginModal(false)}
+                  className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+                >
+                  ×
+                </button>
+              </div>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Admin PIN
+                  </label>
+                  <input
+                    type="password"
+                    placeholder="••••"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        const pin = e.target.value;
+                        if (pin === '1924') {
+                          setIsAdminAuthenticated(true);
+                          setIsAdminView(true);
+                          setShowAdminLoginModal(false);
+                          alert('✅ Admin erfolgreich angemeldet!');
+                        } else {
+                          alert('❌ Falscher PIN!');
+                          e.target.value = '';
+                        }
+                      }
+                    }}
+                  />
+                </div>
+                
+                <button
+                  onClick={(e) => {
+                    const pin = e.target.parentNode.parentNode.querySelector('input').value;
+                    if (pin === '1924') {
+                      setIsAdminAuthenticated(true);
+                      setIsAdminView(true);
+                      setShowAdminLoginModal(false);
+                      alert('✅ Admin erfolgreich angemeldet!');
+                    } else {
+                      alert('❌ Falscher PIN!');
+                    }
+                  }}
+                  className="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 px-4 rounded-lg transition-colors duration-200"
+                >
+                  🔧 Admin Anmelden
+                </button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+      
+      {/* Simple Subcategory Creation Modal */}
+      {showSimpleSubcategoryModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4" style={{zIndex: 21000}}>
+          <div className="bg-white rounded-lg p-6 w-full max-w-md" style={{zIndex: 21001, position: 'relative'}}>
+            <h2 className="text-xl font-bold mb-4 text-gray-800">Neue Unterkategorie erstellen</h2>
+            
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Hauptkategorie auswählen:
+              </label>
+              <select
+                value={selectedParentCategory}
+                onChange={(e) => setSelectedParentCategory(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                style={{zIndex: 21002, position: 'relative'}}
+              >
+                <option value="">-- Hauptkategorie wählen --</option>
+                {categories.filter(cat => cat.is_main_category).map(category => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Unterkategoriename:
+              </label>
+              <input
+                type="text"
+                value={simpleSubcategoryName}
+                onChange={(e) => setSimpleSubcategoryName(e.target.value)}
+                placeholder="Z.B. T-Shirts, Blusen, Jeans..."
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                style={{zIndex: 21002, position: 'relative'}}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter' && simpleSubcategoryName.trim() && selectedParentCategory && !simpleSubcategoryLoading) {
+                    createSubcategorySimple();
+                  }
+                }}
+                autoFocus
+              />
+            </div>
+            
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => {
+                  setShowSimpleSubcategoryModal(false);
+                  setSimpleSubcategoryName('');
+                  setSelectedParentCategory('');
+                }}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium"
+                disabled={simpleSubcategoryLoading}
+                style={{zIndex: 21003, position: 'relative', pointerEvents: 'auto'}}
+              >
+                Abbrechen
+              </button>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log('🔸 Simple subcategory create button clicked');
+                  createSubcategorySimple();
+                }}
+                disabled={!simpleSubcategoryName.trim() || !selectedParentCategory || simpleSubcategoryLoading}
+                className={`px-6 py-2 rounded-lg font-semibold transition-colors ${
+                  !simpleSubcategoryName.trim() || !selectedParentCategory || simpleSubcategoryLoading
+                    ? 'bg-gray-300 cursor-not-allowed text-gray-500'
+                    : 'bg-orange-600 hover:bg-orange-700 text-white'
+                }`}
+                style={{zIndex: 21003, position: 'relative', pointerEvents: 'auto'}}
+              >
+                {simpleSubcategoryLoading ? 'Erstelle...' : 'Erstellen'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Simple Category Creation Modal */}
+      {showSimpleCategoryModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4" style={{zIndex: 20000}}>
+          <div className="bg-white rounded-lg p-6 w-full max-w-md" style={{zIndex: 20001, position: 'relative'}}>
+            <h2 className="text-xl font-bold mb-4 text-gray-800">Neue Kategorie erstellen</h2>
+            
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Kategoriename:
+              </label>
+              <input
+                type="text"
+                value={simpleCategoryName}
+                onChange={(e) => setSimpleCategoryName(e.target.value)}
+                placeholder="Z.B. Oberteile, Hosen, Jacken..."
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                style={{zIndex: 20002, position: 'relative'}}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter' && simpleCategoryName.trim() && !simpleCategoryLoading) {
+                    createCategorySimple();
+                  }
+                }}
+                autoFocus
+              />
+            </div>
+            
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => {
+                  setShowSimpleCategoryModal(false);
+                  setSimpleCategoryName('');
+                }}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium"
+                disabled={simpleCategoryLoading}
+                style={{zIndex: 20003, position: 'relative', pointerEvents: 'auto'}}
+              >
+                Abbrechen
+              </button>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  console.log('🎯 Simple modal create button clicked');
+                  createCategorySimple();
+                }}
+                disabled={!simpleCategoryName.trim() || simpleCategoryLoading}
+                className="px-6 py-2 rounded-lg font-semibold transition-colors bg-purple-600 hover:bg-purple-700 text-white disabled:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-500"
+                style={{zIndex: 20003, position: 'relative', pointerEvents: 'auto'}}
+              >
+                {simpleCategoryLoading ? 'Erstelle...' : 'Erstellen'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Category Management Modal */}
+      <CategoryManagementModal 
+        isOpen={showCategoryManagementModal}
+        onClose={() => setShowCategoryManagementModal(false)}
+        onUpdate={() => {
+          loadCategories();
+          loadCatalogProducts();
+        }}
+      />
+      
+      {/* Color Selection Modal */}
+      <ColorModal 
+        isOpen={showColorModal}
+        onClose={() => setShowColorModal(false)}
+        selectedColors={newProductData.colors}
+        onColorChange={(colors) => setNewProductData({ ...newProductData, colors })}
+      />
+      
+      {/* Material Selection Modal */}
+      <MaterialModal 
+        isOpen={showMaterialModal}
+        onClose={() => setShowMaterialModal(false)}
+        selectedMaterial={newProductData.material}
+        onMaterialChange={(material) => setNewProductData({ ...newProductData, material })}
+      />
+      
+      {/* Material Properties Selection Modal */}
+      <MaterialPropertiesModal 
+        isOpen={showMaterialPropertiesModal}
+        onClose={() => setShowMaterialPropertiesModal(false)}
+        selectedProperties={newProductData.material_properties}
+        onPropertiesChange={(properties) => setNewProductData({ ...newProductData, material_properties: properties })}
+      />
+      
+      {/* Size Selection Modal */}
+      <SizeModal 
+        isOpen={showSizeModal}
+        onClose={() => setShowSizeModal(false)}
+        selectedSizes={newProductData.sizes}
+        onSizeChange={(sizes) => setNewProductData({ ...newProductData, sizes })}
+      />
+      
+      {/* Media Upload Modal */}
+      <MediaUploadModal 
+        isOpen={showMediaUploadModal}
+        onClose={() => setShowMediaUploadModal(false)}
+        onCameraSelect={() => setShowCameraCapture(true)}
+        onFileSelect={handleFileSelection}
+      />
+      
+      {/* Camera Capture Modal */}
+      <CameraCapture 
+        isOpen={showCameraCapture}
+        onClose={() => setShowCameraCapture(false)}
+        onCapture={handleCameraCapture}
+      />
     </div>
   );
 }
