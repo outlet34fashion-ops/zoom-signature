@@ -1173,10 +1173,17 @@ function App() {
       setCustomColor('');
       setSubCategories([]);
       setShowCreateProduct(false);
+      setValidationErrors({}); // Clear validation errors
       
-      // Reload products
+      // Reload products and show them
       await loadCatalogProducts();
-      alert('✅ Produkt erfolgreich erstellt!');
+      
+      // Show catalog to display newly created products
+      setShowCatalog(true);
+      
+      alert('✅ Produkt erfolgreich erstellt! Das neue Produkt wird jetzt in der Produktliste angezeigt.');
+      
+      console.log('Product created successfully and catalog refreshed');
       
     } catch (error) {
       console.error('Error creating product:', error);
