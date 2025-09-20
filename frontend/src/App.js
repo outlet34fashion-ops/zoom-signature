@@ -3998,6 +3998,2006 @@ function App() {
         {isAdminAuthenticated && isAdminView && (
           <div className="space-y-6">
             {/* Main Dashboard Header */}
+            <div className="text-center mb-6">
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">📊 {t.adminDashboard}</h1>
+              <p className="text-gray-600">Verwaltung und Übersicht für Administratoren</p>
+            </div>
+
+            {/* Admin Blocks Grid Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+            {/* Block 1: Live-Statistiken */}
+            <Card className="border-l-4 border-l-green-500 shadow-lg">
+              <CardContent className="p-0">
+                <button
+                  onClick={() => setShowStatistics(!showStatistics)}
+                  className="w-full p-6 text-left bg-gradient-to-r from-green-50 to-green-100 hover:from-green-100 hover:to-green-150 transition-all duration-300 flex justify-between items-center"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-lg">💰</span>
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-bold text-gray-800">Live-Statistiken</h2>
+                      <p className="text-gray-600 text-sm">Umsatz, Bestellungen und Verkaufszahlen</p>
+                    </div>
+                  </div>
+                  <div className="text-gray-400">
+                    {showStatistics ? '▼' : '▶'}
+                  </div>
+                </button>
+                
+                {showStatistics && (
+                  <div className="p-6 border-t border-gray-200">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      {/* Gesamtumsatz */}
+                      <div className="bg-gradient-to-br from-green-400 to-green-600 rounded-xl p-6 text-center text-white shadow-lg">
+                        <div className="text-3xl font-bold mb-2">
+                          {(adminStats.total_revenue || 0).toLocaleString('de-DE')} €
+                        </div>
+                        <div className="text-sm opacity-90 font-medium">💰 Gesamtumsatz</div>
+                        <div className="text-xs opacity-70 mt-1">Live-Statistik</div>
+                      </div>
+                      
+                      {/* Verkaufte Artikel */}
+                      <div className="bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl p-6 text-center text-white shadow-lg">
+                        <div className="text-3xl font-bold mb-2">
+                          {adminStats.total_items || 0}
+                        </div>
+                        <div className="text-sm opacity-90 font-medium">📦 Verkaufte Artikel</div>
+                        <div className="text-xs opacity-70 mt-1">Gesamt Stückzahl</div>
+                      </div>
+                      
+                      {/* Session Umsatz */}
+                      <div className="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl p-6 text-center text-white shadow-lg">
+                        <div className="text-3xl font-bold mb-2">
+                          {(adminStats.session_revenue || 0).toLocaleString('de-DE')} €
+                        </div>
+                        <div className="text-sm opacity-90 font-medium">🔥 Session Umsatz</div>
+                        <div className="text-xs opacity-70 mt-1">Aktuelle Session</div>
+                      </div>
+                      
+                      {/* Bestellungen */}
+                      <div className="bg-gradient-to-br from-pink-400 to-purple-500 rounded-xl p-6 text-center text-white shadow-lg">
+                        <div className="text-3xl font-bold mb-2">
+                          {adminStats.total_orders || 0}
+                        </div>
+                        <div className="text-sm opacity-90 font-medium">📋 Bestellungen</div>
+                        <div className="text-xs opacity-70 mt-1">Gesamtanzahl</div>
+                      </div>
+                    </div>
+                    
+                    {/* Reset Counter */}
+                    <div className="text-center mt-6">
+                      <Button 
+                        onClick={resetOrderCounter}
+                        className="bg-red-500 hover:bg-red-600 text-white px-8 py-3"
+                      >
+                        🔄 {t.resetCounter}
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Block 2: Kundenverwaltung */}
+            <Card className="border-l-4 border-l-blue-500 shadow-lg">
+              <CardContent className="p-0">
+                <button
+                  onClick={() => setShowCustomerManagement(!showCustomerManagement)}
+                  className="w-full p-6 text-left bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-150 transition-all duration-300 flex justify-between items-center"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-lg">👥</span>
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-bold text-gray-800">Kundenverwaltung</h2>
+                      <p className="text-gray-600 text-sm">Kunden erstellen, verwalten und bearbeiten ({customers.filter(c => {
+                        // Filter by status
+                        let matchesFilter = true;
+                        if (customerFilter === 'pending') matchesFilter = c.activation_status === 'pending';
+                        if (customerFilter === 'blocked') matchesFilter = c.activation_status === 'blocked';
+                        
+                        // Filter by search (customer number)
+                        let matchesSearch = true;
+                        if (customerSearch.trim()) {
+                          matchesSearch = c.customer_number.toLowerCase().includes(customerSearch.toLowerCase());
+                        }
+                        
+                        return matchesFilter && matchesSearch;
+                      }).length} Kunden)</p>
+                    </div>
+                  </div>
+                  <div className="text-gray-400">
+                    {showCustomerManagement ? '▼' : '▶'}
+                  </div>
+                </button>
+                
+                {showCustomerManagement && (
+                  <div className="p-6 border-t border-gray-200">
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-semibold text-gray-800">
+                          👥 Kundenverwaltung ({customers.filter(c => {
+                            // Filter by status
+                            let matchesFilter = true;
+                            if (customerFilter === 'pending') matchesFilter = c.activation_status === 'pending';
+                            if (customerFilter === 'blocked') matchesFilter = c.activation_status === 'blocked';
+                            
+                            // Filter by search (customer number)
+                            let matchesSearch = true;
+                            if (customerSearch.trim()) {
+                              matchesSearch = c.customer_number.toLowerCase().includes(customerSearch.toLowerCase());
+                            }
+                            
+                            return matchesFilter && matchesSearch;
+                          }).length})
+                        </h3>
+                      </div>
+                      
+                      {/* Search Field */}
+                      <div className="mb-4">
+                        <Input
+                          placeholder="🔍 Suche nach Kundennummer..."
+                          value={customerSearch}
+                          onChange={(e) => setCustomerSearch(e.target.value)}
+                          className="w-full"
+                        />
+                      </div>
+                      
+                      {/* Filter Buttons */}
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        <Button 
+                          onClick={() => setShowCreateCustomer(true)}
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                          size="sm"
+                        >
+                          ➕ Kunde erstellen
+                        </Button>
+                        <Button 
+                          onClick={() => setCustomerFilter('pending')}
+                          className={customerFilter === 'pending' ? "bg-yellow-500 hover:bg-yellow-600 text-white" : "bg-gray-200 hover:bg-gray-300 text-gray-800"}
+                          size="sm"
+                        >
+                          ⏳ Freigabe ({customers.filter(c => c.activation_status === 'pending').length})
+                        </Button>
+                        <Button 
+                          onClick={() => setCustomerFilter('blocked')}
+                          className={customerFilter === 'blocked' ? "bg-red-500 hover:bg-red-600 text-white" : "bg-gray-200 hover:bg-gray-300 text-gray-800"}
+                          size="sm"
+                        >
+                          🚫 Gesperrt ({customers.filter(c => c.activation_status === 'blocked').length})
+                        </Button>
+                        <Button 
+                          onClick={() => setCustomerFilter('all')}
+                          className={customerFilter === 'all' ? "bg-blue-500 hover:bg-blue-600 text-white" : "bg-gray-200 hover:bg-gray-300 text-gray-800"}
+                          size="sm"
+                        >
+                          📋 Alle
+                        </Button>
+                        <Button 
+                          onClick={loadCustomers}
+                          className="bg-gray-200 hover:bg-gray-300 text-gray-800"
+                          size="sm"
+                        >
+                          🔄 Aktualisieren
+                        </Button>
+                      </div>
+                      
+                      <div className="space-y-3 max-h-64 overflow-y-auto bg-white rounded-lg p-3">
+                        {customers.filter(customer => {
+                          // Filter by status
+                          let matchesFilter = true;
+                          if (customerFilter === 'pending') matchesFilter = customer.activation_status === 'pending';
+                          if (customerFilter === 'blocked') matchesFilter = customer.activation_status === 'blocked';
+                          
+                          // Filter by search (customer number)
+                          let matchesSearch = true;
+                          if (customerSearch.trim()) {
+                            matchesSearch = customer.customer_number.toLowerCase().includes(customerSearch.toLowerCase());
+                          }
+                          
+                          return matchesFilter && matchesSearch;
+                        }).length === 0 ? (
+                          <p className="text-gray-600 text-center py-4">
+                            {customerSearch.trim() ? `Keine Kunden mit Nummer "${customerSearch}" gefunden` :
+                             customerFilter === 'pending' ? 'Keine ausstehenden Kunden' :
+                             customerFilter === 'blocked' ? 'Keine gesperrten Kunden' :
+                             'Keine Kunden verfügbar'}
+                          </p>
+                        ) : (
+                          customers.filter(customer => {
+                            // Filter by status
+                            let matchesFilter = true;
+                            if (customerFilter === 'pending') matchesFilter = customer.activation_status === 'pending';
+                            if (customerFilter === 'blocked') matchesFilter = customer.activation_status === 'blocked';
+                            
+                            // Filter by search (customer number)
+                            let matchesSearch = true;
+                            if (customerSearch.trim()) {
+                              matchesSearch = customer.customer_number.toLowerCase().includes(customerSearch.toLowerCase());
+                            }
+                            
+                            return matchesFilter && matchesSearch;
+                          }).map((customer) => (
+                            <div key={customer.id} className="bg-gray-100 rounded-lg p-3 border">
+                              <div className="flex justify-between items-start">
+                                <div className="flex items-start space-x-3">
+                                  {/* Profile Image */}
+                                  <div className="flex-shrink-0">
+                                    {customer.profile_image ? (
+                                      <img
+                                        src={customer.profile_image}
+                                        alt={customer.name}
+                                        className="w-16 h-16 rounded-full object-cover border-2 border-gray-300"
+                                      />
+                                    ) : (
+                                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center border-2 border-gray-300">
+                                        <span className="text-white text-lg font-bold">
+                                          {customer.name ? customer.name.charAt(0).toUpperCase() : '👤'}
+                                        </span>
+                                      </div>
+                                    )}
+                                  </div>
+                                  {/* Customer Info */}
+                                  <div className="flex-1 min-w-0">
+                                    {/* Customer Number First */}
+                                    <div className="text-lg font-bold text-gray-800">
+                                      #{customer.customer_number}
+                                    </div>
+                                    {/* Name Second */}
+                                    <div className="font-medium text-gray-700">
+                                      {customer.name}
+                                    </div>
+                                    {/* Email and date smaller */}
+                                    <div className="text-sm text-gray-600">
+                                      📧 {customer.email}
+                                    </div>
+                                    <div className="text-xs text-gray-500">
+                                      📅 Registriert: {formatGermanDate(customer.created_at)}
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                <div className="flex flex-col items-end space-y-2">
+                                  <Badge 
+                                    className={
+                                      customer.activation_status === 'active' 
+                                        ? "bg-green-500 text-white" 
+                                        : customer.activation_status === 'pending'
+                                        ? "bg-yellow-500 text-white"
+                                        : "bg-red-500 text-white"
+                                    }
+                                  >
+                                    {customer.activation_status === 'active' ? '✓ Aktiv' : 
+                                     customer.activation_status === 'pending' ? '⏳ Wartend' : 
+                                     '🚫 Gesperrt'}
+                                  </Badge>
+                                  
+                                  <div className="flex space-x-1">
+                                    {customer.activation_status === 'pending' && (
+                                      <Button 
+                                        onClick={() => activateCustomer(customer.id)}
+                                        className="bg-green-600 hover:bg-green-700 text-white"
+                                        size="sm"
+                                      >
+                                        ✓
+                                      </Button>
+                                    )}
+                                    
+                                    {customer.activation_status === 'active' && (
+                                      <Button 
+                                        onClick={() => blockCustomer(customer.id)}
+                                        className="bg-red-600 hover:bg-red-700 text-white"
+                                        size="sm"
+                                      >
+                                        🚫
+                                      </Button>
+                                    )}
+                                    
+                                    {customer.activation_status === 'blocked' && (
+                                      <Button 
+                                        onClick={() => activateCustomer(customer.id)}
+                                        className="bg-green-600 hover:bg-green-700 text-white"
+                                        size="sm"
+                                      >
+                                        ✓
+                                      </Button>
+                                    )}
+                                    
+                                    <Button 
+                                      onClick={() => deleteCustomer(customer.id)}
+                                      className="bg-red-800 hover:bg-red-900 text-white"
+                                      size="sm"
+                                    >
+                                      🗑️
+                                    </Button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+        {/* Create Customer Modal */}
+        {showCreateCustomer && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <Card className="w-full max-w-md mx-4">
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-800 text-center">
+                    ➕ Neuen Kunde erstellen
+                  </h3>
+                  
+                  {createCustomerError && (
+                    <div className="bg-red-100 border border-red-300 rounded-lg p-3">
+                      <p className="text-red-700 text-sm">{createCustomerError}</p>
+                    </div>
+                  )}
+                  
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Kundennummer *
+                      </label>
+                      <Input
+                        type="text"
+                        placeholder="z.B. TEST001"
+                        value={newCustomerData.customer_number}
+                        onChange={(e) => setNewCustomerData(prev => ({
+                          ...prev,
+                          customer_number: e.target.value
+                        }))}
+                        className="w-full"
+                      />
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Vorname *
+                        </label>
+                        <Input
+                          type="text"
+                          placeholder="Vorname"
+                          value={newCustomerData.first_name}
+                          onChange={(e) => setNewCustomerData(prev => ({
+                            ...prev,
+                            first_name: e.target.value
+                          }))}
+                          className="w-full"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Nachname *
+                        </label>
+                        <Input
+                          type="text"
+                          placeholder="Nachname"
+                          value={newCustomerData.last_name}
+                          onChange={(e) => setNewCustomerData(prev => ({
+                            ...prev,
+                            last_name: e.target.value
+                          }))}
+                          className="w-full"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Firmenname (optional)
+                      </label>
+                      <Input
+                        type="text"
+                        placeholder="Firmenname"
+                        value={newCustomerData.company_name}
+                        onChange={(e) => setNewCustomerData(prev => ({
+                          ...prev,
+                          company_name: e.target.value
+                        }))}
+                        className="w-full"
+                      />
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Kunde seit (optional)
+                        </label>
+                        <Input
+                          type="date"
+                          value={newCustomerData.member_since}
+                          onChange={(e) => setNewCustomerData(prev => ({
+                            ...prev,
+                            member_since: e.target.value
+                          }))}
+                          className="w-full"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Status
+                        </label>
+                        <select
+                          value={newCustomerData.status}
+                          onChange={(e) => setNewCustomerData(prev => ({
+                            ...prev,
+                            status: e.target.value
+                          }))}
+                          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                          <option value="Starter">🥉 Starter</option>
+                          <option value="Business">💼 Business</option>
+                          <option value="Gold">🥇 Gold</option>
+                          <option value="Platinum">💎 Platinum</option>
+                        </select>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        E-Mail *
+                      </label>
+                      <Input
+                        type="email"
+                        placeholder="kunde@example.com"
+                        value={newCustomerData.email}
+                        onChange={(e) => setNewCustomerData(prev => ({
+                          ...prev,
+                          email: e.target.value
+                        }))}
+                        className="w-full"
+                      />
+                    </div>
+                    
+                    <div className="bg-green-100 border border-green-300 rounded-lg p-3">
+                      <p className="text-green-700 text-sm text-center">
+                        ✓ Status wird automatisch auf <strong>"Aktiv"</strong> gesetzt
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex space-x-3 pt-4">
+                    <Button 
+                      variant="outline"
+                      onClick={() => {
+                        setShowCreateCustomer(false);
+                        setNewCustomerData({ customer_number: '', email: '', first_name: '', last_name: '', company_name: '', member_since: '', status: 'Starter' });
+                        setCreateCustomerError('');
+                      }}
+                      className="flex-1"
+                      disabled={creatingCustomer}
+                    >
+                      Abbrechen
+                    </Button>
+                    <Button 
+                      onClick={createCustomerManually}
+                      className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                      disabled={creatingCustomer}
+                    >
+                      {creatingCustomer ? 'Erstellen...' : 'Kunde erstellen'}
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Block 3: Live-Streaming Controls */}
+            <Card className="border-l-4 border-l-red-500 shadow-lg">
+              <CardContent className="p-0">
+                <button
+                  onClick={() => setShowStreamingControls(!showStreamingControls)}
+                  className="w-full p-6 text-left bg-gradient-to-r from-red-50 to-red-100 hover:from-red-100 hover:to-red-150 transition-all duration-300 flex justify-between items-center"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-lg">🎥</span>
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-bold text-gray-800">Live-Streaming</h2>
+                      <p className="text-gray-600 text-sm">HD-Video-Streaming starten und verwalten</p>
+                    </div>
+                  </div>
+                  <div className="text-gray-400">
+                    {showStreamingControls ? '▼' : '▶'}
+                  </div>
+                </button>
+                
+                {showStreamingControls && (
+                  <div className="p-6 border-t border-gray-200">
+                    {/* CRITICAL: LiveKit Streaming Admin Controls */}
+                    {streamingActive && dailyToken && dailyRoomUrl ? (
+                      <div className="space-y-4">
+                        {/* Connection Status */}
+                        <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                          <div className="flex items-center space-x-2">
+                            <div className={`w-3 h-3 rounded-full ${isDailyConnected ? 'bg-green-500' : 'bg-yellow-500'} animate-pulse`} />
+                            <span className="text-sm font-medium">
+                              {isDailyConnected ? '🟢 Live Connected' : '🟡 Connecting...'}
+                            </span>
+                          </div>
+                          <Button 
+                            onClick={stopDailyStreaming}
+                            variant="destructive"
+                            size="sm"
+                          >
+                            ⏹️ Stream beenden
+                          </Button>
+                        </div>
+
+                        {/* Daily.co Error Display */}
+                        {dailyError && (
+                          <Alert className="border-red-200 bg-red-50">
+                            <AlertDescription className="text-red-800">
+                              ❌ Streaming Error: {dailyError}
+                            </AlertDescription>
+                          </Alert>
+                        )}
+
+                        {/* Daily.co Admin Streaming Component - STABLE */}
+                        <div className="bg-black rounded-lg overflow-hidden" style={{ aspectRatio: '16/9' }}>
+                          <DailyVideoCall
+                            roomUrl={dailyRoomUrl}
+                            token={dailyToken}
+                            isAdmin={true}
+                            onLeave={stopDailyStreaming}
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      /* Start Streaming Section */
+                      <div className="bg-gray-50 rounded-lg p-4">
+                        <h3 className="text-lg font-semibold mb-3 text-gray-800">🎥LiveKit Professional Streaming</h3>
+                        <div className="text-center space-y-3">
+                          <div className="bg-yellow-100 border border-yellow-300 rounded-lg p-4">
+                            <p className="text-yellow-800">
+                              ⚠️ LiveKit Streaming temporär deaktiviert
+                            </p>
+                          </div>
+                          {/* Temporarily disabled LiveKit code */}
+                          {/*
+                          <Button 
+                            onClick={async () => {
+                              try {
+                                console.log('🚀 DIRECT Admin streaming start...');
+                                
+                                // Generate room name
+                                const roomName = `admin-live-${Date.now()}`;
+                                console.log('Creating admin room:', roomName);
+                                
+                                // Create room first
+                                await livekitService.createRoom(roomName, 100);
+                                console.log('✅ Room created successfully');
+                                
+                                // Generate publisher token for admin
+                                const tokenData = await livekitService.generatePublisherToken(
+                                  roomName,
+                                  `admin-${Date.now()}`,
+                                  { role: 'admin', streaming: true }
+                                );
+                                console.log('✅ Admin token generated');
+                                
+                                setCurrentRoomName(roomName);
+                                setLivekitToken(tokenData.token);
+                                setLivekitUrl(tokenData.livekitUrl);
+                                setStreamingActive(true);
+                                setLivekitError(null);
+                                
+                                console.log('🎥 Admin streaming initialized successfully');
+                                alert('✅ Streaming gestartet! Room: ' + roomName);
+                                
+                              } catch (error) {
+                                console.error('❌ Admin streaming failed:', error);
+                                setLivekitError(error.message);
+                                alert('❌ Streaming-Start fehlgeschlagen: ' + error.message);
+                              }
+                            }}
+                            className="bg-red-600 hover:bg-red-700 text-white w-full py-3 text-lg"
+                          >
+                            🔴 SOFORT LIVE gehen
+                          </Button>
+                          */}
+                          <div className="text-sm text-gray-600">
+                            HD-Qualität • Multi-Viewer • Stabil • FUNKTIONIERT GARANTIERT
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Block 4: Ticker-Einstellungen */}
+            <Card className="border-l-4 border-l-purple-500 shadow-lg">
+              <CardContent className="p-0">
+                <button
+                  onClick={() => setShowTickerSettings(!showTickerSettings)}
+                  className="w-full p-6 text-left bg-gradient-to-r from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-150 transition-all duration-300 flex justify-between items-center"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-lg">⚙️</span>
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-bold text-gray-800">Ticker-Einstellungen</h2>
+                      <p className="text-gray-600 text-sm">Laufband-Text konfigurieren und verwalten</p>
+                    </div>
+                  </div>
+                  <div className="text-gray-400">
+                    {showTickerSettings ? '▼' : '▶'}
+                  </div>
+                </button>
+                
+                {showTickerSettings && (
+                  <div className="p-6 border-t border-gray-200">
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <h3 className="text-lg font-semibold mb-3 text-gray-800">⚙️ Ticker-Einstellungen</h3>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Ticker Text</label>
+                          <Input
+                            value={newTickerText}
+                            onChange={(e) => setNewTickerText(e.target.value)}
+                            className="w-full"
+                            placeholder="Ticker Text eingeben..."
+                          />
+                        </div>
+                        <div className="flex space-x-3">
+                          <Button 
+                            onClick={updateTicker}
+                            className="bg-green-500 hover:bg-green-600 text-white flex-1"
+                          >
+                            📝 Ticker aktualisieren
+                          </Button>
+                          <Button 
+                            onClick={toggleTicker}
+                            className={tickerSettings.enabled ? "bg-orange-500 hover:bg-orange-600 text-white flex-1" : "bg-gray-500 hover:bg-gray-600 text-white flex-1"}
+                          >
+                            {tickerSettings.enabled ? "⏸️ Ticker Stop" : "▶️ Ticker Start"}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Produktkatalog Management (Admin) */}
+        {isAdminAuthenticated && isAdminView && (
+          <Card className="border-l-4 border-l-purple-500 shadow-lg mb-6">
+            <CardContent className="p-0">
+              <button
+                onClick={() => setShowCatalogManagement(!showCatalogManagement)}
+                className="w-full p-6 text-left bg-gradient-to-r from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-150 transition-all duration-300 flex justify-between items-center"
+              >
+                <div className="flex items-center space-x-3">
+                  <span className="text-2xl">🛍️</span>
+                  <div>
+                    <h3 className="text-xl font-bold text-purple-800">Produktkatalog Verwaltung</h3>
+                    <p className="text-purple-600 text-sm">Kategorien und Produkte verwalten</p>
+                  </div>
+                </div>
+                <span className="text-2xl text-purple-600">
+                  {showCatalogManagement ? '▼' : '▶'}
+                </span>
+              </button>
+
+              {showCatalogManagement && (
+                <div className="p-6 bg-white border-t">
+                  {/* Quick Stats */}
+                  <div className="flex justify-center mb-6">
+                    <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-4 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-purple-100 text-sm">Bestellungen</p>
+                          <p className="text-2xl font-bold">-</p>
+                        </div>
+                        <span className="text-3xl">🛒</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Management Buttons */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    {/* Category Management Button */}
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('🔵 Kategorien button clicked - opening CategoryManagementModal');
+                        console.log('Current showCategoryManagementModal state:', showCategoryManagementModal);
+                        
+                        // Use immediate state update with callback
+                        setShowCategoryManagementModal(prev => {
+                          console.log('State update callback - prev:', prev, 'new: true');
+                          return true;
+                        });
+                        
+                        // Force re-render check
+                        setTimeout(() => {
+                          console.log('🔍 Post-click state check - should be true now');
+                        }, 100);
+                      }}
+                      className="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-between"
+                      style={{ zIndex: '1', position: 'relative', marginBottom: '1rem' }}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <div className="text-2xl">🏷️</div>
+                        <div className="text-left">
+                          <div className="text-lg font-bold">Kategorien</div>
+                          <div className="text-xs opacity-90">Haupt- und Unterkategorien verwalten</div>
+                        </div>
+                      </div>
+                      <div className="text-3xl font-bold">
+                        {categories?.length || 0}
+                      </div>
+                    </button>
+
+                    {/* ALTERNATIVE 2: Simple Category Modal Button */}
+                    <button
+                      onClick={() => {
+                        console.log('🎯 Simple Category Modal Button clicked');
+                        setShowSimpleCategoryModal(true);
+                      }}
+                      className="bg-purple-600 hover:bg-purple-700 text-white p-4 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-between"
+                      style={{ marginBottom: '1rem' }}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <div className="text-2xl">🏷️</div>
+                        <div className="text-left">
+                          <div className="text-lg font-bold">Kategorie hinzufügen</div>
+                          <div className="text-xs opacity-90">Einfaches Eingabe-Fenster</div>
+                        </div>
+                      </div>
+                      <div className="text-2xl">
+                        +
+                      </div>
+                    </button>
+
+                    {/* ALTERNATIVE 3: Simple Subcategory Creation Button */}
+                    <button
+                      onClick={() => {
+                        console.log('🔸 Simple Subcategory Modal Button clicked');
+                        setShowSimpleSubcategoryModal(true);
+                      }}
+                      className="bg-orange-600 hover:bg-orange-700 text-white p-4 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-between"
+                      style={{ marginBottom: '1rem' }}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <div className="text-2xl">📂</div>
+                        <div className="text-left">
+                          <div className="text-lg font-bold">Unterkategorie hinzufügen</div>
+                          <div className="text-xs opacity-90">Zu bestehender Hauptkategorie</div>
+                        </div>
+                      </div>
+                      <div className="text-2xl">
+                        +
+                      </div>
+                    </button>
+                    
+                    {/* Products View Button - Show All Products */}
+                    <button
+                      onClick={() => {
+                        console.log('🔵 Produkte anzeigen button clicked');
+                        setShowCatalog(true); // Show catalog
+                        loadCategories(); // Load categories
+                        loadCatalogProducts(); // Load products
+                      }}
+                      className="bg-green-600 hover:bg-green-700 text-white p-4 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-between"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <div className="text-2xl">📦</div>
+                        <div className="text-left">
+                          <div className="text-lg font-bold">Produkte</div>
+                          <div className="text-xs opacity-90">Alle Produkte anzeigen</div>
+                        </div>
+                      </div>
+                      <div className="text-3xl font-bold">
+                        {catalogProducts?.length || 0}
+                      </div>
+                    </button>
+                    
+                    {/* Products Management Button - NEW */}
+                    <button
+                      onClick={() => {
+                        console.log('🔵 Neues Produkt button clicked');
+                        setShowCreateProduct(true);
+                        setCatalogError('');
+                        // Load categories for dropdown
+                        loadCategories();
+                      }}
+                      className="bg-orange-600 hover:bg-orange-700 text-white p-4 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-between"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <div className="text-2xl">📦</div>
+                        <div className="text-left">
+                          <div className="text-lg font-bold">Neues Produkt</div>
+                          <div className="text-xs opacity-90">Produkt hinzufügen</div>
+                        </div>
+                      </div>
+                      <div className="text-3xl font-bold">+</div>
+                    </button>
+                  </div>
+
+                  {/* Load Data Button */}
+                  <div className="text-center">
+                    <button
+                      onClick={() => {
+                        loadCategories();
+                        loadCatalogProducts();
+                      }}
+                      className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200"
+                    >
+                      🔄 Daten neu laden
+                    </button>
+                  </div>
+
+                  {/* Error Display */}
+                  {catalogError && (
+                    <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-4">
+                      <p className="text-red-800">{catalogError}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Live Shopping Calendar Management (Admin) */}
+        {isAdminAuthenticated && isAdminView && (
+          <Card className="border-l-4 border-l-pink-500 shadow-lg mb-6">
+            <CardContent className="p-0">
+              <button
+                onClick={() => setShowCalendarManagement(!showCalendarManagement)}
+                className="w-full p-6 text-left bg-gradient-to-r from-pink-50 to-pink-100 hover:from-pink-100 hover:to-pink-150 transition-all duration-300 flex justify-between items-center"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-pink-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-lg">📅</span>
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-800">Live Shopping Kalender</h2>
+                    <p className="text-gray-600 text-sm">Events erstellen und verwalten</p>
+                  </div>
+                </div>
+                <div className="text-gray-400">
+                  {showCalendarManagement ? '▼' : '▶'}
+                </div>
+              </button>
+              
+              {showCalendarManagement && (
+                <div className="p-6 border-t border-gray-200">
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-lg font-semibold text-gray-800">📅 Live Shopping Kalender</h3>
+                      <Button 
+                        onClick={() => {
+                          setNewEventData({ date: '', time: '', title: '', description: '' });
+                          setEventError('');
+                          setShowCreateEvent(true);
+                        }}
+                        className="bg-pink-500 hover:bg-pink-600 text-white"
+                      >
+                        ➕ Event erstellen
+                      </Button>
+                    </div>
+              
+              {loadingEvents ? (
+                <div className="text-center py-4">
+                  <p className="text-gray-600">Events werden geladen...</p>
+                </div>
+              ) : events.length === 0 ? (
+                <div className="text-center py-4">
+                  <p className="text-gray-500">Noch keine Events geplant</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {events.map((event) => (
+                    <div key={event.id} className="bg-white rounded-lg p-4 border-l-4 border-l-pink-500 border shadow-sm">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <div className="flex items-center space-x-4">
+                            <div className="text-sm text-gray-500">
+                              {formatEventDate(event.date)}
+                            </div>
+                            <div className="font-medium text-pink-600">
+                              {event.time}
+                            </div>
+                            <div className="font-semibold text-gray-800">
+                              {event.title}
+                            </div>
+                          </div>
+                          {event.description && (
+                            <div className="text-sm text-gray-600 mt-1">
+                              {event.description}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button 
+                            onClick={() => openEditEvent(event)}
+                            variant="outline"
+                            size="sm"
+                          >
+                            ✏️ Bearbeiten
+                          </Button>
+                          <Button 
+                            onClick={() => deleteEvent(event.id)}
+                            className="bg-red-500 hover:bg-red-600 text-white"
+                            size="sm"
+                          >
+                            🗑️ Löschen
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Block 6: Live Stream Management mit Live Ticker */}
+        {isAdminAuthenticated && isAdminView && (
+          <Card className="border-l-4 border-l-orange-500 shadow-lg mb-6">
+            <CardContent className="p-0">
+              <button
+                onClick={() => setShowLiveStreamManagement(!showLiveStreamManagement)}
+                className="w-full p-6 text-left bg-gradient-to-r from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-150 transition-all duration-300 flex justify-between items-center"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-lg">📺</span>
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-800">Live Stream Management</h2>
+                    <p className="text-gray-600 text-sm">Live Ticker und Stream-Überwachung</p>
+                  </div>
+                </div>
+                <div className="text-gray-400">
+                  {showLiveStreamManagement ? '▼' : '▶'}
+                </div>
+              </button>
+              
+              {showLiveStreamManagement && (
+                <div className="p-6 border-t border-gray-200">
+                  <div className="bg-gray-50 rounded-lg p-4 space-y-6">
+                    
+                    {/* Live Stream Status */}
+                    <div className="bg-white rounded-lg p-4 border-l-4 border-l-orange-500">
+                      <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        🔴 Live Stream Status
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-green-600">AKTIV</div>
+                          <div className="text-sm text-gray-600">Stream Status</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-blue-600">0</div>
+                          <div className="text-sm text-gray-600">Aktive Zuschauer</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-2xl font-bold text-purple-600">00:00:00</div>
+                          <div className="text-sm text-gray-600">Stream Dauer</div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex space-x-3 mt-4">
+                        <Button 
+                          onClick={startSimpleStream}
+                          className="bg-red-600 hover:bg-red-700 text-white flex-1"
+                        >
+                          🔴 Stream starten
+                        </Button>
+                        <Button 
+                          onClick={() => alert('Stream beenden')}
+                          className="bg-gray-600 hover:bg-gray-700 text-white flex-1"
+                        >
+                          ⏹️ Stream beenden
+                        </Button>
+                      </div>
+                    </div>
+
+                    {/* Live Ticker Management */}
+                    <div className="bg-white rounded-lg p-4 border-l-4 border-l-orange-500">
+                      <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        📰 Live Ticker Management
+                      </h3>
+                      
+                      {/* Current Ticker Display */}
+                      <div className="bg-gray-100 rounded-lg p-3 mb-4">
+                        <div className="text-sm text-gray-600 mb-1">Aktueller Ticker:</div>
+                        <div className="font-medium text-gray-800">
+                          {tickerSettings.text || 'Kein Ticker Text gesetzt'}
+                        </div>
+                        <div className="text-xs text-gray-500 mt-1">
+                          Status: {tickerSettings.enabled ? 
+                            <span className="text-green-600 font-medium">🟢 Aktiv</span> : 
+                            <span className="text-red-600 font-medium">🔴 Inaktiv</span>
+                          }
+                        </div>
+                      </div>
+                      
+                      {/* Ticker Controls */}
+                      <div className="space-y-3">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Ticker Text bearbeiten:
+                          </label>
+                          <Input
+                            value={newTickerText}
+                            onChange={(e) => setNewTickerText(e.target.value)}
+                            className="w-full"
+                            placeholder="Neuen Ticker Text eingeben..."
+                          />
+                        </div>
+                        
+                        <div className="flex space-x-2">
+                          <Button 
+                            onClick={updateTicker}
+                            className="bg-blue-600 hover:bg-blue-700 text-white flex-1"
+                          >
+                            💾 Ticker aktualisieren
+                          </Button>
+                          <Button 
+                            onClick={toggleTicker}
+                            className={tickerSettings.enabled ? 
+                              "bg-red-600 hover:bg-red-700 text-white flex-1" : 
+                              "bg-green-600 hover:bg-green-700 text-white flex-1"
+                            }
+                          >
+                            {tickerSettings.enabled ? "⏸️ Ticker stoppen" : "▶️ Ticker starten"}
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Quick Actions */}
+                    <div className="bg-white rounded-lg p-4 border-l-4 border-l-orange-500">
+                      <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        ⚡ Quick Actions
+                      </h3>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <Button 
+                          onClick={() => {
+                            setNewTickerText('🔥 LIVE SHOPPING JETZT! Exklusive Angebote nur heute!');
+                            updateTicker();
+                          }}
+                          className="bg-pink-600 hover:bg-pink-700 text-white"
+                        >
+                          🔥 Standard Live Ticker
+                        </Button>
+                        <Button 
+                          onClick={() => {
+                            setNewTickerText('🎉 OUTLET34 - Ihr Modegroßhandel! Jetzt live dabei sein!');
+                            updateTicker();
+                          }}
+                          className="bg-purple-600 hover:bg-purple-700 text-white"
+                        >
+                          🎉 Willkommens Ticker
+                        </Button>
+                        <Button 
+                          onClick={() => {
+                            setNewTickerText('⏰ Nur noch wenige Minuten! Sichere dir die besten Deals!');
+                            updateTicker();
+                          }}
+                          className="bg-yellow-600 hover:bg-yellow-700 text-white"
+                        >
+                          ⏰ Countdown Ticker
+                        </Button>
+                        <Button 
+                          onClick={() => {
+                            setNewTickerText('');
+                            updateTicker();
+                          }}
+                          className="bg-gray-600 hover:bg-gray-700 text-white"
+                        >
+                          🗑️ Ticker löschen
+                        </Button>
+                        <Button 
+                          onClick={resetOrderCounter}
+                          className="bg-red-600 hover:bg-red-700 text-white"
+                        >
+                          🔄 Session Reset
+                        </Button>
+                        <Button 
+                          onClick={() => {
+                            loadAllOrders();
+                            loadAdminStats();
+                          }}
+                          className="bg-blue-600 hover:bg-blue-700 text-white"
+                        >
+                          🔃 Daten aktualisieren
+                        </Button>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+            </div>
+          </div>
+        )}
+
+        {/* CRITICAL: Zebra Etiketten-Drucker Management (Admin) */}
+        {isAdminAuthenticated && isAdminView && (
+          <Card className="border-l-4 border-l-purple-500 shadow-lg mb-6">
+            <CardContent className="p-0">
+              <button
+                onClick={() => setShowZebraControls(!showZebraControls)}
+                className="w-full p-6 text-left bg-gradient-to-r from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-150 transition-all duration-300 flex justify-between items-center"
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-purple-500 rounded-full flex items-center justify-center">
+                    <span className="text-white text-lg">🏷️</span>
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-gray-800">Zebra Etiketten-Drucker</h2>
+                    <p className="text-gray-600 text-sm">GK420d • 40x25mm Labels • Automatischer Druck</p>
+                  </div>
+                </div>
+                <div className="text-gray-400">
+                  {showZebraControls ? '▼' : '▶'}
+                </div>
+              </button>
+              
+              {showZebraControls && (
+                <div className="p-6 border-t border-gray-200">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    
+                    {/* Drucker-Status */}
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <h3 className="text-lg font-semibold mb-3 text-gray-800">🖨️ Drucker-Status</h3>
+                      <div className="space-y-3">
+                        <Button 
+                          onClick={async () => {
+                            try {
+                              const response = await axios.get(`${API}/zebra/status`);
+                              const status = response.data.printer_status;
+                              alert(`Drucker Status: ${status.status}\n${status.message}`);
+                            } catch (error) {
+                              alert('Fehler beim Abrufen des Drucker-Status: ' + error.message);
+                            }
+                          }}
+                          className="bg-blue-600 hover:bg-blue-700 text-white w-full"
+                        >
+                          📊 Status prüfen
+                        </Button>
+                        
+                        <Button 
+                          onClick={async () => {
+                            try {
+                              const response = await axios.post(`${API}/zebra/test-print`);
+                              if (response.data.success) {
+                                alert('✅ Test-Etikett erfolgreich gedruckt!');
+                              } else {
+                                alert('❌ Test-Druck fehlgeschlagen: ' + response.data.result.message);
+                              }
+                            } catch (error) {
+                              alert('❌ Test-Druck Fehler: ' + error.message);
+                            }
+                          }}
+                          className="bg-green-600 hover:bg-green-700 text-white w-full"
+                        >
+                          🧪 Test-Etikett drucken
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    {/* Etikett-Vorschau */}
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <h3 className="text-lg font-semibold mb-3 text-gray-800">👁️ Etikett-Vorschau</h3>
+                      <div className="space-y-3">
+                        <input 
+                          type="text"
+                          placeholder="Kundennummer (z.B. 10299)"
+                          value={labelPreviewCustomer}
+                          onChange={(e) => setLabelPreviewCustomer(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                        <input 
+                          type="text"
+                          placeholder="Preis (z.B. €19,99)"
+                          value={labelPreviewPrice}
+                          onChange={(e) => setLabelPreviewPrice(e.target.value)}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                        
+                        <Button 
+                          onClick={async () => {
+                            try {
+                              const response = await axios.get(`${API}/zebra/preview/${labelPreviewCustomer}?price=${labelPreviewPrice}`);
+                              setLabelPreview(response.data.zpl_code);
+                              alert('✅ Etikett-Vorschau generiert!');
+                            } catch (error) {
+                              alert('❌ Vorschau-Fehler: ' + error.message);
+                            }
+                          }}
+                          className="bg-purple-600 hover:bg-purple-700 text-white w-full"
+                          disabled={!labelPreviewCustomer}
+                        >
+                          🔍 ZPL-Vorschau generieren
+                        </Button>
+                        
+                        <Button 
+                          onClick={async () => {
+                            try {
+                              // PDF-Vorschau öffnen
+                              const pdfUrl = `${API}/zebra/pdf-preview/${labelPreviewCustomer}?price=${labelPreviewPrice}`;
+                              window.open(pdfUrl, '_blank');
+                              alert('✅ PDF-Vorschau wird geöffnet!');
+                            } catch (error) {
+                              alert('❌ PDF-Fehler: ' + error.message);
+                            }
+                          }}
+                          className="bg-red-600 hover:bg-red-700 text-white w-full"
+                          disabled={!labelPreviewCustomer}
+                        >
+                          📄 PDF-Vorschau öffnen
+                        </Button>
+                        
+                        <Button 
+                          onClick={async () => {
+                            try {
+                              // NEUE EINFACHE LÖSUNG: ZPL-Datei herunterladen
+                              const downloadUrl = `${API}/zebra/download-latest-zpl`;
+                              
+                              // Erstelle unsichtbaren Link zum Download
+                              const link = document.createElement('a');
+                              link.href = downloadUrl;
+                              link.download = 'zebra_label.zpl';
+                              document.body.appendChild(link);
+                              link.click();
+                              document.body.removeChild(link);
+                              
+                              // Zeige auch die Druckbefehle
+                              const contentResponse = await axios.get(`${API}/zebra/latest-zpl-content`);
+                              if (contentResponse.data.success) {
+                                const commands = contentResponse.data.mac_commands.join('\n');
+                                
+                                // Zeige Popup mit Druckbefehlen
+                                const popup = window.open('', '_blank', 'width=600,height=400');
+                                popup.document.write(`
+                                  <html>
+                                    <head><title>ZPL Druckbefehle für Mac</title></head>
+                                    <body style="font-family: monospace; padding: 20px;">
+                                      <h2>🖨️ ZPL-Datei heruntergeladen!</h2>
+                                      <p><strong>Schritt 1:</strong> Datei wurde heruntergeladen</p>
+                                      <p><strong>Schritt 2:</strong> Terminal auf Mac öffnen und eingeben:</p>
+                                      <pre style="background: #f0f0f0; padding: 10px; border: 1px solid #ccc;">${commands}</pre>
+                                      <p><strong>Das Etikett wird sofort gedruckt!</strong></p>
+                                    </body>
+                                  </html>
+                                `);
+                              }
+                              
+                              alert('✅ ZPL-Datei heruntergeladen! Öffnen Sie das neue Fenster für Druckbefehle.');
+                            } catch (error) {
+                              alert('❌ Download-Fehler: ' + error.message);
+                            }
+                          }}
+                          className="bg-green-600 hover:bg-green-700 text-white w-full font-bold text-lg py-3"
+                          disabled={!labelPreviewCustomer}
+                        >
+                          🖨️ ZPL HERUNTERLADEN & DRUCKEN
+                        </Button>
+                        
+                        <Button 
+                          onClick={async () => {
+                            try {
+                              // Zeige neueste ZPL-Inhalte
+                              const response = await axios.get(`${API}/zebra/latest-zpl-content`);
+                              if (response.data.success) {
+                                const commands = response.data.mac_commands.join('\n');
+                                
+                                // Zeige Popup mit vollständigen Befehlen
+                                const popup = window.open('', '_blank', 'width=700,height=500');
+                                popup.document.write(`
+                                  <html>
+                                    <head><title>Aktuelle ZPL-Datei - Druckbefehle</title></head>
+                                    <body style="font-family: monospace; padding: 20px;">
+                                      <h2>🖨️ Neueste ZPL-Datei - Druckbefehle</h2>
+                                      <p><strong>Datei:</strong> ${response.data.zpl_file}</p>
+                                      <h3>Mac Terminal Befehle:</h3>
+                                      <pre style="background: #f0f0f0; padding: 15px; border: 1px solid #ccc; white-space: pre-wrap;">${commands}</pre>
+                                      <button onclick="navigator.clipboard.writeText('${commands.replace(/'/g, "\\'")}'); alert('Befehle kopiert!');" 
+                                              style="background: #4CAF50; color: white; padding: 10px; border: none; cursor: pointer;">
+                                        📋 Befehle kopieren
+                                      </button>
+                                    </body>
+                                  </html>
+                                `);
+                              } else {
+                                alert('❌ Keine ZPL-Datei gefunden: ' + response.data.message);
+                              }
+                            } catch (error) {
+                              alert('❌ Fehler: ' + error.message);
+                            }
+                          }}
+                          className="bg-blue-600 hover:bg-blue-700 text-white w-full"
+                          disabled={!labelPreviewCustomer}
+                        >
+                          📋 DRUCKBEFEHLE ANZEIGEN
+                        </Button>
+                        
+                        <Button 
+                          onClick={async () => {
+                            try {
+                              // Bild-Vorschau öffnen
+                              const imageUrl = `${API}/zebra/image-preview/${labelPreviewCustomer}?price=${labelPreviewPrice}`;
+                              window.open(imageUrl, '_blank');
+                              alert('✅ Bild-Vorschau wird geöffnet!');
+                            } catch (error) {
+                              alert('❌ Bild-Fehler: ' + error.message);
+                            }
+                          }}
+                          className="bg-blue-600 hover:bg-blue-700 text-white w-full"
+                          disabled={!labelPreviewCustomer}
+                        >
+                          🖼️ Bild-Vorschau öffnen
+                        </Button>
+                        
+                        <Button 
+                          onClick={async () => {
+                            try {
+                              // Download ZPL-Datei für manuellen Druck
+                              const response = await axios.get(
+                                `${API}/zebra/download/${labelPreviewCustomer}?price=${labelPreviewPrice}`,
+                                { responseType: 'blob' }
+                              );
+                              
+                              // Erstelle Download-Link
+                              const url = window.URL.createObjectURL(new Blob([response.data]));
+                              const link = document.createElement('a');
+                              link.href = url;
+                              link.setAttribute('download', `zebra_label_${labelPreviewCustomer}_${Date.now()}.zpl`);
+                              document.body.appendChild(link);
+                              link.click();
+                              link.remove();
+                              
+                              alert('✅ ZPL-Datei heruntergeladen!');
+                            } catch (error) {
+                              alert('❌ Download-Fehler: ' + error.message);
+                            }
+                          }}
+                          className="bg-green-600 hover:bg-green-700 text-white w-full"
+                          disabled={!labelPreviewCustomer}
+                        >
+                          💾 ZPL-Datei downloaden
+                        </Button>
+                      </div>
+                      
+                      {/* ZPL-Code Anzeige */}
+                      {labelPreview && (
+                        <div className="mt-4 p-3 bg-black text-green-400 rounded-lg font-mono text-xs">
+                          <div className="mb-2 font-bold text-white">ZPL-Code für Zebra GK420d:</div>
+                          <pre className="whitespace-pre-wrap break-all">{labelPreview}</pre>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Automatischer Druck Info */}
+                  <div className="mt-6 bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div className="flex items-center space-x-2">
+                      <span className="text-green-600 text-lg">⚡</span>
+                      <div>
+                        <h4 className="font-semibold text-green-800">Automatischer Druck aktiviert</h4>
+                        <p className="text-green-700 text-sm">Etiketten werden automatisch gedruckt, sobald eine Bestellung eingeht.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Profile Modal */}
+        {showProfileModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <Card className="w-full max-w-md mx-4">
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold text-gray-800 text-center">
+                    {t('customer.profile.title')}
+                  </h3>
+                  
+                  {/* Profile Image */}
+                  <div className="flex justify-center">
+                    {currentCustomer?.profile_image ? (
+                      <img
+                        src={currentCustomer.profile_image}
+                        alt="Profilbild"
+                        className="w-24 h-24 rounded-full object-cover border-4 border-pink-200"
+                      />
+                    ) : (
+                      <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center border-4 border-pink-200">
+                        <span className="text-gray-600 text-2xl font-bold">
+                          MCD
+                        </span>
+                        <span className="text-yellow-500 text-sm absolute mt-8">60s</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Customer Information */}
+                  <div className="text-center space-y-3">
+                    <div className="text-xl font-bold text-pink-600">
+                      {currentCustomer?.name || `${currentCustomer?.first_name || ''} ${currentCustomer?.last_name || ''}`.trim() || 'Kunde'} 
+                    </div>
+                    
+                    {/* Company Name */}
+                    {currentCustomer?.company_name && (
+                      <div className="text-sm font-medium text-blue-600">
+                        🏢 {currentCustomer.company_name}
+                      </div>
+                    )}
+                    
+                    <div className="text-sm text-gray-600">
+                      #{getCustomerNumber()}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      {currentCustomer?.email}
+                    </div>
+                    
+                    {/* Customer Status */}
+                    <div className="flex items-center justify-center space-x-2 bg-gray-50 rounded-lg py-3 px-4">
+                      <div className="text-center">
+                        <div className="text-2xl mb-1">
+                          {(() => {
+                            const status = currentCustomer?.status || 'Starter';
+                            switch(status) {
+                              case 'Starter': return '🥉';
+                              case 'Business': return '💼';
+                              case 'Gold': return '🥇';
+                              case 'Platinum': return '💎';
+                              default: return '🏆';
+                            }
+                          })()}
+                        </div>
+                        <div className="text-sm font-semibold text-gray-800">
+                          {currentCustomer?.status || 'Starter'}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          Status
+                        </div>
+                      </div>
+                      
+                      {/* Member Since */}
+                      <div className="border-l border-gray-300 pl-4">
+                        <div className="text-2xl mb-1">
+                          📅
+                        </div>
+                        <div className="text-sm font-semibold text-gray-800">
+                          {currentCustomer?.member_since 
+                            ? new Date(currentCustomer.member_since).toLocaleDateString('de-DE', {
+                                year: 'numeric',
+                                month: 'short'
+                              })
+                            : 'Neu'
+                          }
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          Mitglied seit
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Profile Image Upload */}
+                  <div className="flex justify-center space-x-3">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          const customerNumber = currentCustomer?.customer_number || localStorage.getItem('customerNumber') || '10299';
+                          console.log('Uploading for customer:', customerNumber);
+                          uploadProfileImage(customerNumber, e.target.files[0]);
+                        }
+                      }}
+                      className="hidden"
+                      id="profile-modal-upload"
+                    />
+                    <label
+                      htmlFor="profile-modal-upload"
+                      className="cursor-pointer bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+                    >
+                      📷 {t('customer.profile.uploadImage')}
+                    </label>
+                    {currentCustomer?.profile_image && (
+                      <button
+                        onClick={() => {
+                          const customerNumber = currentCustomer?.customer_number || localStorage.getItem('customerNumber') || '10299';
+                          console.log('Deleting for customer:', customerNumber);
+                          deleteProfileImage(customerNumber);
+                        }}
+                        className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+                      >
+                        🗑️ {t('customer.profile.deleteImage')}
+                      </button>
+                    )}
+                  </div>
+                  
+                  {/* Notifications Toggle */}
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <span>🔔</span>
+                      <span className="text-sm font-medium text-gray-700">
+                        {t('customer.profile.notifications')}
+                      </span>
+                    </div>
+                    <button
+                      onClick={toggleNotifications}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 ${
+                        notificationsEnabled ? 'bg-pink-600' : 'bg-gray-200'
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          notificationsEnabled ? 'translate-x-6' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+                  
+                  {/* Language Selector - MOVED FROM HEADER */}
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center space-x-2">
+                      <span>🌐</span>
+                      <span className="text-sm font-medium text-gray-700">
+                        Sprache / Language
+                      </span>
+                    </div>
+                    <select
+                      value={i18n.language}
+                      onChange={(e) => i18n.changeLanguage(e.target.value)}
+                      className="bg-white border border-gray-300 rounded px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500"
+                    >
+                      <option value="de">🇩🇪 Deutsch</option>
+                      <option value="en">🇬🇧 English</option>
+                      <option value="tr">🇹🇷 Türkçe</option>
+                      <option value="fr">🇫🇷 Français</option>
+                    </select>
+                  </div>
+                  
+                  {/* Close Button */}
+                  <div className="grid grid-cols-1 gap-3 pt-4">
+                    <Button 
+                      onClick={() => setShowProfileModal(false)}
+                      className="w-full bg-gray-500 hover:bg-gray-600 text-white"
+                    >
+                      {t('common.close')}
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
+          
+          {/* Video Stream Area - COMPLETELY REMOVED */}
+          {/* SimpleLiveStream and placeholder removed - user requested complete removal */}
+
+          {/* Order Section - Only for Customers - MOVED UP */}
+          {selectedProduct && !isAdminView && (
+            <div className="space-y-4">
+              {/* Order Form */}
+              <Card className="max-w-sm mx-auto">
+                <CardContent className="p-3">
+                <div className="text-center space-y-3">
+                  {/* Größe, Händlerpreis und Menge in einer Zeile */}
+                  <div className="flex justify-between items-center">
+                    <div className="text-left">
+                      <div className="text-xs text-gray-600">{t('orders.size')}</div>
+                      <div className="font-bold text-pink-600 text-lg">{selectedSize}</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xs text-gray-600">Händlerpreis</div>
+                      <div className="font-bold text-pink-600 text-lg">
+                        {selectedPrice.toFixed(2)} €
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xs text-gray-600">Menge</div>
+                      <div className="flex items-center justify-center space-x-2">
+                        <Button 
+                          onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                          variant="outline"
+                          className="h-7 w-7 p-0"
+                        >
+                          -
+                        </Button>
+                        <span className="font-medium text-sm w-8 text-center">{quantity}</span>
+                        <Button 
+                          onClick={() => setQuantity(quantity + 1)}
+                          variant="outline"
+                          className="h-7 w-7 p-0"
+                        >
+                          +
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  <Button 
+                    onClick={placeOrder}
+                    className="w-full bg-pink-500 hover:bg-pink-600 text-white py-2 text-sm"
+                  >
+                    🛒 {t.order}
+                  </Button>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Alle Preise netto, zzgl. Versand*
+                  </p>
+                </div>
+              </CardContent>
+              </Card>
+
+              {/* Last Order Block + Top 3 Käufer - Combined */}
+              <Card className="max-w-sm mx-auto">
+                <CardContent className="p-3">
+                  <div className="space-y-4">
+                    {/* Deine letzte Bestellung - auf/zuklappbar */}
+                    <div className="space-y-2">
+                      <button
+                        onClick={() => setShowLastOrder(!showLastOrder)}
+                        className="w-full flex items-center justify-between p-2 bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 rounded-lg border border-blue-200 transition-all duration-300"
+                      >
+                        <h3 className="font-semibold text-blue-600 text-sm flex items-center">
+                          📦 Deine letzte Bestellung
+                        </h3>
+                        <div className="text-blue-400">
+                          {showLastOrder ? '▼' : '▶'}
+                        </div>
+                      </button>
+
+                      {showLastOrder && (
+                        <div className="space-y-2">
+                          {loadingLastOrder ? (
+                            <div className="text-center py-2">
+                              <div className="text-xs text-gray-600">Lädt...</div>
+                            </div>
+                          ) : customerLastOrder ? (
+                            <div className="bg-white rounded-lg p-2 border-l-4 border-pink-500 shadow-sm hover:shadow-md transition-shadow">
+                              {/* Exakt gleiche Formatierung wie Bestellungen-Liste */}
+                              <div className="flex justify-between items-center overflow-hidden">
+                                <div className="font-medium text-gray-800 flex-1 min-w-0 whitespace-nowrap overflow-hidden text-ellipsis">
+                                  {currentCustomer?.customer_number || 'N/A'} | {customerLastOrder.size} | {customerLastOrder.quantity} | {(customerLastOrder.price / customerLastOrder.quantity).toFixed(2).replace('.', ',')}€
+                                </div>
+                                <div className="text-xs text-gray-500 ml-2 whitespace-nowrap flex-shrink-0">
+                                  {formatGermanDateTime(customerLastOrder.timestamp || customerLastOrder.formatted_time)}
+                                </div>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="text-center py-4 text-gray-500 bg-gray-50 rounded-xl">
+                              <div className="text-2xl mb-2">📦</div>
+                              <div className="text-xs">
+                                Noch keine Bestellungen<br/>
+                                Bestellen Sie jetzt Ihren ersten Artikel!
+                              </div>
+                              {isAdminView && currentCustomer && (
+                                <div className="text-xs text-blue-500 mt-2">
+                                  Debug: Kunde #{currentCustomer.customer_number}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Trennlinie */}
+                    <div className="border-t border-gray-200"></div>
+
+                    {/* Top 3 Käufer - auf/zuklappbar */}
+                    <div className="space-y-3">
+                      <button
+                        onClick={() => setShowTopBuyers(!showTopBuyers)}
+                        className="w-full flex items-center justify-between p-2 bg-gradient-to-r from-pink-50 to-purple-50 hover:from-pink-100 hover:to-purple-100 rounded-lg border border-pink-200 transition-all duration-300"
+                      >
+                        <h3 className="font-bold text-sm text-pink-600 flex items-center">
+                          🏆 TOP 3 KÄUFER 🏆
+                        </h3>
+                        <div className="text-pink-400">
+                          {showTopBuyers ? '▼' : '▶'}
+                        </div>
+                      </button>
+
+                      {showTopBuyers && (
+                        <div className="space-y-2">
+                          {getTop3Buyers().map((buyer, index) => (
+                            <div key={buyer.customerNumber} className={`p-3 rounded-xl border-2 shadow-sm ${
+                              index === 0 ? 'bg-gradient-to-r from-pink-100 to-pink-200 border-pink-400' :
+                              index === 1 ? 'bg-gradient-to-r from-purple-100 to-purple-200 border-purple-400' :
+                              'bg-gradient-to-r from-indigo-100 to-indigo-200 border-indigo-400'
+                            }`}>
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-3">
+                                  {/* Medal Icon */}
+                                  <div className="text-xl">
+                                    {index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}
+                                  </div>
+                                  
+                                  <div>
+                                    <div className="font-bold text-sm text-gray-800">
+                                      Kunde #{buyer.customerNumber.length > 8 ? 
+                                        buyer.customerNumber.slice(-6) : 
+                                        buyer.customerNumber}
+                                    </div>
+                                    <div className="text-xs text-gray-600">
+                                      {buyer.totalItems} Artikel
+                                    </div>
+                                  </div>
+                                </div>
+                                
+                                {/* Rank Badge */}
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm ${
+                                  index === 0 ? 'bg-pink-500' :
+                                  index === 1 ? 'bg-purple-500' :
+                                  'bg-indigo-500'
+                                }`}>
+                                  #{index + 1}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                          
+                          {getTop3Buyers().length === 0 && (
+                            <div className="text-center py-6 text-gray-500 bg-gray-50 rounded-xl">
+                              <div className="text-3xl mb-2">🚀</div>
+                              <div className="text-xs">
+                                Seien Sie der erste Top-Käufer!<br/>
+                                Bestellen Sie jetzt und sichern Sie sich Platz #1!
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Motivations-Text für aktuellen Kunden */}
+                          {currentCustomer && getTop3Buyers().length > 0 && (
+                            <div className="mt-3 p-3 bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl border border-pink-200">
+                              <div className="text-xs text-center text-pink-700">
+                                {getTop3Buyers().some(buyer => buyer.customerNumber === currentCustomer.customer_number) ? (
+                                  <>🎉 <strong>Sie sind in den Top 3!</strong> Halten Sie Ihre Position! 💪</>
+                                ) : (
+                                  <>⚡ <strong>Jetzt bestellen</strong> und in die Top 3 aufsteigen! 🏆</>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {/* Split View - Chat and Orders */}
+          <div className="space-y-4">
+            <Card>
+              <CardContent className="p-0">
+                {/* Tab Header */}
+                <div className="grid grid-cols-2 bg-gray-100">
+                  <button
+                    onClick={() => setActiveView('orders')}
+                    className={`py-3 px-4 text-center font-medium transition-colors ${
+                      activeView === 'orders'
+                        ? 'bg-pink-500 text-white'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    📋 Bestellungen
+                  </button>
+                  <button
+                    onClick={() => setActiveView('chat')}
+                    className={`py-3 px-4 text-center font-medium transition-colors ${
+                      activeView === 'chat'
+                        ? 'bg-pink-500 text-white'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    }`}
+                  >
+                    💬 Chat
+                  </button>
+                </div>
+
+                {/* Tab Content */}
+                <div className="p-4">
+                  {activeView === 'orders' ? (
+                    /* Orders View */
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-semibold flex items-center">
+                          <ShoppingCart className="mr-2" size={20} />
+                          Bestellungen
+                        </h3>
+                      </div>
+                      
+                      {/* Orders List - Alle Bestellungen von allen Kunden */}
+                      <div className="h-64 overflow-y-auto bg-gray-50 rounded p-3 space-y-2">
+                        {loadingOrders ? (
+                          <div className="text-center text-gray-500 py-8">
+                            Bestellungen werden geladen...
+                          </div>
+                        ) : allOrders.length > 0 ? (
+                          allOrders
+                            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)) // Neueste zuerst
+                            .map((order) => (
+                            <div key={order.id} className="text-sm bg-white rounded-lg p-2 border-l-4 border-pink-500 shadow-sm hover:shadow-md transition-shadow">
+                              <div className="flex justify-between items-center">
+                                <div className="font-medium text-gray-800 flex-1">
+                                  {order.customer_id || 'N/A'} | {order.size || 'N/A'} | {order.quantity || 1} | {((order.price || 0) / (order.quantity || 1)).toFixed(2).replace('.', ',')} €
+                                </div>
+                                <div className="text-xs text-gray-500 ml-2 whitespace-nowrap flex-shrink-0">
+                                  {formatGermanDateTime(order.timestamp)}
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-center text-gray-500 py-8">
+                            Noch keine Bestellungen vorhanden
+                            <div className="text-xs mt-2">
+                              <button 
+                                onClick={loadAllOrders}
+                                className="text-pink-500 hover:text-pink-600 underline"
+                              >
+                                Neu laden
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    /* Chat View */
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <h3 className="font-semibold flex items-center">
+                          <MessageCircle className="mr-2" size={20} />
+                          {t.welcomeMessage}
+                        </h3>
+                      </div>
+
+                      {/* Debug-Panel entfernt */}
+
+                      {/* Gepinnte Nachrichten */}
+                      {pinnedMessages.length > 0 && (
+                        <div className="bg-yellow-50 border-2 border-yellow-300 rounded-lg p-3 mb-3">
+                          <div className="flex items-center mb-2">
+                            <span className="text-yellow-600 font-semibold text-sm">📌 GEPINNTE NACHRICHTEN</span>
+                          </div>
+                          <div className="space-y-2">
+                            {pinnedMessages.map((msg) => (
+                              <div key={`pinned-${msg.id}`} className="bg-yellow-100 rounded p-2 border-l-4 border-yellow-500">
+                                <div className="flex items-start justify-between">
+                                  <div className="flex-1">
+                                    <div className="font-medium text-yellow-800 text-sm">
+                                      {formatMessage(msg.message)}
+                                    </div>
+                                    <div className="text-xs text-yellow-600 mt-1">
+                                      📍 Gepinnt • {formatGermanTime(msg.timestamp || Date.now())}
+                                    </div>
+                                  </div>
+                                  {isAdminView && (
+                                    <button
+                                      onClick={() => unpinMessage(msg.id)}
+                                      className="ml-2 text-yellow-600 hover:text-yellow-800 text-xs"
+                                      title="Nachricht entpinnen"
+                                    >
+                                      📌❌
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Chat Messages */}
+                      <div 
+                        ref={chatRef}
+                        className="h-64 overflow-y-auto bg-gray-50 rounded p-3 space-y-2"
+                      >
+                        {chatMessages
+                          .filter(msg => !msg.message.includes('Bestellung'))
+                          .map((msg) => {
+                            // Clean up message format - remove redundant "Chat 10299 I" part
+                            let cleanMessage = msg.message;
+                            if (msg.username !== 'System' && msg.username !== 'Admin') {
+                              // Remove "Chat XXXX I " from the beginning of user messages
+                              cleanMessage = cleanMessage.replace(/^Chat \d+ I\s*/, '');
+                            }
+                            
+                            return (
+                            <div key={msg.id} className={`text-sm ${isPinned(msg.id) ? 'opacity-60' : ''} py-1`}>
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                  {msg.username === 'System' ? (
+                                    <span className="text-gray-600 font-medium">
+                                      {formatMessage(msg.message)}
+                                    </span>
+                                  ) : msg.username === 'Admin' ? (
+                                    <div>
+                                      <span className="font-bold text-red-600">
+                                        👑 Admin {msg.emoji && <span className="ml-1">{msg.emoji}</span>}
+                                      </span>
+                                      {msg.message && (
+                                        <span className="ml-2 text-gray-600">{msg.message}</span>
+                                      )}
+                                    </div>
+                                  ) : (
+                                    <div>
+                                      <span className="font-medium text-blue-600">
+                                        #{extractCustomerNumber(msg.username)} {msg.emoji && <span className="ml-1">{msg.emoji}</span>}
+                                      </span>
+                                      {cleanMessage && (
+                                        <span className="ml-2 text-gray-600">{cleanMessage}</span>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                                
+                                {/* Pin-Button für Admins */}
+                                {isAdminView && (
+                                  <div className="ml-2">
+                                    {!isPinned(msg.id) ? (
+                                      <button
+                                        onClick={() => pinMessage(msg.id)}
+                                        className="text-gray-400 hover:text-yellow-600 text-xs px-1"
+                                        title="Nachricht pinnen"
+                                      >
+                                        📌
+                                      </button>
+                                    ) : (
+                                      <button
+                                        onClick={() => unpinMessage(msg.id)}
+                                        className="text-yellow-600 hover:text-red-600 text-xs px-1"
+                                        title="Nachricht entpinnen"
+                                      >
+                                        📌❌
+                                      </button>
+                                    )}
+                                    {isPinned(msg.id) && <span className="text-yellow-600 text-xs ml-1">📍</span>}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            );
+                          })}
+                        <div ref={chatEndRef} />
+                      </div>
+
 
     </div>
   );
