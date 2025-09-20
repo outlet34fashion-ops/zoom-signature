@@ -7969,6 +7969,37 @@ function App() {
           >
             <div className="sticky top-0 bg-white p-4 border-b">
               <h3 className="text-xl font-bold text-gray-800">Neues Produkt erstellen</h3>
+              
+              {/* PROMINENT ERROR MESSAGE - Directly visible */}
+              {catalogError && (
+                <div 
+                  className="mt-4 bg-red-100 border-l-4 border-red-500 p-4 rounded-r-lg shadow-lg"
+                  style={{ zIndex: '24020', position: 'relative' }}
+                >
+                  <div className="flex items-center">
+                    <div className="flex-shrink-0">
+                      <span className="text-2xl">🚨</span>
+                    </div>
+                    <div className="ml-3">
+                      <h3 className="text-lg font-semibold text-red-800">
+                        Fehler beim Erstellen des Produkts
+                      </h3>
+                      <p className="text-red-700 font-medium">
+                        {catalogError}
+                      </p>
+                    </div>
+                    <div className="ml-auto">
+                      <button
+                        onClick={() => setCatalogError('')}
+                        className="text-red-500 hover:text-red-700 text-xl font-bold"
+                        style={{ zIndex: '24021', position: 'relative' }}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             <div className="p-6 space-y-4">
               {/* Media Upload Section - WhatsApp Style */}
