@@ -8490,6 +8490,7 @@ function App() {
                   setCatalogError('');
                 }}
                 className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors duration-200"
+                style={{ zIndex: '25003', position: 'relative', pointerEvents: 'auto' }}
               >
                 Abbrechen
               </button>
