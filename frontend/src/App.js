@@ -8521,11 +8521,14 @@ function App() {
                     name: '',
                     description: '',
                     material: '',
-                    category_id: '',
+                    material_properties: [],
+                    main_category_id: '',
+                    sub_category_id: '',
                     price: 0,
                     sizes: [],
                     colors: [],
                     image_url: '',
+                    additional_images: [],
                     stock_quantity: null
                   });
                   setProductMediaFiles([]);
