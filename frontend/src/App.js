@@ -9030,7 +9030,7 @@ function App() {
         </div>
       )}
       
-      </div> {/* Close main app container */}
+      </div>
       
       {/* Simple Subcategory Creation Modal */}
       {showSimpleSubcategoryModal && (
