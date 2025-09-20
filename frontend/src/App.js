@@ -8332,12 +8332,34 @@ function App() {
                 {/* Material Selection Button */}
                 <button
                   type="button"
-                  onClick={() => setShowMaterialModal(true)}
-                  className="w-full bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg"
+                  onClick={() => {
+                    setShowMaterialModal(true);
+                    // Clear material error when opening modal
+                    if (validationErrors.material) {
+                      const newErrors = { ...validationErrors };
+                      delete newErrors.material;
+                      setValidationErrors(newErrors);
+                    }
+                  }}
+                  className={`w-full px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg ${
+                    validationErrors.material 
+                      ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 border-2 border-red-300'
+                      : 'bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700'
+                  } text-white`}
                 >
                   <span className="text-2xl">🧵</span>
                   <span className="font-medium">Material-Übersicht öffnen {newProductData.material ? `(${newProductData.material})` : '(Kein Material gewählt)'}</span>
                 </button>
+
+                {/* Validation Error Message for Material */}
+                {validationErrors.material && (
+                  <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+                    <p className="text-red-700 text-sm font-medium flex items-center space-x-2">
+                      <span>⚠️</span>
+                      <span>{validationErrors.material}</span>
+                    </p>
+                  </div>
+                )}
                 
                 {/* Selected Material Display */}
                 {newProductData.material && (
