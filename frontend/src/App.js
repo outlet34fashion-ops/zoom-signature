@@ -1132,7 +1132,7 @@ function App() {
       if (Object.keys(errors).length > 0) {
         setValidationErrors(errors);
         
-        // Create user-friendly error message for immediate alert
+        // Create user-friendly error message
         const missingFields = [];
         if (errors.name) missingFields.push('Produktname');
         if (errors.main_category_id) missingFields.push('Hauptkategorie');
@@ -1140,10 +1140,8 @@ function App() {
         if (errors.colors) missingFields.push('Farben');
         if (errors.material) missingFields.push('Material-Übersicht');
         
-        const errorMessage = `PFLICHTFELDER FEHLEN:\n\n${missingFields.join('\n• ')}`;
-        
-        // Show prominent alert immediately
-        alert(`🚨 FEHLER BEIM ERSTELLEN\n\n${errorMessage}\n\nBitte füllen Sie alle markierten Pflichtfelder aus.`);
+        const errorMessage = `Folgende Pflichtfelder sind nicht ausgefüllt: ${missingFields.join(', ')}`;
+        alert(`❌ ${errorMessage}`);
         
         setCreatingProduct(false);
         return;
@@ -1175,22 +1173,10 @@ function App() {
       setCustomColor('');
       setSubCategories([]);
       setShowCreateProduct(false);
-      setValidationErrors({}); // Clear validation errors
       
-      // Reload products and show them immediately
-      console.log('Reloading catalog products...');
+      // Reload products
       await loadCatalogProducts();
-      
-      // Force refresh of all product-related data
-      await loadCategories();
-      
-      // Show catalog immediately to display newly created products
-      setShowCatalog(true);
-      setSelectedCategory(null); // Show all products
-      
-      console.log('Product created and catalog refreshed. Total products now:', catalogProducts.length);
-      
-      alert('✅ Produkt erfolgreich erstellt!\n\nDas neue Produkt ist jetzt in der Produktliste sichtbar. Klicken Sie auf "Produkte" um alle Produkte anzuzeigen.');
+      alert('✅ Produkt erfolgreich erstellt!');
       
     } catch (error) {
       console.error('Error creating product:', error);
@@ -7966,56 +7952,12 @@ function App() {
 
       {/* Create Product Modal (Admin) */}
       {showCreateProduct && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4"
-          style={{zIndex: 24000}}
-        >
-          <div 
-            className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col"
-            style={{ zIndex: '24001', position: 'relative' }}
-          >
-            {/* FIXED HEADER WITH ERROR MESSAGE */}
-            <div className="bg-white p-4 border-b flex-shrink-0">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white p-4 border-b">
               <h3 className="text-xl font-bold text-gray-800">Neues Produkt erstellen</h3>
-              
-              {/* PROMINENT ERROR MESSAGE - Always visible at top */}
-              {catalogError && (
-                <div 
-                  className="mt-3 bg-red-100 border-l-4 border-red-500 p-3 rounded-r-lg shadow-md animate-pulse"
-                  style={{ zIndex: '24020', position: 'relative' }}
-                >
-                  <div className="flex items-start">
-                    <div className="flex-shrink-0">
-                      <span className="text-xl">🚨</span>
-                    </div>
-                    <div className="ml-2 flex-grow">
-                      <h4 className="text-sm font-bold text-red-800">
-                        FEHLER
-                      </h4>
-                      <p className="text-sm text-red-700 mt-1">
-                        {catalogError}
-                      </p>
-                    </div>
-                    <div className="flex-shrink-0 ml-2">
-                      <button
-                        onClick={() => setCatalogError('')}
-                        className="text-red-500 hover:text-red-700 text-lg font-bold p-1"
-                        style={{ zIndex: '24021', position: 'relative' }}
-                        title="Fehlermeldung schließen"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
-
-            {/* SCROLLABLE CONTENT */}
-            <div className="overflow-y-auto flex-grow"
-                 style={{ maxHeight: 'calc(90vh - 120px)' }}
-            >
-              <div className="p-6 space-y-4">
+            <div className="p-6 space-y-4">
               {/* Media Upload Section - WhatsApp Style */}
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50">
                 <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
@@ -8296,34 +8238,12 @@ function App() {
                 {/* Size Selection Button */}
                 <button
                   type="button"
-                  onClick={() => {
-                    setShowSizeModal(true);
-                    // Clear sizes error when opening modal
-                    if (validationErrors.sizes) {
-                      const newErrors = { ...validationErrors };
-                      delete newErrors.sizes;
-                      setValidationErrors(newErrors);
-                    }
-                  }}
-                  className={`w-full px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg ${
-                    validationErrors.sizes 
-                      ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 border-2 border-red-300'
-                      : 'bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700'
-                  } text-white`}
+                  onClick={() => setShowSizeModal(true)}
+                  className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg"
                 >
                   <span className="text-2xl">📏</span>
-                  <span className="font-medium">Größen-Übersicht öffnen ({(newProductData.sizes || []).length} Größen gewählt)</span>
+                  <span className="font-medium">Größen-Übersicht öffnen ({newProductData.sizes.length} Größen gewählt)</span>
                 </button>
-
-                {/* Validation Error Message for Sizes */}
-                {validationErrors.sizes && (
-                  <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-red-700 text-sm font-medium flex items-center space-x-2">
-                      <span>⚠️</span>
-                      <span>{validationErrors.sizes}</span>
-                    </p>
-                  </div>
-                )}
                 
                 {/* Selected Sizes Display */}
                 {newProductData.sizes.length > 0 && (
@@ -8412,34 +8332,12 @@ function App() {
                 {/* Material Selection Button */}
                 <button
                   type="button"
-                  onClick={() => {
-                    setShowMaterialModal(true);
-                    // Clear material error when opening modal
-                    if (validationErrors.material) {
-                      const newErrors = { ...validationErrors };
-                      delete newErrors.material;
-                      setValidationErrors(newErrors);
-                    }
-                  }}
-                  className={`w-full px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg ${
-                    validationErrors.material 
-                      ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 border-2 border-red-300'
-                      : 'bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700'
-                  } text-white`}
+                  onClick={() => setShowMaterialModal(true)}
+                  className="w-full bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white px-4 py-3 rounded-lg transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg"
                 >
                   <span className="text-2xl">🧵</span>
                   <span className="font-medium">Material-Übersicht öffnen {newProductData.material ? `(${newProductData.material})` : '(Kein Material gewählt)'}</span>
                 </button>
-
-                {/* Validation Error Message for Material */}
-                {validationErrors.material && (
-                  <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-red-700 text-sm font-medium flex items-center space-x-2">
-                      <span>⚠️</span>
-                      <span>{validationErrors.material}</span>
-                    </p>
-                  </div>
-                )}
                 
                 {/* Selected Material Display */}
                 {newProductData.material && (
@@ -8510,27 +8408,30 @@ function App() {
                   </div>
                 )}
               </div>
+              
+
+              
+              {catalogError && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                  <p className="text-red-800 text-sm">{catalogError}</p>
+                </div>
+              )}
             </div>
             
-            {/* FIXED FOOTER BUTTONS */}
-            <div className="bg-white p-4 border-t flex justify-end space-x-3 flex-shrink-0" style={{ zIndex: '24002' }}>
+            <div className="sticky bottom-0 bg-white p-4 border-t flex justify-end space-x-3">
               <button
                 onClick={() => {
                   setShowCreateProduct(false);
-                  setValidationErrors({}); // Clear validation errors when closing
                   setNewProductData({
                     article_number: '',
                     name: '',
                     description: '',
                     material: '',
-                    material_properties: [],
-                    main_category_id: '',
-                    sub_category_id: '',
+                    category_id: '',
                     price: 0,
                     sizes: [],
                     colors: [],
                     image_url: '',
-                    additional_images: [],
                     stock_quantity: null
                   });
                   setProductMediaFiles([]);
@@ -8538,7 +8439,6 @@ function App() {
                   setCatalogError('');
                 }}
                 className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors duration-200"
-                style={{ zIndex: '24003', position: 'relative', pointerEvents: 'auto' }}
               >
                 Abbrechen
               </button>
@@ -8546,7 +8446,6 @@ function App() {
                 onClick={createProduct}
                 disabled={creatingProduct || !newProductData.name.trim() || !newProductData.main_category_id}
                 className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-6 py-2 rounded-lg transition-colors duration-200"
-                style={{ zIndex: '24003', position: 'relative', pointerEvents: 'auto' }}
               >
                 {creatingProduct ? 'Erstelle...' : 'Erstellen'}
               </button>
@@ -8757,7 +8656,6 @@ function App() {
                   setCatalogError('');
                 }}
                 className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors duration-200"
-                style={{ zIndex: '24003', position: 'relative', pointerEvents: 'auto' }}
               >
                 Abbrechen
               </button>
@@ -9032,10 +8930,18 @@ function App() {
         </div>
       )}
       
+      </div> {/* Close the padding div */}
+      
       {/* Simple Subcategory Creation Modal */}
       {showSimpleSubcategoryModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4" style={{zIndex: 21000}}>
-          <div className="bg-white rounded-lg p-6 w-full max-w-md" style={{zIndex: 21001, position: 'relative'}}>
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4"
+          style={{ zIndex: '21000' }}
+        >
+          <div 
+            className="bg-white rounded-lg p-6 w-full max-w-md"
+            style={{ zIndex: '21001', position: 'relative' }}
+          >
             <h2 className="text-xl font-bold mb-4 text-gray-800">Neue Unterkategorie erstellen</h2>
             
             <div className="mb-4">
@@ -9046,7 +8952,7 @@ function App() {
                 value={selectedParentCategory}
                 onChange={(e) => setSelectedParentCategory(e.target.value)}
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                style={{zIndex: 21002, position: 'relative'}}
+                style={{ zIndex: '21002', position: 'relative' }}
               >
                 <option value="">-- Hauptkategorie wählen --</option>
                 {categories.filter(cat => cat.is_main_category).map(category => (
@@ -9067,7 +8973,7 @@ function App() {
                 onChange={(e) => setSimpleSubcategoryName(e.target.value)}
                 placeholder="Z.B. T-Shirts, Blusen, Jeans..."
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                style={{zIndex: 21002, position: 'relative'}}
+                style={{ zIndex: '21002', position: 'relative' }}
                 onKeyPress={(e) => {
                   if (e.key === 'Enter' && simpleSubcategoryName.trim() && selectedParentCategory && !simpleSubcategoryLoading) {
                     createSubcategorySimple();
@@ -9086,7 +8992,7 @@ function App() {
                 }}
                 className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium"
                 disabled={simpleSubcategoryLoading}
-                style={{zIndex: 21003, position: 'relative', pointerEvents: 'auto'}}
+                style={{ zIndex: '21003', position: 'relative', pointerEvents: 'auto' }}
               >
                 Abbrechen
               </button>
@@ -9103,7 +9009,7 @@ function App() {
                     ? 'bg-gray-300 cursor-not-allowed text-gray-500'
                     : 'bg-orange-600 hover:bg-orange-700 text-white'
                 }`}
-                style={{zIndex: 21003, position: 'relative', pointerEvents: 'auto'}}
+                style={{ zIndex: '21003', position: 'relative', pointerEvents: 'auto' }}
               >
                 {simpleSubcategoryLoading ? 'Erstelle...' : 'Erstellen'}
               </button>
@@ -9114,8 +9020,14 @@ function App() {
 
       {/* Simple Category Creation Modal */}
       {showSimpleCategoryModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4" style={{zIndex: 20000}}>
-          <div className="bg-white rounded-lg p-6 w-full max-w-md" style={{zIndex: 20001, position: 'relative'}}>
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4"
+          style={{ zIndex: '20000' }}
+        >
+          <div 
+            className="bg-white rounded-lg p-6 w-full max-w-md"
+            style={{ zIndex: '20001', position: 'relative' }}
+          >
             <h2 className="text-xl font-bold mb-4 text-gray-800">Neue Kategorie erstellen</h2>
             
             <div className="mb-4">
@@ -9128,7 +9040,7 @@ function App() {
                 onChange={(e) => setSimpleCategoryName(e.target.value)}
                 placeholder="Z.B. Oberteile, Hosen, Jacken..."
                 className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                style={{zIndex: 20002, position: 'relative'}}
+                style={{ zIndex: '20002', position: 'relative' }}
                 onKeyPress={(e) => {
                   if (e.key === 'Enter' && simpleCategoryName.trim() && !simpleCategoryLoading) {
                     createCategorySimple();
@@ -9146,7 +9058,7 @@ function App() {
                 }}
                 className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium"
                 disabled={simpleCategoryLoading}
-                style={{zIndex: 20003, position: 'relative', pointerEvents: 'auto'}}
+                style={{ zIndex: '20003', position: 'relative', pointerEvents: 'auto' }}
               >
                 Abbrechen
               </button>
@@ -9158,8 +9070,12 @@ function App() {
                   createCategorySimple();
                 }}
                 disabled={!simpleCategoryName.trim() || simpleCategoryLoading}
-                className="px-6 py-2 rounded-lg font-semibold transition-colors bg-purple-600 hover:bg-purple-700 text-white disabled:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-500"
-                style={{zIndex: 20003, position: 'relative', pointerEvents: 'auto'}}
+                className={`px-6 py-2 rounded-lg font-semibold transition-colors ${
+                  !simpleCategoryName.trim() || simpleCategoryLoading
+                    ? 'bg-gray-300 cursor-not-allowed text-gray-500'
+                    : 'bg-purple-600 hover:bg-purple-700 text-white'
+                }`}
+                style={{ zIndex: '20003', position: 'relative', pointerEvents: 'auto' }}
               >
                 {simpleCategoryLoading ? 'Erstelle...' : 'Erstellen'}
               </button>
