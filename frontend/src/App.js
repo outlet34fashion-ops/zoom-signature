@@ -8156,7 +8156,11 @@ function App() {
                         setSubCategories([]);
                       }
                     }}
-                    className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className={`w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 ${
+                      validationErrors.main_category_id 
+                        ? 'border-red-500 bg-red-50 focus:ring-red-500' 
+                        : 'border-gray-300 focus:ring-green-500'
+                    }`}
                     required
                   >
                     <option value="">Hauptkategorie auswählen</option>
@@ -8166,6 +8170,12 @@ function App() {
                       </option>
                     ))}
                   </select>
+                  {validationErrors.main_category_id && (
+                    <p className="text-red-600 text-sm mt-1 flex items-center">
+                      <span className="mr-1">⚠️</span>
+                      {validationErrors.main_category_id}
+                    </p>
+                  )}
                 </div>
                 
                 <div>
