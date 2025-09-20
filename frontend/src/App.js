@@ -1175,15 +1175,20 @@ function App() {
       setShowCreateProduct(false);
       setValidationErrors({}); // Clear validation errors
       
-      // Reload products and show them
+      // Reload products and show them immediately
+      console.log('Reloading catalog products...');
       await loadCatalogProducts();
       
-      // Show catalog to display newly created products
+      // Force refresh of all product-related data
+      await loadCategories();
+      
+      // Show catalog immediately to display newly created products
       setShowCatalog(true);
+      setSelectedCategory(null); // Show all products
       
-      alert('✅ Produkt erfolgreich erstellt! Das neue Produkt wird jetzt in der Produktliste angezeigt.');
+      console.log('Product created and catalog refreshed. Total products now:', catalogProducts.length);
       
-      console.log('Product created successfully and catalog refreshed');
+      alert('✅ Produkt erfolgreich erstellt!\n\nDas neue Produkt ist jetzt in der Produktliste sichtbar. Klicken Sie auf "Produkte" um alle Produkte anzuzeigen.');
       
     } catch (error) {
       console.error('Error creating product:', error);
