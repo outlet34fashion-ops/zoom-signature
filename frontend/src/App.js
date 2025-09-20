@@ -3498,6 +3498,506 @@ function App() {
                             </div>
                           </div>
                         )}
+                        
+                        <button 
+                          onClick={() => {
+                            localStorage.removeItem('customerNumber');
+                            setCurrentCustomer(null);
+                            setCustomerStatus(null);
+                          }}
+                          className="w-full bg-white/10 hover:bg-white/20 border border-white/30 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300 hover:scale-105"
+                        >
+                          Andere Kundennummer verwenden
+                        </button>
+                      </div>
+                    </div>
+                  ) : customerStatus === 'blocked' ? (
+                    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-red-500/30 shadow-2xl">
+                      <div className="text-center space-y-4">
+                        <div className="w-16 h-16 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center mx-auto">
+                          <span className="text-2xl">🚫</span>
+                        </div>
+                        <h2 className="text-xl font-bold text-white">
+                          Konto gesperrt
+                        </h2>
+                        <p className="text-white/70 text-sm leading-relaxed">
+                          Ihr Kundenkonto wurde gesperrt. Bitte kontaktieren Sie unseren Support.
+                        </p>
+                        
+                        <button 
+                          onClick={() => {
+                            localStorage.removeItem('customerNumber');
+                            setCurrentCustomer(null);
+                            setCustomerStatus(null);
+                          }}
+                          className="w-full bg-white/10 hover:bg-white/20 border border-white/30 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300 hover:scale-105"
+                        >
+                          Andere Kundennummer verwenden
+                        </button>
+                      </div>
+                    </div>
+                  ) : showCustomerLogin ? (
+                    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl">
+                      <div className="text-center space-y-6">
+                        <div className="space-y-2">
+                          <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto">
+                            <span className="text-2xl">🔑</span>
+                          </div>
+                          <h2 className="text-xl font-bold text-white">Kundenanmeldung</h2>
+                          <p className="text-white/70 text-sm">
+                            Melden Sie sich mit Ihrer Kundennummer an
+                          </p>
+                        </div>
+                        
+                        {customerLoginError && (
+                          <div className="bg-red-500/20 border border-red-500/30 rounded-xl p-3">
+                            <p className="text-red-200 text-sm">{customerLoginError}</p>
+                          </div>
+                        )}
+                        
+                        <div className="space-y-4">
+                          <div className="text-left">
+                            <label className="block text-white/80 text-sm font-medium mb-2">
+                              Kundennummer
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="Ihre Kundennummer"
+                              value={customerLoginData.customer_number}
+                              onChange={(e) => setCustomerLoginData(prev => ({
+                                ...prev,
+                                customer_number: e.target.value
+                              }))}
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  customerLogin();
+                                }
+                              }}
+                              className="w-full bg-white/10 border border-white/30 text-white placeholder-white/50 py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-300"
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="flex space-x-3">
+                          <button 
+                            onClick={() => {
+                              setShowCustomerLogin(false);
+                              setCustomerLoginError('');
+                            }}
+                            className="flex-1 bg-white/10 hover:bg-white/20 border border-white/30 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300"
+                          >
+                            Zurück
+                          </button>
+                          <button 
+                            onClick={customerLogin}
+                            className="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300 hover:scale-105 shadow-lg"
+                          >
+                            Anmelden
+                          </button>
+                        </div>
+                        
+                        <div className="space-y-4 pt-4 border-t border-white/20">
+                          <p className="text-white/60 text-xs">
+                            Noch nicht registriert?
+                          </p>
+                          <button 
+                            onClick={() => {
+                              setShowCustomerLogin(false);
+                              setShowRegistration(true);
+                            }}
+                            className="w-full bg-white/5 hover:bg-white/10 border border-white/30 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300"
+                          >
+                            Jetzt registrieren
+                          </button>
+                          
+                          {/* WhatsApp Service Contact */}
+                          <div className="bg-white/5 rounded-xl p-3">
+                            <a 
+                              href="https://wa.me/4917621105848?text=Hallo%20OUTLET34%20Team,%20ich%20habe%20Probleme%20bei%20der%20Anmeldung..." 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="flex items-center justify-center space-x-3 bg-green-500 hover:bg-green-600 text-white font-medium py-3 px-4 rounded-xl transition-all duration-300 hover:scale-105 w-full"
+                            >
+                              <img 
+                                src="/images/whatsapp-logo-dark.png" 
+                                alt="WhatsApp Logo" 
+                                className="w-5 h-5"
+                              />
+                              <span className="font-semibold">{t('navigation.service')}</span>
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : showAdminLogin ? (
+                    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl">
+                      <div className="text-center space-y-6">
+                        <div className="space-y-2">
+                          <div className="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-600 rounded-full flex items-center justify-center mx-auto">
+                            <span className="text-2xl">🔐</span>
+                          </div>
+                          <h2 className="text-xl font-bold text-white">Admin-Zugang</h2>
+                          <p className="text-white/70 text-sm">
+                            Sicherer Bereich für Administratoren
+                          </p>
+                        </div>
+                        
+                        {adminLoginError && (
+                          <div className="bg-red-500/20 border border-red-500/30 rounded-xl p-3">
+                            <p className="text-red-200 text-sm">{adminLoginError}</p>
+                          </div>
+                        )}
+                        
+                        <div className="space-y-4">
+                          <div className="text-left">
+                            <label className="block text-white/80 text-sm font-medium mb-2">
+                              Admin PIN
+                            </label>
+                            <input
+                              type="password"
+                              placeholder="••••"
+                              value={adminPin}
+                              onChange={(e) => setAdminPin(e.target.value)}
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  adminLogin();
+                                }
+                              }}
+                              className="w-full bg-white/10 border border-white/30 text-white placeholder-white/50 py-3 px-4 rounded-xl text-center text-2xl tracking-widest focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-300"
+                              maxLength="4"
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="flex space-x-3">
+                          <button 
+                            onClick={() => {
+                              setShowAdminLogin(false);
+                              setAdminLoginError('');
+                              setAdminPin('');
+                            }}
+                            className="flex-1 bg-white/10 hover:bg-white/20 border border-white/30 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300"
+                          >
+                            Zurück
+                          </button>
+                          <button 
+                            onClick={adminLogin}
+                            disabled={!adminPin}
+                            className="flex-1 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300 hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                          >
+                            Anmelden
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : showRegistration ? (
+                    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl">
+                      <div className="text-center space-y-6">
+                        <div className="space-y-2">
+                          <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-blue-600 rounded-full flex items-center justify-center mx-auto">
+                            <span className="text-2xl">📝</span>
+                          </div>
+                          <h2 className="text-xl font-bold text-white">Registrierung</h2>
+                          <p className="text-white/70 text-sm">
+                            Erstellen Sie Ihr kostenloses Kundenkonto
+                          </p>
+                        </div>
+                        
+                        {registrationError && (
+                          <div className="bg-red-500/20 border border-red-500/30 rounded-xl p-3">
+                            <p className="text-red-200 text-sm">{registrationError}</p>
+                          </div>
+                        )}
+                        
+                        <div className="space-y-4 text-left">
+                          <div>
+                            <label className="block text-white/80 text-sm font-medium mb-2">
+                              Kundennummer
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="Ihre Kundennummer"
+                              value={registrationData.customer_number}
+                              onChange={(e) => setRegistrationData(prev => ({
+                                ...prev,
+                                customer_number: e.target.value
+                              }))}
+                              className="w-full bg-white/10 border border-white/30 text-white placeholder-white/50 py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label className="block text-white/80 text-sm font-medium mb-2">
+                              E-Mail
+                            </label>
+                            <input
+                              type="email"
+                              placeholder="ihre@email.de"
+                              value={registrationData.email}
+                              onChange={(e) => setRegistrationData(prev => ({
+                                ...prev,
+                                email: e.target.value
+                              }))}
+                              className="w-full bg-white/10 border border-white/30 text-white placeholder-white/50 py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label className="block text-white/80 text-sm font-medium mb-2">
+                              Name
+                            </label>
+                            <input
+                              type="text"
+                              placeholder="Ihr vollständiger Name"
+                              value={registrationData.name}
+                              onChange={(e) => setRegistrationData(prev => ({
+                                ...prev,
+                                name: e.target.value
+                              }))}
+                              className="w-full bg-white/10 border border-white/30 text-white placeholder-white/50 py-3 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300"
+                            />
+                          </div>
+                        </div>
+                        
+                        <div className="flex space-x-3">
+                          <button 
+                            onClick={() => {
+                              setShowRegistration(false);
+                              setRegistrationError('');
+                            }}
+                            className="flex-1 bg-white/10 hover:bg-white/20 border border-white/30 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300"
+                          >
+                            Zurück
+                          </button>
+                          <button 
+                            onClick={registerCustomer}
+                            disabled={!registrationData.customer_number || !registrationData.email || !registrationData.name}
+                            className="flex-1 bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300 hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                          >
+                            Registrieren
+                          </button>
+                        </div>
+                        
+                        <div className="pt-4 border-t border-white/20">
+                          <p className="text-white/60 text-xs mb-3">
+                            Bereits registriert?
+                          </p>
+                          <button 
+                            onClick={() => {
+                              setShowRegistration(false);
+                              setShowCustomerLogin(true);
+                            }}
+                            className="w-full bg-white/5 hover:bg-white/10 border border-white/30 text-white py-3 px-4 rounded-xl font-medium transition-all duration-300"
+                          >
+                            Jetzt anmelden
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-8">
+                      {/* Registration Call-to-Action Section */}
+                      <div className="text-center space-y-4">
+                        {/* Registration Call-to-Action Button */}
+                        <div className="space-y-3">
+                          <a 
+                            href="https://www.outlet34fashion.com/registrieren" 
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block w-full bg-gradient-to-r from-pink-500/20 to-purple-600/20 hover:from-pink-500/30 hover:to-purple-600/30 border border-pink-400/30 hover:border-pink-400/50 text-white py-4 px-6 rounded-xl font-medium transition-all duration-300 hover:scale-105 text-center backdrop-blur-sm"
+                          >
+                            <div className="space-y-1">
+                              <div className="text-sm font-semibold">
+                                Neu bei OUTLET34?
+                              </div>
+                              <div className="text-xs text-white/70">
+                                Jetzt kostenlos registrieren
+                              </div>
+                            </div>
+                          </a>
+
+                        </div>
+                      </div>
+                      
+                      {/* Action Buttons */}
+                      <div className="space-y-4">
+                        {/* Primary Actions */}
+                        <div className="flex space-x-3">
+                          <button 
+                            onClick={() => setShowRegistration(true)}
+                            className="flex-1 bg-white/10 hover:bg-white/20 border border-white/30 text-white py-4 px-4 rounded-xl font-medium transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2"
+                          >
+                            <span className="text-lg">📝</span>
+                            <span>{t('auth.register')}</span>
+                          </button>
+                          <button 
+                            onClick={() => setShowCustomerLogin(true)}
+                            className="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white py-4 px-4 rounded-xl font-medium transition-all duration-300 hover:scale-105 shadow-lg flex items-center justify-center space-x-2"
+                          >
+                            <span className="text-lg">🔑</span>
+                            <span>{t('auth.login')}</span>
+                          </button>
+                        </div>
+                        
+                        {/* WhatsApp Support - Modern Style */}
+                        <div className="bg-white/5 rounded-xl p-3">
+                          <a 
+                            href="https://wa.me/4917621105848?text=Hallo%20OUTLET34%20Team,%20ich%20habe%20eine%20Frage%20zum%20Live%20Shopping..." 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-center space-x-3 bg-gradient-to-r from-green-500/80 to-emerald-600/80 hover:from-green-500 hover:to-emerald-600 border border-green-400/30 hover:border-green-400/50 text-white font-medium py-4 px-4 rounded-xl transition-all duration-300 hover:scale-105 w-full backdrop-blur-sm"
+                          >
+                            <img 
+                              src="/images/whatsapp-logo-dark.png" 
+                              alt="WhatsApp Logo" 
+                              className="w-6 h-6"
+                            />
+                            <span className="font-semibold">{t('navigation.service')}</span>
+                          </a>
+                        </div>
+                        
+                        {/* Admin Access */}
+                        <button 
+                          onClick={() => setShowAdminLogin(true)}
+                          className="w-full bg-white/5 hover:bg-white/10 border border-white/20 text-white/60 hover:text-white py-3 px-4 rounded-xl font-medium transition-all duration-300 text-sm flex items-center justify-center space-x-2"
+                        >
+                          <span className="text-sm">🔐</span>
+                          <span>{t('auth.adminLogin')}</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            {/* Bottom Gradient */}
+            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-slate-900 to-transparent pointer-events-none"></div>
+          </div>
+        </div>
+      )}
+
+      {/* Live Stream Integration for Customers - MOVED TO TOP */}
+      {isAuthenticated && !isAdminView && !showSimpleStream && (
+        <div className="container mx-auto px-4 py-4">
+          {/* Embedded Live Stream Section */}
+          <div className="bg-gradient-to-br from-purple-600 via-purple-700 to-pink-600 rounded-2xl p-6 mb-6 text-white">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="bg-red-500 px-3 py-1 rounded-full text-sm font-bold animate-pulse">
+                  🔴 LIVE STREAM
+                </div>
+                <div className="text-sm opacity-90">
+                  👥 {Math.floor(Math.random() * 50) + 15} Zuschauer online
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-sm opacity-90">OUTLET34 Fashion Store</div>
+                <div className="text-xs opacity-75">Jetzt live • HD Qualität</div>
+              </div>
+            </div>
+
+            {/* Embedded Live Stream Video - Daily.co Stable Connection */}
+            <div className="bg-black rounded-xl overflow-hidden mb-4" style={{ aspectRatio: '16/9' }}>
+              {/* Daily.co Integration - Stable Low-Latency Streaming */}
+              {streamingActive && dailyToken && dailyRoomUrl ? (
+                <div className="w-full h-full relative">
+                  <DailyVideoCall
+                    roomUrl={dailyRoomUrl}
+                    token={dailyToken}
+                    isAdmin={isAdminAuthenticated}
+                    onLeave={() => {
+                      setStreamingActive(false);
+                      setDailyToken(null);
+                      setDailyRoomUrl(null);
+                    }}
+                  />
+                  
+                  {/* Connection Status Indicator */}
+                  <div className="absolute top-2 right-2 z-10">
+                    <div className={`flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-medium ${
+                      isDailyConnected 
+                        ? 'bg-green-500 text-white' 
+                        : 'bg-yellow-500 text-black'
+                    }`}>
+                      <div className={`w-2 h-2 rounded-full ${
+                        isDailyConnected ? 'bg-white animate-pulse' : 'bg-red-500'
+                      }`}></div>
+                      {isDailyConnected ? 'Live' : 'Verbinde...'}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* ENHANCED: Warten auf Stream - Mit besserer User Experience */
+                <div className="w-full h-full flex items-center justify-center text-white relative">
+                  <div className="text-center space-y-4">
+                    <div className="text-4xl mb-4">📺</div>
+                    <h3 className="text-xl font-bold mb-2">
+                      {isAuthenticated ? 'Live-Stream wird gesucht...' : 'Willkommen bei OUTLET34'}
+                    </h3>
+                    <p className="text-white/70 text-sm max-w-md">
+                      {isAuthenticated 
+                        ? 'Wir suchen nach aktiven Live-Streams. Sobald ein Administrator einen Stream startet, wird er hier angezeigt.'
+                        : 'Melden Sie sich an, um Live-Fashion-Shows zu sehen und exklusive Angebote zu erhalten.'
+                      }
+                    </p>
+                    
+                    {/* ENHANCED: Loading animation when checking for streams */}
+                    <div className="flex items-center justify-center space-x-2 mt-4">
+                      <div className="w-2 h-2 bg-pink-500 rounded-full animate-pulse"></div>
+                      <div className="w-2 h-2 bg-pink-400 rounded-full animate-pulse delay-75"></div>
+                      <div className="w-2 h-2 bg-pink-300 rounded-full animate-pulse delay-150"></div>
+                    </div>
+                    
+                    {/* ENHANCED: Stream status info */}
+                    <div className="text-xs text-white/50 mt-2">
+                      Streaming wird alle 3 Sekunden überprüft
+                    </div>
+                  </div>
+
+                  {/* ENHANCED: Auto-refresh indicator */}
+                  <div className="absolute top-2 left-2">
+                    <div className="flex items-center space-x-1 px-2 py-1 bg-white/10 rounded-full text-xs">
+                      <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-ping"></div>
+                      <span className="text-white/70">Auto-Check</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-bold mb-1">🛍️ Live Shopping Event</h3>
+                <p className="text-sm opacity-90">
+                  Exklusive Fashion Angebote • Live Beratung • Sofort bestellen
+                </p>
+              </div>
+              <button 
+                onClick={() => setShowSimpleStream(true)}
+                className="bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-colors"
+              >
+                💬 Vollbild & Chat
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Main App - Only shown when authenticated */}
+      {(isAuthenticated || isAdminView) && (
+        <>
+        {/* Original Header moved to top as fixed element */}
+
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-6">
+        
+        {/* Admin Dashboard - Organized in Collapsible Blocks */}
+        {isAdminAuthenticated && isAdminView && (
+          <div className="space-y-6">
+            {/* Main Dashboard Header */}
 
     </div>
   );
