@@ -8013,6 +8013,7 @@ function App() {
             <div className="overflow-y-auto flex-grow"
                  style={{ maxHeight: 'calc(90vh - 120px)' }}
             >
+              <div className="p-6 space-y-4">
               {/* Media Upload Section - WhatsApp Style */}
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50">
                 <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
