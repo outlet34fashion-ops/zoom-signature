@@ -710,7 +710,7 @@ class LiveShoppingAPITester:
         """Test if WebSocket endpoint is accessible from production URL"""
         try:
             # Test the production WebSocket URL as specified in review request
-            production_ws_url = "https://modalfix-dev.preview.emergentagent.com/ws"
+            production_ws_url = "https://shop-syntax-fix.preview.emergentagent.com/ws"
             
             # Test HTTP GET to WebSocket endpoint (should return specific status codes)
             response = requests.get(production_ws_url, timeout=10)
@@ -777,7 +777,7 @@ class LiveShoppingAPITester:
             
             # STEP 2: Test WebSocket endpoint accessibility from production URL
             print("  🔌 STEP 2: Testing WebSocket endpoint accessibility...")
-            production_ws_url = "https://modalfix-dev.preview.emergentagent.com/ws"
+            production_ws_url = "https://shop-syntax-fix.preview.emergentagent.com/ws"
             
             try:
                 ws_response = requests.get(production_ws_url, timeout=10)
@@ -10879,7 +10879,7 @@ TIMEZONE BUG ANALYSIS COMPLETE:
             
             # Test CORS headers on category endpoints
             cors_headers = {
-                'Origin': 'https://modalfix-dev.preview.emergentagent.com',
+                'Origin': 'https://shop-syntax-fix.preview.emergentagent.com',
                 'Access-Control-Request-Method': 'POST',
                 'Access-Control-Request-Headers': 'Content-Type'
             }
