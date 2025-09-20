@@ -8468,10 +8468,11 @@ function App() {
               )}
             </div>
             
-            <div className="sticky bottom-0 bg-white p-4 border-t flex justify-end space-x-3">
+            <div className="sticky bottom-0 bg-white p-4 border-t flex justify-end space-x-3" style={{ zIndex: '25002' }}>
               <button
                 onClick={() => {
                   setShowCreateProduct(false);
+                  setValidationErrors({}); // Clear validation errors when closing
                   setNewProductData({
                     article_number: '',
                     name: '',
