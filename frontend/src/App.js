@@ -9032,8 +9032,8 @@ function App() {
         </div>
       )}
       
-      {/* Simple Subcategory Creation Modal - TEMPORARILY DISABLED FOR TESTING */}
-      {false && showSimpleSubcategoryModal && (
+      {/* Simple Subcategory Creation Modal */}
+      {showSimpleSubcategoryModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4" style={{zIndex: 21000}}>
           <div className="bg-white rounded-lg p-6 w-full max-w-md" style={{zIndex: 21001, position: 'relative'}}>
             <h2 className="text-xl font-bold mb-4 text-gray-800">Neue Unterkategorie erstellen</h2>
