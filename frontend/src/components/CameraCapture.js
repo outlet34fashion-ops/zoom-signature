@@ -8,7 +8,7 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [cameraStarted, setCameraStarted] = useState(false);
 
-  // Vereinfachte Kamera-Initialisierung
+  // Vereinfachte Kamera-Initialisierung mit verbesserter Fehlerbehandlung
   const startCamera = async () => {
     console.log('🎥 Starting camera...');
     setIsLoading(true);
@@ -20,7 +20,11 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
         stream.getTracks().forEach(track => track.stop());
       }
 
-      // Einfache, robuste Kamera-Konfiguration
+      // Prüfe HTTPS-Kontext
+      const isSecure = window.location.protocol === 'https:' || window.location.hostname === 'localhost';
+      console.log('🔒 Secure context:', isSecure, 'Protocol:', window.location.protocol);
+
+      // Einfache, robuste Kamera-Konfiguration mit Fallbacks
       const constraints = {
         video: {
           width: { ideal: 1280, max: 1920 },
