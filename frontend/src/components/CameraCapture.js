@@ -35,7 +35,18 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
       };
 
       console.log('🎥 Requesting camera access...');
-      const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+      
+      // getUserMedia mit Timeout um unendliches Warten zu vermeiden
+      const getUserMediaWithTimeout = (constraints, timeout = 10000) => {
+        return Promise.race([
+          navigator.mediaDevices.getUserMedia(constraints),
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Camera access timeout - please try again')), timeout)
+          )
+        ]);
+      };
+      
+      const mediaStream = await getUserMediaWithTimeout(constraints);
       
       console.log('✅ Camera access granted!');
       setStream(mediaStream);
