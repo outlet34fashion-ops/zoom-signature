@@ -8,13 +8,17 @@ const config = {
 
 module.exports = {
   devServer: {
-    https: process.env.HTTPS === 'true',
+    https: process.env.HTTPS === 'true' ? {
+      key: process.env.SSL_KEY_FILE ? require('fs').readFileSync(process.env.SSL_KEY_FILE) : undefined,
+      cert: process.env.SSL_CRT_FILE ? require('fs').readFileSync(process.env.SSL_CRT_FILE) : undefined,
+    } : false,
     allowedHosts: 'all',
     host: '0.0.0.0',
     port: 3000,
     client: {
       webSocketURL: {
         port: 3000,
+        protocol: process.env.HTTPS === 'true' ? 'wss' : 'ws',
       },
     },
   },
