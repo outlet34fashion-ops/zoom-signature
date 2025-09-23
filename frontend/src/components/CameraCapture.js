@@ -389,12 +389,32 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
               {!isCameraReady && (
                 <div className="absolute inset-0 flex items-center justify-center text-center text-white bg-black bg-opacity-50">
                   <div>
-                    <div className="text-6xl mb-4">📷</div>
-                    <p className="text-lg">Kamera wird geladen...</p>
+                    <div className="text-6xl mb-4">📱</div>
+                    <p className="text-lg">Kamera wird für Mobile optimiert...</p>
                     <div className="mt-4">
                       <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
                     </div>
                   </div>
+                </div>
+              )}
+              
+              {/* Mobile Manual Play Button - for browsers that block autoplay */}
+              {isCameraReady && videoRef.current?.paused && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-70">
+                  <button
+                    onClick={async () => {
+                      try {
+                        await videoRef.current.play();
+                        console.log('📱 Manual video start successful');
+                      } catch (e) {
+                        console.error('📱 Manual video start failed:', e);
+                      }
+                    }}
+                    className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 rounded-lg text-lg font-semibold flex items-center space-x-2 shadow-xl"
+                  >
+                    <span className="text-2xl">▶️</span>
+                    <span>Kamera starten</span>
+                  </button>
                 </div>
               )}
             </>
