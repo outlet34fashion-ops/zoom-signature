@@ -250,6 +250,11 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
               <p className="text-sm text-gray-600">
                 📱 Für beste Ergebnisse: Erlauben Sie Kamera-Zugriff in Ihrem Browser
               </p>
+              {window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' && (
+                <p className="text-xs text-orange-600 mt-2">
+                  ⚠️ Für Kamera-Zugriff auf mobilen Geräten: Nutzen Sie die offizielle HTTPS-URL
+                </p>
+              )}
             </div>
           </div>
         )}
