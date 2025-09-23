@@ -103,26 +103,49 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
         throw lastError || new Error('Alle Kamera-Konfigurationen fehlgeschlagen');
       }
 
-      setStream(newStream);
-      
       if (videoRef.current) {
+        // Clear any existing source first to prevent flicker
+        videoRef.current.srcObject = null;
+        
+        // Small delay to ensure cleanup
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
         videoRef.current.srcObject = newStream;
+        
+        // Enhanced mobile video setup
+        videoRef.current.setAttribute('playsinline', 'true');
+        videoRef.current.setAttribute('webkit-playsinline', 'true');
+        videoRef.current.muted = true;
         
         // Ensure video plays and set ready state
         videoRef.current.onloadedmetadata = async () => {
           try {
-            // Force play the video
+            console.log('📱 Video loaded, attempting mobile-optimized play...');
+            
+            // Force play for mobile Safari compatibility
             await videoRef.current.play();
+            
             const videoWidth = videoRef.current.videoWidth;
             const videoHeight = videoRef.current.videoHeight;
-            console.log('📷 Camera ready! Resolution:', videoWidth, 'x', videoHeight);
-            console.log('📷 Video tracks:', newStream.getVideoTracks().map(track => ({
+            console.log('✅ Mobile camera ready! Resolution:', videoWidth, 'x', videoHeight);
+            console.log('📱 Video tracks:', newStream.getVideoTracks().map(track => ({
               label: track.label,
               settings: track.getSettings()
             })));
-            setIsCameraReady(true);
+            
+            // Double-check video is actually playing (mobile Safari fix)
+            setTimeout(() => {
+              if (videoRef.current && !videoRef.current.paused) {
+                setIsCameraReady(true);
+                console.log('📱 Mobile camera confirmed playing');
+              } else {
+                console.log('📱 Mobile camera needs manual start');
+                setIsCameraReady(true); // Still allow manual start
+              }
+            }, 500);
+            
           } catch (playError) {
-            console.warn('⚠️ Video autoplay failed (browser restriction):', playError.message);
+            console.warn('⚠️ Mobile video autoplay failed (browser restriction):', playError.message);
             // Still set ready even if autoplay fails - user can manually start
             setIsCameraReady(true);
           }
