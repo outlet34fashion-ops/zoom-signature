@@ -18,46 +18,62 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
         stream.getTracks().forEach(track => track.stop());
       }
 
-      // Try different constraint configurations for better compatibility
+      // iPhone/Mobile-optimized constraint configurations
       const constraintSets = [
-        // Mobile-optimized constraints (try first on mobile)
+        // iPhone/iOS optimized constraints (try FIRST on mobile)
         {
           video: {
             facingMode: facingMode,
-            width: { ideal: 1280, max: 1920 },
-            height: { ideal: 720, max: 1080 }
+            width: { ideal: 1280, max: 1920, min: 640 },
+            height: { ideal: 720, max: 1080, min: 480 },
+            frameRate: { ideal: 30, max: 30 }, // Limit framerate for stability
+            aspectRatio: { ideal: 16/9 }
           },
           audio: false
         },
-        // Desktop-optimized constraints
+        // High-quality mobile constraints
         {
           video: {
-            width: { ideal: 1920, max: 1920 },
-            height: { ideal: 1080, max: 1080 }
+            facingMode: facingMode,
+            width: { ideal: 1920, max: 3840 },
+            height: { ideal: 1080, max: 2160 },
+            frameRate: { ideal: 24, max: 30 }
           },
           audio: false
         },
-        // Basic mobile constraints
+        // Basic mobile constraints with specific camera
         {
           video: {
-            facingMode: 'environment', // Back camera first
+            facingMode: { exact: facingMode },
             width: { min: 640, ideal: 1280 },
             height: { min: 480, ideal: 720 }
           },
           audio: false
         },
-        // Front camera fallback
+        // iOS Safari fallback - environment camera
         {
           video: {
-            facingMode: 'user', // Front camera
+            facingMode: 'environment',
             width: { min: 640, ideal: 1280 },
             height: { min: 480, ideal: 720 }
           },
           audio: false
         },
-        // Final basic fallback
+        // iOS Safari fallback - user camera  
         {
-          video: true,
+          video: {
+            facingMode: 'user',
+            width: { min: 640, ideal: 1280 },
+            height: { min: 480, ideal: 720 }
+          },
+          audio: false
+        },
+        // Final basic fallback for any device
+        {
+          video: {
+            width: { min: 320, ideal: 1280 },
+            height: { min: 240, ideal: 720 }
+          },
           audio: false
         }
       ];
