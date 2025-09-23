@@ -8,20 +8,17 @@ const config = {
 };
 
 module.exports = {
-  devServer: {
-    https: process.env.HTTPS === 'true' ? {
-      key: process.env.SSL_KEY_FILE ? require('fs').readFileSync(process.env.SSL_KEY_FILE) : undefined,
-      cert: process.env.SSL_CRT_FILE ? require('fs').readFileSync(process.env.SSL_CRT_FILE) : undefined,
-    } : false,
-    allowedHosts: 'all',
-    host: '0.0.0.0',
-    port: 3000,
-    client: {
-      webSocketURL: {
-        port: 3000,
-        protocol: process.env.HTTPS === 'true' ? 'wss' : 'ws',
-      },
-    },
+  devServer: (devServerConfig) => {
+    if (process.env.HTTPS === 'true') {
+      devServerConfig.https = {
+        key: fs.readFileSync('/app/frontend/ssl/key.pem'),
+        cert: fs.readFileSync('/app/frontend/ssl/cert.pem'),
+      };
+    }
+    devServerConfig.allowedHosts = 'all';
+    devServerConfig.host = '0.0.0.0';
+    devServerConfig.port = 3000;
+    return devServerConfig;
   },
   webpack: {
     alias: {
