@@ -1,5 +1,6 @@
 // Load configuration from environment or config file
 const path = require('path');
+const fs = require('fs');
 
 // Environment variable overrides
 const config = {
