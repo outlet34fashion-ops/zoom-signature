@@ -340,6 +340,12 @@ frontend:
       - working: true
         agent: "main"
         comment: "✅ KAMERA-INTEGRATION VOLLSTÄNDIG BEHOBEN! Comprehensive fix applied: 1) Z-INDEX KONFLIKT GELÖST: MediaUploadModal z-index auf 9999 erhöht, CameraCapture z-index auf 9999 erhöht, Modal-Überlagerung komplett beseitigt, 2) MODAL INTEGRATION FIXED: MediaUploadModal → CameraCapture flow funktioniert einwandfrei, Race-condition beim Modal-Wechsel behoben, Debug-Logs für bessere Fehlerdiagnose hinzugefügt, 3) CAMERA ACCESS WORKING: getUserMedia() API korrekt implementiert, Multiple fallback constraints für verschiedene Geräte, Mobile und Desktop-optimierte Kamera-Einstellungen, 4) FEHLERBEHANDLUNG VERBESSERT: Deutsche Fehlermeldungen für alle Kamera-Fehler-Szenarien, HTTPS/localhost Sicherheitshinweise, Benutzerfreundliche 'Erneut versuchen' Option. TESTING CONFIRMED: MediaUploadModal öffnet sich korrekt über Produkterstellungs-Modal, Kamera-Option erfolgreich anklickbar, CameraCapture-Modal lädt ordnungsgemäß, Kamera-Zugriff wird versucht (Fehler erwartet ohne physische Kamera), Alle Modal-Flows funktionieren einwandfrei."
+      - working: false
+        agent: "user"
+        comment: "CRITICAL CAMERA BUG REPORTED AGAIN: Benutzer berichtet dass das Kameraproblem nicht gelöst ist und sie die Kamera-Funktion benötigen um Produkte zu erstellen. Despite all previous fixes, camera still not working on real mobile devices."
+      - working: "NA"
+        agent: "main"
+        comment: "ROOT CAUSE IDENTIFIED BY TROUBLESHOOT AGENT: Camera functionality fails on real mobile devices because frontend is served over HTTP instead of HTTPS. Modern browsers require HTTPS for getUserMedia() camera access for security reasons. HTTPS CONFIGURATION IMPLEMENTED: 1) Added HTTPS=true to .env, 2) Generated self-signed SSL certificates (/app/frontend/ssl/), 3) Updated craco.config.js with HTTPS devServer configuration, 4) Frontend now serves over HTTPS (confirmed with curl). Camera should now work on real mobile devices with HTTPS security requirement satisfied."
     implemented: true
     working: false
     file: "/app/frontend/src/App.js"
