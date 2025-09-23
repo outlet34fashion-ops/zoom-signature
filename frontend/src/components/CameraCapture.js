@@ -11,18 +11,28 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
   // Vereinfachte Kamera-Initialisierung mit verbesserter Fehlerbehandlung
   const startCamera = async () => {
     console.log('🎥 Starting camera...');
+    console.log('📍 Current URL:', window.location.href);
+    console.log('🔒 Protocol:', window.location.protocol);
+    console.log('🌐 Host:', window.location.hostname);
+    
     setIsLoading(true);
     setError('');
     
     try {
+      // Prüfe ob getUserMedia verfügbar ist
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('getUserMedia not supported in this browser');
+      }
+
       // Stoppe vorhandenen Stream
       if (stream) {
+        console.log('🛑 Stopping existing stream...');
         stream.getTracks().forEach(track => track.stop());
       }
 
       // Prüfe HTTPS-Kontext
       const isSecure = window.location.protocol === 'https:' || window.location.hostname === 'localhost';
-      console.log('🔒 Secure context:', isSecure, 'Protocol:', window.location.protocol);
+      console.log('🔒 Secure context:', isSecure);
 
       // Einfache, robuste Kamera-Konfiguration mit Fallbacks
       const constraints = {
