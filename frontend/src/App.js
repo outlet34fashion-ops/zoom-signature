@@ -9182,8 +9182,14 @@ function App() {
       {/* Media Upload Modal */}
       <MediaUploadModal 
         isOpen={showMediaUploadModal}
-        onClose={() => setShowMediaUploadModal(false)}
-        onCameraSelect={() => setShowCameraCapture(true)}
+        onClose={() => {
+          console.log('🔄 MediaUploadModal closing...');
+          setShowMediaUploadModal(false);
+        }}
+        onCameraSelect={() => {
+          console.log('📷 Camera selected - opening CameraCapture...');
+          setShowCameraCapture(true);
+        }}
         onFileSelect={handleFileSelection}
       />
       
