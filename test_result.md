@@ -325,11 +325,11 @@ backend:
 frontend:
   - task: "KAMERA-INTEGRATION FÜR PRODUKTERSTELLUNG FIX"
     implemented: true
-    working: true
-    file: "/app/frontend/src/components/CameraCapture.js, /app/frontend/src/components/MediaUploadModal.js, /app/frontend/src/App.js"
-    stuck_count: 0
+    working: false
+    file: "/app/frontend/src/components/CameraCapture.js, /app/frontend/src/components/MediaUploadModal.js, /app/frontend/src/App.js, /app/frontend/.env, /app/frontend/craco.config.js"
+    stuck_count: 1
     priority: "critical"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: false
         agent: "user"
