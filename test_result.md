@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "WENN EINE PFLICHTANGABE NICHT ANGEKLICKT MUSS ER ROT FEHLERMELDUNG ANZEIGEN AN DER STELLE WAS NICHT GEWÄHLT WURDE: Bei der Produkterstellung sollen Pflichtfelder, die nicht ausgefüllt sind, rote Fehlermeldungen direkt an der entsprechenden Stelle anzeigen. Besonders wichtig sind: Produktname, Hauptkategorie, Größen, Farben und Material-Übersicht."
+user_problem_statement: "CRITICAL CAMERA BUG: Das problem mit der kamera ist nicht gelöst. Wir benötigen die kamera Funktion um Produkte zu Erstellen. The camera functionality is completely broken on real mobile devices (iPhone/smartphones) preventing product creation. Root cause identified as HTTPS requirement for camera access on modern browsers."
 
 backend:
   - task: "CRITICAL: LiveKit Streaming System Diagnosis and Fix"
