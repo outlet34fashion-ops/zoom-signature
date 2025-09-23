@@ -73,7 +73,7 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
         errorMessage += '❌ Keine Kamera gefunden. Prüfen Sie ob eine Kamera angeschlossen ist.';
       } else if (err.name === 'SecurityError' || err.name === 'NotReadableError') {
         if (!isSecure) {
-          errorMessage += '⚠️ HTTPS ERFORDERLICH: Bitte öffnen Sie die App über die offizielle URL (https://live-shop-mobile.preview.emergentagent.com) für Kamera-Zugriff.';
+          errorMessage += `⚠️ HTTPS ERFORDERLICH: Bitte öffnen Sie die App über eine sichere HTTPS-Verbindung für Kamera-Zugriff.`;
         } else {
           errorMessage += '⚠️ Sicherheitsfehler: Kamera-Zugriff blockiert. Prüfen Sie Browser-Einstellungen.';
         }
