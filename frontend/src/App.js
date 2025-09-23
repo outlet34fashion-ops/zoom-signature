@@ -9196,7 +9196,10 @@ function App() {
       {/* Camera Capture Modal */}
       <CameraCapture 
         isOpen={showCameraCapture}
-        onClose={() => setShowCameraCapture(false)}
+        onClose={() => {
+          console.log('📷 CameraCapture closing...');
+          setShowCameraCapture(false);
+        }}
         onCapture={handleCameraCapture}
       />
     </div>
