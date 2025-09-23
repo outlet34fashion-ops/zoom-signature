@@ -133,13 +133,13 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
       if (error.name === 'NotAllowedError') {
         errorMessage += 'Bitte erlauben Sie den Kamerazugriff in Ihrem Browser und laden Sie die Seite neu.';
       } else if (error.name === 'NotFoundError') {
-        errorMessage += 'Keine Kamera gefunden. Bitte stellen Sie sicher, dass eine Kamera verfügbar ist.';
+        errorMessage += 'Keine Kamera gefunden. Bitte stellen Sie sicher, dass eine Kamera angeschlossen und verfügbar ist.';
       } else if (error.name === 'NotReadableError') {
         errorMessage += 'Kamera wird bereits verwendet. Bitte schließen Sie andere Apps, die die Kamera nutzen.';
       } else if (error.name === 'OverconstrainedError') {
         errorMessage += 'Kamera unterstützt die angeforderte Auflösung nicht.';
       } else if (error.name === 'SecurityError') {
-        errorMessage += 'Sicherheitsfehler. Bitte stellen Sie sicher, dass Sie HTTPS verwenden.';
+        errorMessage += 'Sicherheitsfehler. Bitte stellen Sie sicher, dass Sie HTTPS verwenden oder localhost nutzen.';
       } else {
         errorMessage += `Fehler: ${error.message}`;
       }
