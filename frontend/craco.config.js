@@ -1,6 +1,5 @@
 // Load configuration from environment or config file
 const path = require('path');
-const fs = require('fs');
 
 // Environment variable overrides
 const config = {
@@ -8,18 +7,6 @@ const config = {
 };
 
 module.exports = {
-  devServer: (devServerConfig) => {
-    if (process.env.HTTPS === 'true') {
-      devServerConfig.https = {
-        key: fs.readFileSync('/app/frontend/ssl/key.pem'),
-        cert: fs.readFileSync('/app/frontend/ssl/cert.pem'),
-      };
-    }
-    devServerConfig.allowedHosts = 'all';
-    devServerConfig.host = '0.0.0.0';
-    devServerConfig.port = 3000;
-    return devServerConfig;
-  },
   webpack: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
