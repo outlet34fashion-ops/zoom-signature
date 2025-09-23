@@ -65,15 +65,23 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
       setIsLoading(false);
       
       let errorMessage = 'Kamera-Zugriff fehlgeschlagen. ';
+      const isSecure = window.location.protocol === 'https:' || window.location.hostname === 'localhost';
       
       if (err.name === 'NotAllowedError') {
         errorMessage += '❌ Berechtigung verweigert. Bitte erlauben Sie Kamera-Zugriff und laden die Seite neu.';
       } else if (err.name === 'NotFoundError') {
         errorMessage += '❌ Keine Kamera gefunden. Prüfen Sie ob eine Kamera angeschlossen ist.';
-      } else if (err.name === 'SecurityError') {
-        errorMessage += '⚠️ Sicherheitsfehler: Kamera nur über HTTPS oder localhost verfügbar.';
+      } else if (err.name === 'SecurityError' || err.name === 'NotReadableError') {
+        if (!isSecure) {
+          errorMessage += '⚠️ HTTPS ERFORDERLICH: Bitte öffnen Sie die App über die offizielle URL (https://live-shop-mobile.preview.emergentagent.com) für Kamera-Zugriff.';
+        } else {
+          errorMessage += '⚠️ Sicherheitsfehler: Kamera-Zugriff blockiert. Prüfen Sie Browser-Einstellungen.';
+        }
       } else {
         errorMessage += `Fehler: ${err.message}`;
+        if (!isSecure) {
+          errorMessage += ' (Hinweis: HTTPS wird für Kamera-Zugriff benötigt)';
+        }
       }
       
       setError(errorMessage);
