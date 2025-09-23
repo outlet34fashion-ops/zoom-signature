@@ -248,7 +248,7 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-60">
+    <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center" style={{zIndex: 9999}}>
       <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="bg-gray-800 text-white px-6 py-4 flex justify-between items-center">
