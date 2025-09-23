@@ -283,12 +283,29 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
                 ref={videoRef}
                 autoPlay
                 playsInline
+                webkit-playsinline="true"
                 muted
+                controls={false}
                 className={`w-full h-full object-cover ${isCameraReady ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`}
                 style={{ 
                   transform: facingMode === 'user' ? 'scaleX(-1)' : 'none',
                   minHeight: '400px',
                   maxHeight: '500px'
+                }}
+                onLoadedMetadata={async () => {
+                  console.log('📱 Video metadata loaded - mobile optimization starting...');
+                  try {
+                    // Force play for mobile Safari
+                    if (videoRef.current) {
+                      await videoRef.current.play();
+                      console.log('📱 Mobile video play successful');
+                      setIsCameraReady(true);
+                    }
+                  } catch (playError) {
+                    console.warn('⚠️ Mobile video autoplay failed, manual start required:', playError.message);
+                    // Still set ready for manual play
+                    setIsCameraReady(true);
+                  }
                 }}
               />
               {!isCameraReady && (
