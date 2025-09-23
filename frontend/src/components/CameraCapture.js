@@ -103,6 +103,9 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
         throw lastError || new Error('Alle Kamera-Konfigurationen fehlgeschlagen');
       }
 
+      console.log('✅ Mobile camera stream obtained, setting up video...');
+      setStream(newStream);
+      
       if (videoRef.current) {
         // Clear any existing source first to prevent flicker
         videoRef.current.srcObject = null;
