@@ -7,6 +7,17 @@ const config = {
 };
 
 module.exports = {
+  devServer: {
+    https: process.env.HTTPS === 'true',
+    allowedHosts: 'all',
+    host: '0.0.0.0',
+    port: 3000,
+    client: {
+      webSocketURL: {
+        port: 3000,
+      },
+    },
+  },
   webpack: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
