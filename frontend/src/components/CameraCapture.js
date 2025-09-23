@@ -6,6 +6,7 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
   const [stream, setStream] = useState(null);
   const [cameraError, setCameraError] = useState('');
   const [isCameraReady, setIsCameraReady] = useState(false);
+  const [isStartingCamera, setIsStartingCamera] = useState(false);
   const [facingMode, setFacingMode] = useState('environment'); // 'user' for front, 'environment' for back
 
   const startCamera = useCallback(async () => {
