@@ -4,8 +4,9 @@ const MediaUploadModal = ({ isOpen, onClose, onCameraSelect, onFileSelect }) => 
   if (!isOpen) return null;
 
   const handleCameraSelect = () => {
-    onClose(); // Close modal immediately for faster switching
-    setTimeout(() => onCameraSelect(), 50); // Slight delay for smoother animation
+    console.log('📷 Camera option clicked - starting camera capture...');
+    onCameraSelect(); // Call camera select immediately
+    onClose(); // Close modal after triggering camera
   };
 
   const handleFileSelect = () => {
