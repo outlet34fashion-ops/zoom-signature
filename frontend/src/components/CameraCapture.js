@@ -210,56 +210,92 @@ const CameraCapture = ({ isOpen, onClose, onCapture }) => {
       const canvas = canvasRef.current;
       const context = canvas.getContext('2d');
 
-      // Set canvas dimensions to match video (with fallbacks)
+      console.log('📱 Starting mobile photo capture...');
+      
+      // Ensure video is actually playing before capture
+      if (video.paused) {
+        try {
+          await video.play();
+          // Wait a moment for the frame to be ready
+          await new Promise(resolve => setTimeout(resolve, 200));
+        } catch (playError) {
+          console.warn('📱 Could not restart video for capture:', playError);
+        }
+      }
+
+      // Mobile-optimized canvas dimensions
       const videoWidth = video.videoWidth || 1280;
       const videoHeight = video.videoHeight || 720;
       
+      // High-quality capture for mobile
       canvas.width = videoWidth;
       canvas.height = videoHeight;
 
-      console.log('📸 Capturing photo:', videoWidth, 'x', videoHeight);
+      console.log('📸 Mobile photo capture:', videoWidth, 'x', videoHeight);
 
+      // Ensure high-quality rendering for mobile
+      context.imageSmoothingEnabled = true;
+      context.imageSmoothingQuality = 'high';
+      
       // Draw the video frame to canvas
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-      // Convert to blob with error handling
+      // Mobile-optimized blob creation with high quality
       const capturePromise = new Promise((resolve, reject) => {
         canvas.toBlob((blob) => {
           if (blob && blob.size > 0) {
+            console.log('✅ Mobile photo captured:', blob.size, 'bytes');
             resolve(blob);
           } else {
-            reject(new Error('Foto-Erstellung fehlgeschlagen'));
+            reject(new Error('Mobile Foto-Erstellung fehlgeschlagen'));
           }
-        }, 'image/jpeg', 0.92); // High quality
+        }, 'image/jpeg', 0.95); // Very high quality for mobile
       });
 
       const blob = await capturePromise;
       
-      // Create a File object from the blob
+      // Create mobile-optimized File object
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const file = new File([blob], `camera-photo-${timestamp}.jpg`, {
+      const file = new File([blob], `mobile-photo-${timestamp}.jpg`, {
         type: 'image/jpeg',
         lastModified: Date.now()
       });
       
-      console.log('✅ Photo captured successfully:', file.name, file.size, 'bytes');
+      console.log('✅ Mobile photo file created:', file.name, file.size, 'bytes');
       
-      // Show immediate feedback
+      // Mobile-friendly feedback with haptic feedback (if available)
+      if (navigator.vibrate) {
+        navigator.vibrate(100); // Haptic feedback for mobile
+      }
+      
+      // Visual feedback optimized for mobile
       const captureButton = document.querySelector('[data-capture-button]');
       if (captureButton) {
         const originalText = captureButton.innerHTML;
         captureButton.innerHTML = '<span class="text-2xl">✅</span><span>Foto erfasst!</span>';
+        captureButton.style.transform = 'scale(0.95)';
         setTimeout(() => {
           captureButton.innerHTML = originalText;
+          captureButton.style.transform = 'scale(1)';
         }, 1000);
       }
       
       onCapture(file);
-      handleClose();
+      
+      // Close modal after successful capture on mobile
+      setTimeout(() => {
+        handleClose();
+      }, 1500);
 
     } catch (error) {
-      console.error('🚨 Photo capture error:', error);
-      alert('❌ Fehler beim Aufnehmen des Fotos. Bitte versuchen Sie es erneut.');
+      console.error('🚨 Mobile photo capture error:', error);
+      
+      // Mobile-friendly error handling
+      if (navigator.vibrate) {
+        navigator.vibrate([100, 50, 100]); // Error haptic pattern
+      }
+      
+      alert('❌ Fehler beim Aufnehmen des Fotos auf diesem Gerät. Bitte versuchen Sie es erneut.');
     }
   };
 
